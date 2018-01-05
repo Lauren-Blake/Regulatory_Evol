@@ -1,0 +1,220 @@
+---
+title: "ASH_DE_RIN"
+author: "Lauren Blake"
+date: "June 7, 2017"
+output: html_document
+---
+
+
+
+```{r chunk-options, include=FALSE}
+source("chunk-options.R")
+```
+
+
+```{r}
+# Load libraries
+
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+library("R.utils")
+library("plyr")
+library("limma")
+library("gridExtra")
+library("VennDiagram")
+source("functions.R")
+library(ashr)
+library(ggplot2)
+
+# Set directory to save the data
+
+data_dir <- "../data"
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Retrieve RIN score for each sample
+RNA_seq_info <- read.csv("../data/RNA_seq_info.csv")
+RIN <- as.data.frame(RNA_seq_info[,22])
+RIN <- as.matrix(RIN)
+colnames(RIN) <- c("RIN")
+
+# Retrieve sample information
+samples <- read.delim("../data/Sample_info_RNAseq_limma.txt")
+
+# Eliminate H1H
+samples <- samples[-17,]
+dim(samples)
+
+# Label species and tissues
+
+species <- samples$Species
+length(species)
+tissue <- samples$Tissue
+length(tissue)
+
+labels <- paste(samples$Species, samples$Tissue, sep=" ")
+```
+
+## Test interactions
+
+```{r}
+## Make the contrast matrix and rename columns of the contrast matrix
+
+design <- model.matrix(~ species*tissue + RIN)
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "Human"
+colnames(design)[3] <- "Rhesus"
+colnames(design)[4] <- "Kidney"
+colnames(design)[5] <- "Liver"
+colnames(design)[6] <- "Lung"
+colnames(design)[8] <- "H_by_K"
+colnames(design)[9] <- "R_by_K"
+colnames(design)[10] <- "H_by_Li"
+colnames(design)[11] <- "R_by_Li"
+colnames(design)[12] <- "H_by_Lu"
+colnames(design)[13] <- "R_by_Lu"
+
+# Look at the number of samples in each column 
+colSums(design)
+```
+
+
+```{r}
+# Load count data
+
+counts_genes_in_cutoff <- read.delim("../data/counts_12184.txt")
+
+# TMM 
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+head(cpm_in_cutoff)
+hist(cpm_in_cutoff, xlab = "Log2(CPM)", main = "Log2(CPM) values for genes meeting the filtering criteria", breaks = 100 )
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_in_cutoff, design, normalize.method="cyclicloess", plot=T)
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit.consensus <- 0.2197275
+
+# Final voom on filtered data
+
+cpm.voom.cyclic <- voom(dge_in_cutoff, design, normalize.method="cyclicloess", plot=TRUE, block=samples$Individual, correlation=corfit.consensus)
+
+```
+
+
+
+### Fit the linear model
+
+```{r}
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+
+## - Potential caveat: variances could be different between human, chimp and rhesus (see Gordon Smyth email, 7 June 2013).                                                               
+##  We look at the standard error for each condition                                                    
+hist(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma, breaks=100)
+hist(log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma), breaks=100)
+boxplot(log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma))
+## This seems to be pretty comparable between conditions. The human heart is higher, probably because of H1H missing and H3H with a bit strange behavior                                     
+stderror <- log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma)
+boxplot(list(stderror[,1:4], stderror[,5:8], stderror[,9:12]))
+## A bit higher for human, and a bit lower for rhesus                                                                                                                                    
+boxplot(list(stderror[,2:4], stderror[,6:8], stderror[,8:12])) ## excluding heart samples  
+```
+
+```{r}
+# In the contrast matrix, we have many comparisons for species and tissues individually
+# Note: baseline is chimp heart
+
+cm1 <- makeContrasts(H_K_inter_CH = H_by_K, 
+                     R_K_inter_CH = R_by_K, 
+                     H_Li_inter_CH = H_by_Li, 
+                     R_Li_inter_CH = R_by_Li,  
+                     H_Lu_inter_CH = H_by_Lu, 
+                     R_Lu_inter_CH = R_by_Lu,
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_each_species <- contrasts.fit(fit.cyclic.norm, cm1)
+fit1 <- eBayes(contrasts_each_species)
+
+top3 <- list(H_K_inter =topTable(fit1, coef=1, adjust="BH", number=Inf, sort.by="none"), 
+             R_K_inter =topTable(fit1, coef=2, adjust="BH", number=Inf, sort.by="none"),  
+             H_Li_inter =topTable(fit1, coef=3, adjust="BH", number=Inf, sort.by="none"),  
+             R_Li_inter =topTable(fit1, coef=4, adjust="BH", number=Inf, sort.by="none"), 
+             
+             H_Lu_inter =topTable(fit1, coef=5, adjust="BH", number=Inf, sort.by="none"), 
+             R_Lu_inter =topTable(fit1, coef=6, adjust="BH", number=Inf, sort.by="none") )
+
+
+# Set FDR level at 1% 
+
+FDR_level <- 0.01
+
+## Significant interactions in Humans (baseline = chimp hearts)
+
+mylist <- list()
+mylist[["Kidney"]] <- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val < FDR_level]
+mylist[["Liver"]] <-  row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val < FDR_level]
+mylist[["Lung"]] <- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val < FDR_level]
+
+
+# Make 
+dev.off()
+Four_comp <- venn.diagram(mylist, filename= NULL, main="Significant interactions in Humans (FDR 1%)", cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+## Significant interactions in Rhesus (baseline = chimp hearts)
+
+mylist <- list()
+mylist[["Kidney"]] <- row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val < FDR_level]
+mylist[["Liver"]] <-  row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val < FDR_level]
+mylist[["Lung"]] <- row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val < FDR_level]
+
+
+# Make 
+dev.off()
+Four_comp <- venn.diagram(mylist, filename= NULL, main="Significant interactions in Rhesus (FDR 1%)", cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+```
+
+
+
+```{r}
+# Prepare the data for the 
+tests <- colnames(fit1$coefficients)
+results <- vector(length = length(tests), mode = "list")
+names(results) <- tests
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+for (test in tests) {
+  # Extract limma results
+  results[[test]] <- get_results(fit1, coef = test)
+  # Add mutliple testing correction with ASH
+  output_ash <- run_ash(fit1, coef = test)
+  results[[test]] <- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+}
+
+# Save results from analysis with limma and ash.
+saveRDS(results, file.path(data_dir, "results-limma-voom-ash-interactions.rds"))
+```
+
+
+
+

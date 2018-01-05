@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Follow_up_best_set_tech_factors</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Follow_up_best_set_tech_factors</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>August 9, 2016</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#exploratory-analysis">Exploratory Analysis</a></li>
+<li><a href="#determine-if-the-technical-factors-are-confounded-with-expression-levels">Determine if the technical factors are confounded with expression levels</a></li>
+<li><a href="#is-average-expression-level-correlated-with-number-of-technical-factors-included-in-the-best-set-for-each-gene">Is average expression level correlated with number of technical factors included in the best set for each gene?</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>In the previous “Best set” analysis with tissue and species protected, we found that the following technical factors appeared in the best set for more than 2,400 of the 16,616 genes.</p>
+<ul>
+<li><p>RNA Extraction date 3-23-12 (2nd technical factor on the design matrix fed into GLMnet). Note: the samples that have the RNA Extraction date of 3-23-12 are all Human Individual 3 samples (H3H, H3K, H3Li, H3Lu)</p></li>
+<li><p>Mix code 1000 (8th technical factor). The chimp 1 liver (chimp 4x0519) is the only sample that has this multiplexing mix code because it was the only sample that was only in multiplex mix 1.</p></li>
+<li><p>Percentage overlapping a junction (13th technical factor). Note: this was highest in reads mapped in livers than all of the other tissues. It does not appear to be confounded with species.</p></li>
+<li><p>Reads mapped on orthologous exons (15th technical factor). Note: this was higher in liver and lung samples than heart and kidney samples. It does not appear to be confounded with species.</p></li>
+</ul>
+<p>We have found confounders in the design (e.g. confounders with tissue and/or species). Now, we are looking to see if these confounders in the design are confounded with expression levels.</p>
+</div>
+<div id="exploratory-analysis" class="section level3">
+<h3>Exploratory Analysis</h3>
+<p>We want to see the distribution of expression values for the genes in which the best set contains one of the technical variables or not. Our original thought is that if the expression values for the genes in which the best set contains one of the technical variables are randomly distributed, then that is good and we probably won’t include it in the final model (used to determine DE genes). If the expression values for the genes in which the best set contains one of the technical variables are not randomly distributed, then we will consider including it in the final model when testing for DE genes.</p>
+<pre class="r"><code># Load libraries 
+
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+library(&quot;formattable&quot;)
+
+# Load the data (biological and technical factors)
+
+Best_set_bio_tech_var &lt;- read.delim(&quot;~/Reg_Evo_Primates/ashlar-trial/data/Best_set_bio_tech_var.txt&quot;)
+
+t_Best_set_bio_tech_var &lt;- t(Best_set_bio_tech_var)
+
+dim(t_Best_set_bio_tech_var)</code></pre>
+<pre><code>## [1] 16616    28</code></pre>
+<pre class="r"><code># Load the data (expression counts data)
+
+gene_counts_with_gc_correction &lt;- read.delim(&quot;~/Reg_Evo_Primates/ashlar-trial/data/gc_cyclic_loess_random_var_gene_exp_counts&quot;)</code></pre>
+<pre class="r"><code># Find average expression for each gene
+
+chimp_hearts &lt;- c(1, 5, 9, 13)
+chimp_kidneys &lt;- c(2,6,10,14)
+chimp_livers &lt;- c(3,7,11,15)
+chimp_lungs &lt;- c(4,8,12,16)
+
+human_hearts &lt;- c(20,24,28)
+human_kidneys &lt;- c(17,21,25,29)
+human_livers &lt;- c(18,22,26,30)
+human_lungs &lt;- c(19,23,27,31)
+
+rhesus_hearts &lt;- c(32,36,40,44)
+rhesus_kidneys &lt;- c(33,37,41,45)
+rhesus_livers &lt;- c(34,38,42,46)
+rhesus_lungs &lt;- c(35,39,43,47)
+
+# For chimp hearts
+exp_chimp_hearts &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , chimp_hearts]))
+
+# For chimp kidneys
+
+exp_chimp_kidneys &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , chimp_kidneys]))
+
+# For chimp livers
+
+exp_chimp_livers &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , chimp_livers]))
+
+# For chimp lungs
+
+exp_chimp_lungs &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , chimp_lungs]))
+
+# For human hearts
+exp_human_hearts &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , human_hearts]))
+
+# For human kidneys
+
+exp_human_kidneys &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , human_kidneys]))
+
+# For human livers
+
+exp_human_livers &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , human_livers]))
+
+# For human lungs
+
+exp_human_lungs &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , human_lungs]))
+
+# For rhesus hearts
+exp_rhesus_hearts &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , rhesus_hearts]))
+
+# For rhesus kidneys
+
+exp_rhesus_kidneys &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , rhesus_kidneys]))
+
+# For rhesus livers
+
+exp_rhesus_livers &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , rhesus_livers]))
+
+# For rhesus lungs
+
+exp_rhesus_lungs &lt;- as.data.frame(rowMeans(gene_counts_with_gc_correction[ , human_lungs]))
+
+# Make the data frame
+
+avg_exp_values &lt;- cbind(exp_chimp_hearts, exp_chimp_kidneys, exp_chimp_livers, exp_chimp_lungs, exp_human_hearts, exp_human_kidneys, exp_human_livers, exp_human_lungs, exp_rhesus_hearts, exp_rhesus_kidneys, exp_rhesus_livers, exp_rhesus_lungs)
+
+rownames(avg_exp_values) &lt;- row.names(gene_counts_with_gc_correction)
+colnames(avg_exp_values) &lt;- c(&quot;CH&quot;, &quot;CK&quot;, &quot;CLi&quot;, &quot;CLu&quot;, &quot;HH&quot;, &quot;HK&quot;, &quot;HLi&quot;, &quot;HLu&quot;, &quot;RH&quot;, &quot;RK&quot;, &quot;RLi&quot;, &quot;RLu&quot;)
+
+head(avg_exp_values)</code></pre>
+<pre><code>##                       CH       CK       CLi      CLu       HH       HK
+## ENSG00000000003 4.610868 6.396002  8.095469 5.391101 3.857809 6.931617
+## ENSG00000000419 5.776325 5.204482  5.996511 5.432862 5.922276 5.660062
+## ENSG00000000457 4.716621 5.185978  6.408613 5.111782 3.766371 4.320687
+## ENSG00000000460 1.657578 1.692573  2.465693 2.189239 1.265669 2.309113
+## ENSG00000000938 4.243727 3.971252  5.087452 7.650402 4.877109 3.562921
+## ENSG00000000971 6.332304 5.125277 11.306291 6.282460 6.564142 5.757620
+##                       HLi      HLu       RH       RK       RLi      RLu
+## ENSG00000000003  6.880175 4.857195 4.563435 7.071678  8.146930 4.857195
+## ENSG00000000419  5.990137 5.463117 5.407861 5.223920  5.697787 5.463117
+## ENSG00000000457  4.911001 4.272097 4.385651 5.077154  5.341901 4.272097
+## ENSG00000000460  3.631794 2.487244 1.584310 1.547638  1.358645 2.487244
+## ENSG00000000938  5.807408 7.568003 2.465641 2.432226  3.957756 7.568003
+## ENSG00000000971 10.279503 7.651720 5.203002 6.511264 11.790392 7.651720</code></pre>
+<pre class="r"><code># Add the 4 relevant technical variables
+
+avg_exp_values_tech &lt;- cbind(avg_exp_values, t_Best_set_bio_tech_var[,10], t_Best_set_bio_tech_var[,16], t_Best_set_bio_tech_var[,21], t_Best_set_bio_tech_var[,23], t_Best_set_bio_tech_var[,26])
+
+colnames(avg_exp_values_tech) &lt;- c(&quot;CH&quot;, &quot;CK&quot;, &quot;CLi&quot;, &quot;CLu&quot;, &quot;HH&quot;, &quot;HK&quot;, &quot;HLi&quot;, &quot;HLu&quot;, &quot;RH&quot;, &quot;RK&quot;, &quot;RLi&quot;, &quot;RLu&quot;, &quot;Extraction_3-23-12&quot;, &quot;Mix_code_1000&quot;, &quot;Perc_overlapping_junction&quot;, &quot;Reads_mapped_on_ortho_exons&quot;, &quot;RIN score&quot;)
+
+# Check # of genes with technical variables
+colSums(avg_exp_values_tech)</code></pre>
+<pre><code>##                          CH                          CK 
+##                    55484.39                    56037.61 
+##                         CLi                         CLu 
+##                    56485.17                    55182.71 
+##                          HH                          HK 
+##                    55231.61                    55509.20 
+##                         HLi                         HLu 
+##                    56193.66                    54984.79 
+##                          RH                          RK 
+##                    55485.42                    55221.47 
+##                         RLi                         RLu 
+##                    56196.48                    54984.79 
+##          Extraction_3-23-12               Mix_code_1000 
+##                     2511.00                     2522.00 
+##   Perc_overlapping_junction Reads_mapped_on_ortho_exons 
+##                     3434.00                     2425.00 
+##                   RIN score 
+##                     1158.00</code></pre>
+<pre class="r"><code># Put in a format ggplot2 likes
+
+# All the tissue-species combinations
+
+CH &lt;- as.data.frame(rep(&quot;CH&quot;, times = 16616))
+CK &lt;- as.data.frame(rep(&quot;CK&quot;, times = 16616))
+CLi &lt;- as.data.frame(rep(&quot;CLi&quot;, times = 16616))
+CLu &lt;- as.data.frame(rep(&quot;CLu&quot;, times = 16616))
+
+HH &lt;- as.data.frame(rep(&quot;HH&quot;, times = 16616))
+HK &lt;- as.data.frame(rep(&quot;HK&quot;, times = 16616))
+HLi &lt;- as.data.frame(rep(&quot;HLi&quot;, times = 16616))
+HLu &lt;- as.data.frame(rep(&quot;HLu&quot;, times = 16616))
+
+RH &lt;- as.data.frame(rep(&quot;RH&quot;, times = 16616))
+RK &lt;- as.data.frame(rep(&quot;RK&quot;, times = 16616))
+RLi &lt;- as.data.frame(rep(&quot;RLi&quot;, times = 16616))
+RLu &lt;- as.data.frame(rep(&quot;RLu&quot;, times = 16616))
+
+# Add expression and technical variables for each tissue-species combination
+
+ggplot_avg_value_CH &lt;- cbind(avg_exp_values_tech[,1], CH, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+colnames(ggplot_avg_value_CH) &lt;- c(&quot;Avg_Expression&quot;, &quot;Sample&quot;, &quot;RNA_Extra&quot;, &quot;Mix_1000&quot;, &quot;Perc_overlap_junct&quot;, &quot;Reads_mapped_orth_exon&quot;, &quot;RIN_Score&quot;)
+
+ggplot_avg_value_CK &lt;- cbind(avg_exp_values[,2], CK, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_CK) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_CLi &lt;- cbind(avg_exp_values[,3], CLi, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_CLi) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_CLu &lt;- cbind(avg_exp_values[,4], CLu, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_CLu) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_HH &lt;- cbind(avg_exp_values[,5], HH, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_HH) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_HK &lt;- cbind(avg_exp_values[,6], HK, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_HK) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_HLi &lt;- cbind(avg_exp_values[,7], HLi, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_HLi) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_HLu &lt;- cbind(avg_exp_values[,8], HLu, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_HLu) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_RH &lt;- cbind(avg_exp_values[,9], RH, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_RH) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_RK &lt;- cbind(avg_exp_values[,10], RK, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_RK) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_RLi &lt;- cbind(avg_exp_values[,11], RLi, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_RLi) &lt;- colnames(ggplot_avg_value_CH)
+
+ggplot_avg_value_RLu &lt;- cbind(avg_exp_values[,12], RLu, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17])
+
+colnames(ggplot_avg_value_RLu) &lt;- colnames(ggplot_avg_value_CH)
+
+# Combine all of the data frames
+
+ggplot_avg_value &lt;- rbind(ggplot_avg_value_CH, ggplot_avg_value_CK, ggplot_avg_value_CLi, ggplot_avg_value_CLu, ggplot_avg_value_HH, ggplot_avg_value_HK, ggplot_avg_value_HLi, ggplot_avg_value_HLu, ggplot_avg_value_RH, ggplot_avg_value_RK, ggplot_avg_value_RLi, ggplot_avg_value_RLu)
+
+# Make labels
+
+labels_RNA_Extra &lt;- as.data.frame(paste(ggplot_avg_value$Sample, ggplot_avg_value$RNA_Extra, sep=&quot;_&quot;))
+
+colnames(labels_RNA_Extra) &lt;- c(&quot;RNA_Extra_labels&quot;)
+
+labels_Mix_1000 &lt;- as.data.frame(paste(ggplot_avg_value$Sample, ggplot_avg_value$Mix_1000, sep=&quot;_&quot;))
+
+colnames(labels_Mix_1000) &lt;- c(&quot;Mix_labels&quot;)
+
+labels_Perc_overlap_junct &lt;- as.data.frame(paste(ggplot_avg_value$Sample, ggplot_avg_value$Perc_overlap_junct, sep=&quot;_&quot;))
+
+colnames(labels_Perc_overlap_junct) &lt;- c(&quot;Perc_overlap_junct_labels&quot;)
+
+labels_Reads_mapped_orth_exon &lt;- as.data.frame(paste(ggplot_avg_value$Sample, ggplot_avg_value$Reads_mapped_orth_exon, sep=&quot;_&quot;))
+
+colnames(labels_Reads_mapped_orth_exon) &lt;- c(&quot;Reads_mapped_orth_exon_labels&quot;)
+
+labels_RIN_Score &lt;- as.data.frame(paste(ggplot_avg_value$Sample, ggplot_avg_value$RIN_Score, sep=&quot;_&quot;))
+
+colnames(labels_RIN_Score) &lt;- c(&quot;RIN_Score_labels&quot;)
+
+ggplot_avg_value_labels &lt;- cbind(ggplot_avg_value, labels_RNA_Extra, labels_Mix_1000, labels_Perc_overlap_junct, labels_Reads_mapped_orth_exon, labels_RIN_Score)
+
+# Make the plots
+
+ggplot(ggplot_avg_value_labels, aes(factor(RNA_Extra_labels), Avg_Expression)) +  geom_boxplot() + ylab(&quot;Normalized expression values (averaged over inds.)&quot;) + labs(title = &quot;Expression values including genes with and without RNA Extraction Date 3-23-12&quot;) + xlab(&quot;Tissue-species + whether or not tech. factor included&quot;)  + theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="Follow_up_best_set_tech_factors_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(ggplot_avg_value_labels, aes(factor(Mix_labels), Avg_Expression)) +  geom_boxplot() + ylab(&quot;Normalized expression values (averaged over inds.)&quot;) + labs(title = &quot;Expression values including genes with and without Master Mix Code 1000&quot;)  + xlab(&quot;Tissue-species + whether or not tech. factor included&quot;)  + theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="Follow_up_best_set_tech_factors_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<pre class="r"><code>ggplot(ggplot_avg_value_labels, aes(factor(Perc_overlap_junct_labels), Avg_Expression)) +  geom_boxplot() + ylab(&quot;Normalized expression values (averaged over inds.)&quot;) + labs(title = &quot;Expression values including genes with and without Perc. overlapping junctions&quot;) + xlab(&quot;Tissue-species + whether or not tech. factor included&quot;)  + theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="Follow_up_best_set_tech_factors_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
+<pre class="r"><code>ggplot(ggplot_avg_value_labels, aes(factor(Reads_mapped_orth_exon_labels), Avg_Expression)) +  geom_boxplot() + ylab(&quot;Normalized expression values (averaged over inds.)&quot;) + labs(title = &quot;Expression values including genes with and without Num. of reads mapped on orth. exons&quot;) + xlab(&quot;Tissue-species + whether or not tech. factor included&quot;)  + theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="Follow_up_best_set_tech_factors_files/figure-html/unnamed-chunk-1-4.png" width="672" /></p>
+<pre class="r"><code>ggplot(ggplot_avg_value_labels, aes(factor(RIN_Score_labels), Avg_Expression)) +  geom_boxplot() + ylab(&quot;Normalized expression values (averaged over inds.)&quot;) + labs(title = &quot;Expression values including genes with and without RIN Score&quot;) + xlab(&quot;Tissue-species + whether or not tech. factor included&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="Follow_up_best_set_tech_factors_files/figure-html/unnamed-chunk-1-5.png" width="672" /></p>
+</div>
+<div id="determine-if-the-technical-factors-are-confounded-with-expression-levels" class="section level3">
+<h3>Determine if the technical factors are confounded with expression levels</h3>
+<p>We are going to determine if the averaged normalized expression values is the same or different for genes that have technical factor X included in the best set.</p>
+<pre class="r"><code># Find the mean for all 47 samples
+sample_means_per_gene &lt;- rowMeans(gene_counts_with_gc_correction)
+
+dim(sample_means_per_gene)</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code># Combine this with technical variables
+exp_and_tech_var &lt;- as.data.frame(cbind(sample_means_per_gene, avg_exp_values_tech[,13], avg_exp_values_tech[,14], avg_exp_values_tech[,15], avg_exp_values_tech[,16], avg_exp_values_tech[,17]))
+
+colnames(exp_and_tech_var) &lt;- c(&quot;Mean_all_samples&quot;, &quot;Extraction_3_23_12&quot;, &quot;Mix_code_1000&quot;, &quot;Perc_overlapping_junction&quot;, &quot;Reads_mapped_on_ortho_exons&quot;, &quot;RIN_score&quot;)
+
+dim(exp_and_tech_var)</code></pre>
+<pre><code>## [1] 16616     6</code></pre>
+<pre class="r"><code># Find the quantiles of the means of all the samples
+
+quantile(exp_and_tech_var$Mean_all_samples, probs = seq(0, 1, 0.25), na.rm = FALSE, names = TRUE, type = 7)</code></pre>
+<pre><code>##        0%       25%       50%       75%      100% 
+## -4.158937  1.329491  3.764888  5.471154 11.670442</code></pre>
+<pre class="r"><code>Q0 = -4.158937
+Q1 = 1.329491
+Q2 = 3.764888
+Q3 = 5.471154
+Q4 = 11.670442 </code></pre>
+<div id="quantile-analysis-with-rna-extraction-date-3-21-16" class="section level4">
+<h4>Quantile analysis with RNA Extraction Date 3-21-16</h4>
+<pre class="r"><code># Find how many genes have 0 in the best set for RNA Extraction date 3-23-12 and which have 1 for each quantile
+
+exp_RNA_extra_0_Q01 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 0 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q0 &amp; exp_and_tech_var$Mean_all_samples &lt; Q1 ), ]
+
+dim(exp_RNA_extra_0_Q01)</code></pre>
+<pre><code>## [1] 2966    6</code></pre>
+<pre class="r"><code>exp_RNA_extra_0_Q12 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 0 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q1 &amp; exp_and_tech_var$Mean_all_samples &lt; Q2 ), ]
+
+dim(exp_RNA_extra_0_Q12)</code></pre>
+<pre><code>## [1] 3514    6</code></pre>
+<pre class="r"><code>exp_RNA_extra_0_Q23 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 0 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q2 &amp; exp_and_tech_var$Mean_all_samples &lt; Q3 ), ]
+
+dim(exp_RNA_extra_0_Q23)</code></pre>
+<pre><code>## [1] 3759    6</code></pre>
+<pre class="r"><code>exp_RNA_extra_0_Q34 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 0 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q3 &amp; exp_and_tech_var$Mean_all_samples &lt; Q4 ), ]
+
+dim(exp_RNA_extra_0_Q34)</code></pre>
+<pre><code>## [1] 3866    6</code></pre>
+<pre class="r"><code>exp_RNA_extra_1_Q01 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 1 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q0 &amp; exp_and_tech_var$Mean_all_samples &lt; Q1 ), ]
+
+dim(exp_RNA_extra_1_Q01)</code></pre>
+<pre><code>## [1] 1188    6</code></pre>
+<pre class="r"><code>exp_RNA_extra_1_Q12 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 1 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q1 &amp; exp_and_tech_var$Mean_all_samples &lt; Q2 ), ]
+
+dim(exp_RNA_extra_1_Q12)</code></pre>
+<pre><code>## [1] 640   6</code></pre>
+<pre class="r"><code>exp_RNA_extra_1_Q23 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 1 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q2 &amp; exp_and_tech_var$Mean_all_samples &lt; Q3 ), ]
+
+dim(exp_RNA_extra_1_Q23)</code></pre>
+<pre><code>## [1] 395   6</code></pre>
+<pre class="r"><code>exp_RNA_extra_1_Q34 &lt;- exp_and_tech_var[which(exp_and_tech_var$Extraction_3_23_12 == 1 &amp; exp_and_tech_var$Mean_all_samples &gt;= Q3 &amp; exp_and_tech_var$Mean_all_samples &lt; Q4 ), ]
+
+dim(exp_RNA_extra_1_Q34)</code></pre>
+<pre><code>## [1] 288   6</code></pre>
+<pre class="r"><code># Make a table of the values
+
+DF &lt;- data.frame(RNA_Extra_date_in_best_set=c(&quot;Yes&quot;, &quot;No&quot;, &quot;Ratio&quot;), Q1=c(&quot;1188&quot;, &quot;2966&quot;, &quot;0.401&quot;), Q2=c(&quot;640&quot;, &quot;3514&quot;, &quot;0.182&quot;), Q3=c(&quot;395&quot;, &quot;3759&quot;, &quot;0.110&quot;), Q4=c(&quot;288&quot;, &quot;3866&quot;, &quot;0.074&quot;))
+formattable(DF)</code></pre>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+RNA_Extra_date_in_best_set
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+Q2
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+Q4
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+Yes
+</td>
+<td style="text-align:right;">
+1188
+</td>
+<td style="text-align:right;">
+640
+</td>
+<td style="text-align:right;">
+395
+</td>
+<td style="text-align:right;">
+288
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+No
+</td>
+<td style="text-align:right;">
+2966
+</td>
+<td style="text-align:right;">
+3514
+</td>
+<td style="text-align:right;">
+3759
+</td>
+<td style="text-align:right;">
+3866
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Ratio
+</td>
+<td style="text-align:right;">
+0.401
+</td>
+<td style="text-align:right;">
+0.182
+</td>
+<td style="text-align:right;">
+0.110
+</td>
+<td style="text-align:right;">
+0.074
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="quantile-analysis-with-mix-code-1000" class="section level4">
+<h4>Quantile analysis with Mix Code 1000</h4>
+<pre><code>## [1] 2873    6</code></pre>
+<pre><code>## [1] 3583    6</code></pre>
+<pre><code>## [1] 3771    6</code></pre>
+<pre><code>## [1] 3867    6</code></pre>
+<pre><code>## [1] 1281    6</code></pre>
+<pre><code>## [1] 571   6</code></pre>
+<pre><code>## [1] 383   6</code></pre>
+<pre><code>## [1] 287   6</code></pre>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+Mix_code_1000_in_best_set
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+Q2
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+Q4
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+Yes
+</td>
+<td style="text-align:right;">
+1281
+</td>
+<td style="text-align:right;">
+571
+</td>
+<td style="text-align:right;">
+383
+</td>
+<td style="text-align:right;">
+287
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+No
+</td>
+<td style="text-align:right;">
+2873
+</td>
+<td style="text-align:right;">
+3583
+</td>
+<td style="text-align:right;">
+3771
+</td>
+<td style="text-align:right;">
+3867
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Ratio
+</td>
+<td style="text-align:right;">
+0.446
+</td>
+<td style="text-align:right;">
+0.159
+</td>
+<td style="text-align:right;">
+0.102
+</td>
+<td style="text-align:right;">
+0.074
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="quantile-analysis-with-percentage-of-reads-overlapping-a-junction" class="section level4">
+<h4>Quantile analysis with Percentage of reads overlapping a junction</h4>
+<pre><code>## [1] 2912    6</code></pre>
+<pre><code>## [1] 3160    6</code></pre>
+<pre><code>## [1] 3445    6</code></pre>
+<pre><code>## [1] 3665    6</code></pre>
+<pre><code>## [1] 1242    6</code></pre>
+<pre><code>## [1] 994   6</code></pre>
+<pre><code>## [1] 709   6</code></pre>
+<pre><code>## [1] 489   6</code></pre>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+Perc_overlapping_junction_in_best_set
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+Q2
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+Q4
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+Yes
+</td>
+<td style="text-align:right;">
+1242
+</td>
+<td style="text-align:right;">
+994
+</td>
+<td style="text-align:right;">
+709
+</td>
+<td style="text-align:right;">
+489
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+No
+</td>
+<td style="text-align:right;">
+2912
+</td>
+<td style="text-align:right;">
+3160
+</td>
+<td style="text-align:right;">
+3445
+</td>
+<td style="text-align:right;">
+3665
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Ratio
+</td>
+<td style="text-align:right;">
+0.427
+</td>
+<td style="text-align:right;">
+0.315
+</td>
+<td style="text-align:right;">
+0.206
+</td>
+<td style="text-align:right;">
+0.133
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="quantile-analysis-with-number-of-reads-mapped-on-orthologous-exons" class="section level4">
+<h4>Quantile analysis with Number of reads mapped on orthologous exons</h4>
+<pre><code>## [1] 3062    6</code></pre>
+<pre><code>## [1] 3499    6</code></pre>
+<pre><code>## [1] 3731    6</code></pre>
+<pre><code>## [1] 3899    6</code></pre>
+<pre><code>## [1] 1092    6</code></pre>
+<pre><code>## [1] 655   6</code></pre>
+<pre><code>## [1] 423   6</code></pre>
+<pre><code>## [1] 255   6</code></pre>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+Perc_overlapping_junction_in_best_set
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+Q2
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+Q4
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+Yes
+</td>
+<td style="text-align:right;">
+1092
+</td>
+<td style="text-align:right;">
+655
+</td>
+<td style="text-align:right;">
+423
+</td>
+<td style="text-align:right;">
+255
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+No
+</td>
+<td style="text-align:right;">
+3062
+</td>
+<td style="text-align:right;">
+3499
+</td>
+<td style="text-align:right;">
+3731
+</td>
+<td style="text-align:right;">
+3899
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Ratio
+</td>
+<td style="text-align:right;">
+0.357
+</td>
+<td style="text-align:right;">
+0.187
+</td>
+<td style="text-align:right;">
+0.113
+</td>
+<td style="text-align:right;">
+0.065
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="quantile-analysis-with-rin-score" class="section level4">
+<h4>Quantile analysis with RIN Score</h4>
+<pre><code>## [1] 3573    6</code></pre>
+<pre><code>## [1] 3845    6</code></pre>
+<pre><code>## [1] 3958    6</code></pre>
+<pre><code>## [1] 4082    6</code></pre>
+<pre><code>## [1] 581   6</code></pre>
+<pre><code>## [1] 309   6</code></pre>
+<pre><code>## [1] 196   6</code></pre>
+<pre><code>## [1] 72  6</code></pre>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+RNA_RIN_Score_in_best_set
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+Q2
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+Q4
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+Yes
+</td>
+<td style="text-align:right;">
+581
+</td>
+<td style="text-align:right;">
+309
+</td>
+<td style="text-align:right;">
+196
+</td>
+<td style="text-align:right;">
+72
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+No
+</td>
+<td style="text-align:right;">
+3573
+</td>
+<td style="text-align:right;">
+3845
+</td>
+<td style="text-align:right;">
+3958
+</td>
+<td style="text-align:right;">
+4082
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Ratio
+</td>
+<td style="text-align:right;">
+0.163
+</td>
+<td style="text-align:right;">
+0.080
+</td>
+<td style="text-align:right;">
+0.050
+</td>
+<td style="text-align:right;">
+0.018
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="is-average-expression-level-correlated-with-number-of-technical-factors-included-in-the-best-set-for-each-gene" class="section level3">
+<h3>Is average expression level correlated with number of technical factors included in the best set for each gene?</h3>
+<pre class="r"><code># Find the number of technical variables in the best set for each gene
+
+num_tech_var &lt;- as.data.frame(rowSums(t_Best_set_bio_tech_var)-7)
+summary(num_tech_var)</code></pre>
+<pre><code>##  rowSums(t_Best_set_bio_tech_var) - 7
+##  Min.   : 0.00                       
+##  1st Qu.: 0.00                       
+##  Median : 1.00                       
+##  Mean   : 1.68                       
+##  3rd Qu.: 2.00                       
+##  Max.   :12.00</code></pre>
+<pre class="r"><code># Combine the number of technical variables in the best set for each gene with the mean expression level for each gene (over all 47 samples)
+
+avg_exp_num_tech_var &lt;- cbind(num_tech_var, exp_and_tech_var$Mean_all_samples)
+colnames(avg_exp_num_tech_var) &lt;- c(&quot;Num_tech_var&quot;, &quot;Avg_Expression&quot;)
+
+# Plot the results
+
+ggplot(avg_exp_num_tech_var, aes(factor(Num_tech_var), Avg_Expression)) +  geom_boxplot() + ylab(&quot;Normalized expression values (averaged over all inds.)&quot;) + labs(title = &quot;Expression values versus technical factors in the best set&quot;) + xlab(&quot;Number of technical factors included in the best set analysis&quot;)</code></pre>
+<p><img src="Follow_up_best_set_tech_factors_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># The following code produces the same graph as above but the jitter function plots the actual points. 
+
+ggplot(avg_exp_num_tech_var, aes(factor(Num_tech_var), Avg_Expression)) +  geom_boxplot() + geom_jitter() + ylab(&quot;Normalized expression values (averaged over all inds.)&quot;) + labs(title = &quot;Expression values versus technical factors in the best set&quot;) + xlab(&quot;Number of technical factors included in the best set analysis&quot;) </code></pre>
+<p><img src="Follow_up_best_set_tech_factors_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<p>Conclusions: The number of technical factors identified in the best set is inversely proportional to the normalized expression values. I believe that the additional technical factors in the model may help to capture some of the noise around the lowly expressed genes. I think it is possible that this problem may be exacerbated by a relatively lax filtering strategy. Therefore, in the next set of analysis, I adopt a more stringent filtering strategy to see how this impacts the relationship between number of technical factors in the best set and expression values.</p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

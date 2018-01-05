@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Methyl_reg_lima_ASH</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Methyl_reg_lima_ASH</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>December 5, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#clustering-of-the-values-for-the-methylated-regions">Clustering of the values for the methylated regions</a></li>
+<li><a href="#are-pcs-correlated-with-rin-score">Are PCs correlated with RIN score?</a></li>
+<li><a href="#quantile-normalize-the-methylation-levels">Quantile normalize the methylation levels</a></li>
+</ul>
+</div>
+
+<p>Originally, I wrote this script to determine differentially methylated regions, DMRs, using a voom+limma framework. Through this analysis, we found that due to the distribution of the methylated regions, we should not use limma.</p>
+<pre class="r"><code># Load libraries
+
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>
+Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    lowess</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)</code></pre>
+<pre><code>Warning: package &#39;scales&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>Loading required package: limma</code></pre>
+<pre><code>Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
+<pre><code>Warning: package &#39;R.utils&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading required package: R.oo</code></pre>
+<pre><code>Warning: package &#39;R.oo&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading required package: R.methodsS3</code></pre>
+<pre><code>Warning: package &#39;R.methodsS3&#39; was built under R version 3.2.3</code></pre>
+<pre><code>R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
+<pre><code>R.oo v1.21.0 (2016-10-30) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>
+Attaching package: &#39;R.oo&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:methods&#39;:
+
+    getClasses, getMethods</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    attach, detach, gc, load, save</code></pre>
+<pre><code>R.utils v2.5.0 (2016-11-07) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>
+Attaching package: &#39;R.utils&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:utils&#39;:
+
+    timestamp</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)</code></pre>
+<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;gridExtra&quot;)</code></pre>
+<pre><code>Warning: package &#39;gridExtra&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading required package: grid</code></pre>
+<pre><code>Loading required package: futile.logger</code></pre>
+<pre><code>Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>source(&quot;functions.R&quot;)
+library(ashr)
+library(ggplot2)
+library(dendextend)</code></pre>
+<pre><code>Warning: package &#39;dendextend&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: replacing previous import by &#39;magrittr::%&gt;%&#39; when loading
+&#39;dendextend&#39;</code></pre>
+<pre><code>
+---------------------
+Welcome to dendextend version 1.5.2
+Type citation(&#39;dendextend&#39;) for how to cite the package.
+
+Type browseVignettes(package = &#39;dendextend&#39;) for the package vignette.
+The github page is: https://github.com/talgalili/dendextend/
+
+Suggestions and bug-reports can be submitted at: https://github.com/talgalili/dendextend/issues
+Or contact: &lt;tal.galili@gmail.com&gt;
+
+    To suppress this message use:  suppressPackageStartupMessages(library(dendextend))
+---------------------</code></pre>
+<pre><code>
+Attaching package: &#39;dendextend&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:VennDiagram&#39;:
+
+    rotate</code></pre>
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    cutree</code></pre>
+<pre class="r"><code>library(colorspace)</code></pre>
+<pre><code>Warning: package &#39;colorspace&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>Warning: package &#39;tidyverse&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading tidyverse: tibble
+Loading tidyverse: tidyr
+Loading tidyverse: readr
+Loading tidyverse: purrr
+Loading tidyverse: dplyr</code></pre>
+<pre><code>Warning: package &#39;tibble&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;tidyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;readr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;purrr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;dplyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Conflicts with tidy packages ----------------------------------------------</code></pre>
+<pre><code>arrange():    dplyr, plyr
+col_factor(): readr, scales
+combine():    dplyr, gridExtra
+compact():    purrr, plyr
+count():      dplyr, plyr
+discard():    purrr, scales
+extract():    tidyr, R.utils
+failwith():   dplyr, plyr
+filter():     dplyr, stats
+id():         dplyr, plyr
+lag():        dplyr, stats
+mutate():     dplyr, plyr
+rename():     dplyr, plyr
+summarise():  dplyr, plyr
+summarize():  dplyr, plyr</code></pre>
+<pre class="r"><code># Add function for making ggplot2 figures look good (from Bryan Pavlovic)
+
+bjp&lt;-
+theme(
+  panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;, hjust = 0.5),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x = element_text(size = 14,face = &quot;bold&quot;),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))
+
+# Set directory to save the data
+
+data_dir &lt;- &quot;../data&quot;
+
+# Load colors 
+
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Retrieve RIN score for each sample
+samples &lt;- read.csv(&quot;../data/Sample_info_RNAseq.csv&quot;)
+RIN &lt;- as.data.frame(samples[,5])
+RIN &lt;- as.matrix(RIN)
+colnames(RIN) &lt;- c(&quot;RIN&quot;)
+
+# Retrieve sample information
+samples &lt;- read.csv(&quot;../data/Sample_info_RNAseq.csv&quot;)
+species &lt;- samples$Species
+tissue &lt;- samples$Tissue
+sample_id &lt;- samples[,1]
+individual &lt;- samples[,2]
+
+# Make labels
+
+labels &lt;- paste(samples$Species, samples$Tissue, sep=&quot;.&quot;)
+
+# Methylated regions
+
+methyl_reg &lt;- read.table(&quot;../data/get_means_orth_MR.txt&quot;)
+dim(methyl_reg)</code></pre>
+<pre><code>[1] 168955     48</code></pre>
+<pre class="r"><code>colnames(methyl_reg) &lt;- sample_id</code></pre>
+<div id="clustering-of-the-values-for-the-methylated-regions" class="section level2">
+<h2>Clustering of the values for the methylated regions</h2>
+<pre class="r"><code>pca_genes &lt;- prcomp(t(methyl_reg), scale = F)
+scores &lt;- pca_genes$x
+
+#PCA function (original code from Julien Roux)
+#Load in the plot_scores function
+plot_scores &lt;- function(pca, scores, n, m, cols, points=F, pchs =20, legend=F){
+  xmin &lt;- min(scores[,n]) - (max(scores[,n]) - min(scores[,n]))*0.05
+  if (legend == T){ ## let some room (35%) for a legend                                                                                                                                                 
+    xmax &lt;- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.50
+  }
+  else {
+    xmax &lt;- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.05
+  }
+  ymin &lt;- min(scores[,m]) - (max(scores[,m]) - min(scores[,m]))*0.05
+  ymax &lt;- max(scores[,m]) + (max(scores[,m]) - min(scores[,m]))*0.05
+  plot(scores[,n], scores[,m], xlab=paste(&quot;PC&quot;, n, &quot;: &quot;, round(summary(pca)$importance[2,n],3)*100, &quot;% variance explained&quot;, sep=&quot;&quot;), ylab=paste(&quot;PC&quot;, m, &quot;: &quot;, round(summary(pca)$importance[2,m],3)*100, &quot;% variance explained&quot;, sep=&quot;&quot;), xlim=c(xmin, xmax), ylim=c(ymin, ymax), type=&quot;n&quot;)
+  if (points == F){
+    text(scores[,n],scores[,m], rownames(scores), col=cols, cex=1)
+  }
+  else {
+    points(scores[,n],scores[,m], col=cols, pch=pchs, cex=1.3)
+  }
+}
+
+for (n in 1:1){
+  col.v &lt;- pal[as.integer(samples$Tissue)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>for (n in 2:2){
+  col.v &lt;- pal[as.integer(samples$Tissue)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Function to make pearson correlation matrix and convert into distance matrix
+pearson &lt;- function(x, ...) {
+    x &lt;- as.matrix(x)
+    res &lt;- as.dist(1 - cor(x, method = &quot;pearson&quot;, use = &quot;everything&quot;))
+    res &lt;- as.dist(res)
+    attr(res, &quot;method&quot;) &lt;- &quot;pearson&quot;
+    return(res)
+}
+
+#Convert rpkm gene expression matrix into correlation matrix (this is for the heat map tiles part)
+
+cor(methyl_reg)-&gt;all_data
+
+hc &lt;- methyl_reg %&gt;% pearson %&gt;% hclust(method=&quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram 
+
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(5, 5),  trace=&#39;none&#39;, denscol=&quot;white&quot;, Colv=dend,Rowv=dend, ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(tissue))+9])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot of one 
+
+hist(methyl_reg[,1], xlab = &quot;Methylation level&quot;, main = &quot;Methylation level for each region in 1 chimpanzee heart&quot;)</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-2-4.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="are-pcs-correlated-with-rin-score" class="section level2">
+<h2>Are PCs correlated with RIN score?</h2>
+<pre class="r"><code>summary(lm(scores[,1]~RIN))</code></pre>
+<pre><code>
+Call:
+lm(formula = scores[, 1] ~ RIN)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-25.548  -8.170   1.146   9.845  22.480 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  -84.714     12.289  -6.894 1.32e-08 ***
+RIN           10.820      1.555   6.958 1.05e-08 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 11.59 on 46 degrees of freedom
+Multiple R-squared:  0.5128,    Adjusted R-squared:  0.5022 
+F-statistic: 48.42 on 1 and 46 DF,  p-value: 1.052e-08</code></pre>
+<pre class="r"><code>summary(lm(RIN~as.factor(species)))</code></pre>
+<pre><code>
+Call:
+lm(formula = RIN ~ as.factor(species))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.9750 -0.3750  0.0500  0.4469  1.7250 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                        7.4875     0.1878  39.866  &lt; 2e-16 ***
+as.factor(species)human           -0.4125     0.2656  -1.553    0.127    
+as.factor(species)rhesus macaque   1.4375     0.2656   5.412 2.31e-06 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.7513 on 45 degrees of freedom
+Multiple R-squared:  0.543, Adjusted R-squared:  0.5227 
+F-statistic: 26.74 on 2 and 45 DF,  p-value: 2.225e-08</code></pre>
+</div>
+<div id="quantile-normalize-the-methylation-levels" class="section level2">
+<h2>Quantile normalize the methylation levels</h2>
+<pre class="r"><code># Chimps
+C1H &lt;- qqnorm(methyl_reg[,1])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C1K &lt;- qqnorm(methyl_reg[,2])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C1Li &lt;- qqnorm(methyl_reg[,3])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C1Lu &lt;- qqnorm(methyl_reg[,4])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C2H &lt;- qqnorm(methyl_reg[,5])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C2K &lt;- qqnorm(methyl_reg[,6])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C2Li &lt;- qqnorm(methyl_reg[,7])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C2Lu &lt;- qqnorm(methyl_reg[,8])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C3H &lt;- qqnorm(methyl_reg[,9])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C3K &lt;- qqnorm(methyl_reg[,10])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C3Li &lt;- qqnorm(methyl_reg[,11])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C3Lu &lt;- qqnorm(methyl_reg[,12])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C4H &lt;- qqnorm(methyl_reg[,13])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C4K &lt;- qqnorm(methyl_reg[,14])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C4Li &lt;- qqnorm(methyl_reg[,15])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>C4Lu &lt;- qqnorm(methyl_reg[,16])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Humans
+
+H1H &lt;- qqnorm(methyl_reg[,17])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H1K &lt;- qqnorm(methyl_reg[,18])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H1Li &lt;- qqnorm(methyl_reg[,19])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H1Lu &lt;- qqnorm(methyl_reg[,20])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H2H &lt;- qqnorm(methyl_reg[,21])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H2K &lt;- qqnorm(methyl_reg[,22])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H2Li &lt;- qqnorm(methyl_reg[,23])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H2Lu &lt;- qqnorm(methyl_reg[,24])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-24.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H3H &lt;- qqnorm(methyl_reg[,25])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-25.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H3K &lt;- qqnorm(methyl_reg[,26])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-26.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H3Li &lt;- qqnorm(methyl_reg[,27])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-27.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H3Lu &lt;- qqnorm(methyl_reg[,28])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-28.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H4H &lt;- qqnorm(methyl_reg[,29])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-29.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H4K &lt;- qqnorm(methyl_reg[,30])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H4Li &lt;- qqnorm(methyl_reg[,31])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-31.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>H4Lu &lt;- qqnorm(methyl_reg[,32])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-32.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Rhesus
+
+R1H &lt;- qqnorm(methyl_reg[,33])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-33.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R1K &lt;- qqnorm(methyl_reg[,34])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-34.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R1Li &lt;- qqnorm(methyl_reg[,35])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-35.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R1Lu &lt;- qqnorm(methyl_reg[,36])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-36.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R2H &lt;- qqnorm(methyl_reg[,37])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-37.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R2K &lt;- qqnorm(methyl_reg[,38])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-38.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R2Li &lt;- qqnorm(methyl_reg[,39])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-39.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R2Lu &lt;- qqnorm(methyl_reg[,40])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-40.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R3H &lt;- qqnorm(methyl_reg[,41])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-41.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R3K &lt;- qqnorm(methyl_reg[,42])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-42.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R3Li &lt;- qqnorm(methyl_reg[,43])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-43.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R3Lu &lt;- qqnorm(methyl_reg[,44])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-44.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R4H &lt;- qqnorm(methyl_reg[,45])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-45.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R4K &lt;- qqnorm(methyl_reg[,46])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-46.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R4Li &lt;- qqnorm(methyl_reg[,47])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-47.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>R4Lu &lt;- qqnorm(methyl_reg[,48])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-48.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>quantile_methyl_reg &lt;- cbind(C1H$x, C1K$x, C1Li$x, C1Lu$x, C2H$x, C2K$x, C2Li$x, C2Lu$x, C3H$x, C3K$x, C3Li$x, C3Lu$x, C4H$x, C4K$x, C4Li$x, C4Lu$x, H1H$x, H1K$x, H1Li$x, H1Lu$x, H2H$x, H2K$x, H2Li$x, H2Lu$x, H3H$x, H3K$x, H3Li$x, H3Lu$x, H4H$x, H4K$x, H4Li$x, H4Lu$x, R1H$x, R1K$x, R1Li$x, R1Lu$x, R2H$x, R2K$x, R2Li$x, R2Lu$x, R3H$x, R3K$x, R3Li$x, R3Lu$x, R4H$x, R4K$x, R4Li$x, R4Lu$x)
+
+colnames(quantile_methyl_reg) &lt;- sample_id
+
+# Make a plot of the transformed data
+
+hist(C1H$x, xlab = &quot;Z-score of the Methylation level&quot;, main = &quot;Quantile normalized methylation level for each region in 1 chimpanzee heart&quot;)</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-49.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Clustering
+
+cor(quantile_methyl_reg)-&gt;all_data
+
+hc &lt;- quantile_methyl_reg %&gt;% pearson %&gt;% hclust(method=&quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram 
+
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(5, 5),  trace=&#39;none&#39;, denscol=&quot;white&quot;, Colv=dend,Rowv=dend, ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(tissue))+9])</code></pre>
+<p><img src="figure/Methyl_reg_limma_ASH.Rmd/unnamed-chunk-4-50.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

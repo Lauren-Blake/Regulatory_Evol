@@ -1,0 +1,335 @@
+---
+title: "Filtering_analysis"
+author: "Lauren Blake"
+date: "June 10, 2016"
+output: word_document
+---
+
+### The goal of this file is to establish filtering criteria for multispecies RNA-seq data. This analysis is exploratory; our final scheme can be found in the beginning of the GC content normalization file.
+
+### Introduction
+
+There are the main considerations for filtering:
+  
+1. **What to filter (raw counts or CPM).** Our lab frequently uses CPM in human RNA-seq and multi-species RNA-seq data (e.g. Gallego Romero and Pavlovic et al. 2015). 
+
+2. **What threshold(s) to filter** at e.g. how many samples, tissues, and/or species should have a present value in order to include the gene in the later analysis. For example, Julien had used the cut-off of log2(cpm > 1) in at least 4 of the samples for each gene. This is a potentially lax cutoff and may lead to us having lots of missing data when we perform the differential expression analysis. We have 12 tissue-species pairs. Therefore, we will evaluate the performance of 2/4, 3/4, and 4/4 samples in all 12 tissue-species pairs. 
+
+*Note: After this preliminary exploration, we SNP calling (via GATK) that the sample Human 1 Heart is Human 1 but most likely a Human 1 Liver. Therefore, in future analyses, we will drop this sample.*
+
+```{r}
+# Load libraries 
+
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+library("R.utils")
+library("plyr")
+library("limma")
+library("statmod")
+library("EDASeq")
+source("~/Reg_Evo_Primates/ashlar-trial/analysis/functions.R")
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+#Load the data
+
+  #Raw counts
+
+counts_genes <- read.delim("~/Reg_Evo_Primates/ashlar-trial/data/counts_genes.txt")
+
+summary(counts_genes)
+
+  #Sample information
+
+samples <- read.csv("~/Reg_Evo_Primates/ashlar-trial/data/Sample_info_RNAseq.csv")
+
+labels <- paste(samples$Species, samples$Tissue, sep=" ")
+
+dim(counts_genes)
+```
+
+### Patterns of log2(CPM) 
+
+We are beginning with 30030 genes and 48 samples. Let's do some preliminary analysis on the log2(CPM) to determine an appropriate cutoff
+
+
+```{r}
+# log2(CPM) adjusted for library sizes
+
+dge_original <- DGEList(counts=as.matrix(counts_genes), genes=rownames(counts_genes), group = as.character(t(labels)))
+dge_original <- calcNormFactors(dge_original)
+
+expr_cutoff <- -5.5
+
+tmm_cpm <- cpm(dge_original, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+head(tmm_cpm)
+
+summary(tmm_cpm)
+hist(tmm_cpm, main = "log2(CPM) values in unfiltered data (n = 48 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+# Median log(CPM) adjusted for library sizes
+
+cpm_log <- cpm(counts_genes, normalized.lib.sizes=TRUE, log = TRUE, prior.count = 0.25)
+median_log2_cpm <- apply(cpm_log, 1, median)
+hist(median_log2_cpm, breaks = 100, ylim = c(0, 1500))
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+```
+
+These plots are very similar.
+
+### Patterns of log2(CPM) for each species
+
+```{r}
+# Looking at chimpanzees
+hist(tmm_cpm[,1], main = "log2(CPM) values in unfiltered data (chimpanzee heart sample 1)", xlab = "log2(CPM)", breaks = 100, ylim = c(0, 5000))
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+
+hist(tmm_cpm[,1:16], main = "log2(CPM) values in unfiltered chimpanzee samples", breaks = 100, xlab = "log2(CPM)", ylim = c(0, 20000))
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+# Looking at humans
+hist(tmm_cpm[,17], main = "log2(CPM) values in unfiltered data (human heart sample 1)", xlab = "log2(CPM)", breaks = 100, ylim = c(0, 5000))
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+hist(tmm_cpm[,17:32], main = "log2(CPM) values in unfiltered data (all human samples)", xlab = "log2(CPM)", breaks = 100, ylim = c(0, 20000))
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+# Rhesus macaques
+
+# Looking at chimpanzees
+hist(tmm_cpm[,33], main = "log2(CPM) values in unfiltered rhesus macaque heart sample 1", xlab = "log2(CPM)", breaks = 100, ylim = c(0, 5000))
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+
+hist(tmm_cpm[,33:48], main = "log2(CPM) vallues in rhesus macaque samples", xlab = "log2(CPM)", breaks = 100, ylim = c(0, 20000))
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+```
+
+
+### Filtering 1: log2(CPM) > 1 in at least 4 samples (filtering scheme proposed by Julien)
+
+What happens when we require keeping only those that have log2(CPM) > 1 in at least 4 samples? 
+
+```{r}
+cpm <- cpm(dge_original, normalized.lib.sizes=TRUE, log=TRUE, prior.count=0.25)
+cpm_filtered <- cpm[rowSums(cpm > 1) >= 4, ]
+dim(cpm_filtered)
+```
+
+This leaves us with 15,487 genes. 
+
+### Different log2(cpm) thresholds (1 to 48 samples required)
+
+```{r}
+
+#Find number of genes for each sample threshold
+filtered_genes <- array(1:48, dim = (c(48,1)))
+
+for (i in 1:48){
+  cpm_filtered <- cpm[rowSums(cpm > 1) >= i, ]
+  filter_genes <- as.data.frame(dim(cpm_filtered))
+  filtered_genes[i, 1] <- filter_genes[1,]
+  
+  }
+
+# Plot the results
+plot(filtered_genes, pch = 16, xlab = "Number of samples required to have log2(cpm) > 1", ylab = "Number of genes", main = "Genes for each sample threshold")
+```
+
+There are `r filtered_genes[48,1]` genes when we require log2(cpm) > 1 in all 48 samples. 
+
+### Filtering 2: Log2(CPM) > a particular threshold adjusted for library size in 4/4 samples, 3/4 samples, and 2/4 samples per tissue-species pair. 
+
+```{r}
+# Assign all 12 tissue-species pairs
+chimp_hearts <- c(1, 5, 9, 13)
+chimp_kidneys <- c(2,6,10,14)
+chimp_livers <- c(3,7,11,15)
+chimp_lungs <- c(4,8,12,16)
+
+human_hearts <- c(17,21,25,29)
+human_kidneys <- c(18,22,26,30)
+human_livers <- c(19,23,27,31)
+human_lungs <- c(20,24,28,32)
+
+rhesus_hearts <- c(33,37,41,45)
+rhesus_kidneys <- c(34,38,42,46)
+rhesus_livers <- c(35,39,43,47)
+rhesus_lungs <- c(36,40,44,48)
+
+# Save the counts
+                          # Raw counts = log2(counts_genes)
+                          # CPM = tmm_cpm
+counts_genes_filtered_3 <- tmm_cpm
+
+# Put the number of samples that you want to have for every tissue-species pair (count/4 samples)
+
+count = 2
+threshold = -5.5
+
+counts_genes_filtered_3A <- counts_genes_filtered_3[rowSums(counts_genes_filtered_3[, chimp_hearts] >= threshold) >= count, ] 
+
+#dim(counts_genes_filtered_3A)
+
+counts_genes_filtered_3B <- counts_genes_filtered_3A[rowSums(counts_genes_filtered_3A[, chimp_kidneys] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3B)
+
+counts_genes_filtered_3C <- counts_genes_filtered_3B[rowSums(counts_genes_filtered_3B[, chimp_livers] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3C)
+
+counts_genes_filtered_3D <- counts_genes_filtered_3C[rowSums(counts_genes_filtered_3C[, chimp_lungs] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3D)
+
+counts_genes_filtered_3E <- counts_genes_filtered_3D[rowSums(counts_genes_filtered_3D[, human_hearts] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3E)
+
+counts_genes_filtered_3F <- counts_genes_filtered_3E[rowSums(counts_genes_filtered_3E[, human_kidneys] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3F)
+
+counts_genes_filtered_3G <- counts_genes_filtered_3F[rowSums(counts_genes_filtered_3F[, human_livers] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3G)
+
+counts_genes_filtered_3H <- counts_genes_filtered_3G[rowSums(counts_genes_filtered_3G[, human_lungs] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3H)
+
+counts_genes_filtered_3I <- counts_genes_filtered_3H[rowSums(counts_genes_filtered_3H[, rhesus_hearts] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3I)
+
+counts_genes_filtered_3J <- counts_genes_filtered_3I[rowSums(counts_genes_filtered_3I[, rhesus_kidneys] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3J)
+
+counts_genes_filtered_3K <- counts_genes_filtered_3J[rowSums(counts_genes_filtered_3J[, rhesus_livers] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3K)
+
+counts_genes_filtered_3L <- counts_genes_filtered_3K[rowSums(counts_genes_filtered_3K[, rhesus_lungs] >= threshold) >= count, ] 
+
+dim(counts_genes_filtered_3L)
+
+#counts_genes_filtered_3L_sums <- rowSums(counts_genes_filtered_3L)
+#hist(counts_genes_filtered_3L_sums, main = "Number of genes remaining (2/4 species-tissue criteria)", xlab = "Number of genes")
+```
+
+**When we require each sample in each tissue-species pair to have log2(CPM) > -5 in each gene, we have 14,090 genes remaining.**
+
+**When we require 3/4 samples in each tissue-species pair to have log2(CPM) > -5 in each gene, we have 15,776 genes remaining.** 
+
+**When we require 2/4 samples in each tissue-species pair to have log2(CPM) > -5 in each gene, we have 17,109 genes remaining.** 
+
+For comparison,
+
+When we require each sample in each tissue-species pair to have log2(CPM) > 0 in each gene, we have 9,803 genes remaining. 
+
+When we require 3/4 samples in each tissue-species pair to have log2(CPM) > 0 in each gene, we have 10,579 genes remaining. 
+
+When we require 2/4 samples in each tissue-species pair to have log2(CPM) > 0 in each gene, we have 10,157 genes remaining. 
+
+
+### Distribution of NAs/0 counts
+
+We can get an idea about the distribution of the missing data (where log2(CPM) > threshold) e.g. if one species or tissue-species pair is over-represented in the missing genes
+
+```{r}
+# Copy the raw counts table
+counts_genes_filtered <- tmm_cpm
+
+# If the raw count in a cell is > threshold, replace the counts with a 1
+counts_genes_filtered[counts_genes_filtered > threshold ] <- 1
+
+# If the raw count in a cell is =< threshold, replace the counts with a 0
+counts_genes_filtered[counts_genes_filtered <= threshold ] <- 0
+head(counts_genes_filtered)
+
+# Count the number of genes that have a raw count < 1
+x <- 30030 - colSums(counts_genes_filtered)
+
+par(las=1)
+plot(x, pch = 16, ylab = "Number of Genes with log2(CPM) < -5", xlab = "Sample name", xaxt = 'n', col = as.factor(samples$Tissue), main = "Number of genes with 0 raw counts/sample")
+axis(side = 1, at = 1:48,labels = samples$Species)
+legend("topright", c("Heart", "Kidney", "Liver", "Lung"), lwd = c(2,2,2,2), col = c("black", "red", "green", "blue"))
+```
+
+
+### Density plots of gene counts when we require 2/4 samples in each tissue-species pair to have log2(CPM) > -5.5
+
+```{r}
+
+# Find the original counts of all of the genes that fit the 2/4 criteria and then re-do TMM
+
+inshared_lists = row.names(counts_genes) %in% rownames(counts_genes_filtered_3L)
+inshared_lists_data <- as.data.frame(inshared_lists)
+counts_genes_in <- cbind(counts_genes, inshared_lists_data)
+counts_genes_in_2_of_4 <- subset(counts_genes_in, inshared_lists_data == "TRUE")
+counts_genes_in_2_of_4 <- counts_genes_in_2_of_4[,1:48]
+
+# Take the TMM of the genes that meet the criteria of 2/4 in 12 tissue-species pairs
+
+dge_2_in_4 <- DGEList(counts=as.matrix(counts_genes_in_2_of_4), genes=rownames(counts_genes_in_2_of_4), group = as.character(t(labels)))
+dge_2_in_4 <- calcNormFactors(dge_2_in_4)
+
+cpm <- cpm(dge_2_in_4, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+head(cpm)
+
+summary(cpm)
+hist(cpm, xlab = "Log2(CPM)", main = "Log2(CPM) values for genes meeting the filtering criteria", breaks = 100 )
+```
+
+```{r}
+all_hearts <- c(1,5,9,13,17, 21,25,29,33,37,41,45)
+all_kidneys <- c(2,6,10,14,18, 22,26,30,34,38,42,46)
+all_livers <- c(3,7,11,15,19, 23,27,31,35,39,43,47)
+all_lungs <- c(4,8,12,16,20, 24,28,31,36,40,44,48)
+
+col = as.data.frame(pal[as.numeric(samples$Species)])
+col_hearts = col[all_hearts,]
+col_kidneys = col[all_kidneys, ]
+col_livers = col[all_livers, ]
+col_lungs = col[all_lungs, ]
+
+group = as.data.frame(samples$Species)
+group_hearts = group[all_hearts, ]
+group_kidneys = group[all_kidneys, ]
+group_livers = group[all_livers, ]
+group_lungs = group[all_lungs, ]
+
+plotDensities(cpm[,all_hearts], col=col_hearts, legend = FALSE)
+legend('topright', legend = levels(group_hearts), col = levels(col_hearts), pch = 20)
+
+plotDensities(cpm[,all_kidneys], col=col_kidneys, legend = FALSE)
+legend('topright', legend = levels(group_kidneys), col = levels(col_kidneys), pch = 20)
+
+plotDensities(cpm[,all_livers], col=col_livers, legend = FALSE)
+legend('topright', legend = levels(group_livers), col = levels(col_livers), pch = 20)
+
+plotDensities(cpm[,all_lungs], col=col_lungs, legend = FALSE)
+legend('topright', legend = levels(group_lungs), col = levels(col_lungs), pch = 20)
+
+# Look at all tissues in each species
+
+plotDensities(cpm[,1:16], group=samples$Tissue, col=pal[as.numeric(samples$Tissue)], legend = "topright")
+
+plotDensities(cpm[,17:32], group=samples$Tissue, col=pal[as.numeric(samples$Tissue)], legend = "topright")
+
+plotDensities(cpm[,33:48], group=samples$Tissue, col=pal[as.numeric(samples$Tissue)], legend = "topright")
+
+```
+

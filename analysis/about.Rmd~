@@ -1,0 +1,12 @@
+---
+title: "About"
+---
+
+**Last updated:** `r Sys.Date()`
+
+**Code version:** `r system("git log -1 --format='%H'", intern = TRUE)`
+
+Lauren Blake is a graduate student in the Department of Human Genetics at the University of Chicago. She is supported by the National Science Foundation's Graduate Research Fellowship (NSF-GRFP). 
+
+
+

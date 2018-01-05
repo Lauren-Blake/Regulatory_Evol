@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2017-10-25" />
+
+<title>Human_chimp_variance_values</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Human_chimp_variance_values</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>October 25, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#check-the-variances">Check the variances</a><ul>
+<li><a href="#human-versus-chimp-for-each-tissue">Human versus chimp for each tissue</a></li>
+<li><a href="#human-versus-chimp-for-each-tissue-that-we-have-methylation-values-for">Human versus chimp for each tissue (that we have methylation values for)</a></li>
+<li><a href="#human-heart-versus-kidney-at-fdr-5">Human Heart versus Kidney at FDR 5%</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>This script evaluates the variance of gene expression between the tissues within a species.</p>
+<pre class="r"><code># Load libraries/data
+
+library(&quot;edgeR&quot;)</code></pre>
+<pre><code>Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>Loading required package: limma</code></pre>
+<pre><code>Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;plyr&quot;)</code></pre>
+<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- readRDS(&quot;../data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)
+exp_methyl &lt;- read.table(&quot;../data/human_chimp_orth_exp_methyl_7725_hum.txt&quot;, header = T, stringsAsFactors = F)
+samples &lt;- read.table(&quot;../data/human_chimp_orth_new_sample_info.txt&quot;, header = T,  stringsAsFactors = F)
+
+# Get sample info
+species &lt;- as.data.frame(samples[,4])
+tissue &lt;- as.data.frame(samples[,5])
+RIN &lt;- as.data.frame(samples[,6])</code></pre>
+<div id="check-the-variances" class="section level1">
+<h1>Check the variances</h1>
+<div id="human-versus-chimp-for-each-tissue" class="section level2">
+<h2>Human versus chimp for each tissue</h2>
+<pre class="r"><code># Human heart versus chimp heart
+exp_methyl_chimp_heart &lt;- c(1, 5, 9, 13)
+exp_methyl_human_heart &lt;- c(20, 24, 28)
+var_exp_methyl_chimp_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_chimp_heart], 1, var)
+summary(var_exp_methyl_chimp_heart)</code></pre>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+ 0.000086  0.036030  0.089590  0.245700  0.223500 26.600000 </code></pre>
+<pre class="r"><code>large_var &lt;- cpm.voom.cyclic$E[which(var_exp_methyl_chimp_heart &gt; 1), exp_methyl_chimp_heart]
+length(large_var)</code></pre>
+<pre><code>[1] 2404</code></pre>
+<pre class="r"><code>var_exp_methyl_human_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_human_heart], 1, var)
+summary(var_exp_methyl_human_heart)</code></pre>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+ 0.000008  0.066530  0.184800  0.478100  0.479500 21.710000 </code></pre>
+<pre class="r"><code>large_var &lt;- cpm.voom.cyclic$E[which(var_exp_methyl_human_heart &gt; 1), exp_methyl_human_heart]
+length(large_var)</code></pre>
+<pre><code>[1] 4080</code></pre>
+<pre class="r"><code>plot(var_exp_methyl_chimp_heart, var_exp_methyl_human_heart)</code></pre>
+<p><img src="figure/Human_chimp_var.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Human kidney versus chimp kidney
+exp_methyl_chimp_heart &lt;- c(2, 6, 10, 14)
+exp_methyl_human_heart &lt;- c( 17, 21, 25, 29)
+var_exp_methyl_chimp_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_chimp_heart], 1, var)
+large_var &lt;- cpm.voom.cyclic$E[which(var_exp_methyl_chimp_heart &gt; 1), exp_methyl_chimp_heart]
+length(large_var)</code></pre>
+<pre><code>[1] 1416</code></pre>
+<pre class="r"><code>summary(var_exp_methyl_chimp_heart)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000135 0.032080 0.076140 0.193500 0.180600 9.668000 </code></pre>
+<pre class="r"><code>var_exp_methyl_human_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_human_heart], 1, var)
+summary(var_exp_methyl_human_heart)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+ 0.00002  0.06097  0.14000  0.35160  0.34440 15.90000 </code></pre>
+<pre class="r"><code>large_var &lt;- cpm.voom.cyclic$E[which(var_exp_methyl_human_heart &gt; 1), exp_methyl_human_heart]
+length(large_var)</code></pre>
+<pre><code>[1] 3808</code></pre>
+<pre class="r"><code>plot(var_exp_methyl_chimp_heart, var_exp_methyl_human_heart, xlim = c(0, 15), xlab = &quot;Chimp Kidney&quot;, ylab = &quot;Human Kidney&quot;, main = &quot;Variance of gene expression (10,304 genes)&quot;)</code></pre>
+<p><img src="figure/Human_chimp_var.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Human liver versus chimp liver
+
+exp_methyl_chimp_heart &lt;- c(3, 7, 11, 15)
+exp_methyl_human_heart &lt;- c(18, 22, 26, 30)
+var_exp_methyl_chimp_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_chimp_heart], 1, var)
+summary(var_exp_methyl_chimp_heart)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+ 0.00001  0.06998  0.16200  0.35300  0.37730 16.86000 </code></pre>
+<pre class="r"><code>var_exp_methyl_human_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_human_heart], 1, var)
+summary(var_exp_methyl_human_heart)</code></pre>
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+ 0.00022  0.10630  0.26130  0.54940  0.62900 29.72000 </code></pre>
+<pre class="r"><code>plot(var_exp_methyl_chimp_heart, var_exp_methyl_human_heart, xlim = c(0, 15), xlab = &quot;Chimp Liver&quot;, ylab = &quot;Human Liver&quot;, main = &quot;Variance of gene expression (10,304 genes)&quot;)</code></pre>
+<p><img src="figure/Human_chimp_var.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Human lung versus chimp lung
+
+exp_methyl_chimp_heart &lt;- c(4, 8, 12, 16)
+exp_methyl_human_heart &lt;- c(19, 23, 27, 31)
+var_exp_methyl_chimp_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_chimp_heart], 1, var)
+summary(var_exp_methyl_chimp_heart)</code></pre>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+ 0.000322  0.073810  0.168000  0.332500  0.382200 18.980000 </code></pre>
+<pre class="r"><code>var_exp_methyl_human_heart &lt;- apply(cpm.voom.cyclic$E[,exp_methyl_human_heart], 1, var)
+summary(var_exp_methyl_human_heart)</code></pre>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+ 0.000073  0.054310  0.122300  0.313900  0.285600 19.950000 </code></pre>
+<pre class="r"><code>plot(var_exp_methyl_chimp_heart, var_exp_methyl_human_heart, xlim = c(0, 15), xlab = &quot;Chimp Lung&quot;, ylab = &quot;Human Lung&quot;, main = &quot;Variance of gene expression (10,304 genes)&quot;)</code></pre>
+<p><img src="figure/Human_chimp_var.Rmd/unnamed-chunk-2-4.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="human-versus-chimp-for-each-tissue-that-we-have-methylation-values-for" class="section level2">
+<h2>Human versus chimp for each tissue (that we have methylation values for)</h2>
+<pre class="r"><code># Pul expression values that we have accompanying methylation values for
+
+exp_methyl_exp_only &lt;- exp_methyl[,2:48]
+
+# Human heart versus chimp heart
+exp_methyl_chimp_heart &lt;- c(1, 5, 9, 13)
+exp_methyl_human_heart &lt;- c(20, 24, 28)
+
+mean_exp_methyl_chimp_heart &lt;- apply(exp_methyl_exp_only[,exp_methyl_chimp_heart], 1, mean)
+mean_exp_methyl_human_heart &lt;- apply(exp_methyl_exp_only[,exp_methyl_human_heart], 1, mean)
+plot(mean_exp_methyl_chimp_heart, mean_exp_methyl_human_heart, xlim = c(0, 25), ylim = c(0,25), xlab = &quot;Chimp Heart&quot;, ylab = &quot;Human Heart&quot;, main = &quot;Avg. of normalized gene expression levels (7,725 genes)&quot;)
+abline(0, 1, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Human_chimp_var.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>t.test(mean_exp_methyl_chimp_heart, mean_exp_methyl_human_heart)</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  mean_exp_methyl_chimp_heart and mean_exp_methyl_human_heart
+t = 0.38123, df = 15448, p-value = 0.703
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.05401257  0.08009554
+sample estimates:
+mean of x mean of y 
+ 4.801659  4.788618 </code></pre>
+<pre class="r"><code>var_exp_methyl_chimp_heart &lt;- apply(exp_methyl_exp_only[,exp_methyl_chimp_heart], 1, var)
+summary(var_exp_methyl_chimp_heart)</code></pre>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+ 0.000086  0.034240  0.085110  0.243500  0.217900 26.600000 </code></pre>
+<pre class="r"><code>summary(var_exp_methyl_chimp_heart &gt; 1)</code></pre>
+<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
+logical    7337     388       0 </code></pre>
+<pre class="r"><code>var_exp_methyl_human_heart &lt;- apply(exp_methyl_exp_only[,exp_methyl_human_heart], 1, var)
+summary(var_exp_methyl_human_heart)</code></pre>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+ 0.000008  0.063210  0.175800  0.466100  0.469100 21.710000 </code></pre>
+<pre class="r"><code>summary(var_exp_methyl_human_heart &gt; 1)</code></pre>
+<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
+logical    6877     848       0 </code></pre>
+<pre class="r"><code>t.test(var_exp_methyl_chimp_heart, var_exp_methyl_human_heart)</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  var_exp_methyl_chimp_heart and var_exp_methyl_human_heart
+t = -17.041, df = 12428, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.2482753 -0.1970505
+sample estimates:
+mean of x mean of y 
+0.2434577 0.4661206 </code></pre>
+<pre class="r"><code>plot(var_exp_methyl_chimp_heart, var_exp_methyl_human_heart, xlim = c(0, 25), ylim = c(0,25), xlab = &quot;Chimp Heart&quot;, ylab = &quot;Human Heart&quot;, main = &quot;Variance of normalized gene expression levels (7,725 genes)&quot;)
+abline(0, 1, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Human_chimp_var.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Find the ones with high variances
+
+which(var_exp_methyl_human_heart &gt; 15)</code></pre>
+<pre><code>ENSG00000115590 ENSG00000118849 ENSG00000188257 ENSG00000188404 
+           2235            2463            6871            6877 </code></pre>
+<pre class="r"><code>exp_methyl_exp_only[2235,exp_methyl_human_heart]</code></pre>
+<pre><code>                   H2H.x     H3H.x   H4H.x
+ENSG00000115590 3.172838 -4.521215 2.83154</code></pre>
+<pre class="r"><code>exp_methyl_exp_only[2463,exp_methyl_human_heart]</code></pre>
+<pre><code>                  H2H.x      H3H.x    H4H.x
+ENSG00000118849 8.51795 -0.7667387 4.570575</code></pre>
+<pre class="r"><code>exp_methyl_exp_only[6871,exp_methyl_human_heart]</code></pre>
+<pre><code>                   H2H.x    H3H.x    H4H.x
+ENSG00000188257 9.836642 1.885551 8.235753</code></pre>
+<pre class="r"><code>exp_methyl_exp_only[6877,exp_methyl_human_heart]</code></pre>
+<pre><code>                   H2H.x     H3H.x    H4H.x
+ENSG00000188404 2.101309 -4.572644 3.683609</code></pre>
+<pre class="r"><code>find_var &lt;- c(3.172838, -4.521215, 2.83154)
+var(find_var)</code></pre>
+<pre><code>[1] 18.89632</code></pre>
+</div>
+<div id="human-heart-versus-kidney-at-fdr-5" class="section level2">
+<h2>Human Heart versus Kidney at FDR 5%</h2>
+<pre class="r"><code># First, pick out the genes that are DE (you run the entire analysis only on genes that are DE)
+tissue &lt;- as.data.frame(samples[,5])
+chimp_human_heart &lt;- c(17, 20, 21, 24, 25, 28, 29)
+FDR_level &lt;- 0.05
+tissue &lt;- tissue[chimp_human_heart,]
+tissue_no_extra &lt;- droplevels.factor(tissue, &quot;liver&quot;)
+
+
+design &lt;- model.matrix(~ as.factor(tissue_no_extra) + RIN[chimp_human_heart,])
+fit_all &lt;- lmFit(cpm.voom.cyclic[,chimp_human_heart], design)
+fit_all &lt;- eBayes(fit_all)
+HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+human_chimp_heart &lt;-   rownames(fit_all) %in% rownames(exp_methyl) 
+human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+counts_genes_in &lt;- cbind(fit_all, human_chimp_heart)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart == &quot;TRUE&quot;)
+counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:23]  
+
+human_heart_lung_beta_fitall &lt;- counts_genes_in_cutoff[,2]
+human_heart_lung_sigma_fitall &lt;- counts_genes_in_cutoff[,5]*counts_genes_in_cutoff[,7]
+human_heart_lung_t_fitall &lt;- counts_genes_in_cutoff[,13]
+
+HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+human_chimp_heart &lt;-   rownames(HvC_Heart_fit_all) %in% rownames(exp_methyl) 
+human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+counts_genes_in &lt;- cbind(HvC_Heart_fit_all, human_chimp_heart)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart == &quot;TRUE&quot;)
+human_heart_lung_FDR_fitall &lt;- counts_genes_in_cutoff[,6]  
+
+HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+human_chimp_heart &lt;-  rownames(exp_methyl) %in% HvC_Heart_fit_all_5perc$genes
+human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+counts_genes_in &lt;- cbind(exp_methyl, human_chimp_heart)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart == &quot;TRUE&quot;)
+counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]  
+expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+human_heart_lung_gene_fit1 &lt;- rownames(expression_values_only)
+
+
+## Obtain corrected data (regression for scenario 2) by regressing out RIN on a gene-by-gene basis
+resid_methyl &lt;- array(0, dim = c(nrow(expression_values_only), length(chimp_human_heart))) 
+expression_values &lt;- as.data.frame(expression_values_only)
+methylation_values &lt;- as.data.frame(methylation_values_only)
+for (i in 1:nrow(expression_values_only)){
+  resid_methyl[i,] &lt;- lm(t(expression_values_only[i,chimp_human_heart]) ~ t(methylation_values_only[i,chimp_human_heart]))$resid
+}
+rownames(resid_methyl) &lt;- rownames(expression_values_only)
+
+# Scenario 1
+
+fit1 &lt;- lmFit(expression_values_only[, chimp_human_heart], design)
+fit1 &lt;- eBayes(fit1)
+
+save(fit1, file = &quot;../Limma_output_fit1.rda&quot;)
+
+HvC_Heart_fit1 = topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+human_heart_lung_FDR_fit1 &lt;- HvC_Heart_fit1$adj.P.Val 
+
+save(HvC_Heart_fit1, file = &quot;../Limma_toptable_fit1.rda&quot;)
+
+human_heart_lung_beta_fitall &lt;- fit1$coef[,2]
+human_heart_lung_sigma_fitall &lt;- fit1$stdev.unscaled[,2]*fit1$sigma
+human_heart_lung_t_fitall &lt;- fit1$t[,2]
+
+
+# Scenario 2
+
+fit2 &lt;- lmFit(resid_methyl, design)
+fit2 &lt;- eBayes(fit2)
+HvC_Heart_fit2 = topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+
+save(fit2, file = &quot;../Limma_output_fit2.rda&quot;)
+save(HvC_Heart_fit2, file = &quot;../Limma_toptable_fit2.rda&quot;)
+
+plot(HvC_Heart_fit1$logFC, HvC_Heart_fit2$logFC)</code></pre>
+<p><img src="figure/Human_chimp_var.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Bind DE from fit1 and DE from fit2 together
+
+HvC_Heart_fits12 &lt;- as.data.frame(cbind(rownames(HvC_Heart_fit1), HvC_Heart_fit1$adj.P.Val, HvC_Heart_fit2$adj.P.Val), stringsAsFactors = FALSE)
+HvC_Heart_fits12[,2] &lt;- as.numeric(HvC_Heart_fits12[,2])
+HvC_Heart_fits12[,3] &lt;- as.numeric(HvC_Heart_fits12[,3])
+colnames(HvC_Heart_fits12) &lt;- c(&quot;genes&quot;, &quot;fit1_FDR&quot;, &quot;fit2_FDR&quot;)
+
+DE_both &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_both)</code></pre>
+<pre><code>[1] 785</code></pre>
+<pre class="r"><code>DE_before &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &gt; FDR_level),]
+nrow(DE_before)</code></pre>
+<pre><code>[1] 680</code></pre>
+<pre class="r"><code>DE_after &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &gt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_after)</code></pre>
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

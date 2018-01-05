@@ -1,0 +1,286 @@
+---
+title: "Normalization_plots_RNAseq"
+author: "Lauren Blake"
+date: "June 2, 2016"
+output: html_document
+---
+
+### The goal of this script is to visualize different normalizations that can be applied to the RNA-seq data. 
+
+The RNA-seq data that we are using here are counts from orthologous genes. This was created by taking the sum of counts from the ortholgous exons. For more information about how the orthologous exons were determined, see http://giladlab.uchicago.edu/orthoExon/. 
+
+
+```{r}
+#Load the libraries
+
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+#Load the data
+
+  #Raw counts
+
+counts_genes <- read.delim("~/Reg_Evo_Primates/ashlar-trial/data/counts_genes.txt")
+
+head(counts_genes)
+
+  #Sample information
+
+samples <- read.csv("~/Reg_Evo_Primates/ashlar-trial/data/Sample_info_RNAseq.csv")
+
+head(samples)
+
+labels <- paste(samples$Species, samples$Tissue, sep=" ")
+
+```
+
+### Hierarchical clustering and PCA on raw data
+
+```{r}
+#PCA function (original code from Julien Roux)
+#Load in the plot_scores function
+plot_scores <- function(pca, scores, n, m, cols, points=F, pchs =20, legend=F){
+  xmin <- min(scores[,n]) - (max(scores[,n]) - min(scores[,n]))*0.05
+  if (legend == T){ ## let some room (35%) for a legend                                                                                                                                                 
+    xmax <- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.50
+  }
+  else {
+    xmax <- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.05
+  }
+  ymin <- min(scores[,m]) - (max(scores[,m]) - min(scores[,m]))*0.05
+  ymax <- max(scores[,m]) + (max(scores[,m]) - min(scores[,m]))*0.05
+  plot(scores[,n], scores[,m], xlab=paste("PC", n, ": ", round(summary(pca)$importance[2,n],3)*100, "% variance explained", sep=""), ylab=paste("PC", m, ": ", round(summary(pca)$importance[2,m],3)*100, "% variance explained", sep=""), xlim=c(xmin, xmax), ylim=c(ymin, ymax), type="n")
+  if (points == F){
+    text(scores[,n],scores[,m], rownames(scores), col=cols, cex=1)
+  }
+  else {
+    points(scores[,n],scores[,m], col=cols, pch=pchs, cex=1.3)
+  }
+}
+
+```
+
+```{r}
+# Clustering (original code from Julien Roux)
+cors <- cor(counts_genes, method="spearman", use="pairwise.complete.obs")
+
+
+heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol=labels, ColSideColors=pal[as.integer(as.factor(samples$Species))], RowSideColors=pal[as.integer(as.factor(samples$Tissue))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+```
+
+
+```{r}
+# Check that there's no "NAs" in the data
+select <- counts_genes
+summary(apply(select, 1, var) == 0) 
+
+# Perform PCA
+
+pca_genes <- prcomp(t(counts_genes), scale = F)
+scores <- pca_genes$x
+
+
+#Make PCA plots with the factors colored by tissue
+
+### PCs 1 and 2 Raw Data
+for (n in 1:1){
+  col.v <- pal[as.integer(samples$Tissue)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+### PCs 3 and 4 Raw Data
+
+for (n in 3:3){
+  col.v <- pal[as.integer(samples$Tissue)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+```
+
+### Density plot for the raw data
+
+Let's see what the density plot looks like when we only 
+use one sample and the raw counts.
+
+```{r}
+density_plot_C1H <- ggplot(counts_genes, aes(x = C1H)) + geom_density()
+
+density_plot_C1H + labs(title = "Density plot of raw gene counts of C1H") + labs(x = "Raw counts for each gene")
+```
+
+We need to first transform this raw data so we can better assess the densities. We will look the counts using log2. 
+
+### Log2(raw counts)
+
+```{r}
+log_counts_genes <- as.data.frame(log2(counts_genes))
+head(log_counts_genes)
+
+density_plot_C1H <- ggplot(log_counts_genes, aes(x = C1H)) + geom_density()
+
+density_plot_C1H + labs(title = "Density plot of log2 counts of C1H") + labs(x = "Log2 counts for each gene") + geom_vline(xintercept = 1)  
+
+plotDensities(log_counts_genes, col=pal[as.numeric(samples$Species)], legend="topright")
+
+plotDensities(log_counts_genes, col=pal[as.numeric(samples$Tissue)], legend="topright")
+
+all_hearts <- c(1,5,9,13,17, 21,25,29,33,37,41,45)
+all_kidneys <- c(2,6,10,14,18, 22,26,30,34,38,42,46)
+all_livers <- c(3,7,11,15,19, 23,27,31,35,39,43,47)
+all_lungs <- c(4,8,12,16,20, 24,28,31,36,40,44,48)
+
+# Look at all species for each tissue 
+
+col = as.data.frame(pal[as.numeric(samples$Species)])
+
+plotDensities(log_counts_genes[,all_hearts], col=col[all_hearts, ], legend="topright")
+
+plotDensities(log_counts_genes[,all_kidneys], col=col[all_kidneys, ], legend="topright")
+
+plotDensities(log_counts_genes[,all_livers], col=col[all_livers, ], legend="topright")
+
+plotDensities(log_counts_genes[,all_lungs], col=col[all_lungs, ], legend="topright")
+
+# Look at all tissues in each species
+col = as.data.frame(pal[as.numeric(samples$Tissue)])
+
+plotDensities(log_counts_genes[,1:16], col=col[1:16, ], legend="topright")
+
+plotDensities(log_counts_genes[,17:32], col=col[17:32, ], legend="topright")
+
+plotDensities(log_counts_genes[,33:48], col=col[33:48, ], legend="topright")
+
+```
+
+
+### log2(CPM)
+
+```{r}
+cpm <- cpm(counts_genes, log=TRUE)
+head(cpm)
+
+# Look at all species for each tissue 
+
+col = as.data.frame(pal[as.numeric(samples$Species)])
+
+plotDensities(cpm[,all_hearts], col=col[all_hearts, ], legend="topright")
+
+plotDensities(cpm[,all_kidneys], col=col[all_kidneys, ], legend="topright")
+
+plotDensities(cpm[,all_livers], col=col[all_livers, ], legend="topright")
+
+plotDensities(cpm[,all_lungs], col=col[all_lungs, ], legend="topright")
+
+# Look at all tissues in each species
+col = as.data.frame(pal[as.numeric(samples$Tissue)])
+
+plotDensities(cpm[,1:16], col=col[1:16, ], legend="topright")
+
+plotDensities(cpm[,17:32], col=col[17:32, ], legend="topright")
+
+plotDensities(cpm[,33:48], col=col[33:48, ], legend="topright")
+
+```
+
+### TMM/log2(CPM)
+
+```{r}
+## Create edgeR object (dge) to calculate TMM normalization  
+dge_original <- DGEList(counts=as.matrix(counts_genes), genes=rownames(counts_genes), group = as.character(t(labels)))
+dge_original <- calcNormFactors(dge_original)
+
+tmm_cpm <- cpm(dge_original, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+head(cpm)
+
+# Plot library size
+
+boxplot_library_size <- ggplot(dge_original$samples, aes(x = samples$Tissue, y = dge_original$samples$lib.size, fill = samples$Species)) + geom_boxplot()
+ 
+boxplot_library_size + labs(title = "Library size by tissue") + labs(y = "Library size") + labs(x = "Tissues") + guides(fill=guide_legend(title="Species"))
+
+col = as.data.frame(pal[as.numeric(samples$Species)])
+
+plotDensities(tmm_cpm[,all_hearts], col=col[all_hearts, ], legend="topright")
+
+plotDensities(tmm_cpm[,all_kidneys], col=col[all_kidneys, ], legend="topright")
+
+plotDensities(tmm_cpm[,all_livers], col=col[all_livers, ], legend="topright")
+
+plotDensities(tmm_cpm[,all_lungs], col=col[all_lungs, ], legend="topright")
+
+# Look at all tissues in each species
+col = as.data.frame(pal[as.numeric(samples$Tissue)])
+
+plotDensities(tmm_cpm[,1:16], col=col[1:16, ], legend="topright")
+
+plotDensities(tmm_cpm[,17:32], col=col[17:32, ], legend="topright")
+
+plotDensities(tmm_cpm[,33:48], col=col[33:48, ], legend="topright")
+
+```
+
+### TMM/log2(CPM) with H1H Removed
+
+We can see from the data that H1H doesn't look like the other (human) hearts. We will remove it here. 
+
+```{r}
+# Remove H1H
+
+dge <- dge_original[,-17]
+labels <- as.data.frame(labels)
+labels_47 <- labels[-17,]
+labels_47 <- as.character(labels_47)
+
+species <- as.data.frame(samples$Species)
+tissues <- as.data.frame(samples$Tissue)
+
+boxplot_library_size <- ggplot(dge$samples, aes(x = tissues[-17,], y = dge$samples$lib.size, fill = species[-17,])) + geom_boxplot()
+ 
+boxplot_library_size + labs(title = "Library size by tissue") + labs(y = "Library size") + labs(x = "Tissues") + guides(fill=guide_legend(title="Species"))
+```
+
+
+```{r}
+# Update these values (because H1H was dropped)
+
+all_hearts <- c(1,5,9,13,20,24,28,32,36,40,44)
+all_kidneys <- c(2,6,10,14,17,21,25,29,33,37,41,45)
+all_livers <- c(3,7,11,15,18,22,26,30,34,38,42,46)
+all_lungs <- c(4,8,12,16,19,23,27,31,35,39,43,47)
+
+tmm_cpm <- cpm(dge, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+head(cpm)
+
+# Update the samples file so that H1H is deleted
+samples <- samples[-17,]
+col = as.data.frame(pal[as.numeric(samples$Species)])
+
+plotDensities(tmm_cpm[,all_hearts], col=col[all_hearts, ], legend="topright")
+
+plotDensities(tmm_cpm[,all_kidneys], col=col[all_kidneys, ], legend="topright")
+
+plotDensities(tmm_cpm[,all_livers], col=col[all_livers, ], legend="topright")
+
+plotDensities(tmm_cpm[,all_lungs], col=col[all_lungs, ], legend="topright")
+
+# Look at all tissues in each species
+col = as.data.frame(pal[as.numeric(samples$Tissue)])
+
+plotDensities(tmm_cpm[,1:16], col=col[1:16, ], legend="topright")
+
+plotDensities(tmm_cpm[,17:31], col=col[17:31, ], legend="topright")
+
+plotDensities(tmm_cpm[,32:47], col=col[32:47, ], legend="topright")
+
+```
+
+

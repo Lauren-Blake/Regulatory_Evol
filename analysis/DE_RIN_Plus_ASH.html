@@ -1,0 +1,3168 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>ASH_DE_RIN</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">ASH_DE_RIN</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>June 7, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#pairwise-comparisons">Pairwise comparisons</a><ul>
+<li><a href="#fit-the-linear-model">Fit the linear model</a></li>
+</ul></li>
+<li><a href="#make-venn-diagrams-for-directionality-using-ash">Make Venn Diagrams for directionality using ASH</a><ul>
+<li><a href="#run-ash">Run ASH</a></li>
+<li><a href="#find-where-the-genes-are-upregulated-between-tissues">Find where the genes are upregulated between tissues</a></li>
+<li><a href="#downregulated">Downregulated</a></li>
+<li><a href="#find-where-the-genes-are-upregulated-between-species">Find where the genes are upregulated between species</a></li>
+<li><a href="#find-where-the-genes-are-downregulated-between-species">Find where the genes are downregulated between species</a></li>
+</ul></li>
+<li><a href="#find-genes-with-a-tissue-specific-direction-significant-and-upregulated-in-1-versus-2-3-4-but-not-significant-in-2-v-3-4-and-3-v-4">Find genes with a tissue-specific direction (significant and upregulated in 1 versus 2, 3, 4 but not significant in 2 v 3, 4 and 3 v 4)</a></li>
+<li><a href="#experimenting-with-interactions-3-species-1-tissue-versus-a-group-of-3-tissues">Experimenting with interactions (3 species, 1 tissue versus a group of 3 tissues)</a><ul>
+<li><a href="#interactions-in-all-3-species-hearts-versus-all-other-tissues">Interactions in all 3 species’ hearts versus all other tissues</a></li>
+<li><a href="#adaptive-shrinkage-on-interactions-in-all-3-species-hearts-versus-all-other-tissues">Adaptive shrinkage on interactions in all 3 species’ hearts versus all other tissues</a></li>
+<li><a href="#interactions-in-all-3-species-livers-versus-all-other-tissues">Interactions in all 3 species’ livers versus all other tissues</a></li>
+<li><a href="#adaptive-shrinkage-on-interactions-in-all-3-species-livers-versus-all-other-tissues">Adaptive shrinkage on interactions in all 3 species’ livers versus all other tissues</a></li>
+<li><a href="#interactions-in-all-3-species-lungs-versus-all-other-tissues">Interactions in all 3 species’ lungs versus all other tissues</a></li>
+<li><a href="#adaptive-shrinkage-on-interactions-in-all-3-species-lungs-versus-all-other-tissues">Adaptive shrinkage on interactions in all 3 species’ lungs versus all other tissues</a></li>
+<li><a href="#interactions-in-all-3-species-kidneys-versus-all-other-tissues">Interactions in all 3 species’ kidneys versus all other tissues</a></li>
+<li><a href="#tissue-specific-interactions-fdr">Tissue-specific interactions (FDR)</a></li>
+<li><a href="#adaptive-shrinkage-on-interactions-in-all-3-species-kidneys-versus-all-other-tissues">Adaptive shrinkage on interactions in all 3 species’ kidneys versus all other tissues</a></li>
+<li><a href="#number-of-interactions-using-fsr">Number of interactions using FSR</a></li>
+</ul></li>
+<li><a href="#combining-humans-and-chimps-to-have-a-great-ape-versus-rhesus-tissues-set-of-interactions">Combining humans and chimps to have a Great Ape versus Rhesus tissues set of interactions</a><ul>
+<li><a href="#hearts">Hearts</a></li>
+<li><a href="#livers">Livers</a></li>
+<li><a href="#lungs">Lungs</a></li>
+<li><a href="#kidneys">Kidneys</a></li>
+<li><a href="#great-ape-tissue-specific-using-fdr">Great Ape Tissue Specific (using FDR)</a></li>
+</ul></li>
+<li><a href="#combining-chimps-and-rhesus-to-have-a-human-versus-non-human-tissues-set-of-interactions">Combining chimps and rhesus to have a human versus non-human tissues set of interactions</a><ul>
+<li><a href="#hearts-1">Hearts</a></li>
+<li><a href="#livers-1">Livers</a></li>
+<li><a href="#lungs-1">Lungs</a></li>
+<li><a href="#kidneys-1">Kidneys</a></li>
+<li><a href="#humannon-human-tissue-specific-using-fdr">Human/Non-Human Tissue Specific (using FDR)</a></li>
+</ul></li>
+</ul>
+</div>
+
+<pre class="r"><code># Load libraries
+
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>
+Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    lowess</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)</code></pre>
+<pre><code>Warning: package &#39;scales&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>Loading required package: limma</code></pre>
+<pre><code>Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
+<pre><code>Warning: package &#39;R.utils&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading required package: R.oo</code></pre>
+<pre><code>Warning: package &#39;R.oo&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading required package: R.methodsS3</code></pre>
+<pre><code>Warning: package &#39;R.methodsS3&#39; was built under R version 3.2.3</code></pre>
+<pre><code>R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
+<pre><code>R.oo v1.21.0 (2016-10-30) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>
+Attaching package: &#39;R.oo&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:methods&#39;:
+
+    getClasses, getMethods</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    attach, detach, gc, load, save</code></pre>
+<pre><code>R.utils v2.5.0 (2016-11-07) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>
+Attaching package: &#39;R.utils&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:utils&#39;:
+
+    timestamp</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)</code></pre>
+<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;gridExtra&quot;)</code></pre>
+<pre><code>Warning: package &#39;gridExtra&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading required package: grid</code></pre>
+<pre><code>Loading required package: futile.logger</code></pre>
+<pre><code>Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>source(&quot;functions.R&quot;)
+library(ashr)
+library(ggplot2)
+
+# Add function for making ggplot2 figures look good (from Bryan Pavlovic)
+
+bjp&lt;-
+theme(
+  panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;, hjust = 0.5),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x = element_text(size = 14,face = &quot;bold&quot;),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))
+
+# Set directory to save the data
+
+data_dir &lt;- &quot;../data&quot;
+
+# Load colors 
+
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Retrieve RIN score for each sample
+RNA_seq_info &lt;- read.csv(&quot;../data/RNA_seq_info.csv&quot;)
+RIN &lt;- as.data.frame(RNA_seq_info[,22])
+RIN &lt;- as.matrix(RIN)
+#RIN &lt;- as.data.frame(RIN[-1,])
+#RIN &lt;- as.matrix(RIN)
+colnames(RIN) &lt;- c(&quot;RIN&quot;)
+
+# Retrieve sample information
+samples &lt;- read.delim(&quot;../data/Sample_info_RNAseq_limma.txt&quot;)
+
+# Eliminate H1H
+samples &lt;- samples[-17,]
+#samples &lt;- samples[-1,]
+dim(samples)</code></pre>
+<pre><code>[1] 47  4</code></pre>
+<pre class="r"><code># Make labels
+
+labels &lt;- paste(samples$Species, samples$Tissue, sep=&quot;.&quot;)</code></pre>
+<div id="pairwise-comparisons" class="section level2">
+<h2>Pairwise comparisons</h2>
+<pre class="r"><code>## Make the contrast matrix and rename columns of the contrast matrix
+
+#design &lt;- model.matrix(~ as.factor(tissue) + as.factor(species) + RIN)
+tissue &lt;- samples$Tissue
+species &lt;- samples$Species
+design &lt;- model.matrix(~ tissue*species + RIN)
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+
+# Rename columns of the contrast matrix
+
+colnames(design)[2] &lt;- &quot;kidney&quot;
+colnames(design)[3] &lt;- &quot;liver&quot;
+colnames(design)[4] &lt;- &quot;lung&quot;
+colnames(design)[5] &lt;- &quot;human&quot;
+colnames(design)[6] &lt;- &quot;rhesus&quot;
+
+colnames(design)[8] &lt;- &quot;kidneyHuman&quot;
+colnames(design)[9] &lt;- &quot;liverHuman&quot;
+colnames(design)[10] &lt;- &quot;lungHuman&quot;
+colnames(design)[11] &lt;- &quot;kidneyRhesus&quot;
+colnames(design)[12] &lt;- &quot;liverRhesus&quot;
+colnames(design)[13] &lt;- &quot;lungRhesus&quot;
+
+
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>   Intercept       kidney        liver         lung        human 
+        47.0         12.0         12.0         12.0         15.0 
+      rhesus          RIN  kidneyHuman   liverHuman    lungHuman 
+        16.0        368.2          4.0          4.0          4.0 
+kidneyRhesus  liverRhesus   lungRhesus 
+         4.0          4.0          4.0 </code></pre>
+<pre class="r"><code># Load count data
+
+counts_genes_in_cutoff &lt;- read.delim(&quot;../data/counts_12184.txt&quot;)
+cpm_12184 &lt;- read.delim(&quot;../data/cpm_12184.txt&quot;)
+
+# TMM 
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff &lt;- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+head(cpm_in_cutoff)</code></pre>
+<pre><code>                     C1H      C1K      C1Li     C1Lu      C2H      C2K
+ENSG00000000003 4.569101 6.484481  8.260731 5.481561 4.686636 6.076562
+ENSG00000000419 5.842023 5.217972  5.937465 5.478545 5.681016 5.100404
+ENSG00000000457 4.560130 5.214732  5.902494 4.972557 4.834031 5.289413
+ENSG00000000460 1.506846 1.869887  2.080244 2.308985 1.660573 1.968249
+ENSG00000000938 5.611783 3.819613  5.091152 7.550720 2.533135 4.178135
+ENSG00000000971 6.877100 4.451824 11.368082 6.100181 6.135730 4.887383
+                     C2Li     C2Lu      C3H      C3K      C3Li     C3Lu
+ENSG00000000003  8.029471 4.564496 4.915377 6.406310  7.784365 5.875983
+ENSG00000000419  5.813444 5.199855 5.675979 5.179418  6.413682 5.596709
+ENSG00000000457  6.545270 4.985922 4.618657 5.204247  6.498053 5.168988
+ENSG00000000460  2.324903 2.023533 1.580465 1.461635  2.344190 2.124699
+ENSG00000000938  5.388459 8.083442 4.965147 4.223500  5.204433 7.160345
+ENSG00000000971 11.387090 6.246512 5.606820 4.941061 11.420166 5.990777
+                     C4H      C4K      C4Li     C4Lu      H1K      H1Li
+ENSG00000000003 4.235754 6.503717  8.453727 5.430223 6.864660  6.576082
+ENSG00000000419 5.785414 5.257938  5.881536 5.321782 5.588152  6.082997
+ENSG00000000457 4.645293 5.023223  6.597499 5.263806 4.285007  4.953825
+ENSG00000000460 1.456629 1.826787  2.206829 2.476664 2.766766  4.989335
+ENSG00000000938 3.638952 3.621239  4.580376 7.717763 4.059344  4.479943
+ENSG00000000971 6.845219 5.957838 11.330910 6.421417 6.585546 11.216641
+                    H1Lu      H2H      H2K     H2Li     H2Lu         H3H
+ENSG00000000003 5.099004 3.681088 7.205567 6.638944 4.181104  3.54360583
+ENSG00000000419 5.810855 5.606326 5.461678 5.838444 5.313450  5.75090978
+ENSG00000000457 4.502116 3.406682 4.158467 4.450840 4.201852  4.44063190
+ENSG00000000460 3.318021 1.892216 1.978501 2.657920 2.553081 -0.07576077
+ENSG00000000938 7.878166 5.560041 3.740312 5.990299 6.968892  4.09684184
+ENSG00000000971 7.561408 6.363288 4.736443 9.409472 7.310814  6.22507411
+                     H3K      H3Li     H3Lu      H4H      H4K      H4Li
+ENSG00000000003 7.091569  7.735945 5.290097 4.284175 6.371782  6.590115
+ENSG00000000419 5.854940  6.216818 5.009845 6.244527 5.608088  5.834153
+ENSG00000000457 4.722790  4.993719 3.999170 3.312369 4.087480  5.176119
+ENSG00000000460 2.990603  3.237751 2.457261 1.629959 1.983141  3.137731
+ENSG00000000938 2.643134  5.741066 6.912746 4.918491 3.820852  6.899117
+ENSG00000000971 5.313255 10.346500 7.124250 6.927089 6.032612 10.197598
+                    H4Lu      R1H      R1K       R1Li     R1Lu      R2H
+ENSG00000000003 4.463456 4.356369 6.932932  8.3343252 5.915547 4.625348
+ENSG00000000419 5.350423 5.464082 5.391834  5.8259430 4.887057 5.295517
+ENSG00000000457 4.173647 4.285211 5.024853  5.1435415 4.837373 4.311664
+ENSG00000000460 2.604439 1.284359 1.555258 -0.1735364 2.480549 1.415808
+ENSG00000000938 8.249002 1.837210 2.564210  3.8041639 6.515323 2.327061
+ENSG00000000971 8.277236 4.027912 6.576019 12.1322643 7.445976 5.571685
+                     R2K      R2Li     R2Lu      R3H      R3K      R3Li
+ENSG00000000003 7.134183  8.640291 5.654663 4.469039 7.166047  8.202424
+ENSG00000000419 5.043831  5.723120 4.881450 5.462958 5.367362  5.990303
+ENSG00000000457 5.154832  5.511121 5.265617 4.241449 5.139792  5.359535
+ENSG00000000460 1.320003  1.496941 2.394895 1.656614 1.874414  1.413727
+ENSG00000000938 2.681748  3.672247 6.583375 2.870792 2.267214  3.636318
+ENSG00000000971 6.778700 11.778253 7.231996 5.150488 6.054215 12.087241
+                    R3Lu      R4H      R4K      R4Li     R4Lu
+ENSG00000000003 5.453490 4.892515 7.094406  7.705335 5.361237
+ENSG00000000419 4.956114 5.427374 5.215706  5.464168 5.041757
+ENSG00000000457 5.165431 4.509684 5.144266  5.318210 4.828352
+ENSG00000000460 2.577251 1.088179 1.509418  1.534185 2.847559
+ENSG00000000938 6.845883 2.474777 2.310571  4.509304 6.834845
+ENSG00000000971 7.258258 6.408881 6.469038 11.695479 7.298202</code></pre>
+<pre class="r"><code>hist(cpm_in_cutoff, xlab = &quot;Log2(CPM)&quot;, main = &quot;Log2(CPM) values for genes meeting the filtering criteria&quot;, breaks = 100 )</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Voom with individual as a random variable
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=T)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;- 0.2197275
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="fit-the-linear-model" class="section level3">
+<h3>Fit the linear model</h3>
+<pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+View(fit.cyclic.norm)
+HvC_Heart =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+
+
+# MA Plots
+## If &#39;MA&#39; is an &#39;MArrayLM&#39; object, then the plot is a fitted model MA-plot in which the estimated coefficient is on the y-axis and the average A-value is on the x-axis.                
+
+#limma::plotMA(fit.cyclic.norm, array=1, xlab=&quot;average coefficient&quot;, ylab=&quot;estimated coefficient&quot;)
+
+## - Potential caveat: variances could be different between human, chimp and rhesus (see Gordon Smyth email, 7 June 2013).                                                               
+##  We look at the standard error for each condition                                                    
+hist(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma, breaks=100)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>hist(log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma), breaks=100)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>boxplot(log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma))</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>## This seems to be pretty comparable between conditions. The human heart is higher, probably because of H1H missing and H3H with a bit strange behavior                                     
+stderror &lt;- log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma)
+boxplot(list(stderror[,1:4], stderror[,5:8], stderror[,9:12]))</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>## A bit higher for human, and a bit lower for rhesus                                                                                                                                    
+boxplot(list(stderror[,2:4], stderror[,6:8], stderror[,8:12])) ## excluding heart samples  </code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># In the contrast matrix, we have many comparisons for species and tissues individually
+# Note: baseline is chimp heart
+
+cm1 &lt;- makeContrasts(HvC_Liver = human + liverHuman, 
+                     HvC_Lung = human + lungHuman, 
+                     HvC_Heart = human, 
+                     HvC_Kidney = human + kidneyHuman, 
+                     HvR_Liver = human + liverHuman - (rhesus + liverRhesus), 
+                     HvR_Lung = human + lungHuman - (rhesus + lungRhesus), 
+                     HvR_Heart = human - rhesus, 
+                     HvR_Kidney = human + kidneyHuman - (rhesus + kidneyRhesus), 
+                     CvR_Liver = -(rhesus + liverRhesus),  
+                     CvR_Lung = -(rhesus + lungRhesus), 
+                     CvR_Heart = -(rhesus), 
+                     CvR_Kidney = -(rhesus + kidneyRhesus), 
+                     H_HeartvLi = (human) - (human + liver + liverHuman), 
+                     H_HeartvLu = (human) - (human + lung + lungHuman), 
+                     H_HeartvK = (human) - (human + kidney + kidneyHuman), 
+                     H_LivLu = (human + liver + liverHuman) - (human + lung + lungHuman), 
+                     H_LivK = (human + liver + liverHuman) - (human + kidney + kidneyHuman),  
+                     H_LuvK = (human + lung + lungHuman) - (human + kidney + kidneyHuman), 
+                     C_HeartvLi = -(liver), 
+                     C_HeartvLu = -(lung), 
+                     C_HeartvK = -(kidney), 
+                     C_LivLu = liver - lung, 
+                     C_LivK = liver - kidney,  
+                     C_LuvK = lung - kidney,  
+                     R_HeartvLi = (rhesus) - (rhesus + liver + liverRhesus), 
+                     R_HeartvLu = (rhesus) - (rhesus + lung + lungRhesus), 
+                     R_HeartvK = (rhesus) - (rhesus + kidney + kidneyRhesus), 
+                     R_LivLu = (rhesus + liver + liverRhesus) - (rhesus + lung + lungRhesus), 
+                     R_LivK = (rhesus + liver + liverRhesus) - (rhesus + kidney + kidneyRhesus),  
+                     R_LuvK = (rhesus + lung + lungRhesus) - (rhesus + kidney + kidneyRhesus), 
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_each_species &lt;- contrasts.fit(fit.cyclic.norm, cm1)
+fit1 &lt;- eBayes(contrasts_each_species)
+
+top3 &lt;- list(HvC_Liver =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             HvC_Lung =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             HvC_Heart =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             HvC_Kidney =topTable(fit1, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             
+             HvR_Liver =topTable(fit1, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             HvR_Lung =topTable(fit1, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+             HvR_Heart =topTable(fit1, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             HvR_Kidney =topTable(fit1, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             
+             CvR_Liver =topTable(fit1, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             CvR_Lung =topTable(fit1, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             CvR_Heart =topTable(fit1, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             CvR_Kidney =topTable(fit1, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+             
+             H_HeartvLi =topTable(fit1, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             H_HeartvLu =topTable(fit1, coef=14, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             H_HeartvK =topTable(fit1, coef=15, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             H_LivLu =topTable(fit1, coef=16, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             H_LivK =topTable(fit1, coef=17, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             H_LuvK =topTable(fit1, coef=18, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+             
+             C_HeartvLi =topTable(fit1, coef=19, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             C_HeartvLu =topTable(fit1, coef=20, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             C_HeartvK =topTable(fit1, coef=21, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             C_LivLu =topTable(fit1, coef=22, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             C_LivK =topTable(fit1, coef=23, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             C_LuvK =topTable(fit1, coef=24, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+             
+             R_HeartvLi =topTable(fit1, coef=25, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             R_HeartvLu =topTable(fit1, coef=26, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             R_HeartvK =topTable(fit1, coef=27, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             R_LivLu =topTable(fit1, coef=28, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             R_LivK =topTable(fit1, coef=29, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             R_LuvK =topTable(fit1, coef=30, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) )
+
+
+# Set FDR level at 1% 
+
+FDR_level &lt;- 0.01
+
+## DE between HvC
+
+HvC_Liver =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvC_Liver[which(HvC_Liver$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 1364    7</code></pre>
+<pre class="r"><code>HvC_Lung =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvC_Lung[which(HvC_Lung$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 805   7</code></pre>
+<pre class="r"><code>HvC_Heart =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(HvC_Heart[which(HvC_Heart$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 2195    7</code></pre>
+<pre class="r"><code>HvC_Kidney =topTable(fit1, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(HvC_Kidney[which(HvC_Kidney$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 799   7</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Liver&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Lung&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Heart&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Kidney&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Humans and Chimps (FDR 1%)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+## DE between HvR
+
+HvR_Liver =topTable(fit1, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvR_Liver[which(HvR_Liver$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 2868    7</code></pre>
+<pre class="r"><code>HvR_Lung =topTable(fit1, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvR_Lung[which(HvR_Lung$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 2833    7</code></pre>
+<pre class="r"><code>HvR_Heart =topTable(fit1, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(HvR_Heart[which(HvR_Heart$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4098    7</code></pre>
+<pre class="r"><code>HvR_Kidney =topTable(fit1, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)  
+dim(HvR_Kidney[which(HvR_Kidney$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 2347    7</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Liver&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Lung&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Heart&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Kidney&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Humans and Rhesus (FDR 1%)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+## DE between CvR
+
+CvR_Liver =topTable(fit1, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(CvR_Liver[which(CvR_Liver$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 3139    7</code></pre>
+<pre class="r"><code>CvR_Lung =topTable(fit1, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(CvR_Lung[which(CvR_Lung$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 1917    7</code></pre>
+<pre class="r"><code>CvR_Heart =topTable(fit1, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(CvR_Heart[which(CvR_Heart$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 3218    7</code></pre>
+<pre class="r"><code>CvR_Kidney =topTable(fit1, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(CvR_Kidney[which(CvR_Kidney$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 2695    7</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Liver&quot;]] &lt;- row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Lung&quot;]] &lt;-  row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Heart&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Kidney&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Chimps and Rhesus (FDR 1%)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+# DE between tissues within a species
+
+  # Within humans
+H_HeartvLi =topTable(fit1, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(H_HeartvLi[which(H_HeartvLi$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4776    7</code></pre>
+<pre class="r"><code>H_HeartvLu =topTable(fit1, coef=14, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)  
+dim(H_HeartvLu[which(H_HeartvLu$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4037    7</code></pre>
+<pre class="r"><code>H_HeartvK =topTable(fit1, coef=15, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)  
+dim(H_HeartvK[which(H_HeartvK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4224    7</code></pre>
+<pre class="r"><code>H_LivLu =topTable(fit1, coef=16, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_LivLu[which(H_LivLu$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4701    7</code></pre>
+<pre class="r"><code>H_LivK =topTable(fit1, coef=17, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(H_LivK[which(H_LivK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4248    7</code></pre>
+<pre class="r"><code>H_LuvK =topTable(fit1, coef=18, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_LuvK[which(H_LuvK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 3695    7</code></pre>
+<pre class="r"><code>  # Within chimps
+
+C_HeartvLi =topTable(fit1, coef=19, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(C_HeartvLi[which(C_HeartvLi$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 6295    7</code></pre>
+<pre class="r"><code>C_HeartvLu =topTable(fit1, coef=20, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)  
+dim(C_HeartvLu[which(C_HeartvLu$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 5365    7</code></pre>
+<pre class="r"><code>C_HeartvK =topTable(fit1, coef=21, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)  
+dim(C_HeartvK[which(C_HeartvK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4971    7</code></pre>
+<pre class="r"><code>C_LivLu =topTable(fit1, coef=22, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_LivLu[which(C_LivLu$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 6247    7</code></pre>
+<pre class="r"><code>C_LivK =topTable(fit1, coef=23, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(C_LivK[which(C_LivK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4625    7</code></pre>
+<pre class="r"><code>C_LuvK =topTable(fit1, coef=24, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_LuvK[which(C_LuvK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 4623    7</code></pre>
+<pre class="r"><code>  # Within rhesus
+
+R_HeartvLi =topTable(fit1, coef=25, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(R_HeartvLi[which(R_HeartvLi$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 6933    7</code></pre>
+<pre class="r"><code>R_HeartvLu =topTable(fit1, coef=26, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(R_HeartvLu[which(R_HeartvLu$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 6814    7</code></pre>
+<pre class="r"><code>R_HeartvK =topTable(fit1, coef=27, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)  
+dim(R_HeartvK[which(R_HeartvK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 5980    7</code></pre>
+<pre class="r"><code>R_LivLu =topTable(fit1, coef=28, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(R_LivLu[which(R_LivLu$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 7027    7</code></pre>
+<pre class="r"><code>R_LivK =topTable(fit1, coef=29, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+dim(R_LivK[which(R_LivK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 5126    7</code></pre>
+<pre class="r"><code>R_LuvK =topTable(fit1, coef=30, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(R_LuvK[which(R_LuvK$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 5721    7</code></pre>
+<pre class="r"><code>## DE between Heart and Liver
+
+mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Chimp&quot;]] &lt;-  row.names(top3[[names(top3)[19]]])[top3[[names(top3)[19]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Rhesus&quot;]] &lt;- row.names(top3[[names(top3)[25]]])[top3[[names(top3)[25]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Heart and Liver (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+## DE between Heart and Lung
+
+mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- row.names(top3[[names(top3)[14]]])[top3[[names(top3)[14]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Chimp&quot;]] &lt;-  row.names(top3[[names(top3)[20]]])[top3[[names(top3)[20]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Rhesus&quot;]] &lt;- row.names(top3[[names(top3)[26]]])[top3[[names(top3)[26]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Heart and Lung (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+
+## DE between Heart and Kidney
+
+mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- row.names(top3[[names(top3)[15]]])[top3[[names(top3)[15]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Chimp&quot;]] &lt;-  row.names(top3[[names(top3)[21]]])[top3[[names(top3)[21]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Rhesus&quot;]] &lt;- row.names(top3[[names(top3)[27]]])[top3[[names(top3)[27]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Heart and Kidney (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+
+## DE between Liver and Lung
+
+mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- row.names(top3[[names(top3)[16]]])[top3[[names(top3)[16]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Chimp&quot;]] &lt;-  row.names(top3[[names(top3)[22]]])[top3[[names(top3)[22]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Rhesus&quot;]] &lt;- row.names(top3[[names(top3)[28]]])[top3[[names(top3)[28]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Liver and Lung (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+## DE between Liver and Kidney
+
+mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- row.names(top3[[names(top3)[17]]])[top3[[names(top3)[17]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Chimp&quot;]] &lt;-  row.names(top3[[names(top3)[23]]])[top3[[names(top3)[23]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Rhesus&quot;]] &lt;- row.names(top3[[names(top3)[29]]])[top3[[names(top3)[29]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Liver and Kidney (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)
+
+## DE between Lung and Kidney
+
+mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- row.names(top3[[names(top3)[18]]])[top3[[names(top3)[18]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Chimp&quot;]] &lt;-  row.names(top3[[names(top3)[24]]])[top3[[names(top3)[24]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;Rhesus&quot;]] &lt;- row.names(top3[[names(top3)[30]]])[top3[[names(top3)[30]]]$adj.P.Val &lt; FDR_level]
+
+# Make 
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Lung and Kidney (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)</code></pre>
+</div>
+</div>
+<div id="make-venn-diagrams-for-directionality-using-ash" class="section level2">
+<h2>Make Venn Diagrams for directionality using ASH</h2>
+<p>In this section, we are going to detect genes that have differences in the same direction (false sign rate = 1%).</p>
+<div id="run-ash" class="section level3">
+<h3>Run ASH</h3>
+<pre class="r"><code># Prepare the data for ASH
+tests &lt;- colnames(fit1$coefficients)
+results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Perform multiple testing correction with adaptive shrinkage (ASH) 
+ #
+ # x - object MArrayLM from eBayes output
+ # coef - coefficient tested by eBayes
+
+run_ash &lt;- function(x, coef){
+  #stopifnot(class(x) == &quot;MArrayLM&quot;, coef %in% colnames(x$coefficients),
+  #             length(unique(x$df.total) == 1))
+  result &lt;- ash(betahat = x$coefficients[, coef], sebetahat = x$stdev.unscaled[, coef] * sqrt(x$s2.post), df = x$df.total[1])
+  return(result)
+}
+
+get_results &lt;- function(x, number = nrow(x$coefficients), sort.by = &quot;none&quot;,
+                        ...) {
+  # x - object MArrayLM from eBayes output
+  # ... - additional arguments passed to topTable
+  stopifnot(class(x) == &quot;MArrayLM&quot;)
+  results &lt;- topTable(x, number = number, sort.by = sort.by, ...)
+  return(results)
+}
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+for (test in tests) {
+  # Extract limma results
+  results[[test]] &lt;- get_results(fit1, coef = test)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit1, coef = test)
+  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+}</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code># Save results from analysis with limma and ash.
+saveRDS(results, file.path(data_dir, &quot;combined-limma.rds&quot;))</code></pre>
+</div>
+<div id="find-where-the-genes-are-upregulated-between-tissues" class="section level3">
+<h3>Find where the genes are upregulated between tissues</h3>
+<pre class="r"><code># Set false sign rate
+FDR_level &lt;- 0.01
+FSR_level &lt;- 0.01
+
+# Heart versus kidney
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_HeartvK&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_HeartvK&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_HeartvK&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_kidney &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Heart compared to Kidney (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_kidney)
+
+
+# Heart versus liver
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_HeartvLi&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_HeartvLi&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_HeartvLi&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_liver &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Heart compared to Liver (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_liver)
+
+
+# Heart versus lung
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_HeartvLu&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_HeartvLu&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_HeartvLu&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_lung &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Heart compared to Lung (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_lung)
+
+
+# Liver versus lung
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_LivLu&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_LivLu&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_LivLu&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Liver_lung &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Liver compared to Lung (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Liver_lung)
+
+
+# Liver versus kidney
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_LivK&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_LivK&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_LivK&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Liver_kidney &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Liver compared to Kidney (FSR 1%)&quot;,  main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Liver_kidney)
+
+
+# Lung versus Kidney
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_LuvK&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_LuvK&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_LuvK&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Lung_kidney &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Lung compared to Kidney (FSR 1%)&quot;,  main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Lung_kidney)</code></pre>
+</div>
+<div id="downregulated" class="section level3">
+<h3>Downregulated</h3>
+<pre class="r"><code># Set false sign rate
+FDR_level &lt;- 0.01
+FSR_level &lt;- 0.01
+
+# Heart versus kidney
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_HeartvK&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;C_HeartvK&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;R_HeartvK&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_kidney &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated in Heart compared to Kidney (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_kidney)
+
+
+# Heart versus liver
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_HeartvLi&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_HeartvLi&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_HeartvLi&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_liver &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Heart compared to Liver (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_liver)
+
+
+# Heart versus lung
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_HeartvLu&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_HeartvLu&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_HeartvLu&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_lung &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Heart compared to Lung (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_lung)
+
+
+# Liver versus lung
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_LivLu&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_LivLu&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_LivLu&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Liver_lung &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Liver compared to Lung (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Liver_lung)
+
+
+# Liver versus kidney
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_LivK&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_LivK&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_LivK&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Liver_kidney &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Liver compared to Kidney (FSR 1%)&quot;,  main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Liver_kidney)
+
+
+# Lung versus Kidney
+
+mylist &lt;- list()
+
+test &lt;- &quot;H_LuvK&quot;
+mylist[[&quot;Human&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;C_LuvK&quot;
+mylist[[&quot;Chimpanzee&quot;]] &lt;-   (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;R_LuvK&quot;
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Lung_kidney &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Lung compared to Kidney (FSR 1%)&quot;,  main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Lung_kidney)</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000118194&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+
+keep &lt;- c(1,2,5,6,9,10,13,14,17,20,21,24,25,28,29, 32, 33, 36, 37, 40, 41, 44, 45)
+make_exp_df &lt;- make_exp_df[keep,]
+
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;TNNT2 (ENSG00000104951)&quot;) </code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="find-where-the-genes-are-upregulated-between-species" class="section level3">
+<h3>Find where the genes are upregulated between species</h3>
+<pre class="r"><code># Set false sign rate
+
+FSR_level &lt;- 0.01
+
+  # DE between humans and chimpanzees
+
+mylist &lt;- list()
+
+test &lt;- &quot;HvC_Liver&quot;
+mylist[[&quot;Liver&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;HvC_Lung&quot;
+mylist[[&quot;Lung&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;HvC_Heart&quot;
+mylist[[&quot;Heart&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;HvC_Kidney&quot;
+mylist[[&quot;Kidney&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Human_chimp_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Humans compared to Chimps (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Human_chimp_up)
+
+
+  # DE between humans and rhesus
+mylist &lt;- list()
+test &lt;- &quot;HvR_Liver&quot;
+mylist[[&quot;Liver&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;HvR_Lung&quot;
+mylist[[&quot;Lung&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;HvR_Heart&quot;
+mylist[[&quot;Heart&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;HvR_Kidney&quot;
+mylist[[&quot;Kidney&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Human_rhesus_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Humans compared to Rhesus (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Human_rhesus_up)
+
+
+
+  # DE between chimpanzees and rhesus
+mylist &lt;- list()
+test &lt;- &quot;CvR_Liver&quot;
+mylist[[&quot;Liver&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;CvR_Lung&quot;
+mylist[[&quot;Lung&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;CvR_Heart&quot;
+mylist[[&quot;Heart&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+test &lt;- &quot;CvR_Kidney&quot;
+mylist[[&quot;Kidney&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &gt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Chimp_rhesus_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated in Chimps relative to Rhesus (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Chimp_rhesus_up)</code></pre>
+<pre class="r"><code>## Example of </code></pre>
+</div>
+<div id="find-where-the-genes-are-downregulated-between-species" class="section level3">
+<h3>Find where the genes are downregulated between species</h3>
+<pre class="r"><code># Set false sign rate
+
+FSR_level &lt;- 0.01
+
+  # DE between humans and chimpanzees
+
+mylist &lt;- list()
+
+test &lt;- &quot;HvC_Liver&quot;
+mylist[[&quot;Liver&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;HvC_Lung&quot;
+mylist[[&quot;Lung&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;HvC_Heart&quot;
+mylist[[&quot;Heart&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;HvC_Kidney&quot;
+mylist[[&quot;Kidney&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Human_chimp_down &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated in Humans compared to Chimps (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Human_chimp_down)
+
+
+  # DE between humans and rhesus
+mylist &lt;- list()
+test &lt;- &quot;HvR_Liver&quot;
+mylist[[&quot;Liver&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;HvR_Lung&quot;
+mylist[[&quot;Lung&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;HvR_Heart&quot;
+mylist[[&quot;Heart&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;HvR_Kidney&quot;
+mylist[[&quot;Kidney&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Human_rhesus_down &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated in Humans compared to Rhesus (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Human_rhesus_down)
+
+
+
+  # DE between chimpanzees and rhesus
+mylist &lt;- list()
+test &lt;- &quot;CvR_Liver&quot;
+mylist[[&quot;Liver&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;CvR_Lung&quot;
+mylist[[&quot;Lung&quot;]] &lt;-  (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;CvR_Heart&quot;
+mylist[[&quot;Heart&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+test &lt;- &quot;CvR_Kidney&quot;
+mylist[[&quot;Kidney&quot;]] &lt;- (results[[test]]$genes)[results[[test]]$adj.P.Val &lt; FDR_level &amp; results[[test]]$svalue &lt; FSR_level &amp; results[[test]]$beta_est &lt; 0]
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Chimp_rhesus_down &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated in Chimps relative to Rhesus (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:4], lty=1, height=2000, width=3000)
+grid.draw(Chimp_rhesus_down)</code></pre>
+</div>
+</div>
+<div id="find-genes-with-a-tissue-specific-direction-significant-and-upregulated-in-1-versus-2-3-4-but-not-significant-in-2-v-3-4-and-3-v-4" class="section level2">
+<h2>Find genes with a tissue-specific direction (significant and upregulated in 1 versus 2, 3, 4 but not significant in 2 v 3, 4 and 3 v 4)</h2>
+<pre class="r"><code># Combine the human ASH results
+combined_human &lt;- cbind(results[[&quot;H_HeartvLi&quot;]], results[[&quot;H_HeartvLu&quot;]], results[[&quot;H_HeartvK&quot;]], results[[&quot;H_LivLu&quot;]], results[[&quot;H_LivK&quot;]], results[[&quot;H_LuvK&quot;]])
+
+dim(combined_human)</code></pre>
+<pre><code>[1] 12184    84</code></pre>
+<pre class="r"><code># Combine the chimp ASH results
+combined_chimp &lt;- cbind(results[[&quot;C_HeartvLi&quot;]], results[[&quot;C_HeartvLu&quot;]], results[[&quot;C_HeartvK&quot;]], results[[&quot;C_LivLu&quot;]], results[[&quot;C_LivK&quot;]], results[[&quot;C_LuvK&quot;]])
+
+dim(combined_chimp)</code></pre>
+<pre><code>[1] 12184    84</code></pre>
+<pre class="r"><code># Combine the rhesus ASH results
+combined_rhesus &lt;- cbind(results[[&quot;R_HeartvLi&quot;]], results[[&quot;R_HeartvLu&quot;]], results[[&quot;R_HeartvK&quot;]], results[[&quot;R_LivLu&quot;]], results[[&quot;R_LivK&quot;]], results[[&quot;R_LuvK&quot;]])
+
+dim(combined_rhesus)</code></pre>
+<pre><code>[1] 12184    84</code></pre>
+<pre class="r"><code># Upregulated in human liver but not in any of the other tissues
+human_heart_1 &lt;- combined_human[combined_human[,12] &lt; FSR_level &amp; combined_human[,13] &lt; 0, ]
+human_heart_2 &lt;- human_heart_1[!(human_heart_1[,26] &lt; FSR_level),]
+human_heart_3 &lt;- human_heart_2[!(human_heart_2[,40] &lt; FSR_level),]
+human_heart_4 &lt;- human_heart_3[human_heart_3[,54] &lt; FSR_level &amp; human_heart_3[,55] &gt; 0, ]
+human_heart_5 &lt;- human_heart_4[human_heart_4[,68] &lt; FSR_level &amp; human_heart_4[,69] &gt; 0,]
+human_liver_6_up &lt;- human_heart_5[!(human_heart_5[,82] &lt; FSR_level ),]
+dim(human_liver_6_up)</code></pre>
+<pre><code>[1] 541  84</code></pre>
+<pre class="r"><code># Upregulated in chimp liver but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[combined_chimp[,12] &lt; FSR_level &amp; combined_chimp[,13] &lt; 0, ]
+chimp_heart_2 &lt;- chimp_heart_1[!(chimp_heart_1[,26]) &lt; FSR_level,]
+chimp_heart_3 &lt;- chimp_heart_2[!(chimp_heart_2[,40] &lt; FSR_level),]
+chimp_heart_4 &lt;- chimp_heart_3[chimp_heart_3[,54] &lt; FSR_level &amp; chimp_heart_3[,55] &gt; 0,]
+chimp_heart_5 &lt;- chimp_heart_4[chimp_heart_4[,68] &lt; FSR_level &amp; chimp_heart_4[,69] &gt; 0,]
+chimp_liver_6_up &lt;- chimp_heart_5[!(chimp_heart_5[,82] &lt; FSR_level),]
+dim(chimp_liver_6_up)</code></pre>
+<pre><code>[1] 546  84</code></pre>
+<pre class="r"><code># Upregulated in rhesus liver but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[combined_rhesus[,12] &lt; FSR_level &amp; combined_rhesus[,13] &lt; 0, ]
+rhesus_heart_2 &lt;- rhesus_heart_1[!(rhesus_heart_1[,26] &lt; FSR_level),]
+rhesus_heart_3 &lt;- rhesus_heart_2[!(rhesus_heart_2[,40] &lt; FSR_level),]
+rhesus_heart_4 &lt;- rhesus_heart_3[rhesus_heart_3[,54] &lt; FSR_level &amp; rhesus_heart_3[,55] &gt; 0,]
+rhesus_heart_5 &lt;- rhesus_heart_4[rhesus_heart_4[,68] &lt; FSR_level &amp; rhesus_heart_4[,69] &gt; 0,]
+rhesus_liver_6_up &lt;- rhesus_heart_5[!(rhesus_heart_5[,82] &lt; FSR_level),]
+dim(rhesus_liver_6_up)</code></pre>
+<pre><code>[1] 416  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_liver_6_up)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_liver_6_up)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_liver_6_up)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Liver_specific_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated livers (FDR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Liver_specific_up)
+
+
+# FDR
+
+rhesus_heart_1 &lt;- combined_rhesus[combined_rhesus[,6] &lt; FSR_level &amp; combined_rhesus[,4] &lt; 0, ]
+rhesus_heart_2 &lt;- rhesus_heart_1[!(rhesus_heart_1[,20] &lt; FSR_level),]
+rhesus_heart_3 &lt;- rhesus_heart_2[!(rhesus_heart_2[,34] &lt; FSR_level),]
+rhesus_heart_4 &lt;- rhesus_heart_3[rhesus_heart_3[,48] &lt; FSR_level &amp; rhesus_heart_3[,46] &gt; 0,]
+rhesus_heart_5 &lt;- rhesus_heart_4[rhesus_heart_4[,62] &lt; FSR_level &amp; rhesus_heart_4[,60] &gt; 0,]
+rhesus_liver_6_up &lt;- rhesus_heart_5[!(rhesus_heart_5[,76] &lt; FSR_level),]
+
+
+# Upregulated in human liver but not in any of the other tissues
+human_heart_1 &lt;- combined_human[combined_human[,6] &lt; FSR_level &amp; combined_human[,4] &lt; 0, ]
+human_heart_2 &lt;- human_heart_1[!(human_heart_1[,20] &lt; FSR_level),]
+human_heart_3 &lt;- human_heart_2[!(human_heart_2[,34] &lt; FSR_level),]
+human_heart_4 &lt;- human_heart_3[human_heart_3[,48] &lt; FSR_level &amp; human_heart_3[,46] &gt; 0, ]
+human_heart_5 &lt;- human_heart_4[human_heart_4[,62] &lt; FSR_level &amp; human_heart_4[,60] &gt; 0,]
+human_liver_6_up &lt;- human_heart_5[!(human_heart_5[,76] &lt; FSR_level ),]
+dim(human_liver_6_up)</code></pre>
+<pre><code>[1] 501  84</code></pre>
+<pre class="r"><code># Upregulated in chimp liver but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[combined_chimp[,6] &lt; FSR_level &amp; combined_chimp[,4] &lt; 0, ]
+chimp_heart_2 &lt;- chimp_heart_1[!(chimp_heart_1[,20]) &lt; FSR_level,]
+chimp_heart_3 &lt;- chimp_heart_2[!(chimp_heart_2[,34] &lt; FSR_level),]
+chimp_heart_4 &lt;- chimp_heart_3[chimp_heart_3[,48] &lt; FSR_level &amp; chimp_heart_3[,46] &gt; 0,]
+chimp_heart_5 &lt;- chimp_heart_4[chimp_heart_4[,62] &lt; FSR_level &amp; chimp_heart_4[,60] &gt; 0,]
+chimp_liver_6_up &lt;- chimp_heart_5[!(chimp_heart_5[,76] &lt; FSR_level),]
+dim(chimp_liver_6_up)</code></pre>
+<pre><code>[1] 599  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_liver_6_up)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_liver_6_up)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_liver_6_up)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Liver_specific_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated livers (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Liver_specific_up)
+
+
+
+
+
+names_union_liver &lt;- intersect(intersect(rownames(human_liver_6_up), rownames(chimp_liver_6_up)), rownames(rhesus_liver_6_up))
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000004139&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;SARM1 (ENSG00000004139)&quot;) 
+
+
+
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000136881&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;BAAT (ENSG00000136881)&quot;) 
+
+
+# Downregulated in human liver but not in any of the other tissues
+human_heart_1 &lt;- combined_human[combined_human[,12] &lt; FSR_level &amp; combined_human[,13] &gt; 0, ]
+human_heart_2 &lt;- human_heart_1[!(human_heart_1[,26] &lt; FSR_level),]
+human_heart_3 &lt;- human_heart_2[!(human_heart_2[,40] &lt; FSR_level),]
+human_heart_4 &lt;- human_heart_3[human_heart_3[,54] &lt; FSR_level &amp; human_heart_3[,55] &lt; 0, ]
+human_heart_5 &lt;- human_heart_4[human_heart_4[,68] &lt; FSR_level &amp; human_heart_4[,69] &lt; 0,]
+human_liver_6_down &lt;- human_heart_5[!(human_heart_5[,82] &lt; FSR_level ),]
+dim(human_liver_6_down)</code></pre>
+<pre><code>[1] 324  84</code></pre>
+<pre class="r"><code># Downregulated in chimp liver but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[combined_chimp[,12] &lt; FSR_level &amp; combined_chimp[,13] &gt; 0, ]
+chimp_heart_2 &lt;- chimp_heart_1[!(chimp_heart_1[,26]) &lt; FSR_level,]
+chimp_heart_3 &lt;- chimp_heart_2[!(chimp_heart_2[,40] &lt; FSR_level),]
+chimp_heart_4 &lt;- chimp_heart_3[chimp_heart_3[,54] &lt; FSR_level &amp; chimp_heart_3[,55] &lt; 0,]
+chimp_heart_5 &lt;- chimp_heart_4[chimp_heart_4[,68] &lt; FSR_level &amp; chimp_heart_4[,69] &lt; 0,]
+chimp_liver_6_down &lt;- chimp_heart_5[!(chimp_heart_5[,82] &lt; FSR_level),]
+dim(chimp_liver_6_down)</code></pre>
+<pre><code>[1] 301  84</code></pre>
+<pre class="r"><code># Downregulated in rhesus liver but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[combined_rhesus[,12] &lt; FSR_level &amp; combined_rhesus[,13] &gt; 0, ]
+rhesus_heart_2 &lt;- rhesus_heart_1[!(rhesus_heart_1[,26] &lt; FSR_level),]
+rhesus_heart_3 &lt;- rhesus_heart_2[!(rhesus_heart_2[,40] &lt; FSR_level),]
+rhesus_heart_4 &lt;- rhesus_heart_3[rhesus_heart_3[,54] &lt; FSR_level &amp; rhesus_heart_3[,55] &lt; 0,]
+rhesus_heart_5 &lt;- rhesus_heart_4[rhesus_heart_4[,68] &lt; FSR_level &amp; rhesus_heart_4[,69] &lt; 0,]
+rhesus_liver_6_down &lt;- rhesus_heart_5[!(rhesus_heart_5[,82] &lt; FSR_level),]
+dim(rhesus_liver_6_down)</code></pre>
+<pre><code>[1] 202  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_liver_6_down)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_liver_6_down)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_liver_6_down)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Liver_specific_down &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated livers (FSR 1%)&quot;,  main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Liver_specific_down)
+
+names_union_liver_down &lt;- intersect(intersect(rownames(human_liver_6_down), rownames(chimp_liver_6_down)), rownames(rhesus_liver_6_down))
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000106605&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)
+
+# Upregulated in human heart but not in any of the other tissues
+human_heart_1 &lt;- combined_human[combined_human[,12] &lt; FSR_level &amp; combined_human[,13] &gt; 0, ]
+human_heart_2 &lt;- human_heart_1[human_heart_1[,26] &lt; FSR_level &amp; human_heart_1[,27] &gt; 0,]
+human_heart_3 &lt;- human_heart_2[human_heart_2[,40] &lt; FSR_level &amp; human_heart_2[,41] &gt; 0,]
+human_heart_4 &lt;- human_heart_3[!(human_heart_3[,54] &gt; FSR_level), ]
+human_heart_5 &lt;- human_heart_4[!(human_heart_4[,68] &gt; FSR_level),]
+human_heart_6_up &lt;- human_heart_5[!(human_heart_5[,82] &gt; FSR_level ),]
+dim(human_heart_6_up)</code></pre>
+<pre><code>[1] 149  84</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000067225&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)
+
+
+# Downregulated in chimp heart but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[combined_chimp[,12] &lt; FSR_level &amp; combined_chimp[,13] &gt; 0, ]
+chimp_heart_2 &lt;- chimp_heart_1[chimp_heart_1[,26] &lt; FSR_level &amp; chimp_heart_1[,27] &gt; 0,]
+chimp_heart_3 &lt;- chimp_heart_2[chimp_heart_2[,40] &lt; FSR_level &amp; chimp_heart_2[,41] &gt; 0,]
+chimp_heart_4 &lt;- chimp_heart_3[chimp_heart_3[,54] &lt; 0.01,]
+chimp_heart_5 &lt;- chimp_heart_4[chimp_heart_4[,68] &lt; 0.01,]
+chimp_heart_6_up &lt;- chimp_heart_5[chimp_heart_5[,82] &lt; 0.01,]
+dim(chimp_heart_6_up)</code></pre>
+<pre><code>[1] 336  84</code></pre>
+<pre class="r"><code># Downregulated in rhesus heart but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[combined_rhesus[,12] &lt; FSR_level &amp; combined_rhesus[,13] &gt; 0, ]
+rhesus_heart_2 &lt;- rhesus_heart_1[rhesus_heart_1[,26] &lt; FSR_level &amp; rhesus_heart_1[,27] &gt; 0,]
+rhesus_heart_3 &lt;- rhesus_heart_2[rhesus_heart_2[,40] &lt; FSR_level &amp; rhesus_heart_2[,41] &gt; 0,]
+rhesus_heart_4 &lt;- rhesus_heart_3[!(rhesus_heart_3[,54] &gt; 0.01),]
+rhesus_heart_5 &lt;- rhesus_heart_4[!(rhesus_heart_4[,68] &gt; 0.01),]
+rhesus_heart_6_up &lt;- rhesus_heart_5[!(rhesus_heart_5[,82] &gt; 0.01),]
+dim(rhesus_heart_6_up)</code></pre>
+<pre><code>[1] 544  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_heart_6_up)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_heart_6_up)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_heart_6_up)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_specific_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated hearts (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_specific_up)
+
+
+# Downregulated in human heart but not in any of the other tissues
+human_heart_1 &lt;- combined_human[combined_human[,12] &lt; FSR_level &amp; combined_human[,13] &lt; 0, ]
+human_heart_2 &lt;- human_heart_1[human_heart_1[,26] &lt; FSR_level &amp; human_heart_1[,27] &lt; 0,]
+human_heart_3 &lt;- human_heart_2[human_heart_2[,40] &lt; FSR_level &amp; human_heart_2[,41] &lt; 0,]
+human_heart_4 &lt;- human_heart_3[!(human_heart_3[,54] &lt; FSR_level), ]
+human_heart_5 &lt;- human_heart_4[!(human_heart_4[,68] &lt; FSR_level),]
+human_heart_6_down &lt;- human_heart_5[!(human_heart_5[,82] &lt; FSR_level ),]
+dim(human_heart_6_down)</code></pre>
+<pre><code>[1] 354  84</code></pre>
+<pre class="r"><code># Downregulated in chimp heart but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[combined_chimp[,12] &lt; FSR_level &amp; combined_chimp[,13] &lt; 0, ]
+chimp_heart_2 &lt;- chimp_heart_1[chimp_heart_1[,26] &lt; FSR_level &amp; chimp_heart_1[,27] &lt; 0,]
+chimp_heart_3 &lt;- chimp_heart_2[chimp_heart_2[,40] &lt; FSR_level &amp; chimp_heart_2[,41] &lt; 0,]
+chimp_heart_4 &lt;- chimp_heart_3[chimp_heart_3[,54] &gt; 0.01,]
+chimp_heart_5 &lt;- chimp_heart_4[chimp_heart_4[,68] &gt; 0.01,]
+chimp_heart_6_down &lt;- chimp_heart_5[chimp_heart_5[,82] &gt; 0.01,]
+dim(chimp_heart_6_down)</code></pre>
+<pre><code>[1] 397  84</code></pre>
+<pre class="r"><code># Downregulated in rhesus heart but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[combined_rhesus[,12] &lt; FSR_level &amp; combined_rhesus[,13] &lt; 0, ]
+rhesus_heart_2 &lt;- rhesus_heart_1[rhesus_heart_1[,26] &lt; FSR_level &amp; rhesus_heart_1[,27] &lt; 0,]
+rhesus_heart_3 &lt;- rhesus_heart_2[rhesus_heart_2[,40] &lt; FSR_level &amp; rhesus_heart_2[,41] &lt; 0,]
+rhesus_heart_4 &lt;- rhesus_heart_3[!(rhesus_heart_3[,54] &lt; 0.01),]
+rhesus_heart_5 &lt;- rhesus_heart_4[!(rhesus_heart_4[,68] &lt; 0.01),]
+rhesus_heart_6_down &lt;- rhesus_heart_5[!(rhesus_heart_5[,82] &lt; 0.01),]
+dim(rhesus_heart_6_down)</code></pre>
+<pre><code>[1] 294  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_heart_6_down)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_heart_6_down)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_heart_6_down)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Heart_specific_down &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated hearts (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Heart_specific_down)
+
+names_union_heart_down &lt;- intersect(intersect(rownames(human_heart_6_down), rownames(chimp_heart_6_down)), rownames(rhesus_heart_6_down))
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000082996&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)
+
+
+# Upregulated in human lung but not in any of the other tissues
+human_heart_1 &lt;- combined_human[!(combined_human[,12] &lt; FSR_level), ]
+human_heart_2 &lt;- human_heart_1[human_heart_1[,26] &lt; FSR_level &amp; human_heart_1[,27] &lt; 0,]
+human_heart_3 &lt;- human_heart_2[!(human_heart_2[,40] &lt; FSR_level),]
+human_heart_4 &lt;- human_heart_3[human_heart_3[,54] &lt; FSR_level &amp; human_heart_3[,55] &lt; 0, ]
+human_heart_5 &lt;- human_heart_4[!(human_heart_4[,68] &lt; FSR_level),]
+human_lung_6_up &lt;- human_heart_5[human_heart_5[,82] &lt; FSR_level &amp; human_heart_5[,83] &gt; 0,]
+dim(human_lung_6_up)</code></pre>
+<pre><code>[1] 305  84</code></pre>
+<pre class="r"><code># Upregulated in chimp lung but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[!(combined_chimp[,12] &lt; FSR_level), ]
+chimp_heart_2 &lt;- chimp_heart_1[chimp_heart_1[,26] &lt; FSR_level &amp; chimp_heart_1[,27] &lt; 0,]
+chimp_heart_3 &lt;- chimp_heart_2[!(chimp_heart_2[,40] &lt; FSR_level),]
+chimp_heart_4 &lt;- chimp_heart_3[chimp_heart_3[,54] &lt; FSR_level &amp; chimp_heart_3[,55] &lt; 0,]
+chimp_heart_5 &lt;- chimp_heart_4[!(chimp_heart_4[,68] &lt; FSR_level),]
+chimp_lung_6_up &lt;- chimp_heart_5[chimp_heart_5[,82] &lt; FSR_level &amp; chimp_heart_5[,83] &gt; 0,]
+dim(chimp_lung_6_up)</code></pre>
+<pre><code>[1] 464  84</code></pre>
+<pre class="r"><code># Upregulated in rhesus lung but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[!(combined_rhesus[,12] &lt; FSR_level), ]
+rhesus_heart_2 &lt;- rhesus_heart_1[rhesus_heart_1[,26] &lt; FSR_level &amp; rhesus_heart_1[,27] &lt; 0,]
+rhesus_heart_3 &lt;- rhesus_heart_2[!(rhesus_heart_2[,40] &lt; FSR_level),]
+rhesus_heart_4 &lt;- rhesus_heart_3[rhesus_heart_3[,54] &lt; FSR_level &amp; rhesus_heart_3[,55] &lt; 0,]
+rhesus_heart_5 &lt;- rhesus_heart_4[!(rhesus_heart_4[,68] &lt; FSR_level),]
+rhesus_lung_6_up &lt;- rhesus_heart_5[rhesus_heart_5[,82] &lt; FSR_level &amp; rhesus_heart_5[,83] &gt; 0,]
+dim(rhesus_lung_6_up)</code></pre>
+<pre><code>[1] 363  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_lung_6_up)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_lung_6_up)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_lung_6_up)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Lung_specific_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated lung specific (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Lung_specific_up)
+
+names_union_lung &lt;- intersect(intersect(rownames(human_lung_6_up), rownames(chimp_lung_6_up)), rownames(rhesus_lung_6_up))
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000009413&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)
+
+
+# Downregulated in human lung but not in any of the other tissues
+human_heart_1 &lt;- combined_human[!(combined_human[,12] &lt; FSR_level), ]
+human_heart_2 &lt;- human_heart_1[human_heart_1[,26] &lt; FSR_level &amp; human_heart_1[,27] &gt; 0,]
+human_heart_3 &lt;- human_heart_2[!(human_heart_2[,40] &lt; FSR_level),]
+human_heart_4 &lt;- human_heart_3[human_heart_3[,54] &lt; FSR_level &amp; human_heart_3[,55] &gt; 0, ]
+human_heart_5 &lt;- human_heart_4[!(human_heart_4[,68] &lt; FSR_level),]
+human_lung_6_down &lt;- human_heart_5[human_heart_5[,82] &lt; FSR_level &amp; human_heart_5[,83] &lt; 0,]
+dim(human_lung_6_down)</code></pre>
+<pre><code>[1] 234  84</code></pre>
+<pre class="r"><code># Downregulated in chimp lung but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[!(combined_chimp[,12] &lt; FSR_level), ]
+chimp_heart_2 &lt;- chimp_heart_1[chimp_heart_1[,26] &lt; FSR_level &amp; chimp_heart_1[,27] &gt; 0,]
+chimp_heart_3 &lt;- chimp_heart_2[!(chimp_heart_2[,40] &lt; FSR_level),]
+chimp_heart_4 &lt;- chimp_heart_3[chimp_heart_3[,54] &lt; FSR_level &amp; chimp_heart_3[,55] &gt; 0,]
+chimp_heart_5 &lt;- chimp_heart_4[!(chimp_heart_4[,68] &lt; FSR_level),]
+chimp_lung_6_down &lt;- chimp_heart_5[chimp_heart_5[,82] &lt; FSR_level &amp; chimp_heart_5[,83] &lt; 0,]
+dim(chimp_lung_6_down)</code></pre>
+<pre><code>[1] 228  84</code></pre>
+<pre class="r"><code># Downregulated in rhesus lung but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[!(combined_rhesus[,12] &lt; FSR_level), ]
+rhesus_heart_2 &lt;- rhesus_heart_1[rhesus_heart_1[,26] &lt; FSR_level &amp; rhesus_heart_1[,27] &gt; 0,]
+rhesus_heart_3 &lt;- rhesus_heart_2[!(rhesus_heart_2[,40] &lt; FSR_level),]
+rhesus_heart_4 &lt;- rhesus_heart_3[rhesus_heart_3[,54] &lt; FSR_level &amp; rhesus_heart_3[,55] &gt; 0,]
+rhesus_heart_5 &lt;- rhesus_heart_4[!(rhesus_heart_4[,68] &lt; FSR_level),]
+rhesus_lung_6_down &lt;- rhesus_heart_5[rhesus_heart_5[,82] &lt; FSR_level &amp; rhesus_heart_5[,83] &lt; 0,]
+dim(rhesus_lung_6_down)</code></pre>
+<pre><code>[1] 240  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_lung_6_down)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_lung_6_down)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_lung_6_down)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Lung_specific_down &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated lung specific (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Lung_specific_down)
+
+names_union_lung_down &lt;- intersect(intersect(rownames(human_lung_6_down), rownames(chimp_lung_6_down)), rownames(rhesus_lung_6_down))
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000118922&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)
+
+
+
+# Upregulated in human kidney but not in any of the other tissues
+human_heart_1 &lt;- combined_human[!(combined_human[,12] &lt; FSR_level), ]
+human_heart_2 &lt;- human_heart_1[!(human_heart_1[,26] &lt; FSR_level),]
+human_heart_3 &lt;- human_heart_2[human_heart_2[,40] &lt; FSR_level &amp; human_heart_2[,41] &lt; 0,]
+human_heart_4 &lt;- human_heart_3[!(human_heart_3[,54] &lt; FSR_level), ]
+human_heart_5 &lt;- human_heart_4[human_heart_4[,68] &lt; FSR_level &amp; human_heart_4[,69] &lt; 0,]
+human_kidney_6_up &lt;- human_heart_5[human_heart_5[,82] &lt; FSR_level &amp; human_heart_5[,83] &lt; 0,]
+dim(human_kidney_6_up)</code></pre>
+<pre><code>[1] 266  84</code></pre>
+<pre class="r"><code># Upregulated in chimp kidney but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[!(combined_chimp[,12] &lt; FSR_level), ]
+chimp_heart_2 &lt;- chimp_heart_1[!(chimp_heart_1[,26] &lt; FSR_level),]
+chimp_heart_3 &lt;- chimp_heart_2[chimp_heart_2[,40] &lt; FSR_level &amp; chimp_heart_2[,41] &lt; 0,]
+chimp_heart_4 &lt;- chimp_heart_3[!(chimp_heart_3[,54] &lt; FSR_level),]
+chimp_heart_5 &lt;- chimp_heart_4[chimp_heart_4[,68] &lt; FSR_level &amp; chimp_heart_4[,69] &lt; 0,]
+chimp_kidney_6_up &lt;- chimp_heart_5[chimp_heart_5[,82] &lt; FSR_level &amp; chimp_heart_5[,83] &lt; 0,]
+dim(chimp_kidney_6_up)</code></pre>
+<pre><code>[1] 152  84</code></pre>
+<pre class="r"><code># Upregulated in rhesus kidney but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[!(combined_rhesus[,12] &lt; FSR_level), ]
+rhesus_heart_2 &lt;- rhesus_heart_1[!(rhesus_heart_1[,26] &lt; FSR_level),]
+rhesus_heart_3 &lt;- rhesus_heart_2[rhesus_heart_2[,40] &lt; FSR_level &amp; rhesus_heart_2[,41] &lt; 0,]
+rhesus_heart_4 &lt;- rhesus_heart_3[!(rhesus_heart_3[,54] &lt; FSR_level),]
+rhesus_heart_5 &lt;- rhesus_heart_4[rhesus_heart_4[,68] &lt; FSR_level &amp; rhesus_heart_4[,69] &lt; 0,]
+rhesus_kidney_6_up &lt;- rhesus_heart_5[rhesus_heart_5[,82] &lt; FSR_level &amp; rhesus_heart_5[,83] &lt; 0,]
+dim(rhesus_kidney_6_up)</code></pre>
+<pre><code>[1] 133  84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_kidney_6_up)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_kidney_6_up)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_kidney_6_up)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>kidney_specific_up &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Upregulated kidneys (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(kidney_specific_up)
+
+names_union_kidney &lt;- intersect(intersect(rownames(human_kidney_6_up), rownames(chimp_kidney_6_up)), rownames(rhesus_kidney_6_up))
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000048471&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)
+
+
+# Downregulated in human kidney but not in any of the other tissues
+human_heart_1 &lt;- combined_human[!(combined_human[,12] &lt; FSR_level), ]
+human_heart_2 &lt;- human_heart_1[!(human_heart_1[,26] &lt; FSR_level),]
+human_heart_3 &lt;- human_heart_2[human_heart_2[,40] &lt; FSR_level &amp; human_heart_2[,41] &gt; 0,]
+human_heart_4 &lt;- human_heart_3[!(human_heart_3[,54] &lt; FSR_level), ]
+human_heart_5 &lt;- human_heart_4[human_heart_4[,68] &lt; FSR_level &amp; human_heart_4[,69] &gt; 0,]
+human_kidney_6_down &lt;- human_heart_5[human_heart_5[,82] &lt; FSR_level &amp; human_heart_5[,83] &gt; 0,]
+dim(human_kidney_6_down)</code></pre>
+<pre><code>[1] 141  84</code></pre>
+<pre class="r"><code># Downregulated in chimp kidney but not in any of the other tissues
+chimp_heart_1 &lt;- combined_chimp[!(combined_chimp[,12] &lt; FSR_level), ]
+chimp_heart_2 &lt;- chimp_heart_1[!(chimp_heart_1[,26] &lt; FSR_level),]
+chimp_heart_3 &lt;- chimp_heart_2[chimp_heart_2[,40] &lt; FSR_level &amp; chimp_heart_2[,41] &gt; 0,]
+chimp_heart_4 &lt;- chimp_heart_3[!(chimp_heart_3[,54] &lt; FSR_level),]
+chimp_heart_5 &lt;- chimp_heart_4[chimp_heart_4[,68] &lt; FSR_level &amp; chimp_heart_4[,69] &gt; 0,]
+chimp_kidney_6_down &lt;- chimp_heart_5[chimp_heart_5[,82] &lt; FSR_level &amp; chimp_heart_5[,83] &gt; 0,]
+dim(chimp_kidney_6_down)</code></pre>
+<pre><code>[1] 90 84</code></pre>
+<pre class="r"><code># Upregulated in rhesus kidney but not in any of the other tissues
+rhesus_heart_1 &lt;- combined_rhesus[!(combined_rhesus[,12] &lt; FSR_level), ]
+rhesus_heart_2 &lt;- rhesus_heart_1[!(rhesus_heart_1[,26] &lt; FSR_level),]
+rhesus_heart_3 &lt;- rhesus_heart_2[rhesus_heart_2[,40] &lt; FSR_level &amp; rhesus_heart_2[,41] &gt; 0,]
+rhesus_heart_4 &lt;- rhesus_heart_3[!(rhesus_heart_3[,54] &lt; FSR_level),]
+rhesus_heart_5 &lt;- rhesus_heart_4[rhesus_heart_4[,68] &lt; FSR_level &amp; rhesus_heart_4[,69] &gt; 0,]
+rhesus_kidney_6_down &lt;- rhesus_heart_5[rhesus_heart_5[,82] &lt; FSR_level &amp; rhesus_heart_5[,83] &gt; 0,]
+dim(rhesus_kidney_6_down)</code></pre>
+<pre><code>[1] 86 84</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Human&quot;]] &lt;- rownames(human_kidney_6_down)
+mylist[[&quot;Chimpanzee&quot;]] &lt;- rownames(chimp_kidney_6_down)
+mylist[[&quot;Rhesus Macaque&quot;]] &lt;- rownames(rhesus_kidney_6_down)
+
+# Make Venn Diagram
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code>Kidney_specific_down &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Downregulated kidney specific (FSR 1%)&quot;, main.cex = 2, cat.cex = 1.5, cex=2.5, fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Kidney_specific_down)
+
+names_union_kidney_down &lt;- intersect(intersect(rownames(human_kidney_6_down), rownames(chimp_kidney_6_down)), rownames(rhesus_kidney_6_down))
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000119402&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)
+
+
+
+# Check to make sure that there is no intersection between the tissue specific directions 
+
+# Upregulated genes
+
+intersect(intersect(intersect(rownames(human_kidney_6_up), rownames(human_liver_6_up)), rownames(human_heart_6_up)),  rownames(human_lung_6_up))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code>intersect(intersect(intersect(rownames(chimp_kidney_6_up), rownames(chimp_liver_6_up)), rownames(chimp_heart_6_up)),  rownames(chimp_lung_6_up))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code>intersect(intersect(intersect(rownames(rhesus_kidney_6_up), rownames(rhesus_liver_6_up)), rownames(rhesus_heart_6_up)),  rownames(rhesus_lung_6_up))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code># Downregulated
+intersect(intersect(intersect(rownames(human_kidney_6_down), rownames(human_liver_6_down)), rownames(human_heart_6_down)),  rownames(human_lung_6_down))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code>intersect(intersect(intersect(rownames(chimp_kidney_6_down), rownames(chimp_liver_6_down)), rownames(chimp_heart_6_down)),  rownames(chimp_lung_6_down))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code>intersect(intersect(intersect(rownames(rhesus_kidney_6_down), rownames(rhesus_liver_6_down)), rownames(rhesus_heart_6_down)),  rownames(rhesus_lung_6_down))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code># Both
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(human_kidney_6_up), rownames(human_liver_6_up)), rownames(human_heart_6_up)),  rownames(human_lung_6_up)), rownames(human_kidney_6_down)), rownames(human_liver_6_down)), rownames(human_heart_6_down)),  rownames(human_lung_6_down))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code>intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(chimp_kidney_6_up), rownames(chimp_liver_6_up)), rownames(chimp_heart_6_up)),  rownames(chimp_lung_6_up)), rownames(chimp_kidney_6_down)), rownames(chimp_liver_6_down)), rownames(chimp_heart_6_down)),  rownames(chimp_lung_6_down))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code>intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(rhesus_kidney_6_up), rownames(rhesus_liver_6_up)), rownames(rhesus_heart_6_up)),  rownames(rhesus_lung_6_up)), rownames(rhesus_kidney_6_down)), rownames(rhesus_liver_6_down)), rownames(rhesus_heart_6_down)),  rownames(rhesus_lung_6_down))</code></pre>
+<pre><code>character(0)</code></pre>
+</div>
+<div id="experimenting-with-interactions-3-species-1-tissue-versus-a-group-of-3-tissues" class="section level2">
+<h2>Experimenting with interactions (3 species, 1 tissue versus a group of 3 tissues)</h2>
+<p>There are many possible interactions (e.g. Human and Chimp heart versus liver). To minimize the number of comparisons, we are going to compare 1 tissue to a group of the other 3 tissues (e.g. Human and Chimp heart versus non-heart).</p>
+<div id="interactions-in-all-3-species-hearts-versus-all-other-tissues" class="section level3">
+<h3>Interactions in all 3 species’ hearts versus all other tissues</h3>
+<pre class="r"><code># Reassign tissues to be heart versus non-heart
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+## Make the contrast matrix and rename columns of the contrast matrix
+
+design &lt;- model.matrix(~ species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Human&quot;
+colnames(design)[3] &lt;- &quot;Rhesus&quot;
+colnames(design)[4] &lt;- &quot;tissue_heart&quot; # Heart versus non-heart
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;Human_heart&quot;
+colnames(design)[7] &lt;- &quot;Rhesus_heart&quot;
+
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>   Intercept        Human       Rhesus tissue_heart          RIN 
+        47.0         15.0         16.0         11.0        368.2 
+ Human_heart Rhesus_heart 
+         3.0          4.0 </code></pre>
+<pre class="r"><code># Run linear model with new design matrix
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;- -0.1009512
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# In the contrast matrix, we have many comparisons for species and tissues individually
+# Note: baseline is chimp heart
+
+cm2 &lt;- makeContrasts(HC_HG = Human_heart - Human, 
+                     HR_HG = (Human_heart - Rhesus_heart) - (Human - Rhesus),
+                     CR_HG = Rhesus - Rhesus_heart,
+                     levels = design)
+# Implement contrasts
+
+contrasts_interactions &lt;- contrasts.fit(fit.cyclic.norm, cm2)
+fit1 &lt;- eBayes(contrasts_interactions)
+
+
+
+# Pull interactions
+
+top3 &lt;- list(HC_HG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             HR_HG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             CR_HG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+# Determine the number of statistically signficant interactions
+
+HC_HG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HC_HG[which(HC_HG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 140   7</code></pre>
+<pre class="r"><code>HR_HG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HR_HG[which(HR_HG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 610   7</code></pre>
+<pre class="r"><code>CR_HG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(CR_HG[which(CR_HG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 422   7</code></pre>
+</div>
+<div id="adaptive-shrinkage-on-interactions-in-all-3-species-hearts-versus-all-other-tissues" class="section level3">
+<h3>Adaptive shrinkage on interactions in all 3 species’ hearts versus all other tissues</h3>
+<pre class="r"><code># Prepare the data for ASH
+tests &lt;- colnames(fit1$coefficients)
+tests</code></pre>
+<pre><code>[1] &quot;HC_HG&quot; &quot;HR_HG&quot; &quot;CR_HG&quot;</code></pre>
+<pre class="r"><code>results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+for (test in tests) {
+  # Extract limma results
+  results[[test]] &lt;- get_results(fit1, coef = test)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit1, coef = test)
+  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+}</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code># Save results from analysis with limma and ash.
+#saveRDS(results, file.path(data_dir, &quot;results-limma-voom-ash-interactions.rds&quot;))
+
+heart_combined_interactions &lt;- as.data.frame(cbind(results[[&quot;HC_HG&quot;]]$svalue, 
+                               results[[&quot;HR_HG&quot;]]$svalue, 
+                               results[[&quot;CR_HG&quot;]]$svalue))
+
+dim(heart_combined_interactions)</code></pre>
+<pre><code>[1] 12184     3</code></pre>
+<pre class="r"><code>colnames(heart_combined_interactions) &lt;- c(&quot;HC_HG&quot;, &quot;HR_HG&quot;, &quot;CR_HG&quot;)</code></pre>
+</div>
+<div id="interactions-in-all-3-species-livers-versus-all-other-tissues" class="section level3">
+<h3>Interactions in all 3 species’ livers versus all other tissues</h3>
+<pre class="r"><code># Reassign tissues to be liver versus non-livers
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+# Rename columns of the contrast matrix
+
+## Make the contrast matrix and rename columns of the contrast matrix
+
+design &lt;- model.matrix(~ species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Human&quot;
+colnames(design)[3] &lt;- &quot;Rhesus&quot;
+colnames(design)[4] &lt;- &quot;tissue_livers&quot; # Heart versus non-livers
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;Human_liver&quot;
+colnames(design)[7] &lt;- &quot;Rhesus_liver&quot;
+
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>    Intercept         Human        Rhesus tissue_livers           RIN 
+         47.0          15.0          16.0          12.0         368.2 
+  Human_liver  Rhesus_liver 
+          4.0           4.0 </code></pre>
+<pre class="r"><code># Run linear model with new design matrix
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;- -0.0912331
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# In the contrast matrix, we have many comparisons for species and tissues individually
+# Note: baseline is chimp heart
+
+cm2 &lt;- makeContrasts(HC_HG = Human_liver - Human, 
+                     HR_HG = (Human_liver - Rhesus_liver) - (Human - Rhesus),
+                     CR_HG = Rhesus - Rhesus_liver,
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_interactions &lt;- contrasts.fit(fit.cyclic.norm, cm2)
+fit1 &lt;- eBayes(contrasts_interactions)
+
+# Pull interactions
+
+top3 &lt;- list(HC_LiG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             HR_LiG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             CR_LiG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+# Determine the number of statistically signficant interactions
+
+HC_LiG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HC_LiG[which(HC_LiG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 103   7</code></pre>
+<pre class="r"><code>HR_LiG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HR_LiG[which(HR_LiG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 515   7</code></pre>
+<pre class="r"><code>CR_LiG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(CR_LiG[which(CR_LiG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 349   7</code></pre>
+</div>
+<div id="adaptive-shrinkage-on-interactions-in-all-3-species-livers-versus-all-other-tissues" class="section level3">
+<h3>Adaptive shrinkage on interactions in all 3 species’ livers versus all other tissues</h3>
+<pre class="r"><code># Prepare the data for ASH
+tests &lt;- colnames(fit1$coefficients)
+tests</code></pre>
+<pre><code>[1] &quot;HC_HG&quot; &quot;HR_HG&quot; &quot;CR_HG&quot;</code></pre>
+<pre class="r"><code>results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+for (test in tests) {
+  # Extract limma results
+  results[[test]] &lt;- get_results(fit1, coef = test)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit1, coef = test)
+  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+}</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code># Save results from analysis with limma and ash.
+#saveRDS(results, file.path(data_dir, &quot;results-limma-voom-ash-interactions.rds&quot;))
+
+liver_combined_interactions &lt;- as.data.frame(cbind(results[[&quot;HC_HG&quot;]]$svalue, 
+                               results[[&quot;HR_HG&quot;]]$svalue, 
+                               results[[&quot;CR_HG&quot;]]$svalue))
+
+dim(liver_combined_interactions)</code></pre>
+<pre><code>[1] 12184     3</code></pre>
+<pre class="r"><code>colnames(liver_combined_interactions) &lt;- c(&quot;HC_LiG&quot;, &quot;HR_LiG&quot;, &quot;CR_LiG&quot;)</code></pre>
+</div>
+<div id="interactions-in-all-3-species-lungs-versus-all-other-tissues" class="section level3">
+<h3>Interactions in all 3 species’ lungs versus all other tissues</h3>
+<pre class="r"><code># Reassign tissues to be lung versus non-lung
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+
+## Make the contrast matrix and rename columns of the contrast matrix
+
+design &lt;- model.matrix(~ species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Human&quot;
+colnames(design)[3] &lt;- &quot;Rhesus&quot;
+colnames(design)[4] &lt;- &quot;tissue_lungs&quot; # Heart versus non-livers
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;Human_lung&quot;
+colnames(design)[7] &lt;- &quot;Rhesus_lung&quot;
+
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>   Intercept        Human       Rhesus tissue_lungs          RIN 
+        47.0         15.0         16.0         12.0        368.2 
+  Human_lung  Rhesus_lung 
+         4.0          4.0 </code></pre>
+<pre class="r"><code># Run linear model with new design matrix
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.09711687
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# In the contrast matrix, we have many comparisons for species and tissues individually
+# Note: baseline is chimp heart
+
+cm4 &lt;-  makeContrasts(HC_HG = Human_lung - Human, 
+                     HR_HG = (Human_lung - Rhesus_lung) - (Human - Rhesus),
+                     CR_HG = Rhesus - Rhesus_lung,
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_interactions &lt;- contrasts.fit(fit.cyclic.norm, cm4)
+fit1 &lt;- eBayes(contrasts_interactions)
+
+# Pull interactions
+
+top3 &lt;- list(HC_LuG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             HR_LuG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             CR_LuG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+# Determine the number of statistically signficant interactions
+
+HC_LuG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HC_LuG[which(HC_LuG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 98  7</code></pre>
+<pre class="r"><code>HR_LuG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HR_LuG[which(HR_LuG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 480   7</code></pre>
+<pre class="r"><code>CR_LuG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(CR_LuG[which(CR_LuG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 642   7</code></pre>
+</div>
+<div id="adaptive-shrinkage-on-interactions-in-all-3-species-lungs-versus-all-other-tissues" class="section level3">
+<h3>Adaptive shrinkage on interactions in all 3 species’ lungs versus all other tissues</h3>
+<pre class="r"><code># Prepare the data for ASH
+tests &lt;- colnames(fit1$coefficients)
+tests</code></pre>
+<pre><code>[1] &quot;HC_HG&quot; &quot;HR_HG&quot; &quot;CR_HG&quot;</code></pre>
+<pre class="r"><code>results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+for (test in tests) {
+  # Extract limma results
+  results[[test]] &lt;- get_results(fit1, coef = test)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit1, coef = test)
+  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+}</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code># Save results from analysis with limma and ash.
+#saveRDS(results, file.path(data_dir, &quot;results-limma-voom-ash-interactions.rds&quot;))
+
+lung_combined_interactions &lt;- as.data.frame(cbind(results[[&quot;HC_HG&quot;]]$svalue, 
+                               results[[&quot;HR_HG&quot;]]$svalue, 
+                               results[[&quot;CR_HG&quot;]]$svalue))
+
+dim(lung_combined_interactions)</code></pre>
+<pre><code>[1] 12184     3</code></pre>
+<pre class="r"><code>colnames(lung_combined_interactions) &lt;- c(&quot;HC_LuG&quot;, &quot;HR_LuG&quot;, &quot;CR_LuG&quot;)
+
+#check_lung_combined_interactions &lt;- as.data.frame(cbind(results[[&quot;HC_LuG&quot;]]$adj.P.Val, results[[&quot;HC_LuG&quot;]]$svalue))
+#colnames(check_lung_combined_interactions) &lt;- c(&quot;BH-adj P value&quot;, &quot;s value&quot;)
+#dim(check_lung_combined_interactions[which(check_lung_combined_interactions[,1] &lt; 0.01) ,])
+#check_lung_combined_interactions[which(check_lung_combined_interactions[,1] &lt; 0.01) ,]
+#dim(check_lung_combined_interactions[which(check_lung_combined_interactions[,2] &lt; 0.01) ,])</code></pre>
+</div>
+<div id="interactions-in-all-3-species-kidneys-versus-all-other-tissues" class="section level3">
+<h3>Interactions in all 3 species’ kidneys versus all other tissues</h3>
+<pre class="r"><code># Reassign tissues to be heart versus non-heart
+
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+
+design &lt;- model.matrix(~ species*tissue_group + RIN)
+
+## Make the contrast matrix and rename columns of the contrast matrix
+
+# Rename columns of the contrast matrix
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Human&quot;
+colnames(design)[3] &lt;- &quot;Rhesus&quot;
+colnames(design)[4] &lt;- &quot;tissue_kidneys&quot; # Heart versus non-livers
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;Human_kidney&quot;
+colnames(design)[7] &lt;- &quot;Rhesus_kidney&quot;
+
+
+# Implement contrasts
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>     Intercept          Human         Rhesus tissue_kidneys            RIN 
+          47.0           15.0           16.0           12.0          368.2 
+  Human_kidney  Rhesus_kidney 
+           4.0            4.0 </code></pre>
+<pre class="r"><code># Run linear model with new design matrix
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+#corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.128052
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# In the contrast matrix, we have many comparisons for species and tissues individually
+# Note: baseline is chimp heart
+
+cm5 &lt;- makeContrasts(HC_HG = Human_kidney - Human, 
+                     HR_HG = (Human_kidney - Rhesus_kidney) - (Human - Rhesus),
+                     CR_HG = Rhesus - Rhesus_kidney,
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_interactions &lt;- contrasts.fit(fit.cyclic.norm, cm5)
+fit1 &lt;- eBayes(contrasts_interactions)
+
+# Pull interactions
+
+top3 &lt;- list(HC_KG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+             HR_KG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
+             CR_KG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+# Determine the number of statistically signficant interactions
+
+HC_KG =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HC_KG[which(HC_KG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 98  7</code></pre>
+<pre class="r"><code>HR_KG =topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HR_KG[which(HR_KG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 282   7</code></pre>
+<pre class="r"><code>CR_KG =topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(CR_KG[which(CR_KG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 255   7</code></pre>
+</div>
+<div id="tissue-specific-interactions-fdr" class="section level3">
+<h3>Tissue-specific interactions (FDR)</h3>
+<pre class="r"><code># Set FDR level
+
+FDR_level &lt;- 0.01
+
+# Interactions between 3 species hearts and other tissues
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &lt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &lt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &lt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &gt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &gt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &gt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &gt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &gt; FDR_level), ]))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code># Interactions between 3 species livers and other tissues
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &gt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &lt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &lt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &lt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &gt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &gt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &gt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &gt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &gt; FDR_level), ]))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code># Interactions between 3 species lungs and other tissues
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &gt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &lt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &lt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &lt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &gt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &gt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &gt; FDR_level), ]))</code></pre>
+<pre><code>[1] &quot;ENSG00000099326&quot;</code></pre>
+<pre class="r"><code># Interactions between 3 species kidneus and other tissues
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &gt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &gt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &gt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &lt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &lt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &lt; FDR_level), ]))</code></pre>
+<pre><code>[1] &quot;ENSG00000121236&quot; &quot;ENSG00000258232&quot;</code></pre>
+<pre class="r"><code># Interactions between 3 species hearts and other tissues (Human/Chimp versus Rhesus)
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &gt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &lt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &lt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &gt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &gt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &gt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &gt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &gt; FDR_level), ]))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code># Interactions between 3 species livers and other tissues (Human/Chimp versus Rhesus)
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &gt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &lt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &lt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &gt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &gt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &gt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &gt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &gt; FDR_level), ]))</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code># Interactions between 3 species lungs and other tissues (Human/Chimp versus Rhesus)
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &gt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &lt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &lt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &gt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &gt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &gt; FDR_level), ]))</code></pre>
+<pre><code>  [1] &quot;ENSG00000005469&quot; &quot;ENSG00000008516&quot; &quot;ENSG00000011422&quot;
+  [4] &quot;ENSG00000013503&quot; &quot;ENSG00000042445&quot; &quot;ENSG00000048540&quot;
+  [7] &quot;ENSG00000064961&quot; &quot;ENSG00000071859&quot; &quot;ENSG00000075303&quot;
+ [10] &quot;ENSG00000076924&quot; &quot;ENSG00000078124&quot; &quot;ENSG00000079616&quot;
+ [13] &quot;ENSG00000082146&quot; &quot;ENSG00000083838&quot; &quot;ENSG00000085514&quot;
+ [16] &quot;ENSG00000085831&quot; &quot;ENSG00000087206&quot; &quot;ENSG00000088826&quot;
+ [19] &quot;ENSG00000089127&quot; &quot;ENSG00000092036&quot; &quot;ENSG00000092529&quot;
+ [22] &quot;ENSG00000093072&quot; &quot;ENSG00000100297&quot; &quot;ENSG00000100359&quot;
+ [25] &quot;ENSG00000100376&quot; &quot;ENSG00000101224&quot; &quot;ENSG00000102034&quot;
+ [28] &quot;ENSG00000104518&quot; &quot;ENSG00000105287&quot; &quot;ENSG00000105819&quot;
+ [31] &quot;ENSG00000107672&quot; &quot;ENSG00000107949&quot; &quot;ENSG00000108064&quot;
+ [34] &quot;ENSG00000108219&quot; &quot;ENSG00000108433&quot; &quot;ENSG00000108551&quot;
+ [37] &quot;ENSG00000108587&quot; &quot;ENSG00000108797&quot; &quot;ENSG00000110274&quot;
+ [40] &quot;ENSG00000111110&quot; &quot;ENSG00000113391&quot; &quot;ENSG00000114270&quot;
+ [43] &quot;ENSG00000116898&quot; &quot;ENSG00000117245&quot; &quot;ENSG00000117360&quot;
+ [46] &quot;ENSG00000119801&quot; &quot;ENSG00000120280&quot; &quot;ENSG00000120333&quot;
+ [49] &quot;ENSG00000120992&quot; &quot;ENSG00000122335&quot; &quot;ENSG00000122386&quot;
+ [52] &quot;ENSG00000124767&quot; &quot;ENSG00000125846&quot; &quot;ENSG00000125966&quot;
+ [55] &quot;ENSG00000127054&quot; &quot;ENSG00000128928&quot; &quot;ENSG00000129219&quot;
+ [58] &quot;ENSG00000129317&quot; &quot;ENSG00000129933&quot; &quot;ENSG00000130731&quot;
+ [61] &quot;ENSG00000132017&quot; &quot;ENSG00000132530&quot; &quot;ENSG00000132591&quot;
+ [64] &quot;ENSG00000132640&quot; &quot;ENSG00000132781&quot; &quot;ENSG00000133789&quot;
+ [67] &quot;ENSG00000133983&quot; &quot;ENSG00000134627&quot; &quot;ENSG00000135249&quot;
+ [70] &quot;ENSG00000136710&quot; &quot;ENSG00000136811&quot; &quot;ENSG00000137185&quot;
+ [73] &quot;ENSG00000137936&quot; &quot;ENSG00000138095&quot; &quot;ENSG00000138378&quot;
+ [76] &quot;ENSG00000139117&quot; &quot;ENSG00000139132&quot; &quot;ENSG00000139193&quot;
+ [79] &quot;ENSG00000139874&quot; &quot;ENSG00000140043&quot; &quot;ENSG00000143067&quot;
+ [82] &quot;ENSG00000143554&quot; &quot;ENSG00000143753&quot; &quot;ENSG00000144362&quot;
+ [85] &quot;ENSG00000144857&quot; &quot;ENSG00000146477&quot; &quot;ENSG00000149489&quot;
+ [88] &quot;ENSG00000149499&quot; &quot;ENSG00000150977&quot; &quot;ENSG00000151893&quot;
+ [91] &quot;ENSG00000152219&quot; &quot;ENSG00000154146&quot; &quot;ENSG00000154814&quot;
+ [94] &quot;ENSG00000155393&quot; &quot;ENSG00000155926&quot; &quot;ENSG00000156787&quot;
+ [97] &quot;ENSG00000158423&quot; &quot;ENSG00000159128&quot; &quot;ENSG00000159314&quot;
+[100] &quot;ENSG00000159445&quot; &quot;ENSG00000159674&quot; &quot;ENSG00000160401&quot;
+[103] &quot;ENSG00000160767&quot; &quot;ENSG00000160783&quot; &quot;ENSG00000160972&quot;
+[106] &quot;ENSG00000161526&quot; &quot;ENSG00000162591&quot; &quot;ENSG00000162650&quot;
+[109] &quot;ENSG00000162714&quot; &quot;ENSG00000162878&quot; &quot;ENSG00000164054&quot;
+[112] &quot;ENSG00000164088&quot; &quot;ENSG00000164674&quot; &quot;ENSG00000165792&quot;
+[115] &quot;ENSG00000166508&quot; &quot;ENSG00000166833&quot; &quot;ENSG00000166839&quot;
+[118] &quot;ENSG00000167077&quot; &quot;ENSG00000167720&quot; &quot;ENSG00000168589&quot;
+[121] &quot;ENSG00000169992&quot; &quot;ENSG00000170456&quot; &quot;ENSG00000170906&quot;
+[124] &quot;ENSG00000171703&quot; &quot;ENSG00000172264&quot; &quot;ENSG00000172660&quot;
+[127] &quot;ENSG00000172878&quot; &quot;ENSG00000174175&quot; &quot;ENSG00000174516&quot;
+[130] &quot;ENSG00000175130&quot; &quot;ENSG00000175264&quot; &quot;ENSG00000175581&quot;
+[133] &quot;ENSG00000177084&quot; &quot;ENSG00000178038&quot; &quot;ENSG00000182141&quot;
+[136] &quot;ENSG00000184083&quot; &quot;ENSG00000184857&quot; &quot;ENSG00000185187&quot;
+[139] &quot;ENSG00000185238&quot; &quot;ENSG00000188647&quot; &quot;ENSG00000188786&quot;
+[142] &quot;ENSG00000188938&quot; &quot;ENSG00000196526&quot; &quot;ENSG00000198015&quot;
+[145] &quot;ENSG00000198843&quot; &quot;ENSG00000198862&quot; &quot;ENSG00000205707&quot;
+[148] &quot;ENSG00000206538&quot; &quot;ENSG00000213516&quot; &quot;ENSG00000213903&quot;
+[151] &quot;ENSG00000215039&quot; &quot;ENSG00000222046&quot; &quot;ENSG00000223609&quot;
+[154] &quot;ENSG00000227671&quot; &quot;ENSG00000230055&quot; &quot;ENSG00000237883&quot;
+[157] &quot;ENSG00000241852&quot; &quot;ENSG00000242500&quot; &quot;ENSG00000243056&quot;
+[160] &quot;ENSG00000245573&quot; &quot;ENSG00000249124&quot; &quot;ENSG00000253368&quot;
+[163] &quot;ENSG00000253982&quot; &quot;ENSG00000254445&quot; &quot;ENSG00000258210&quot;
+[166] &quot;ENSG00000258461&quot; &quot;ENSG00000258644&quot; &quot;ENSG00000258653&quot;</code></pre>
+<pre class="r"><code># Interactions between 3 species kidneys and other tissues
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(rownames(HC_HG[which(HC_HG$adj.P.Val &gt; FDR_level), ]), rownames(HR_HG[which(HR_HG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                                                      rownames(HC_LiG[which(HC_LiG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LiG[which(HR_LiG$adj.P.Val &gt; FDR_level), ])), rownames(CR_HG[which(CR_HG$adj.P.Val &gt; FDR_level), ])), 
+                                                                                                                        
+            rownames(HC_LuG[which(HC_LuG$adj.P.Val &gt; FDR_level), ])), rownames(HR_LuG[which(HR_LuG$adj.P.Val &gt; FDR_level), ])), rownames(CR_LuG[which(CR_LuG$adj.P.Val &gt; FDR_level), ])), 
+            
+            rownames(HC_KG[which(HC_KG$adj.P.Val &gt; FDR_level), ])), rownames(HR_KG[which(HR_KG$adj.P.Val &lt; FDR_level), ])), rownames(CR_KG[which(CR_KG$adj.P.Val &lt; FDR_level), ]))</code></pre>
+<pre><code> [1] &quot;ENSG00000066923&quot; &quot;ENSG00000070371&quot; &quot;ENSG00000074356&quot;
+ [4] &quot;ENSG00000095066&quot; &quot;ENSG00000100170&quot; &quot;ENSG00000100490&quot;
+ [7] &quot;ENSG00000100612&quot; &quot;ENSG00000102595&quot; &quot;ENSG00000105825&quot;
+[10] &quot;ENSG00000105928&quot; &quot;ENSG00000106123&quot; &quot;ENSG00000107611&quot;
+[13] &quot;ENSG00000110079&quot; &quot;ENSG00000110675&quot; &quot;ENSG00000112667&quot;
+[16] &quot;ENSG00000115556&quot; &quot;ENSG00000120594&quot; &quot;ENSG00000122121&quot;
+[19] &quot;ENSG00000123352&quot; &quot;ENSG00000125895&quot; &quot;ENSG00000126562&quot;
+[22] &quot;ENSG00000130558&quot; &quot;ENSG00000130997&quot; &quot;ENSG00000133059&quot;
+[25] &quot;ENSG00000133250&quot; &quot;ENSG00000137960&quot; &quot;ENSG00000138134&quot;
+[28] &quot;ENSG00000139289&quot; &quot;ENSG00000143801&quot; &quot;ENSG00000144136&quot;
+[31] &quot;ENSG00000148175&quot; &quot;ENSG00000150672&quot; &quot;ENSG00000151491&quot;
+[34] &quot;ENSG00000154265&quot; &quot;ENSG00000161574&quot; &quot;ENSG00000162241&quot;
+[37] &quot;ENSG00000166860&quot; &quot;ENSG00000167778&quot; &quot;ENSG00000168395&quot;
+[40] &quot;ENSG00000172296&quot; &quot;ENSG00000172331&quot; &quot;ENSG00000173567&quot;
+[43] &quot;ENSG00000174799&quot; &quot;ENSG00000176046&quot; &quot;ENSG00000177082&quot;
+[46] &quot;ENSG00000181396&quot; &quot;ENSG00000182983&quot; &quot;ENSG00000185015&quot;
+[49] &quot;ENSG00000187231&quot; &quot;ENSG00000187741&quot; &quot;ENSG00000196456&quot;
+[52] &quot;ENSG00000205517&quot; &quot;ENSG00000213494&quot; &quot;ENSG00000214128&quot;
+[55] &quot;ENSG00000239521&quot; &quot;ENSG00000254528&quot; &quot;ENSG00000257453&quot;</code></pre>
+</div>
+<div id="adaptive-shrinkage-on-interactions-in-all-3-species-kidneys-versus-all-other-tissues" class="section level3">
+<h3>Adaptive shrinkage on interactions in all 3 species’ kidneys versus all other tissues</h3>
+<pre class="r"><code># Prepare the data for ASH
+tests &lt;- colnames(fit1$coefficients)
+tests</code></pre>
+<pre><code>[1] &quot;HC_HG&quot; &quot;HR_HG&quot; &quot;CR_HG&quot;</code></pre>
+<pre class="r"><code>results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+for (test in tests) {
+  # Extract limma results
+  results[[test]] &lt;- get_results(fit1, coef = test)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit1, coef = test)
+  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+}</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code># Save results from analysis with limma and ash.
+#saveRDS(results, file.path(data_dir, &quot;results-limma-voom-ash-interactions.rds&quot;))
+
+kidney_combined_interactions &lt;- as.data.frame(cbind(results[[&quot;HC_HG&quot;]]$svalue, 
+                               results[[&quot;HR_HG&quot;]]$svalue, 
+                               results[[&quot;CR_HG&quot;]]$svalue))
+
+dim(kidney_combined_interactions)</code></pre>
+<pre><code>[1] 12184     3</code></pre>
+<pre class="r"><code>colnames(kidney_combined_interactions) &lt;- c(&quot;HC_KG&quot;, &quot;HR_KG&quot;, &quot;CR_KG&quot;)</code></pre>
+</div>
+<div id="number-of-interactions-using-fsr" class="section level3">
+<h3>Number of interactions using FSR</h3>
+<pre class="r"><code># Heart
+# Human versus Chimp
+
+dim(heart_combined_interactions[which(heart_combined_interactions[,1] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 203   3</code></pre>
+<pre class="r"><code># Human versus Rhesus
+dim(heart_combined_interactions[which(heart_combined_interactions[,2] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 1165    3</code></pre>
+<pre class="r"><code># Chimp versus Rhesus
+dim(heart_combined_interactions[which(heart_combined_interactions[,3] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 705   3</code></pre>
+<pre class="r"><code># Liver
+# Human versus Chimp
+
+dim(liver_combined_interactions[which(liver_combined_interactions[,1] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 107   3</code></pre>
+<pre class="r"><code># Human versus Rhesus
+dim(liver_combined_interactions[which(liver_combined_interactions[,2] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 910   3</code></pre>
+<pre class="r"><code># Chimp versus Rhesus
+dim(liver_combined_interactions[which(liver_combined_interactions[,3] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 547   3</code></pre>
+<pre class="r"><code># Lung
+# Human versus Chimp
+
+dim(lung_combined_interactions[which(lung_combined_interactions[,1] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 113   3</code></pre>
+<pre class="r"><code># Human versus Rhesus
+dim(lung_combined_interactions[which(lung_combined_interactions[,2] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 1049    3</code></pre>
+<pre class="r"><code># Chimp versus Rhesus
+dim(lung_combined_interactions[which(lung_combined_interactions[,3] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 994   3</code></pre>
+<pre class="r"><code>#  Kidney
+# Human versus Chimp
+
+dim(kidney_combined_interactions[which(kidney_combined_interactions[,1] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 113   3</code></pre>
+<pre class="r"><code># Human versus Rhesus
+dim(kidney_combined_interactions[which(kidney_combined_interactions[,2] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 470   3</code></pre>
+<pre class="r"><code># Chimp versus Rhesus
+dim(kidney_combined_interactions[which(kidney_combined_interactions[,3] &lt; FSR_level), ]) </code></pre>
+<pre><code>[1] 361   3</code></pre>
+<pre class="r"><code># Combine the svalue from interactions
+three_species_all_tissue_interactions &lt;- cbind(heart_combined_interactions, liver_combined_interactions, lung_combined_interactions, kidney_combined_interactions)
+
+rownames(three_species_all_tissue_interactions) &lt;- rownames(cpm.voom.cyclic$E)
+dim(three_species_all_tissue_interactions)</code></pre>
+<pre><code>[1] 12184    12</code></pre>
+<pre class="r"><code># Set FDR
+
+FDR_level &lt;- 0.01
+FSR_level &lt;- 0.01
+
+# Interactions between 3 species hearts and other tissues
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &lt; FSR_level &amp; three_species_all_tissue_interactions[,2] &lt; FSR_level &amp; three_species_all_tissue_interactions[,3] &lt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &gt; FSR_level &amp; three_species_all_tissue_interactions[,6] &gt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 5</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000182923&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species) + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Interactions between 3 species livers and other tissues
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &lt; FSR_level &amp; three_species_all_tissue_interactions[,5] &lt; FSR_level &amp; three_species_all_tissue_interactions[,6] &lt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000183077&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species) + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-25-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Interactions between 3 species lungs and other tissues
+
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &gt; FSR_level &amp; three_species_all_tissue_interactions[,6] &gt; FSR_level &amp; three_species_all_tissue_interactions[,7] &lt; FSR_level &amp; three_species_all_tissue_interactions[,8] &lt; FSR_level &amp; three_species_all_tissue_interactions[,9] &lt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 4</code></pre>
+<pre class="r"><code># Interactions between 3 species kidneys and other tissues
+
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &gt; FSR_level &amp; three_species_all_tissue_interactions[,6] &gt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &lt; FSR_level &amp; three_species_all_tissue_interactions[,11] &lt; FSR_level &amp; three_species_all_tissue_interactions[,12] &lt; FSR_level), ])</code></pre>
+<pre><code>[1] 1</code></pre>
+<pre class="r"><code># Interactions between 3 species hearts and other tissues (Human/Chimp versus Rhesus)
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &lt; FSR_level &amp; three_species_all_tissue_interactions[,3] &lt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &gt; FSR_level &amp; three_species_all_tissue_interactions[,6] &gt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 251</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000004487&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue))
+make_exp_df$species &lt;- as.factor(make_exp_df$species)
+levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species) + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-25-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Interactions between 3 species livers and other tissues (Human/Chimp versus Rhesus)
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &lt; FSR_level &amp; three_species_all_tissue_interactions[,6] &lt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 182</code></pre>
+<pre class="r"><code># Interactions between 3 species lungs and other tissues (Human/Chimp versus Rhesus)
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &gt; FSR_level &amp; three_species_all_tissue_interactions[,6] &gt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &lt; FSR_level &amp; three_species_all_tissue_interactions[,9] &lt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 291</code></pre>
+<pre class="r"><code># Interactions between 3 species kidneys and other tissues (Human/Chimp versus Rhesus)
+
+nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &gt; FSR_level &amp; three_species_all_tissue_interactions[,6] &gt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &lt; FSR_level &amp; three_species_all_tissue_interactions[,12] &lt; FSR_level), ])</code></pre>
+<pre><code>[1] 78</code></pre>
+</div>
+</div>
+<div id="combining-humans-and-chimps-to-have-a-great-ape-versus-rhesus-tissues-set-of-interactions" class="section level2">
+<h2>Combining humans and chimps to have a Great Ape versus Rhesus tissues set of interactions</h2>
+<div id="hearts" class="section level3">
+<h3>Hearts</h3>
+<pre class="r"><code># Reassign species to be GA versus not GA
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;GA&quot;, species) 
+GA_species &lt;- gsub(&quot;Human&quot;, &quot;GA&quot;, GA_species) 
+
+# Reassign tissues to be heart versus non-heart
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Heart&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_heart&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>   Intercept       Rhesus        Heart          RIN Rhesus_heart 
+        47.0         16.0         11.0        368.2          4.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.02032154
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-26-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# Determine the number of statistically signficant interactions
+
+GA_HG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(GA_HG[which(GA_HG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 233   7</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000008282&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue), stringsAsFactors = F)
+make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
+#levels(make_exp_df$Species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~make_exp_df[,2])  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;SYPL (ENSG00000008282)&quot;) </code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-26-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  # Extract limma results
+  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+GA_HG_svalue &lt;- results[[test]]
+nrow(GA_HG_svalue[which(GA_HG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 405</code></pre>
+</div>
+<div id="livers" class="section level3">
+<h3>Livers</h3>
+<pre class="r"><code># Reassign species to be GA versus not GA
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;GA&quot;, species) 
+GA_species &lt;- gsub(&quot;Human&quot;, &quot;GA&quot;, GA_species) 
+
+# Reassign tissues to be liver versus non-liver
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Liver&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_liver&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>   Intercept       Rhesus        Liver          RIN Rhesus_liver 
+        47.0         16.0         12.0        368.2          4.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.008945556
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+
+# Determine the number of statistically signficant interactions
+
+GA_LiG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(GA_LiG[which(GA_LiG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 264   7</code></pre>
+<pre class="r"><code>  # Extract limma results
+  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+
+GA_LiG_svalue &lt;- results[[test]]
+nrow(GA_LiG_svalue[which(GA_LiG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 309</code></pre>
+</div>
+<div id="lungs" class="section level3">
+<h3>Lungs</h3>
+<pre class="r"><code># Reassign species to be GA versus not GA
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;GA&quot;, species) 
+GA_species &lt;- gsub(&quot;Human&quot;, &quot;GA&quot;, GA_species) 
+
+# Reassign tissues to be heart versus non-heart
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Lung&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_lung&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>  Intercept      Rhesus        Lung         RIN Rhesus_lung 
+       47.0        16.0        12.0       368.2         4.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.01548285
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+
+# Determine the number of statistically signficant interactions
+
+GA_LuG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(GA_LuG[which(GA_LuG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 82  7</code></pre>
+<pre class="r"><code>  # Extract limma results
+  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+GA_LuG_svalue &lt;- results[[test]]
+nrow(GA_LuG_svalue[which(GA_LuG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 174</code></pre>
+</div>
+<div id="kidneys" class="section level3">
+<h3>Kidneys</h3>
+<pre class="r"><code># Reassign species to be GA versus not GA
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;GA&quot;, species) 
+GA_species &lt;- gsub(&quot;Human&quot;, &quot;GA&quot;, GA_species) 
+
+# Reassign tissues to be heart versus non-heart
+
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Kidney&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_kidney&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>    Intercept        Rhesus        Kidney           RIN Rhesus_kidney 
+         47.0          16.0          12.0         368.2           4.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.05037098
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# Determine the number of statistically signficant interactions
+
+GA_KG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(GA_KG[which(GA_KG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 56  7</code></pre>
+<pre class="r"><code>  # Extract limma results
+  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+GA_KG_svalue &lt;- results[[test]]
+
+nrow(GA_KG_svalue[which(GA_KG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 58</code></pre>
+<pre class="r"><code># Find tissue specific
+
+# bind s values together
+
+GA_svalue &lt;- cbind(GA_HG_svalue$svalue, GA_LiG_svalue$svalue, GA_LuG_svalue$svalue, GA_KG_svalue$svalue)
+
+# Heart tissue specific
+nrow(GA_svalue[which(GA_svalue[,1] &lt; FSR_level &amp; GA_svalue[,2] &gt; FSR_level &amp; GA_svalue[,3] &gt; FSR_level &amp; GA_svalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 377</code></pre>
+<pre class="r"><code># Liver tissue specific
+nrow(GA_svalue[which(GA_svalue[,1] &gt; FSR_level &amp; GA_svalue[,2] &lt; FSR_level &amp; GA_svalue[,3] &gt; FSR_level &amp; GA_svalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 283</code></pre>
+<pre class="r"><code># Lung tissue specific
+nrow(GA_svalue[which(GA_svalue[,1] &gt; FSR_level &amp; GA_svalue[,2] &gt; FSR_level &amp; GA_svalue[,3] &lt; FSR_level &amp; GA_svalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 161</code></pre>
+<pre class="r"><code># Kidney tissue specific
+nrow(GA_svalue[which(GA_svalue[,1] &gt; FSR_level &amp; GA_svalue[,2] &gt; FSR_level &amp; GA_svalue[,3] &gt; FSR_level &amp; GA_svalue[,4] &lt; FSR_level), ])</code></pre>
+<pre><code>[1] 57</code></pre>
+<pre class="r"><code># 377, 283, 161, 57
+
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000008282&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, GA_species, tissue), stringsAsFactors = F)
+make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
+#levels(make_exp_df$species) &lt;- c(&quot;Great Ape&quot;, &quot;Rhesus&quot;)
+colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~make_exp_df[,2])  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;SYPL (ENSG00000008282)&quot;) </code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=Tissue)) + geom_boxplot() + facet_wrap(~make_exp_df[,2])  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;))  + bjp +  ggtitle(&quot;SYPL (ENSG00000008282)&quot;) + scale_fill_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;))</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-34-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="great-ape-tissue-specific-using-fdr" class="section level3">
+<h3>Great Ape Tissue Specific (using FDR)</h3>
+<pre class="r"><code># Set FDR level
+
+FDR_level &lt;- 0.01
+
+GA_BHpvalue &lt;- cbind(GA_HG[,6], GA_LiG[,6], GA_LuG[,6], GA_KG[,6])
+
+# Interactions between GA hearts and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &lt; FDR_level &amp; GA_BHpvalue[,2] &gt; FDR_level &amp; GA_BHpvalue[,3] &gt; FDR_level &amp; GA_BHpvalue[,4] &gt; FDR_level), ])</code></pre>
+<pre><code>[1] 220</code></pre>
+<pre class="r"><code># Interactions between GA livers and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FDR_level &amp; GA_BHpvalue[,2] &lt; FDR_level &amp; GA_BHpvalue[,3] &gt; FDR_level &amp; GA_BHpvalue[,4] &gt; FDR_level), ])</code></pre>
+<pre><code>[1] 253</code></pre>
+<pre class="r"><code># Interactions between GA lungs and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FDR_level &amp; GA_BHpvalue[,2] &gt; FDR_level &amp; GA_BHpvalue[,3] &lt; FDR_level &amp; GA_BHpvalue[,4] &gt; FDR_level), ])</code></pre>
+<pre><code>[1] 74</code></pre>
+<pre class="r"><code># Interactions between GA kidneys and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FDR_level &amp; GA_BHpvalue[,2] &gt; FDR_level &amp; GA_BHpvalue[,3] &gt; FDR_level &amp; GA_BHpvalue[,4] &lt; FDR_level), ])</code></pre>
+<pre><code>[1] 54</code></pre>
+</div>
+</div>
+<div id="combining-chimps-and-rhesus-to-have-a-human-versus-non-human-tissues-set-of-interactions" class="section level2">
+<h2>Combining chimps and rhesus to have a human versus non-human tissues set of interactions</h2>
+<div id="hearts-1" class="section level3">
+<h3>Hearts</h3>
+<pre class="r"><code># Reassign species to be human versus non-human (GA)
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;GA&quot;, species) 
+GA_species &lt;- gsub(&quot;Rhesus&quot;, &quot;GA&quot;, GA_species) 
+
+# Reassign tissues to be heart versus non-heart
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Heart&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_heart&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>   Intercept       Rhesus        Heart          RIN Rhesus_heart 
+        47.0         15.0         11.0        368.2          3.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.01741244
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# Determine the number of statistically signficant interactions
+
+NH_HG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(NH_HG[which(NH_HG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 57  7</code></pre>
+<pre class="r"><code>  # Extract limma results
+  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+NH_HG_svalue &lt;- results[[test]]
+nrow(NH_HG_svalue[which(NH_HG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 200</code></pre>
+</div>
+<div id="livers-1" class="section level3">
+<h3>Livers</h3>
+<pre class="r"><code># Reassign species to be GA versus not GA
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;GA&quot;, species) 
+GA_species &lt;- gsub(&quot;Rhesus&quot;, &quot;GA&quot;, GA_species) 
+
+# Reassign tissues to be heart versus non-heart
+
+# Reassign tissues to be liver versus non-liver
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Liver&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_liver&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>   Intercept       Rhesus        Liver          RIN Rhesus_liver 
+        47.0         15.0         12.0        368.2          4.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;-  -0.01239498
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+
+# Determine the number of statistically signficant interactions
+
+NH_LiG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(NH_LiG[which(NH_LiG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 19  7</code></pre>
+<pre class="r"><code>  # Extract limma results
+  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+
+NH_LiG_svalue &lt;- results[[test]]
+nrow(NH_LiG_svalue[which(NH_LiG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 29</code></pre>
+</div>
+<div id="lungs-1" class="section level3">
+<h3>Lungs</h3>
+<pre class="r"><code># Reassign species to be GA versus not GA
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;GA&quot;, species) 
+GA_species &lt;- gsub(&quot;Rhesus&quot;, &quot;GA&quot;, GA_species) 
+
+# Reassign tissues to be heart versus non-heart
+
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Lung&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_lung&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>  Intercept      Rhesus        Lung         RIN Rhesus_lung 
+       47.0        15.0        12.0       368.2         4.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)</code></pre>
+<pre><code>Warning in glmgam.fit(dx, dy, coef.start = start, tol = tol, maxit =
+maxit, : Too much damping - convergence tolerance not achievable</code></pre>
+<pre class="r"><code>#corfit$consensus &lt;-  0
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# Determine the number of statistically signficant interactions
+
+NH_LuG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(NH_LuG[which(NH_LuG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 2 7</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+NH_LuG_svalue &lt;- results[[test]]
+nrow(NH_LuG_svalue[which(NH_LuG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 5</code></pre>
+</div>
+<div id="kidneys-1" class="section level3">
+<h3>Kidneys</h3>
+<pre class="r"><code># Reassign species to be GA versus not GA
+
+GA_species &lt;- gsub(&quot;Chimp&quot;, &quot;Non human&quot;, species) 
+GA_species &lt;- gsub(&quot;Rhesus&quot;, &quot;Non human&quot;, GA_species) 
+
+# Reassign tissues to be heart versus non-heart
+
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue) 
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+## Make the contrast matrix and rename columns of the contrast matrix
+design &lt;- model.matrix(~ GA_species*tissue_group + RIN)
+
+# Rename columns of the contrast matrix
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;Rhesus&quot;
+colnames(design)[3] &lt;- &quot;Kidney&quot;
+colnames(design)[4] &lt;- &quot;RIN&quot;
+colnames(design)[5] &lt;- &quot;Rhesus_kidney&quot;
+
+# Look at the number of samples in each column 
+colSums(design)</code></pre>
+<pre><code>    Intercept        Rhesus        Kidney           RIN Rhesus_kidney 
+         47.0          32.0          12.0         368.2           8.0 </code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit$consensus &lt;- -0.05638723
+#corfit$consensus &lt;- 0.2177817
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run linear model with new design matrix
+
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
+
+# Determine the number of statistically signficant interactions
+
+NH_KG =topTable(fit.cyclic.norm, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(NH_KG[which(NH_KG$adj.P.Val &lt; FDR_level), ]) </code></pre>
+<pre><code>[1] 8 7</code></pre>
+<pre class="r"><code>  # Extract limma results
+  results[[test]] &lt;- get_results(fit.cyclic.norm, coef = 5)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit.cyclic.norm, coef = 5)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+NH_KG_svalue &lt;- results[[test]]
+
+nrow(NH_KG_svalue[which(NH_KG_svalue$svalue &lt; FSR_level),])</code></pre>
+<pre><code>[1] 5</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000240230&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, GA_species, tissue), stringsAsFactors = F)
+make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
+levels(make_exp_df$GA_species) &lt;- c(&quot;Human&quot;, &quot;Non-Human&quot;)
+colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+
+ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;COX19 (ENSG00000240230)&quot;) </code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="humannon-human-tissue-specific-using-fdr" class="section level3">
+<h3>Human/Non-Human Tissue Specific (using FDR)</h3>
+<pre class="r"><code># Set FDR level
+
+FDR_level &lt;- 0.01
+
+GA_BHpvalue &lt;- cbind(NH_HG[,6], NH_LiG[,6], NH_LuG[,6], NH_KG[,6])
+
+# Interactions between GA hearts and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &lt; FSR_level &amp; GA_BHpvalue[,2] &gt; FSR_level &amp; GA_BHpvalue[,3] &gt; FSR_level &amp; GA_BHpvalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 57</code></pre>
+<pre class="r"><code># Interactions between GA livers and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FSR_level &amp; GA_BHpvalue[,2] &lt; FSR_level &amp; GA_BHpvalue[,3] &gt; FSR_level &amp; GA_BHpvalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 19</code></pre>
+<pre class="r"><code># Interactions between GA lungs and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FSR_level &amp; GA_BHpvalue[,2] &gt; FSR_level &amp; GA_BHpvalue[,3] &lt; FSR_level &amp; GA_BHpvalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 2</code></pre>
+<pre class="r"><code># Interactions between GA kidneys and other tissues
+
+nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FSR_level &amp; GA_BHpvalue[,2] &gt; FSR_level &amp; GA_BHpvalue[,3] &gt; FSR_level &amp; GA_BHpvalue[,4] &lt; FSR_level), ])</code></pre>
+<pre><code>[1] 8</code></pre>
+<pre class="r"><code># 57, 19, 2, 8</code></pre>
+<pre class="r"><code># Find tissue specific
+
+# bind s values together
+
+NH_svalue &lt;- cbind(NH_HG_svalue$svalue, NH_LiG_svalue$svalue, NH_LuG_svalue$svalue, NH_KG_svalue$svalue)
+
+# Heart tissue specific
+nrow(NH_svalue[which(NH_svalue[,1] &lt; FSR_level &amp; NH_svalue[,2] &gt; FSR_level &amp; NH_svalue[,3] &gt; FSR_level &amp; NH_svalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 199</code></pre>
+<pre class="r"><code># Liver tissue specific
+nrow(NH_svalue[which(NH_svalue[,1] &gt; FSR_level &amp; NH_svalue[,2] &lt; FSR_level &amp; NH_svalue[,3] &gt; FSR_level &amp; NH_svalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 28</code></pre>
+<pre class="r"><code># Lung tissue specific
+nrow(NH_svalue[which(NH_svalue[,1] &gt; FSR_level &amp; NH_svalue[,2] &gt; FSR_level &amp; NH_svalue[,3] &lt; FSR_level &amp; NH_svalue[,4] &gt; FSR_level), ])</code></pre>
+<pre><code>[1] 5</code></pre>
+<pre class="r"><code># Kidney tissue specific
+nrow(NH_svalue[which(NH_svalue[,1] &gt; FSR_level &amp; NH_svalue[,2] &gt; FSR_level &amp; NH_svalue[,3] &gt; FSR_level &amp; NH_svalue[,4] &lt; FSR_level), ])</code></pre>
+<pre><code>[1] 5</code></pre>
+<pre class="r"><code># 199, 28, 5, 5</code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

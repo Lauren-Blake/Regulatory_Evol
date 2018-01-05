@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2017-10-30" />
+
+<title>Non_orthologous_cpgs_for_orth_genes</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Non_orthologous_cpgs_for_orth_genes</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>October 30, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#check-the-variances">Check the variances</a><ul>
+<li><a href="#human-heart-v-kidney">Human Heart v Kidney</a><ul>
+<li><a href="#make-this-into-a-function-where-you-give-it-the-fsr-and-the-positions">Make this into a function (where you give it the FSR and the positions)</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+
+<p>In this script, we will perform a joint analysis of methylation and gene expression levels in humans and chimpanzees only. We chose only these two species because the number of genes that we had methylation values for around the promoter was quite low when we required orthology between humans, chimps, and rhesus. This script will compute the on the beta coefficients. In this script, we will make DE decisions based on FSR rather than FDR. This script provides an example for the human heart versus human kidney.</p>
+<p>Permutations are computationally intensive, so we have an RMarkdown example with permuations and an R script to run the code and permutations (in the “code” section).</p>
+<pre class="r"><code># Load libraries/data
+
+library(&quot;edgeR&quot;)</code></pre>
+<pre><code>Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>Loading required package: limma</code></pre>
+<pre><code>Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;plyr&quot;)</code></pre>
+<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>cpm.voom.cyclic &lt;- readRDS(&quot;../data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)
+exp_methyl &lt;- read.table(&quot;../data/human_chimp_orth_exp_methyl_7725_hum.txt&quot;, header = T, stringsAsFactors = F)
+samples &lt;- read.table(&quot;../data/human_chimp_orth_new_sample_info.txt&quot;, header = T,  stringsAsFactors = F)
+
+# Get sample info
+species &lt;- as.data.frame(samples[,4])
+tissue &lt;- as.data.frame(samples[,5])
+RIN &lt;- as.data.frame(samples[,6])</code></pre>
+<div id="check-the-variances" class="section level1">
+<h1>Check the variances</h1>
+<div id="human-heart-v-kidney" class="section level2">
+<h2>Human Heart v Kidney</h2>
+<pre class="r"><code># Human Heart v Kidney
+# First, pick out the genes that are DE (you run the entire analysis only on genes that are DE)
+chimp_human_heart &lt;- c(17, 20, 21, 24, 25, 28, 29)
+
+#chimp_human_heart &lt;- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+FSR_level &lt;- 0.05
+FDR_level &lt;- FSR_level
+tissue &lt;- tissue[chimp_human_heart,]
+tissue_no_extra &lt;- droplevels.factor(tissue, &quot;liver&quot;)
+
+
+design &lt;- model.matrix(~ as.factor(tissue_no_extra) + RIN[chimp_human_heart,])
+fit_all &lt;- lmFit(cpm.voom.cyclic[,chimp_human_heart], design)
+fit_all &lt;- eBayes(fit_all)
+
+
+# Run ASH
+
+library(ashr)
+
+# Prepare the data for ASH
+tests &lt;- colnames(fit_all$coefficients)
+results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Perform multiple testing correction with adaptive shrinkage (ASH) 
+ #
+ # x - object MArrayLM from eBayes output
+ # coef - coefficient tested by eBayes
+
+run_ash &lt;- function(x, coef){
+  #stopifnot(class(x) == &quot;MArrayLM&quot;, coef %in% colnames(x$coefficients),
+  #             length(unique(x$df.total) == 1))
+  result &lt;- ash(betahat = x$coefficients[, coef], sebetahat = x$stdev.unscaled[, coef] * sqrt(x$s2.post), df = x$df.total[1])
+  return(result)
+}
+
+get_results &lt;- function(x, number = nrow(x$coefficients), sort.by = &quot;none&quot;,
+                        ...) {
+  # x - object MArrayLM from eBayes output
+  # ... - additional arguments passed to topTable
+  stopifnot(class(x) == &quot;MArrayLM&quot;)
+  results &lt;- topTable(x, number = number, sort.by = sort.by, ...)
+  return(results)
+}
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+for (test in tests) {
+  # Extract limma results
+  results[[test]] &lt;- get_results(fit_all, coef = test)
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit_all, coef = test)
+  results[[test]] &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+}</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>new_results &lt;- results[[&quot;as.factor(tissue_no_extra)kidney&quot;]]
+summary(new_results)</code></pre>
+<pre><code>    genes               logFC              AveExpr      
+ Length:12184       Min.   :-12.96636   Min.   :-5.971  
+ Class :character   1st Qu.: -0.57924   1st Qu.: 3.312  
+ Mode  :character   Median :  0.01017   Median : 4.781  
+                    Mean   :  0.05666   Mean   : 4.652  
+                    3rd Qu.:  0.59604   3rd Qu.: 5.997  
+                    Max.   :  9.09175   Max.   :12.011  
+       t                P.Value          adj.P.Val              B         
+ Min.   :-37.00466   Min.   :0.00000   Min.   :0.000004   Min.   :-7.287  
+ 1st Qu.: -1.56436   1st Qu.:0.02062   1st Qu.:0.082437   1st Qu.:-6.642  
+ Median :  0.02858   Median :0.15532   Median :0.310619   Median :-5.759  
+ Mean   : -0.09235   Mean   :0.28145   Mean   :0.382664   Mean   :-4.762  
+ 3rd Qu.:  1.57721   3rd Qu.:0.49301   3rd Qu.:0.657334   3rd Qu.:-3.807  
+ Max.   : 22.19081   Max.   :0.99992   Max.   :0.999919   Max.   :12.469  
+   sebetahat           lfsr                lfdr          
+ Min.   :0.1907   Min.   :0.0000007   Min.   :0.0000003  
+ 1st Qu.:0.2943   1st Qu.:0.0726710   1st Qu.:0.0430456  
+ Median :0.3728   Median :0.2385547   Median :0.1351390  
+ Mean   :0.4288   Mean   :0.2680545   Mean   :0.1432319  
+ 3rd Qu.:0.4899   3rd Qu.:0.4512514   3rd Qu.:0.2311110  
+ Max.   :3.3757   Max.   :0.7029781   Max.   :0.4163389  
+     qvalue              svalue             beta_est        
+ Min.   :2.700e-07   Min.   :6.600e-07   Min.   :-6.237638  
+ 1st Qu.:1.471e-02   1st Qu.:2.531e-02   1st Qu.:-0.365334  
+ Median :5.129e-02   Median :8.828e-02   Median : 0.005575  
+ Mean   :5.714e-02   Mean   :1.032e-01   Mean   : 0.017103  
+ 3rd Qu.:9.557e-02   3rd Qu.:1.730e-01   3rd Qu.: 0.367868  
+ Max.   :1.432e-01   Max.   :2.681e-01   Max.   : 6.169521  
+     se_est      
+ Min.   :0.1655  
+ 1st Qu.:0.2883  
+ Median :0.3576  
+ Mean   :0.4304  
+ 3rd Qu.:0.4795  
+ Max.   :2.6383  </code></pre>
+<pre class="r"><code>plot(new_results$adj.P.Val, new_results$qvalue)</code></pre>
+<p><img src="figure/All_cpgs_for_orth_genes.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Find the DE genes
+HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FSR_level), ]
+HvC_Heart_fit_all_5perc &lt;- new_results[which(new_results$qvalue &lt; FSR_level), ]
+HvC_Heart_fit_all_5perc &lt;- new_results[which(new_results$svalue &lt; FSR_level), ]
+
+
+human_chimp_heart &lt;-  rownames(exp_methyl) %in% HvC_Heart_fit_all_5perc$genes
+human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+counts_genes_in &lt;- cbind(exp_methyl, human_chimp_heart)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart == &quot;TRUE&quot;)
+counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]  
+expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+
+## Obtain corrected data (regression for scenario 2) by regressing out RIN on a gene-by-gene basis
+resid_methyl &lt;- array(0, dim = c(nrow(expression_values_only), length(chimp_human_heart))) 
+expression_values &lt;- as.data.frame(expression_values_only)
+methylation_values &lt;- as.data.frame(methylation_values_only)
+for (i in 1:nrow(expression_values_only)){
+  resid_methyl[i,] &lt;- lm(t(expression_values_only[i,chimp_human_heart]) ~ t(methylation_values_only[i,chimp_human_heart]))$resid
+}
+rownames(resid_methyl) &lt;- rownames(expression_values_only)
+
+# Scenario 1
+
+fit1 &lt;- lmFit(expression_values_only[, chimp_human_heart], design)
+fit1 &lt;- eBayes(fit1)
+HvC_Heart_fit1 = topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+summary(HvC_Heart_fit1$adj.P.Val &lt; FDR_level)</code></pre>
+<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
+logical     460    2297       0 </code></pre>
+<pre class="r"><code># Scenario 2
+
+fit2 &lt;- lmFit(resid_methyl, design)
+fit2 &lt;- eBayes(fit2)
+HvC_Heart_fit2 = topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+summary(HvC_Heart_fit2$adj.P.Val &lt; FDR_level)</code></pre>
+<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
+logical    1907     850       0 </code></pre>
+<pre class="r"><code># Bind DE from fit1 and DE from fit2 together
+
+HvC_Heart_fits12 &lt;- as.data.frame(cbind(rownames(HvC_Heart_fit1), fit1$coefficients[,2], HvC_Heart_fit1$adj.P.Val, fit2$coefficients[,2], HvC_Heart_fit2$adj.P.Val), stringsAsFactors = FALSE)
+HvC_Heart_fits12[,2] &lt;- as.numeric(HvC_Heart_fits12[,2])
+HvC_Heart_fits12[,3] &lt;- as.numeric(HvC_Heart_fits12[,3])
+HvC_Heart_fits12[,4] &lt;- as.numeric(HvC_Heart_fits12[,4])
+HvC_Heart_fits12[,5] &lt;- as.numeric(HvC_Heart_fits12[,5])
+colnames(HvC_Heart_fits12) &lt;- c(&quot;genes&quot;, &quot;fit1_species_coef&quot;, &quot;fit1_FDR&quot;, &quot;fit2_species_coef&quot;, &quot;fit2_FDR&quot;)
+
+# Find the number of DE genes
+DE_both &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_both)</code></pre>
+<pre><code>[1] 847</code></pre>
+<pre class="r"><code>DE_before &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &gt; FDR_level),]
+nrow(DE_before)</code></pre>
+<pre><code>[1] 1450</code></pre>
+<pre class="r"><code>DE_after &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &gt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_after)</code></pre>
+<pre><code>[1] 3</code></pre>
+<pre class="r"><code># Make the plot of betas
+
+ggplot(HvC_Heart_fits12, aes(fit1_species_coef, fit2_species_coef)) + geom_point()</code></pre>
+<p><img src="figure/All_cpgs_for_orth_genes.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(ashr)
+# Chimp Kidney v Liver
+# First, pick out the genes that are DE (you run the entire analysis only on genes that are DE)
+tissue &lt;- as.data.frame(samples[,5])
+chimp_human_heart &lt;- c(17, 18, 21, 22, 25, 26, 29, 30)
+
+# chimp_human_heart &lt;- c(2, 3, 6, 7, 10, 11, 14, 15)
+
+FSR_level &lt;- 0.05
+tissue &lt;- tissue[chimp_human_heart,]
+tissue_no_extra &lt;- droplevels.factor(tissue, &quot;lung&quot;)
+
+
+design &lt;- model.matrix(~ as.factor(tissue_no_extra) + RIN[chimp_human_heart,])
+fit_all &lt;- lmFit(cpm.voom.cyclic[,chimp_human_heart], design)
+fit_all &lt;- eBayes(fit_all)
+
+
+# Run ASH
+
+# Prepare the data for ASH
+tests &lt;- colnames(fit_all$coefficients)
+results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Perform multiple testing correction with adaptive shrinkage (ASH) 
+ #
+ # x - object MArrayLM from eBayes output
+ # coef - coefficient tested by eBayes
+
+run_ash &lt;- function(x, coef){
+  #stopifnot(class(x) == &quot;MArrayLM&quot;, coef %in% colnames(x$coefficients),
+  #             length(unique(x$df.total) == 1))
+  result &lt;- ash(betahat = x$coefficients[, coef], sebetahat = x$stdev.unscaled[, coef] * sqrt(x$s2.post), df = x$df.total[1])
+  return(result)
+}
+
+get_results &lt;- function(x, number = nrow(x$coefficients), sort.by = &quot;none&quot;,
+                        ...) {
+  # x - object MArrayLM from eBayes output
+  # ... - additional arguments passed to topTable
+  stopifnot(class(x) == &quot;MArrayLM&quot;)
+  results &lt;- topTable(x, number = number, sort.by = sort.by, ...)
+  return(results)
+}
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+  # Extract limma results
+  results[[test]] &lt;- get_results(fit_all, coef = tests[2])
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit_all, coef = tests[2])</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results &lt;- cbind(results[[test]], sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+# Find the genes &lt; FSR
+#HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+#HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FSR_level), ]
+#HvC_Heart_fit_all_5perc &lt;- results[which(results$qvalue &lt; FSR_level), ]
+HvC_Heart_fit_all_5perc &lt;- results[which(new_results$svalue &lt; FSR_level), ]
+
+
+human_chimp_heart &lt;-  rownames(exp_methyl) %in% HvC_Heart_fit_all_5perc$genes
+human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+counts_genes_in &lt;- cbind(exp_methyl, human_chimp_heart)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart == &quot;TRUE&quot;)
+counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]  
+expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+dim(expression_values_only)</code></pre>
+<pre><code>[1] 2757   31</code></pre>
+<pre class="r"><code>## Obtain corrected data (regression for scenario 2) by regressing out RIN on a gene-by-gene basis
+resid_methyl &lt;- array(0, dim = c(nrow(expression_values_only), length(chimp_human_heart))) 
+expression_values &lt;- as.data.frame(expression_values_only)
+methylation_values &lt;- as.data.frame(methylation_values_only)
+for (i in 1:nrow(expression_values_only)){
+  resid_methyl[i,] &lt;- lm(t(expression_values_only[i,chimp_human_heart]) ~ t(methylation_values_only[i,chimp_human_heart]))$resid
+}
+rownames(resid_methyl) &lt;- rownames(expression_values_only)
+
+# Scenario 1
+
+fit1 &lt;- lmFit(expression_values_only[, chimp_human_heart], design)
+fit1 &lt;- eBayes(fit1)
+
+  results &lt;- get_results(fit1, coef = tests[2])
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit1, coef = tests[2])</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>  results_fit1 &lt;- cbind(results, sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+
+# Scenario 2
+
+fit2 &lt;- lmFit(resid_methyl, design)
+fit2 &lt;- eBayes(fit2)
+
+results &lt;- get_results(fit1, coef = tests[2])
+  # Add mutliple testing correction with ASH
+output_ash &lt;- run_ash(fit2, coef = tests[2])</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>results_fit2 &lt;- cbind(results, sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+# Bind DE from fit1 and DE from fit2 together
+
+HvC_Heart_fits12 &lt;- as.data.frame(cbind(rownames(results_fit1), results_fit1$svalue, results_fit2$svalue), stringsAsFactors = FALSE)
+HvC_Heart_fits12[,2] &lt;- as.numeric(HvC_Heart_fits12[,2])
+HvC_Heart_fits12[,3] &lt;- as.numeric(HvC_Heart_fits12[,3])
+colnames(HvC_Heart_fits12) &lt;- c(&quot;genes&quot;, &quot;fit1_FDR&quot;, &quot;fit2_FDR&quot;)
+
+DE_both &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_both)</code></pre>
+<pre><code>[1] 424</code></pre>
+<pre class="r"><code>DE_before &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &gt; FDR_level),]
+nrow(DE_before)</code></pre>
+<pre><code>[1] 897</code></pre>
+<pre class="r"><code>DE_after &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &gt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_after)</code></pre>
+<pre><code>[1] 2</code></pre>
+<div id="make-this-into-a-function-where-you-give-it-the-fsr-and-the-positions" class="section level3">
+<h3>Make this into a function (where you give it the FSR and the positions)</h3>
+<pre class="r"><code>integration_ash &lt;- function(chimp_human_heart, FSR_level){
+
+library(ashr)
+FDR_level &lt;- FSR_level
+tissue &lt;- as.data.frame(samples[,5])
+tissue &lt;- tissue[chimp_human_heart,]
+tissue_no_extra &lt;- droplevels.factor(tissue)
+
+
+design &lt;- model.matrix(~ as.factor(tissue_no_extra) + RIN[chimp_human_heart,])
+fit_all &lt;- lmFit(cpm.voom.cyclic[,chimp_human_heart], design)
+fit_all &lt;- eBayes(fit_all)
+
+
+# Run ASH
+
+# Prepare the data for ASH
+tests &lt;- colnames(fit_all$coefficients)
+results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
+names(results) &lt;- tests
+
+# Perform multiple testing correction with adaptive shrinkage (ASH) 
+ #
+ # x - object MArrayLM from eBayes output
+ # coef - coefficient tested by eBayes
+
+run_ash &lt;- function(x, coef){
+  #stopifnot(class(x) == &quot;MArrayLM&quot;, coef %in% colnames(x$coefficients),
+  #             length(unique(x$df.total) == 1))
+  result &lt;- ash(betahat = x$coefficients[, coef], sebetahat = x$stdev.unscaled[, coef] * sqrt(x$s2.post), df = x$df.total[1])
+  return(result)
+}
+
+get_results &lt;- function(x, number = nrow(x$coefficients), sort.by = &quot;none&quot;,
+                        ...) {
+  # x - object MArrayLM from eBayes output
+  # ... - additional arguments passed to topTable
+  stopifnot(class(x) == &quot;MArrayLM&quot;)
+  results &lt;- topTable(x, number = number, sort.by = sort.by, ...)
+  return(results)
+}
+
+# Get lfsr, lfdr, s value, q value, and a beta_est value. 
+  # Extract limma results
+  results &lt;- get_results(fit_all, coef = tests[2])
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit_all, coef = tests[2])
+  results &lt;- cbind(results, sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+# Find the genes &lt; FSR
+#HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+#HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FSR_level), ]
+#HvC_Heart_fit_all_5perc &lt;- results[which(results$qvalue &lt; FSR_level), ]
+HvC_Heart_fit_all_5perc &lt;- results[which(results$svalue &lt; FSR_level), ]
+
+
+human_chimp_heart &lt;-  rownames(exp_methyl) %in% HvC_Heart_fit_all_5perc$genes
+human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+counts_genes_in &lt;- cbind(exp_methyl, human_chimp_heart)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart == &quot;TRUE&quot;)
+counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]  
+expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+dim(expression_values_only)
+
+## Obtain corrected data (regression for scenario 2) by regressing out RIN on a gene-by-gene basis
+resid_methyl &lt;- array(0, dim = c(nrow(expression_values_only), length(chimp_human_heart))) 
+expression_values &lt;- as.data.frame(expression_values_only)
+methylation_values &lt;- as.data.frame(methylation_values_only)
+for (i in 1:nrow(expression_values_only)){
+  resid_methyl[i,] &lt;- lm(t(expression_values_only[i,chimp_human_heart]) ~ t(methylation_values_only[i,chimp_human_heart]))$resid
+}
+rownames(resid_methyl) &lt;- rownames(expression_values_only)
+
+# Scenario 1
+
+fit1 &lt;- lmFit(expression_values_only[, chimp_human_heart], design)
+fit1 &lt;- eBayes(fit1)
+
+  results &lt;- get_results(fit1, coef = tests[2])
+  # Add mutliple testing correction with ASH
+  output_ash &lt;- run_ash(fit1, coef = tests[2])
+  results_fit1 &lt;- cbind(results, sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+
+# Scenario 2
+
+fit2 &lt;- lmFit(resid_methyl, design)
+fit2 &lt;- eBayes(fit2)
+
+results &lt;- get_results(fit2, coef = tests[2])
+  # Add mutliple testing correction with ASH
+output_ash &lt;- run_ash(fit2, coef = tests[2])
+results_fit2 &lt;- cbind(results, sebetahat = output_ash$data$s, lfsr = output_ash$result$lfsr,
+                           lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
+                           svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
+                             output_ash$result$PosteriorSD)
+
+# Bind DE from fit1 and DE from fit2 together
+
+HvC_Heart_fits12 &lt;- as.data.frame(cbind(rownames(results_fit1), results_fit1$svalue, results_fit2$svalue), stringsAsFactors = FALSE)
+HvC_Heart_fits12[,2] &lt;- as.numeric(HvC_Heart_fits12[,2])
+HvC_Heart_fits12[,3] &lt;- as.numeric(HvC_Heart_fits12[,3])
+colnames(HvC_Heart_fits12) &lt;- c(&quot;genes&quot;, &quot;fit1_FDR&quot;, &quot;fit2_FDR&quot;)
+
+DE_both &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_both)
+
+DE_before &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &lt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &gt; FDR_level),]
+nrow(DE_before)
+
+DE_after &lt;- HvC_Heart_fits12[which(HvC_Heart_fits12$fit1_FDR &gt; FDR_level &amp;  HvC_Heart_fits12$fit2_FDR &lt; FDR_level),]
+nrow(DE_after)
+
+important_returns &lt;- rbind(nrow(DE_both), nrow(DE_before), nrow(DE_after), nrow(expression_values_only))
+return(important_returns)
+}
+
+# Interspecies results- to run the values for interspecies, you need to the values in the function to be species
+
+# Human vs chimp heart
+#integration_ash(c(1, 5, 9, 13, 20, 24, 28), 0.05)
+#integration_ash(c(1, 5, 9, 13, 20, 24, 28), 0.1)
+
+# Human vs chimp kidney
+#integration_ash(c(2, 6, 10, 14, 17, 21, 25, 29), 0.05)
+#integration_ash(c(2, 6, 10, 14, 17, 21, 25, 29), 0.1)
+
+# Human vs chimp liver
+#integration_ash(c(3, 7, 11, 15, 18, 22, 26, 30), 0.05)
+#integration_ash(c(3, 7, 11, 15, 18, 22, 26, 30), 0.1)
+
+# Human vs chimp lung
+#integration_ash(c(4, 8, 12, 16, 19, 23, 27, 31), 0.05)
+#integration_ash(c(4, 8, 12, 16, 19, 23, 27, 31), 0.1)
+
+# Intertissue results
+
+# Human heart-kidney
+integration_ash(c(17, 20, 21, 24, 25, 28, 29), 0.05)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre><code>     [,1]
+[1,] 2504
+[2,]  253
+[3,]    0
+[4,] 2757</code></pre>
+<pre class="r"><code>integration_ash(c(17, 20, 21, 24, 25, 28, 29), 0.10)</code></pre>
+<pre><code>Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre><code>     [,1]
+[1,] 4031
+[2,]   49
+[3,]    0
+[4,] 4080</code></pre>
+<pre class="r"><code># Chimp heart-kidney
+#integration_ash(c(1, 2, 5, 6, 9, 10, 13, 14), 0.05)
+#integration_ash(c(1, 2, 5, 6, 9, 10, 13, 14), 0.1)
+
+# Human heart-liver
+#integration_ash(c(20, 24, 28, 17, 21, 25, 29), 0.05)
+#integration_ash(c(20, 24, 28, 17, 21, 25, 29), 0.1)
+
+# Chimp heart-liver
+#integration_ash(c(1, 3, 5, 7, 9, 11, 13, 15), 0.05)
+#integration_ash(c(1, 3, 5, 7, 9, 11, 13, 15), 0.1)
+
+# Human heart-lung
+#integration_ash(c(19, 20, 23, 24, 27, 28, 31), 0.05)
+#integration_ash(c(19, 20, 23, 24, 27, 28, 31), 0.1)
+
+# Chimp heart-lung
+#integration_ash(c(1, 4, 5, 8, 9, 12, 13, 16), 0.05)
+#integration_ash(c(1, 4, 5, 8, 9, 12, 13, 16), 0.1)
+
+# Human kidney-liver
+#integration_ash(c(17, 18, 21, 22, 25, 26, 29, 30), 0.05)
+#integration_ash(c(17, 18, 21, 22, 25, 26, 29, 30), 0.1)
+
+# Chimp kidney-liver
+#integration_ash(c(2, 3, 6, 7, 10, 11, 14, 15), 0.05)
+#integration_ash(c(2, 3, 6, 7, 10, 11, 14, 15), 0.1)
+
+# Human kidney-lung
+#integration_ash(c(17, 19, 21, 23, 25, 27, 29, 31), 0.05)
+#integration_ash(c(17, 19, 21, 23, 25, 27, 29, 31), 0.1)
+
+# Chimp kidney-lung
+#integration_ash(c(2, 4, 6, 8, 10, 12, 14, 16), 0.05)
+#integration_ash(c(2, 4, 6, 8, 10, 12, 14, 16), 0.1)
+
+# Human liver-lung
+#integration_ash(c(18, 19, 22, 23, 26, 27, 30, 31), 0.05)
+#integration_ash(c(18, 19, 22, 23, 26, 27, 30, 31), 0.1)
+
+# Chimp liver-lung
+#integration_ash(c(3, 4, 7, 8, 11, 12, 15, 16), 0.05)
+#integration_ash(c(3, 4, 7, 8, 11, 12, 15, 16), 0.1)</code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

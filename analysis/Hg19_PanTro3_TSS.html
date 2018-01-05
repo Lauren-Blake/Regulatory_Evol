@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2017-09-27" />
+
+<title>Hg19_PanTro3_TSS</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Hg19_PanTro3_TSS</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>September 27, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#how-many-genes-have-tss-annotations-that-are-able-to-be-lifted-over">How many genes have TSS annotations that are able to be Lifted over?</a></li>
+<li><a href="#find-the-refseq-tss-annotation-that-is-closest-to-the-first-orthologous-exon-from-rans-file">Find the RefSeq TSS annotation that is closest to the first orthologous exon from Ran’s file</a><ul>
+<li><a href="#get-information-for-the-genes-with-only-1-tss-that-could-be-liftedover">Get information for the genes with only 1 TSS that could be LiftedOver</a></li>
+</ul></li>
+<li><a href="#find-tss-closest-to-the-first-orthologous-exon-when-more-than-1-tss-for-an-orthologous-gene">Find TSS closest to the first orthologous exon when more than 1 TSS for an orthologous gene</a></li>
+<li><a href="#compare-human-and-chimp-distances">Compare human and chimp distances</a></li>
+<li><a href="#filter-by-max.-distance-and-take-off-x-chromosome">Filter by max. distance and take off X chromosome</a></li>
+<li><a href="#obtain-the-tss-annotations-for-the-3-genomes">Obtain the TSS annotations for the 3 genomes</a></li>
+<li><a href="#how-many-orthologous-cpgs-are-within-a-250bp-window-of-the-tss">How many orthologous CpGs are within a 250bp window of the TSS?</a></li>
+<li><a href="#find-the-orthologous-cpgs-in-each-range">Find the orthologous CpGs in each range</a><ul>
+<li><a href="#subset-each-of-the-species-so-that-there-is-only-genes-with-at-least-2-cpgs">Subset each of the species so that there is only genes with at least 2 CpGs</a></li>
+<li><a href="#find-the-cpgs-for-the-genes-with-at-least-2-orthologous-cpgs-in-it-not-necessarily-the-same-cpgs-we-will-take-care-of-this-in-the-next-step">Find the CpGs for the genes with at least 2 orthologous CpGs in it (not necessarily the same CpGs, we will take care of this in the next step)</a></li>
+<li><a href="#for-each-gene-find-the-endpoints-same-orthologous-cpgs-for-each-of-the-genes">For each gene, find the endpoints (same orthologous CpGs) for each of the genes</a></li>
+<li><a href="#make-species-specific-bedfiles-of-cpgs-that-we-need-to-pull">Make species specific bedfiles of CpGs that we need to pull</a></li>
+<li><a href="#run-liftover-with-the-correct-endpoints">Run liftover with the correct endpoints</a></li>
+</ul></li>
+<li><a href="#take-the-average-methylation-level-over-each-gene-and-run-pca">Take the average methylation level over each gene and run PCA</a></li>
+<li><a href="#find-the-average-size-of-the-region">Find the average size of the region</a><ul>
+<li><a href="#pca-with-the-10-million-orthologous-cpg-sites-between-humans-and-chimps">PCA with the 10 million orthologous CpG sites between humans and chimps</a></li>
+<li><a href="#repeat-but-with-the-gene-regions-separated">Repeat but with the gene regions separated</a></li>
+</ul></li>
+<li><a href="#take-the-average-methylation-level-over-each-gene-and-run-pca-1">Take the average methylation level over each gene and run PCA</a></li>
+<li><a href="#find-the-average-size-of-the-region-1">Find the average size of the region</a><ul>
+<li><a href="#pca-with-the-10-million-orthologous-cpg-sites-between-humans-and-chimps-1">PCA with the 10 million orthologous CpG sites between humans and chimps</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>The goal of this script is to find orthologous TSSs between humans and chimps.</p>
+<div id="how-many-genes-have-tss-annotations-that-are-able-to-be-lifted-over" class="section level2">
+<h2>How many genes have TSS annotations that are able to be Lifted over?</h2>
+<pre class="r"><code># Load library
+
+library(ggplot2)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code># Load data
+# TSSs of 12K RNA-seq genes 
+tss_11131_hg19ToPanTro3 &lt;- read.delim(&quot;../data/tss_11131_hg19ToPanTro3.bed&quot;, header=FALSE, stringsAsFactors = FALSE)
+genes_in_RNAseq_and_TSS &lt;- read.delim(&quot;../data/refGene_hg19_TSS_11131.bed&quot;, header=FALSE, stringsAsFactors = FALSE)
+
+# Load plotting function
+
+bjp&lt;- theme(panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;, hjust = 0.5),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x = element_text(size = 14,face = &quot;bold&quot;),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))</code></pre>
+<pre class="r"><code>genes_in_RNAseq_and_TSS_orthologous &lt;- as.data.frame(intersect(tss_11131_hg19ToPanTro3[,4], genes_in_RNAseq_and_TSS[,4]))
+
+# Humans
+
+inshared_lists &lt;- genes_in_RNAseq_and_TSS[,4] %in% genes_in_RNAseq_and_TSS_orthologous[,1]
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind( genes_in_RNAseq_and_TSS, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+genes_in_RNAseq_TSS_orth_human &lt;- counts_genes_in_cutoff_pre[,1:6]
+
+length(unique(genes_in_RNAseq_TSS_orth_human$V5))</code></pre>
+<pre><code>[1] 10511</code></pre>
+<pre class="r"><code>dim(genes_in_RNAseq_TSS_orth_human)</code></pre>
+<pre><code>[1] 21107     6</code></pre>
+<pre class="r"><code># Chimps
+
+inshared_lists &lt;- tss_11131_hg19ToPanTro3[,4] %in% genes_in_RNAseq_and_TSS_orthologous[,1]
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(tss_11131_hg19ToPanTro3, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+genes_in_RNAseq_TSS_orth_chimp &lt;- counts_genes_in_cutoff_pre[,1:6]
+
+length(unique(genes_in_RNAseq_TSS_orth_chimp$V5))</code></pre>
+<pre><code>[1] 10511</code></pre>
+<pre class="r"><code>dim(genes_in_RNAseq_TSS_orth_chimp)</code></pre>
+<pre><code>[1] 21107     6</code></pre>
+<pre class="r"><code># Intersect the two files
+
+human_chimp &lt;- merge(genes_in_RNAseq_TSS_orth_human, genes_in_RNAseq_TSS_orth_chimp, by = c(&quot;V4&quot;))
+
+sort.human &lt;- plyr::arrange(genes_in_RNAseq_TSS_orth_human, V5)
+sort.chimp &lt;- plyr::arrange(genes_in_RNAseq_TSS_orth_chimp, V5)
+
+# Some have different MN numbers at the same site. Get rid of those
+
+anno &lt;- paste(as.character(human_chimp[,2]), human_chimp[,3], sep = &quot;:&quot;)
+human_chimp_rhesus_anno &lt;- cbind(human_chimp, anno)
+human_chimp_rhesus_anno &lt;- as.data.frame(human_chimp_rhesus_anno, stringsAsFactors = FALSE)
+human_chimp_rhesus_anno_rm &lt;- human_chimp_rhesus_anno[!duplicated(human_chimp_rhesus_anno$anno),]
+length(unique(human_chimp_rhesus_anno_rm$V5.x))</code></pre>
+<pre><code>[1] 10491</code></pre>
+<pre class="r"><code># Separate into human and chimps
+
+human_anno &lt;- human_chimp_rhesus_anno_rm[,1:6]
+
+chimp_genes &lt;- c(1, 7:11)
+
+chimp_anno &lt;- human_chimp_rhesus_anno_rm[,chimp_genes]</code></pre>
+<p>There are 10,491 unique genes. Some have multiple TSSs.</p>
+</div>
+<div id="find-the-refseq-tss-annotation-that-is-closest-to-the-first-orthologous-exon-from-rans-file" class="section level2">
+<h2>Find the RefSeq TSS annotation that is closest to the first orthologous exon from Ran’s file</h2>
+<pre class="r"><code>library(&quot;dplyr&quot;)</code></pre>
+<pre><code>Warning: package &#39;dplyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>
+Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:stats&#39;:
+
+    filter, lag</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)</code></pre>
+<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>-------------------------------------------------------------------------</code></pre>
+<pre><code>You have loaded plyr after dplyr - this is likely to cause problems.
+If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
+library(plyr); library(dplyr)</code></pre>
+<pre><code>-------------------------------------------------------------------------</code></pre>
+<pre><code>
+Attaching package: &#39;plyr&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:dplyr&#39;:
+
+    arrange, count, desc, failwith, id, mutate, rename, summarise,
+    summarize</code></pre>
+<pre class="r"><code>ENSG_freq_table &lt;- count(human_chimp_rhesus_anno_rm$V5.x)
+
+solo_ENSG_freq_table &lt;- ENSG_freq_table[which(ENSG_freq_table[,2] == 1), ]
+nrow(solo_ENSG_freq_table)</code></pre>
+<pre><code>[1] 8487</code></pre>
+<pre class="r"><code>freq_mult_TSS &lt;- ENSG_freq_table[which(ENSG_freq_table[,2] &gt;= 2), ]
+
+
+nrow(freq_mult_TSS[which(freq_mult_TSS[,2] == 2), ])</code></pre>
+<pre><code>[1] 1419</code></pre>
+<pre class="r"><code>nrow(freq_mult_TSS[which(freq_mult_TSS[,2] == 3), ])</code></pre>
+<pre><code>[1] 397</code></pre>
+<pre class="r"><code>nrow(freq_mult_TSS[which(freq_mult_TSS[,2] == 4), ])</code></pre>
+<pre><code>[1] 127</code></pre>
+<pre class="r"><code>nrow(freq_mult_TSS[which(freq_mult_TSS[,2] == 5), ])</code></pre>
+<pre><code>[1] 28</code></pre>
+<pre class="r"><code>nrow(freq_mult_TSS[which(freq_mult_TSS[,2] &gt;= 6), ])</code></pre>
+<pre><code>[1] 33</code></pre>
+<p>8487 genes have 1 TSS 1419 genes have 2 TSS 397 genes have 3 TSS 127 genes have 4 TSS 28 genes have 5 TSS 33 genes have &gt;5 TSS</p>
+<div id="get-information-for-the-genes-with-only-1-tss-that-could-be-liftedover" class="section level3">
+<h3>Get information for the genes with only 1 TSS that could be LiftedOver</h3>
+<pre class="r"><code># Get all meta exons
+metaOrthoExonTrios &lt;- read.delim(&quot;../data/metaOrthoExonTrios.0.92.0.96.wExonEnsID.wSymbols.txt&quot;, header=FALSE)
+
+# For humans
+
+solo_ENSG_freq_table &lt;- as.data.frame(solo_ENSG_freq_table[,1])
+
+inshared_lists = human_anno$V5.x %in% solo_ENSG_freq_table[,1]
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(human_anno, inshared_lists_data)
+counts_genes_in_mult_TSS &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_mult_TSS &lt;- counts_genes_in_mult_TSS[,1:6]
+
+sort.human.multiple.TSS &lt;- plyr::arrange(counts_genes_in_mult_TSS, V5.x)
+
+# Find the 1st orthologous exon for each gene in humans
+
+# Now, I want to remake this but with the value of exon #1
+
+uniq_plus &lt;- c(2,3,4,5,7,11,15,16)
+
+# Make data frame for humans
+non_uniq_ENSG_gene_names &lt;- as.data.frame(unique(metaOrthoExonTrios[,uniq_plus], incomparables = FALSE))
+
+# Subset so you only have ortho exon #1 for humans
+
+uniq_ENSG_gene_names &lt;- non_uniq_ENSG_gene_names[which(non_uniq_ENSG_gene_names$V3 == 1),]
+uniq_ENSG_gene_names &lt;- uniq_ENSG_gene_names[,-2]
+uniq_ENSG_gene_names[,1] &lt;- as.character(uniq_ENSG_gene_names[,1])
+uniq_ENSG_gene_names[,2] &lt;- as.character(uniq_ENSG_gene_names[,2])
+uniq_ENSG_gene_names[,3] &lt;- as.integer(uniq_ENSG_gene_names[,3])
+uniq_ENSG_gene_names[,5] &lt;- as.character(uniq_ENSG_gene_names[,5])
+uniq_ENSG_gene_names[,6] &lt;- as.character(uniq_ENSG_gene_names[,6])
+uniq_ENSG_gene_names[,7] &lt;- as.character(uniq_ENSG_gene_names[,7])
+
+colnames(uniq_ENSG_gene_names) &lt;- c(&quot;ENSG&quot;, &quot;chr&quot;, &quot;First_exon_start_human&quot;, &quot;H_strand&quot;, &quot;C_strand&quot;, &quot;R_strand&quot;, &quot;Gene&quot;)
+
+# Combine the TSS site with the first ortho exon
+
+TSS_orth_exon_human = merge(sort.human.multiple.TSS, uniq_ENSG_gene_names, by.x = &quot;V5.x&quot;, by.y = &quot;Gene&quot;)
+length(unique(TSS_orth_exon_human$V5))</code></pre>
+<pre><code>[1] 8487</code></pre>
+<pre class="r"><code># Take the difference between the TSS annotation and the first exon
+
+diff_TSS_orth_exon_human &lt;- abs(TSS_orth_exon_human$V2 - TSS_orth_exon_human$First_exon_start_human)
+
+TSS_orth_exon_dist_human &lt;- cbind(TSS_orth_exon_human, diff_TSS_orth_exon_human)
+
+# Sort out the TSSs in this file that have multiple NMs for the same TSS
+
+one_TSS_orth_exon_dist_human &lt;- TSS_orth_exon_dist_human[!duplicated(TSS_orth_exon_dist_human$V2),]
+nrow(one_TSS_orth_exon_dist_human)</code></pre>
+<pre><code>[1] 8486</code></pre>
+<pre class="r"><code># Chimp
+
+inshared_lists = chimp_anno$V5.y %in% solo_ENSG_freq_table[,1]
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(chimp_anno, inshared_lists_data)
+counts_genes_in_mult_TSS &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_mult_TSS &lt;- counts_genes_in_mult_TSS[,1:6]
+
+dim(counts_genes_in_mult_TSS)</code></pre>
+<pre><code>[1] 8487    6</code></pre>
+<pre class="r"><code>length(unique(counts_genes_in_mult_TSS$V5))</code></pre>
+<pre><code>[1] 8487</code></pre>
+<pre class="r"><code>sort.chimp.multiple.TSS &lt;- plyr::arrange(counts_genes_in_mult_TSS, V5.y)
+
+# Find the 1st orthologous exon for each gene in humans
+
+# Now, I want to remake this but with the value of exon #1
+
+uniq_plus &lt;- c(2,3,4,9,7,11,15,16)
+
+# Make data frame for humans
+non_uniq_ENSG_gene_names &lt;- as.data.frame(unique(metaOrthoExonTrios[,uniq_plus], incomparables = FALSE))
+
+# Subset so you only have ortho exon #1 for humans
+
+uniq_ENSG_gene_names &lt;- non_uniq_ENSG_gene_names[which(non_uniq_ENSG_gene_names$V3 == 1),]
+uniq_ENSG_gene_names &lt;- uniq_ENSG_gene_names[,-2]
+uniq_ENSG_gene_names[,1] &lt;- as.character(uniq_ENSG_gene_names[,1])
+uniq_ENSG_gene_names[,2] &lt;- as.character(uniq_ENSG_gene_names[,2])
+uniq_ENSG_gene_names[,3] &lt;- as.integer(uniq_ENSG_gene_names[,3])
+uniq_ENSG_gene_names[,5] &lt;- as.character(uniq_ENSG_gene_names[,5])
+uniq_ENSG_gene_names[,6] &lt;- as.character(uniq_ENSG_gene_names[,6])
+uniq_ENSG_gene_names[,7] &lt;- as.character(uniq_ENSG_gene_names[,7])
+
+colnames(uniq_ENSG_gene_names) &lt;- c(&quot;ENSG&quot;, &quot;chr&quot;, &quot;First_exon_start_chimp&quot;, &quot;H_strand&quot;, &quot;C_strand&quot;, &quot;R_strand&quot;, &quot;Gene&quot;)
+
+# Combine the TSS site with the first ortho exon
+
+TSS_orth_exon_chimp = merge(sort.chimp.multiple.TSS, uniq_ENSG_gene_names, by.x = &quot;V5.y&quot;, by.y = &quot;Gene&quot;)
+length(unique(TSS_orth_exon_chimp$V5.y))</code></pre>
+<pre><code>[1] 8487</code></pre>
+<pre class="r"><code># Take the difference between the TSS annotation and the first exon
+
+diff_TSS_orth_exon_chimp &lt;- abs(TSS_orth_exon_chimp$V2 - TSS_orth_exon_chimp$First_exon_start_chimp)
+
+TSS_orth_exon_dist_chimp &lt;- cbind(TSS_orth_exon_chimp, diff_TSS_orth_exon_chimp)
+
+# Sort out the TSSs in this file that have multiple NMs for the same TSS
+
+one_TSS_orth_exon_dist_chimp &lt;- TSS_orth_exon_dist_chimp[!duplicated(TSS_orth_exon_dist_chimp$V2),]
+
+
+
+
+# Merge by NM
+  # Human and chimp
+human_chimp_one_TSS &lt;- merge(one_TSS_orth_exon_dist_human, one_TSS_orth_exon_dist_chimp, by = c(&quot;V4&quot;))
+
+ 
+# Sort by alphabetical order
+
+human_chimp_rhesus_one_TSS_sorted &lt;- plyr::arrange(human_chimp_one_TSS, V5.x)
+
+# Check if any have &gt;1 entry/gene
+
+check_more_entries &lt;- count(human_chimp_rhesus_one_TSS_sorted$V5.x)
+summary(check_more_entries$freq)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      1       1       1       1       1       1 </code></pre>
+</div>
+</div>
+<div id="find-tss-closest-to-the-first-orthologous-exon-when-more-than-1-tss-for-an-orthologous-gene" class="section level2">
+<h2>Find TSS closest to the first orthologous exon when more than 1 TSS for an orthologous gene</h2>
+<pre class="r"><code># Pull the gene names with multiple TSS
+freq_mult_TSS &lt;- as.data.frame(freq_mult_TSS[,1])
+nrow(freq_mult_TSS)</code></pre>
+<pre><code>[1] 2004</code></pre>
+<pre class="r"><code>### Distance from TSS to 1st exon in humans ###############################################################
+
+inshared_lists = human_anno$V5.x %in% freq_mult_TSS[,1]
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(human_anno, inshared_lists_data)
+counts_genes_in_mult_TSS &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_mult_TSS &lt;- counts_genes_in_mult_TSS[,1:6]
+
+dim(counts_genes_in_mult_TSS)</code></pre>
+<pre><code>[1] 4904    6</code></pre>
+<pre class="r"><code>length(unique(counts_genes_in_mult_TSS$V5))</code></pre>
+<pre><code>[1] 2004</code></pre>
+<pre class="r"><code>sort.human.multiple.TSS &lt;- plyr::arrange(counts_genes_in_mult_TSS, V5.x)
+nrow(sort.human.multiple.TSS)</code></pre>
+<pre><code>[1] 4904</code></pre>
+<pre class="r"><code># Find the 1st orthologous exon for each gene in humans
+
+# Now, I want to remake this but with the value of exon #1
+
+uniq_plus &lt;- c(2,3,4,5,7,11,15,16)
+
+# Make data frame for humans
+non_uniq_ENSG_gene_names &lt;- as.data.frame(unique(metaOrthoExonTrios[,uniq_plus], incomparables = FALSE))
+
+# Subset so you only have ortho exon #1 for humans
+
+uniq_ENSG_gene_names &lt;- non_uniq_ENSG_gene_names[which(non_uniq_ENSG_gene_names$V3 == 1),]
+uniq_ENSG_gene_names &lt;- uniq_ENSG_gene_names[,-2]
+uniq_ENSG_gene_names[,1] &lt;- as.character(uniq_ENSG_gene_names[,1])
+uniq_ENSG_gene_names[,2] &lt;- as.character(uniq_ENSG_gene_names[,2])
+uniq_ENSG_gene_names[,3] &lt;- as.integer(uniq_ENSG_gene_names[,3])
+uniq_ENSG_gene_names[,5] &lt;- as.character(uniq_ENSG_gene_names[,5])
+uniq_ENSG_gene_names[,6] &lt;- as.character(uniq_ENSG_gene_names[,6])
+uniq_ENSG_gene_names[,7] &lt;- as.character(uniq_ENSG_gene_names[,7])
+
+colnames(uniq_ENSG_gene_names) &lt;- c(&quot;ENSG&quot;, &quot;chr&quot;, &quot;First_exon_start_human&quot;, &quot;H_strand&quot;, &quot;C_strand&quot;, &quot;R_strand&quot;, &quot;Gene&quot;)
+
+# Combine the TSS site with the first ortho exon
+
+TSS_orth_exon_human = merge(sort.human.multiple.TSS, uniq_ENSG_gene_names, by.x = &quot;V5.x&quot;, by.y = &quot;Gene&quot;)
+nrow(TSS_orth_exon_human)</code></pre>
+<pre><code>[1] 4904</code></pre>
+<pre class="r"><code>length(unique(TSS_orth_exon_human$V5))</code></pre>
+<pre><code>[1] 2004</code></pre>
+<pre class="r"><code># Take the difference between the TSS annotation and the first exon
+
+diff_TSS_orth_exon_human &lt;- abs(TSS_orth_exon_human$V2 - TSS_orth_exon_human$First_exon_start_human)
+
+TSS_orth_exon_dist_human &lt;- cbind(TSS_orth_exon_human, diff_TSS_orth_exon_human)
+
+# Sort out the TSSs in this file that have multiple NMs for the same TSS
+
+sort_TSS_orth_exon_dist_human &lt;- TSS_orth_exon_dist_human[!duplicated(TSS_orth_exon_dist_human$V4),]
+nrow(sort_TSS_orth_exon_dist_human)</code></pre>
+<pre><code>[1] 4902</code></pre>
+<pre class="r"><code>### Distance from TSS to 1st exon in chimps ###############################################################
+
+inshared_lists = chimp_anno$V5.y %in% freq_mult_TSS[,1]
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(chimp_anno, inshared_lists_data)
+counts_genes_in_mult_TSS &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_mult_TSS &lt;- counts_genes_in_mult_TSS[,1:6]
+
+dim(counts_genes_in_mult_TSS)</code></pre>
+<pre><code>[1] 4904    6</code></pre>
+<pre class="r"><code>length(unique(counts_genes_in_mult_TSS$V5))</code></pre>
+<pre><code>[1] 2004</code></pre>
+<pre class="r"><code>sort.chimp.multiple.TSS &lt;- plyr::arrange(counts_genes_in_mult_TSS, V5.y)
+
+# Find the 1st orthologous exon for each gene in humans
+
+# Now, I want to remake this but with the value of exon #1
+
+uniq_plus &lt;- c(2,3,4,9,7,11,15,16)
+
+# Make data frame for humans
+non_uniq_ENSG_gene_names &lt;- as.data.frame(unique(metaOrthoExonTrios[,uniq_plus], incomparables = FALSE))
+
+# Subset so you only have ortho exon #1 for humans
+
+uniq_ENSG_gene_names &lt;- non_uniq_ENSG_gene_names[which(non_uniq_ENSG_gene_names$V3 == 1),]
+uniq_ENSG_gene_names &lt;- uniq_ENSG_gene_names[,-2]
+uniq_ENSG_gene_names[,1] &lt;- as.character(uniq_ENSG_gene_names[,1])
+uniq_ENSG_gene_names[,2] &lt;- as.character(uniq_ENSG_gene_names[,2])
+uniq_ENSG_gene_names[,3] &lt;- as.integer(uniq_ENSG_gene_names[,3])
+uniq_ENSG_gene_names[,5] &lt;- as.character(uniq_ENSG_gene_names[,5])
+uniq_ENSG_gene_names[,6] &lt;- as.character(uniq_ENSG_gene_names[,6])
+uniq_ENSG_gene_names[,7] &lt;- as.character(uniq_ENSG_gene_names[,7])
+
+colnames(uniq_ENSG_gene_names) &lt;- c(&quot;ENSG&quot;, &quot;chr&quot;, &quot;First_exon_start_chimp&quot;, &quot;H_strand&quot;, &quot;C_strand&quot;, &quot;R_strand&quot;, &quot;Gene&quot;)
+
+# Combine the TSS site with the first ortho exon
+
+TSS_orth_exon_chimp = merge(sort.chimp.multiple.TSS, uniq_ENSG_gene_names, by.x = &quot;V5.y&quot;, by.y = &quot;Gene&quot;)
+length(unique(TSS_orth_exon_chimp$V5))</code></pre>
+<pre><code>[1] 2004</code></pre>
+<pre class="r"><code># Take the difference between the TSS annotation and the first exon
+
+diff_TSS_orth_exon_chimp &lt;- abs(TSS_orth_exon_chimp$V2 - TSS_orth_exon_chimp$First_exon_start_chimp)
+
+TSS_orth_exon_dist_chimp &lt;- cbind(TSS_orth_exon_chimp, diff_TSS_orth_exon_chimp)
+
+# Sort out the TSSs in this file that have multiple NMs for the same TSS
+
+sort_TSS_orth_exon_dist_chimp &lt;- TSS_orth_exon_dist_chimp[!duplicated(TSS_orth_exon_dist_chimp$V4),]
+nrow(sort_TSS_orth_exon_dist_chimp)</code></pre>
+<pre><code>[1] 4902</code></pre>
+<pre class="r"><code># Pick the TSS that minimizes the diff. bet the TSS and the first orthologous exon
+  # For humans
+get_min_set_TSS_human &lt;- sort_TSS_orth_exon_dist_human[as.logical(ave(sort_TSS_orth_exon_dist_human$diff_TSS_orth_exon_human, sort_TSS_orth_exon_dist_human$V5.x, FUN = function(x) x == min(x))),]
+
+count_min_set_human &lt;- count(get_min_set_TSS_human$V5.x)
+summary(count_min_set_human)</code></pre>
+<pre><code>       x             freq      
+ AADAT  :   1   Min.   :1.000  
+ AATK   :   1   1st Qu.:1.000  
+ ABAT   :   1   Median :1.000  
+ ABCA5  :   1   Mean   :1.001  
+ ABCC10 :   1   3rd Qu.:1.000  
+ ABCG1  :   1   Max.   :2.000  
+ (Other):1998                  </code></pre>
+<pre class="r"><code>human_genes_TSS &lt;- count_min_set_human[which(count_min_set_human[,2] &gt; 1), ]
+
+ # For chimps
+get_min_set_TSS_chimp &lt;- sort_TSS_orth_exon_dist_chimp[as.logical(ave(sort_TSS_orth_exon_dist_chimp$diff_TSS_orth_exon_chimp, sort_TSS_orth_exon_dist_chimp$V5.y, FUN = function(x) x == min(x))),]
+
+#chimp_genes_TSS &lt;- count_min_set_chimp[which(count_min_set_chimp[,2] &gt; 1), ]
+chimp_genes_TSS &lt;- get_min_set_TSS_chimp[which(get_min_set_TSS_chimp[,2] &gt; 1), ]
+
+# SGSM2 and SLC30A7 each have two TSSs remaining per species. Remove them. 
+
+  # In humans
+get_min_set_TSS_human &lt;- get_min_set_TSS_human[!grepl(&quot;SGSM2&quot;, get_min_set_TSS_human$V5.x),]
+get_min_set_TSS_human &lt;- get_min_set_TSS_human[!grepl(&quot;SLC30A7&quot;, get_min_set_TSS_human$V5.x),]
+
+count_min_set_human &lt;- count(get_min_set_TSS_human$V5.x)
+summary(count_min_set_human)</code></pre>
+<pre><code>       x             freq  
+ AADAT  :   1   Min.   :1  
+ AATK   :   1   1st Qu.:1  
+ ABAT   :   1   Median :1  
+ ABCA5  :   1   Mean   :1  
+ ABCC10 :   1   3rd Qu.:1  
+ ABCG1  :   1   Max.   :1  
+ (Other):1996              </code></pre>
+<pre class="r"><code>  # In chimps
+
+get_min_set_TSS_chimp &lt;- get_min_set_TSS_chimp[!grepl(&quot;SGSM2&quot;, get_min_set_TSS_chimp$V5.y),]
+get_min_set_TSS_chimp &lt;- get_min_set_TSS_chimp[!grepl(&quot;SLC30A7&quot;, get_min_set_TSS_chimp$V5.y),]
+
+count_min_set_chimp &lt;- count(get_min_set_TSS_chimp$V5.y)
+summary(count_min_set_chimp)</code></pre>
+<pre><code>       x             freq  
+ AADAT  :   1   Min.   :1  
+ AATK   :   1   1st Qu.:1  
+ ABAT   :   1   Median :1  
+ ABCA5  :   1   Mean   :1  
+ ABCC10 :   1   3rd Qu.:1  
+ ABCG1  :   1   Max.   :1  
+ (Other):1996              </code></pre>
+<pre class="r"><code># Merge by NM
+  # Human and chimp
+human_chimp_multi_TSS &lt;- merge(get_min_set_TSS_human, get_min_set_TSS_chimp, by = c(&quot;V4&quot;))
+
+# Sort by alphabetical order
+
+human_chimp_multi_TSS_sorted &lt;- plyr::arrange(human_chimp_multi_TSS, V5.x)
+
+# Make sure there is no overlap in the gene lists (one TSS and multiple TSSs)
+
+any_overlap_genes &lt;- intersect(human_chimp_rhesus_one_TSS_sorted[,2], human_chimp_multi_TSS_sorted[,2])
+any_overlap_genes</code></pre>
+<pre><code>character(0)</code></pre>
+<pre class="r"><code># Combine the two datasets
+
+human_chimp_TSS &lt;- rbind(human_chimp_rhesus_one_TSS_sorted, human_chimp_multi_TSS_sorted)
+dim(human_chimp_TSS)</code></pre>
+<pre><code>[1] 10454    25</code></pre>
+<p>We now have TSSs for 10,454 genes</p>
+</div>
+<div id="compare-human-and-chimp-distances" class="section level2">
+<h2>Compare human and chimp distances</h2>
+<pre class="r"><code>human_var &lt;- c(1:7,9,13)
+chimp_var &lt;- c(1,14:19,21,25)
+
+check_for_differences &lt;- cbind(human_chimp_TSS[,human_var], human_chimp_TSS[,chimp_var])
+dim(check_for_differences)</code></pre>
+<pre><code>[1] 10454    18</code></pre>
+<pre class="r"><code># Find the greatest difference
+
+min_diff &lt;- transform(check_for_differences, min = pmin(check_for_differences[,9], check_for_differences[,18]))
+max_diff &lt;- transform(min_diff, max = pmax(check_for_differences[,9], check_for_differences[,18]))
+
+# Find the difference between min and max
+
+biggest_difference &lt;- abs(max_diff$max - max_diff$min)
+select_genes &lt;- cbind(max_diff, biggest_difference)
+
+nrow(select_genes[which(select_genes$biggest_difference &lt;= 100) , ])</code></pre>
+<pre><code>[1] 5696</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 500) , ])</code></pre>
+<pre><code>[1] 7349</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 1000) , ])</code></pre>
+<pre><code>[1] 8364</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 2000) , ])</code></pre>
+<pre><code>[1] 9230</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 2500) , ])</code></pre>
+<pre><code>[1] 9493</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 3000) , ])</code></pre>
+<pre><code>[1] 9661</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 5000) , ])</code></pre>
+<pre><code>[1] 10060</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 10000) , ])</code></pre>
+<pre><code>[1] 10295</code></pre>
+<pre class="r"><code>nrow(select_genes[which(select_genes$biggest_difference &lt;= 20000) , ])</code></pre>
+<pre><code>[1] 10358</code></pre>
+<p>9493 genes within 2500 bp (2,000 more genes than in the human-chimp-rhesus comparison)</p>
+<pre class="r"><code>Number_of_TSS &lt;- c(&quot;&lt;100&quot;, &quot;&lt;500&quot;, &quot;&lt;1000&quot;, &quot;&lt;2000&quot;, &quot;&lt;2500&quot;, &quot;&lt;3000&quot;, &quot;&lt;5000&quot;, &quot;&lt;10000&quot;, &quot;&lt;20000&quot;)
+Number_of_RefSeq_Genes &lt;- c(5696, 7349, 8364, 9230, 9493, 9661, 10060, 10295, 10358)
+
+TSS_RefSeq_Genes &lt;- as.data.frame(cbind(Number_of_TSS, Number_of_RefSeq_Genes), stringsAsFactors = F)
+TSS_RefSeq_Genes$Number_of_RefSeq_Genes &lt;- as.numeric(TSS_RefSeq_Genes$Number_of_RefSeq_Genes)
+TSS_RefSeq_Genes$Number_of_TSS &lt;- factor(TSS_RefSeq_Genes$Number_of_TSS, levels =  c(&quot;&lt;100&quot;, &quot;&lt;500&quot;, &quot;&lt;1000&quot;, &quot;&lt;2000&quot;, &quot;&lt;2500&quot;, &quot;&lt;3000&quot;, &quot;&lt;5000&quot;, &quot;&lt;10000&quot;, &quot;&lt;20000&quot;))
+ggplot(TSS_RefSeq_Genes, aes(Number_of_TSS, Number_of_RefSeq_Genes)) + geom_point() + bjp  + ggtitle(&quot;Difference between each species&#39; distance between TSS and 1st orthologous exon for each of the 10454 RefSeq Genes&quot;) + xlab(&quot;Difference between each species&#39; distance between TSS and 1st orthologous exon&quot;) + ylab(&quot;Number of RefSeq Genes&quot;)</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="filter-by-max.-distance-and-take-off-x-chromosome" class="section level2">
+<h2>Filter by max. distance and take off X chromosome</h2>
+<pre class="r"><code># Take only genes that have max_dist &lt; 2500 bp
+summary(select_genes$biggest_difference)</code></pre>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+        0         0        44    362800       685 169000000 </code></pre>
+<pre class="r"><code>select_genes_2500 &lt;- select_genes[which(biggest_difference &lt;= 2500), ]
+dim(select_genes_2500)</code></pre>
+<pre><code>[1] 9493   21</code></pre>
+<pre class="r"><code># Take out any genes on the X chromosome
+
+select_genes_2500_no_X &lt;- select_genes_2500[which(select_genes_2500$V1.x != &quot;chrX&quot;), ]
+dim(select_genes_2500_no_X)</code></pre>
+<pre><code>[1] 9230   21</code></pre>
+<pre class="r"><code># Make select_genes_2500_no_X a file
+
+#write.table(select_genes_2500_no_X,file=&quot;../data/chimp_human_select_genes_2500_no_X.txt&quot;,sep=&quot;\t&quot;, col.names = F, row.names = F, quote = F)
+
+# Read table
+#select_genes_2500_no_X &lt;- read.delim(&quot;../data/chimp_human_select_genes_2500_no_X.txt&quot;, header = FALSE)</code></pre>
+<p>9230 genes</p>
+</div>
+<div id="obtain-the-tss-annotations-for-the-3-genomes" class="section level2">
+<h2>Obtain the TSS annotations for the 3 genomes</h2>
+<pre class="r"><code># Human TSS for 9,230 genes
+
+make_bed_human &lt;- cbind.data.frame(select_genes_2500_no_X[,3:6], select_genes_2500_no_X[,2], select_genes_2500_no_X[,7])
+
+make_bed_human[,1] &lt;- as.character(make_bed_human[,1])
+make_bed_human[,2] &lt;- as.integer(make_bed_human[,2])
+make_bed_human[,3] &lt;- as.integer(make_bed_human[,3])
+make_bed_human[,4] &lt;- as.character(make_bed_human[,4])
+make_bed_human[,5] &lt;- as.character(make_bed_human[,5])
+make_bed_human[,6] &lt;- as.character(make_bed_human[,6])
+
+# Chimp TSS for 9,230 genes
+
+make_bed_chimp &lt;- cbind.data.frame(select_genes_2500_no_X[,12:15], select_genes_2500_no_X[,11], select_genes_2500_no_X[,16])
+
+make_bed_chimp[,1] &lt;- as.character(make_bed_chimp[,1])
+make_bed_chimp[,2] &lt;- as.integer(make_bed_chimp[,2])
+make_bed_chimp[,3] &lt;- as.integer(make_bed_chimp[,3])
+make_bed_chimp[,4] &lt;- as.character(make_bed_chimp[,4])
+make_bed_chimp[,5] &lt;- as.character(make_bed_chimp[,5])
+make_bed_chimp[,6] &lt;- as.character(make_bed_chimp[,6])
+
+
+# How often does the strand of human and chimp match?
+
+match_strand &lt;- (make_bed_human[,4] == make_bed_chimp[,4])
+summary(match_strand)</code></pre>
+<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
+logical     819    8411       0 </code></pre>
+<pre class="r"><code>8411/(8411+819)</code></pre>
+<pre><code>[1] 0.9112676</code></pre>
+<pre class="r"><code># Save the files
+#write.table(make_bed_human, file=&quot;../data/chimp_human_refGene_hg19_TSS.bed&quot;,sep=&quot;\t&quot;, col.names = F, row.names = F, quote = F)
+#write.table(make_bed_chimp,file=&quot;../data/chimp_human_refGene_PanTro3_TSS.bed&quot;,sep=&quot;\t&quot;, col.names = F, row.names = F, quote = F)</code></pre>
+<p>~91% of human-chimp orthologous TSSs are on the same strand.</p>
+</div>
+<div id="how-many-orthologous-cpgs-are-within-a-250bp-window-of-the-tss" class="section level2">
+<h2>How many orthologous CpGs are within a 250bp window of the TSS?</h2>
+<pre class="r"><code># Load data (if needed)
+
+# make_bed_human &lt;- read.table(&quot;../data/chimp_human_refGene_hg19_TSS.bed&quot;)
+# make_bed_chimp &lt;- read.table(&quot;../data/chimp_human_refGene_PanTro3_TSS.bed&quot;)
+
+# Load library
+
+library(&quot;bedr&quot;)</code></pre>
+<pre><code>Warning: package &#39;bedr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>
+
+######################
+#### bedr v1.0.3 ####
+######################
+
+checking binary availability...
+  * Checking path for bedtools... PASS
+    /usr/local/bin/bedtools
+  * Checking path for bedops... FAIL
+  * Checking path for tabix... FAIL
+tests and examples will be skipped on R CMD check if binaries are missing</code></pre>
+<pre class="r"><code># Set length from TSS
+
+TSS_upstream &lt;- 250
+TSS_downstream &lt;- 250
+
+make_orth_cpg_bounds &lt;- function(make_bed_species){
+
+# Separate into positive and negative strands
+  make_bed_species_pos &lt;- make_bed_species[which(make_bed_species[,4] == &quot;+&quot;), ]
+  make_bed_species_neg &lt;- make_bed_species[which(make_bed_species[,4] == &quot;-&quot;), ]
+
+# Boundaries for positive strand
+
+  make_bed_species_pos_lower &lt;- make_bed_species_pos[,2] - TSS_upstream
+  make_bed_species_pos_upper &lt;- make_bed_species_pos[,2] + TSS_downstream 
+  species_pos_bounds &lt;- cbind.data.frame(make_bed_species_pos[,1], make_bed_species_pos_lower,  make_bed_species_pos_upper, make_bed_species_pos[,4:5], make_bed_species_pos[,6])
+  colnames(species_pos_bounds) &lt;- c(&quot;chr&quot;, &quot;start&quot;, &quot;end&quot;,&quot;strand&quot;, &quot;gene&quot;, &quot;ENSG&quot;)
+
+# Boundaries for negative strand
+
+  make_bed_species_neg_lower &lt;- make_bed_species_neg[,2] + TSS_upstream
+  make_bed_species_neg_upper &lt;- make_bed_species_neg[,2] - TSS_downstream 
+  species_neg_bounds &lt;- cbind.data.frame(make_bed_species_neg[,1], make_bed_species_neg_upper, make_bed_species_neg_lower, make_bed_species_neg[,4:5], make_bed_species_neg[,6])
+  colnames(species_neg_bounds) &lt;- c(&quot;chr&quot;, &quot;start&quot;, &quot;end&quot;, &quot;strand&quot;, &quot;gene&quot;, &quot;ENSG&quot;)
+
+  species_bounds &lt;- rbind(species_pos_bounds, species_neg_bounds)
+  return(species_bounds)
+}
+
+human_orth_cpg_bounds &lt;- make_orth_cpg_bounds(make_bed_human)
+chimp_orth_cpg_bounds &lt;- make_orth_cpg_bounds(make_bed_chimp)
+
+# Put bounds in alphabetical order based on gene name
+
+human_orth_cpg_bounds_sort &lt;- plyr::arrange(human_orth_cpg_bounds, gene)
+chimp_orth_cpg_bounds_sort &lt;- plyr::arrange(chimp_orth_cpg_bounds, gene)
+
+# Make sure the genes are the same
+match_strand &lt;- (human_orth_cpg_bounds_sort[,5] == chimp_orth_cpg_bounds_sort[,5])
+summary(match_strand)</code></pre>
+<pre><code>   Mode    TRUE    NA&#39;s 
+logical    9230       0 </code></pre>
+<pre class="r"><code>human_orth_cpg_bounds_sort[,1] &lt;- as.character(human_orth_cpg_bounds_sort[,1])
+human_orth_cpg_bounds_sort[,2] &lt;- as.integer(human_orth_cpg_bounds_sort[,2])    
+human_orth_cpg_bounds_sort[,3] &lt;- as.integer(human_orth_cpg_bounds_sort[,3])
+
+
+human_250_interval &lt;- bedr.sort.region(human_orth_cpg_bounds_sort, method = &quot;lexicographical&quot;, check.chr = FALSE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Checking input type... PASS
+   Input is in bed format
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS</code></pre>
+<pre class="r"><code>#write.table(human_250_interval, file=&quot;../data/chimp_human_250_9230_genes_interval_humans.bed&quot;,sep=&quot;\t&quot;, col.names = F, row.names = F, quote = F)
+
+chimp_orth_cpg_bounds_sort[,1] &lt;- as.character(chimp_orth_cpg_bounds_sort[,1])
+chimp_orth_cpg_bounds_sort[,2] &lt;- as.integer(chimp_orth_cpg_bounds_sort[,2])    
+chimp_orth_cpg_bounds_sort[,3] &lt;- as.integer(chimp_orth_cpg_bounds_sort[,3])
+
+
+chimp_250_interval &lt;- bedr.sort.region(chimp_orth_cpg_bounds_sort, method = &quot;lexicographical&quot;, check.chr = FALSE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Checking input type... PASS
+   Input is in bed format
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS</code></pre>
+<pre class="r"><code>#write.table(chimp_250_interval, file=&quot;../data/chimp_human_250_9230_genes_interval_chimps.bed&quot;,sep=&quot;\t&quot;, col.names = F, row.names = F, quote = F)</code></pre>
+</div>
+<div id="find-the-orthologous-cpgs-in-each-range" class="section level2">
+<h2>Find the orthologous CpGs in each range</h2>
+<p>To get the human-chimp orthologous CpGs,</p>
+<p>/mnt/lustre/home/jroux/bin/liftOver hg19_10mil_plus_one.bed /mnt/gluster/home/leblake/Methylation/liftover_real/hg19ToPanTro3.over.chain.gz hg19_to_Pantro3_10mil_plus_one.bed hg19_to_Pantro3_10mil_plus_one.unlifted.bed</p>
+<pre class="r"><code># Open human-chimp orth CpGs
+
+# Human data
+hg19_10mil &lt;- read.delim(&quot;../data/hg19_10mil_plus_one.bed&quot;, header=FALSE, stringsAsFactors=FALSE)
+
+# chimp data
+hg19_to_Pantro3_10mil &lt;- read.delim(&quot;../data/hg19_to_Pantro3_10mil_plus_one.bed&quot;, header=FALSE, stringsAsFactors=FALSE)
+
+# Use bedtools to find the intersection for humans
+
+library(&quot;bedr&quot;)
+human_250_interval[,4] &lt;- as.character(human_250_interval[,6])
+sort_human_bounds &lt;- bedr.sort.region(human_250_interval, check.chr = TRUE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS</code></pre>
+<pre class="r"><code>sort_human_bounds &lt;- bedr.merge.region(sort_human_bounds)</code></pre>
+<pre><code>MERGING
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Processing input (1): i
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+   bedtools merge -i /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/i_45c594639cf.bed -d 0 -c 4 -o collapse
+ * Collapsing 9230 --&gt; 8815 regions... NOTE</code></pre>
+<pre class="r"><code>cpg_hg19_10mil &lt;- bedr.sort.region(hg19_10mil, check.chr = TRUE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Checking input type... PASS
+   Input seems to be in bed format but chr/start/end column names are missing
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Overlapping regions can cause unexpected results.</code></pre>
+<pre class="r"><code>human.cpg.int &lt;- bedr(input = list(a = cpg_hg19_10mil, b = sort_human_bounds), method = &quot;intersect&quot;, params = &quot;-loj&quot;, check.chr=TRUE)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input seems to be in bed format but chr/start/end column names are missing
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/a_45c5e8847f1.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/b_45c468fc3bc.bed -loj</code></pre>
+<pre class="r"><code>#write.table(human.cpg.int, file=&quot;../data/chimp_human_hg19_10mil_250_intersection.bed&quot;,sep=&quot;\t&quot;, col.names = F, row.names = F, quote = F)
+
+
+#human.cpg.int.a.b &lt;- human.cpg.int 
+
+# Find the intersection for chimps
+
+chimp_250_interval[,4] &lt;- as.character(chimp_250_interval[,6])
+
+  # Need to get rid of the &quot;interval&quot;chr&quot;
+chimp_250_interval_check &lt;- gsub(&quot;chr&quot;, &quot;&quot;, chimp_250_interval[,1])
+chimp_250_interval[,1] &lt;- chimp_250_interval_check
+
+# Now, we need check.chr = FALSE
+sort_chimp_bounds &lt;- bedr.sort.region(chimp_250_interval, check.chr = FALSE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS</code></pre>
+<pre class="r"><code>sort_chimp_bounds &lt;- bedr.merge.region(sort_chimp_bounds, check.chr = FALSE)</code></pre>
+<pre><code>MERGING
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Processing input (1): i
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+   bedtools merge -i /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/i_45c8144dfc.bed -d 0 -c 4 -o collapse
+ * Collapsing 9230 --&gt; 8818 regions... NOTE</code></pre>
+<pre class="r"><code>hg19_to_Pantro3_10mil_check &lt;- gsub(&quot;chr&quot;, &quot;&quot;, hg19_to_Pantro3_10mil[,1])
+hg19_to_Pantro3_10mil[,1] &lt;- hg19_to_Pantro3_10mil_check
+
+hg19_to_Pantro3_10mil_sort &lt;- bedr.sort.region(hg19_to_Pantro3_10mil, check.chr = FALSE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Checking input type... PASS
+   Input seems to be in bed format but chr/start/end column names are missing
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Overlapping regions can cause unexpected results.</code></pre>
+<pre class="r"><code>chimp.cpg.int &lt;- bedr(input = list(a = hg19_to_Pantro3_10mil_sort, b = sort_chimp_bounds), method = &quot;intersect&quot;, params = &quot;-loj&quot;, check.chr=FALSE)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input seems to be in bed format but chr/start/end column names are missing
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/a_45c5dd3c29.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/b_45c2b0e217.bed -loj</code></pre>
+<pre class="r"><code>#write.table(chimp.cpg.int, file=&quot;../data/chimp_human_PanTro3_10mil_250_intersection.bed&quot;,sep=&quot;\t&quot;, col.names = F, row.names = F, quote = F)
+
+#chimp.cpg.int.a.b &lt;- chimp.cpg.int</code></pre>
+<div id="subset-each-of-the-species-so-that-there-is-only-genes-with-at-least-2-cpgs" class="section level3">
+<h3>Subset each of the species so that there is only genes with at least 2 CpGs</h3>
+<pre class="r"><code># Count the number of CpGs/gene
+human.cpg.int.near.gene &lt;- count(human.cpg.int$names) # 7654 genes
+
+# Now, we want to get only the ones with 2 CpGs
+
+human.two.cpg.int.near.gene &lt;- human.cpg.int.near.gene[which(human.cpg.int.near.gene$freq &gt;= 2),] #7390 genes
+
+# Count the number of CpGs/gene
+chimp.cpg.int.near.gene &lt;- count(chimp.cpg.int$names) # 7639 genes
+
+# Now, we want to get only the ones with 2 CpGs
+
+chimp.two.cpg.int.near.gene &lt;- chimp.cpg.int.near.gene[which(chimp.cpg.int.near.gene$freq &gt;= 2),] #7374 genes
+
+# Get the genes that we have 2 cpgs for
+
+gene_two_cpgs_species &lt;- intersect(human.two.cpg.int.near.gene[,1], chimp.two.cpg.int.near.gene[,1])
+gene_two_cpgs_species &lt;- gene_two_cpgs_species[-1]
+
+length(gene_two_cpgs_species) # 7352 genes</code></pre>
+<pre><code>[1] 7352</code></pre>
+</div>
+<div id="find-the-cpgs-for-the-genes-with-at-least-2-orthologous-cpgs-in-it-not-necessarily-the-same-cpgs-we-will-take-care-of-this-in-the-next-step" class="section level3">
+<h3>Find the CpGs for the genes with at least 2 orthologous CpGs in it (not necessarily the same CpGs, we will take care of this in the next step)</h3>
+<pre class="r"><code># Humans
+inshared_lists = human.cpg.int$names %in% gene_two_cpgs_species
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(human.cpg.int, inshared_lists_data)
+counts_genes_in_mult_TSS &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+human.cpg.intersect_2cpgs &lt;- counts_genes_in_mult_TSS[,1:10]
+length(unique(human.cpg.intersect_2cpgs[,10]))</code></pre>
+<pre><code>[1] 7352</code></pre>
+<pre class="r"><code># Chimps
+inshared_lists = chimp.cpg.int$names %in% gene_two_cpgs_species
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(chimp.cpg.int, inshared_lists_data)
+counts_genes_in_mult_TSS &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+chimp.cpg.intersect_2cpgs &lt;- counts_genes_in_mult_TSS[,1:10]
+length(unique(chimp.cpg.intersect_2cpgs[,10]))</code></pre>
+<pre><code>[1] 7352</code></pre>
+</div>
+<div id="for-each-gene-find-the-endpoints-same-orthologous-cpgs-for-each-of-the-genes" class="section level3">
+<h3>For each gene, find the endpoints (same orthologous CpGs) for each of the genes</h3>
+<pre class="r"><code># Add chr:start position to each dataframe 
+
+# Human int
+new_human_cpgs &lt;- paste(human.cpg.intersect_2cpgs[,1], sep = &quot;:&quot;, human.cpg.intersect_2cpgs[,2])
+#new_human_cpgs &lt;- paste(&quot;chr&quot;, new_human_cpgs, sep = &quot;&quot;)
+human.cpg.intersect_2cpgs &lt;- cbind(human.cpg.intersect_2cpgs, new_human_cpgs)
+
+# Chimp int
+new_chimp_cpgs &lt;- paste(chimp.cpg.intersect_2cpgs[,1], sep = &quot;:&quot;, chimp.cpg.intersect_2cpgs[,2])
+new_chimp_cpgs &lt;- paste(&quot;chr&quot;, new_chimp_cpgs, sep = &quot;&quot;)
+chimp.cpg.intersect_2cpgs &lt;- cbind(chimp.cpg.intersect_2cpgs, new_chimp_cpgs)
+
+# All Human data
+hg19_10mil_cpg &lt;- paste(hg19_10mil[,1], sep = &quot;:&quot;, hg19_10mil[,2])
+
+# All chimp data
+Pantro3_10mil_cpg &lt;- paste(hg19_to_Pantro3_10mil[,1], sep = &quot;:&quot;, hg19_to_Pantro3_10mil[,2])
+Pantro3_10mil_cpg &lt;- paste(&quot;chr&quot;, Pantro3_10mil_cpg, sep = &quot;&quot; )
+
+# Combine all human and chimp cpgs
+
+two_genomes_dfCovnoX &lt;- cbind(hg19_10mil_cpg, Pantro3_10mil_cpg)
+
+# Merge human CpGs and chimp Cpgs
+
+chimp.cpg.intersect_2cpgs_with_human &lt;- merge(chimp.cpg.intersect_2cpgs, two_genomes_dfCovnoX, by.x = c(&quot;new_chimp_cpgs&quot;), by.y = c(&quot;Pantro3_10mil_cpg&quot;))
+
+
+human_chimp.cpg.intersect_2cpgs &lt;- merge(chimp.cpg.intersect_2cpgs_with_human, human.cpg.intersect_2cpgs, by.x = c(&quot;hg19_10mil_cpg&quot;), by.y = c(&quot;new_human_cpgs&quot;))
+
+dim(human_chimp.cpg.intersect_2cpgs)</code></pre>
+<pre><code>[1] 98645    22</code></pre>
+<pre class="r"><code>length(unique(human_chimp.cpg.intersect_2cpgs$names.x)) # still 7352 genes</code></pre>
+<pre><code>[1] 7352</code></pre>
+<pre class="r"><code># match(human_chimp.cpg.intersect_2cpgs$names.x == human_chimp.cpg.intersect_2cpgs$names.y)
+
+# Grab the first CpG for each gene
+val_first_gene &lt;- human_chimp.cpg.intersect_2cpgs[as.logical(ave(human_chimp.cpg.intersect_2cpgs$V2.x, human_chimp.cpg.intersect_2cpgs$names.x, FUN = function(x) x == min(x))),]
+
+
+# Grab the last CpG for each gene
+val_last_gene &lt;- human_chimp.cpg.intersect_2cpgs[as.logical(ave(human_chimp.cpg.intersect_2cpgs$V2.x, human_chimp.cpg.intersect_2cpgs$names.x, FUN = function(x) x == max(x))),]
+
+# Make sure that you are pulling them for the same genes
+summary(val_first_gene[,12] == val_first_gene[,22])</code></pre>
+<pre><code>   Mode    TRUE    NA&#39;s 
+logical    7352       0 </code></pre>
+<pre class="r"><code>summary(val_last_gene[,12] == val_last_gene[,22])</code></pre>
+<pre><code>   Mode    TRUE    NA&#39;s 
+logical    7352       0 </code></pre>
+<pre class="r"><code>summary(val_first_gene[,12] == val_last_gene[,12])</code></pre>
+<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
+logical      32    7320       0 </code></pre>
+<pre class="r"><code>val_first_last_gene &lt;- merge(val_first_gene, val_last_gene, by = c(&quot;names.x&quot;))
+
+# Separate back into first and last
+
+val_first_gene_sort &lt;- arrange(val_first_gene, val_first_gene$names.x)
+val_last_gene_sort &lt;- arrange(val_last_gene, val_last_gene$names.x)
+
+summary(val_first_gene_sort[,12] == val_last_gene_sort[,12])</code></pre>
+<pre><code>   Mode    TRUE    NA&#39;s 
+logical    7352       0 </code></pre>
+<pre class="r"><code>summary(val_first_gene_sort[,4] &lt; val_last_gene_sort[,4])</code></pre>
+<pre><code>   Mode    TRUE    NA&#39;s 
+logical    7352       0 </code></pre>
+<pre class="r"><code># Check to make sure no X or Y chromosome
+
+check_chr_val_first_gene_sort  &lt;- as.factor(val_first_gene_sort[,13])</code></pre>
+</div>
+<div id="make-species-specific-bedfiles-of-cpgs-that-we-need-to-pull" class="section level3">
+<h3>Make species specific bedfiles of CpGs that we need to pull</h3>
+<pre class="r"><code># Humans
+humans_250 &lt;- as.data.frame(cbind(val_first_gene_sort$V1.y, as.numeric(val_first_gene_sort$V2.y), as.numeric(val_last_gene_sort$V3.y), as.character(val_first_gene_sort$names.y)), stringsAsFactors = FALSE)
+humans_250[,2] &lt;- as.integer(humans_250[,2])
+humans_250[,3] &lt;- as.integer(humans_250[,3])
+colnames(humans_250) &lt;- c(&quot;chr&quot;, &quot;start&quot;, &quot;end&quot;, &quot;gene&quot;)
+dim(humans_250)</code></pre>
+<pre><code>[1] 7352    4</code></pre>
+<pre class="r"><code>bed_pos_human &lt;- bedr.sort.region(humans_250, method = &quot;lexicographical&quot;, check.chr = TRUE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Checking input type... PASS
+   Input is in bed format
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Overlapping regions can cause unexpected results.</code></pre>
+<pre class="r"><code># Chimps
+chimps_250 &lt;- as.data.frame(cbind(val_first_gene_sort$V1.x, as.numeric(val_first_gene_sort$V2.x), as.numeric(val_last_gene_sort$V3.x), as.character(val_first_gene_sort$names.x)), stringsAsFactors = FALSE)
+chimps_250[,2] &lt;- as.integer(chimps_250[,2])
+chimps_250[,3] &lt;- as.integer(chimps_250[,3])
+colnames(chimps_250) &lt;- c(&quot;chr&quot;, &quot;start&quot;, &quot;end&quot;, &quot;gene&quot;)
+dim(chimps_250)</code></pre>
+<pre><code>[1] 7352    4</code></pre>
+<pre class="r"><code>bed_pos_chimp &lt;- bedr.sort.region(chimps_250, method = &quot;lexicographical&quot;, check.chr = FALSE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Checking input type... PASS
+   Input is in bed format
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Overlapping regions can cause unexpected results.</code></pre>
+</div>
+<div id="run-liftover-with-the-correct-endpoints" class="section level3">
+<h3>Run liftover with the correct endpoints</h3>
+<pre class="r"><code>human_int_250 &lt;- bedr(input = list(a = hg19_10mil, b = bed_pos_human), method = &quot;intersect&quot;, params = &quot;-wao&quot;)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input seems to be in bed format but chr/start/end column names are missing
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/a_45c1cfc41d5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/b_45c1338b2b7.bed -wao</code></pre>
+<pre class="r"><code>show &lt;- human_int_250[,8] != -1
+matrix_grab &lt;- which(show == TRUE)
+
+matrix_grab_genes &lt;- human_int_250[matrix_grab,]
+
+matrix_grab_250 &lt;- as.data.frame(cbind(matrix_grab, matrix_grab_genes[,1:3], matrix_grab_genes[,10]), stringsAsFactors = FALSE)
+
+length(unique(matrix_grab_250[,5]))</code></pre>
+<pre><code>[1] 7352</code></pre>
+<pre class="r"><code>#write.table(matrix_grab_250, &quot;../data/chimp_human_250_matrix_grab_250_merged.txt&quot;, quote = FALSE)</code></pre>
+</div>
+</div>
+<div id="take-the-average-methylation-level-over-each-gene-and-run-pca" class="section level2">
+<h2>Take the average methylation level over each gene and run PCA</h2>
+<pre class="r"><code># Read in the data
+
+methyl_250_2cpgs &lt;- read.csv(&quot;../data/chimp_human_orth_tab_98k_with_genes.txt&quot;, sep=&quot;&quot;, stringsAsFactors=FALSE)
+methyl_250_2cpgs &lt;- methyl_250_2cpgs[,6:38]
+
+# Average over all orthologous CpGs
+
+avg_methylation_multiple_cpgs_per_gene &lt;- array(data = NA, dim = c(7352,32))
+
+for (i in 2:33){
+avg_methylation_multiple_cpgs_per_gene[,i-1] &lt;- aggregate(methyl_250_2cpgs[,i] ~ methyl_250_2cpgs[,1], data = methyl_250_2cpgs, mean)[,2]
+}
+
+colnames(avg_methylation_multiple_cpgs_per_gene) &lt;- colnames(methyl_250_2cpgs[,2:33])
+
+# Get the gene names
+
+gene_names &lt;- array(data = NA, dim = c(7352,1))
+
+for (i in 2){
+gene_names[,i-1] &lt;- aggregate(methyl_250_2cpgs[,i] ~ methyl_250_2cpgs[,1], data = methyl_250_2cpgs, mean)[,1]
+}
+
+# Make file with average values and gene names
+
+matrix_methyl &lt;- cbind(avg_methylation_multiple_cpgs_per_gene, gene_names)
+#write.table(matrix_methyl, &quot;../data/chimp_human_orth_7352_avg_methyl_per_ts_gene.txt&quot;)
+
+# PCA with just the humans and chimps
+
+pca_genes &lt;- prcomp(t(avg_methylation_multiple_cpgs_per_gene), scale = T, center = T)
+scores &lt;- pca_genes$x
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+summary &lt;- summary(pca_genes)
+
+
+
+
+
+library(&quot;ggplot2&quot;)
+library(&quot;RColorBrewer&quot;)
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>
+Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    lowess</code></pre>
+<pre class="r"><code>samples &lt;- read.csv(&quot;../data/Sample_info_RNAseq.csv&quot;)
+
+tissue &lt;- samples$Tissue[1:32]
+species &lt;- samples$Species[1:32]
+
+# Load colors 
+
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Make PCA
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue))) + bjp  + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=pcs, aes(x=pc3, y=pc2, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue))) + bjp + xlab(paste(&quot;PC3 (&quot;,(summary$importance[2,3]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-17-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Bryan&#39;s code for clustering 
+
+library(dendextend)</code></pre>
+<pre><code>Warning: package &#39;dendextend&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: replacing previous import by &#39;magrittr::%&gt;%&#39; when loading
+&#39;dendextend&#39;</code></pre>
+<pre><code>
+---------------------
+Welcome to dendextend version 1.5.2
+Type citation(&#39;dendextend&#39;) for how to cite the package.
+
+Type browseVignettes(package = &#39;dendextend&#39;) for the package vignette.
+The github page is: https://github.com/talgalili/dendextend/
+
+Suggestions and bug-reports can be submitted at: https://github.com/talgalili/dendextend/issues
+Or contact: &lt;tal.galili@gmail.com&gt;
+
+    To suppress this message use:  suppressPackageStartupMessages(library(dendextend))
+---------------------</code></pre>
+<pre><code>
+Attaching package: &#39;dendextend&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:stats&#39;:
+
+    cutree</code></pre>
+<pre class="r"><code>library(colorspace)</code></pre>
+<pre><code>Warning: package &#39;colorspace&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>Warning: package &#39;tidyverse&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Loading tidyverse: tibble
+Loading tidyverse: tidyr
+Loading tidyverse: readr
+Loading tidyverse: purrr</code></pre>
+<pre><code>Warning: package &#39;tibble&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;tidyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;readr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;purrr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Conflicts with tidy packages ----------------------------------------------</code></pre>
+<pre><code>arrange():   dplyr, plyr
+compact():   purrr, plyr
+count():     dplyr, plyr
+failwith():  dplyr, plyr
+filter():    dplyr, stats
+id():        dplyr, plyr
+lag():       dplyr, stats
+mutate():    dplyr, plyr
+rename():    dplyr, plyr
+summarise(): dplyr, plyr
+summarize(): dplyr, plyr</code></pre>
+<pre class="r"><code>#Function to make pearson correlation matrix and convert into distance matrix
+pearson &lt;- function(x, ...) {
+    x &lt;- as.matrix(x)
+    res &lt;- as.dist(1 - cor(x, method = &quot;pearson&quot;, use = &quot;everything&quot;))
+    res &lt;- as.dist(res)
+    attr(res, &quot;method&quot;) &lt;- &quot;pearson&quot;
+    return(res)
+}
+
+
+
+cor(avg_methylation_multiple_cpgs_per_gene[,1:32])-&gt;all_data
+
+hc &lt;- avg_methylation_multiple_cpgs_per_gene[,1:32] %&gt;% pearson %&gt;% hclust(method=&quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram 
+
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(5, 5), trace=&#39;none&#39;, denscol=&quot;white&quot;, Colv=dend,Rowv=dend, ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(tissue))+9])</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-17-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="find-the-average-size-of-the-region" class="section level2">
+<h2>Find the average size of the region</h2>
+<pre class="r"><code># PCA with just the humans and chimps
+
+lungs &lt;- c(4, 8, 12, 16, 20, 24, 28, 32)
+
+pca_genes &lt;- prcomp(t(avg_methylation_multiple_cpgs_per_gene[,-(lungs)]), scale = T, center = T)
+scores &lt;- pca_genes$x
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+summary &lt;- summary(pca_genes)
+
+tissue &lt;- samples$Tissue[1:32]
+tissue_no_lungs &lt;- tissue[-lungs]
+species &lt;- samples$Species[1:32]
+species_no_lungs &lt;- species[-lungs]
+
+# Make PCA
+
+cbPalette &lt;- c(&quot;black&quot;, &quot;red&quot;, &quot;blue&quot;)
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=tissue_no_lungs, shape=species_no_lungs, size=2)) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + geom_point(aes(colour = as.factor(tissue_no_lungs))) + bjp +  scale_colour_manual(values=cbPalette) + scale_shape_manual(values=c(17, 15))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="pca-with-the-10-million-orthologous-cpg-sites-between-humans-and-chimps" class="section level3">
+<h3>PCA with the 10 million orthologous CpG sites between humans and chimps</h3>
+<pre class="r"><code># Load data (PCA)
+pcs_10mil &lt;- read.csv(&quot;../data/pcs_10mil.txt&quot;, sep=&quot;&quot;)
+
+# Load libraries
+library(&quot;ggplot2&quot;)
+library(&quot;RColorBrewer&quot;)
+
+# Load sample information 
+samples &lt;- read.csv(&quot;../data/Sample_info_RNAseq.csv&quot;)
+tissue &lt;- samples$Tissue[1:32]
+species &lt;- samples$Species[1:32]
+
+# Run PCA
+pc1 &lt;- pcs_10mil[,1]
+pc2 &lt;- pcs_10mil[,2]
+pc3 &lt;- pcs_10mil[,3]
+pc4 &lt;- pcs_10mil[,4]
+pc5 &lt;- pcs_10mil[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue))) + bjp</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=pcs, aes(x=pc2, y=pc3, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue)))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-19-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="repeat-but-with-the-gene-regions-separated" class="section level3">
+<h3>Repeat but with the gene regions separated</h3>
+<pre class="r"><code>methyl_250_2cpgs &lt;- read.csv(&quot;../data/chimp_human_orth_tab_98k_with_genes.txt&quot;, sep=&quot;&quot;, stringsAsFactors=FALSE)
+
+# Take out the genes on the X chromosome
+
+methyl_250_2cpgs &lt;- methyl_250_2cpgs[!grepl(&quot;chrX&quot;, methyl_250_2cpgs$V2),]
+
+# Grab CpGs with 1 gene
+
+one_gene_region &lt;- methyl_250_2cpgs[!grepl(&quot;,&quot;, methyl_250_2cpgs[,6]),]
+
+one_gene_regions_count &lt;- count(one_gene_region[,6])
+summary(one_gene_regions_count[,2])</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2.00    6.00   12.00   12.86   18.00   42.00 </code></pre>
+<pre class="r"><code># Grab CpGs with 2 genes
+
+two_gene_regions &lt;- methyl_250_2cpgs[grepl(&quot;,&quot;, methyl_250_2cpgs[,6]),]
+
+bed_two_gene_regions &lt;- two_gene_regions[,3:5]
+colnames(bed_two_gene_regions) &lt;- c(&quot;chr&quot;, &quot;start&quot;, &quot;end&quot;)
+bed_two_gene_regions &lt;- bedr.sort.region(bed_two_gene_regions, check.chr = TRUE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Checking input type... PASS
+   Input is in bed format
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Overlapping regions can cause unexpected results.</code></pre>
+<pre class="r"><code># Try to intersect 
+
+sort_human_bounds &lt;- bedr.sort.region(human_250_interval, check.chr = TRUE)</code></pre>
+<pre><code>SORTING
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS</code></pre>
+<pre class="r"><code>human.cpg.int &lt;- bedr(input = list(a = bed_two_gene_regions, b = sort_human_bounds), method = &quot;intersect&quot;, params = &quot;-wao&quot;, check.chr=TRUE)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+   The input for object has overlapping features!
+   This can cause unexpected results for some set operations.
+   i.e. x &lt;- bedr.merge.region(x)
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/a_45c1b69fbb4.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpNelh0F/b_45c74561ee5.bed -wao</code></pre>
+<pre class="r"><code>two_gene_regions_merge &lt;- merge(human.cpg.int, methyl_250_2cpgs, by.x = c(&quot;start&quot;), by.y = c(&quot;V3&quot;))
+
+clean_up &lt;- c(9, 16:47)
+two_gene_regions_merge_to_avg &lt;- two_gene_regions_merge[,clean_up]
+two_gene_regions_merge_to_avg &lt;- as.data.frame(two_gene_regions_merge_to_avg)
+two_gene_regions_merge_to_avg_sort &lt;- arrange(two_gene_regions_merge_to_avg, two_gene_regions_merge_to_avg$ENSG)
+
+length(unique(two_gene_regions_merge_to_avg_sort$ENSG))</code></pre>
+<pre><code>[1] 752</code></pre>
+<pre class="r"><code>two_gene_regions_merge_to_avg_count &lt;- count(two_gene_regions_merge_to_avg$ENSG)
+summary(two_gene_regions_merge_to_avg_count$freq)</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1.00   12.00   19.00   18.45   24.00   41.00 </code></pre>
+<pre class="r"><code>two_gene_regions_merge_to_avg_count_sort &lt;- arrange(two_gene_regions_merge_to_avg_count, two_gene_regions_merge_to_avg_count$freq)
+
+# Take out the two genes (PLAGL2 and SIRT3, ENSG00000126003 and ENSG00000142082) with only 1 CpG/gene
+
+
+two_gene_regions &lt;- two_gene_regions_merge_to_avg_sort[!grepl(&quot;ENSG00000126003&quot;, two_gene_regions_merge_to_avg_sort$ENSG),]
+two_gene_regions_two_cpgs &lt;- two_gene_regions[!grepl(&quot;ENSG00000142082&quot;, two_gene_regions$ENSG),]
+
+# Find the number of genes
+length(unique(one_gene_region[,6]))</code></pre>
+<pre><code>[1] 6975</code></pre>
+<pre class="r"><code>length(unique(two_gene_regions_two_cpgs$ENSG))</code></pre>
+<pre><code>[1] 750</code></pre>
+<pre class="r"><code>one_gene_region_methyl &lt;- one_gene_region[,6:38]
+colnames(one_gene_region_methyl) &lt;- colnames(two_gene_regions_two_cpgs)
+
+all_genes_methyl &lt;- rbind(one_gene_region_methyl, two_gene_regions_two_cpgs)
+length(unique(all_genes_methyl$ENSG))</code></pre>
+<pre><code>[1] 7725</code></pre>
+</div>
+</div>
+<div id="take-the-average-methylation-level-over-each-gene-and-run-pca-1" class="section level2">
+<h2>Take the average methylation level over each gene and run PCA</h2>
+<pre class="r"><code># Rename so you can reuse code
+
+methyl_250_2cpgs &lt;- all_genes_methyl
+
+# Average over all orthologous CpGs
+
+avg_methylation_multiple_cpgs_per_gene &lt;- array(data = NA, dim = c(7725,32))
+
+for (i in 2:33){
+avg_methylation_multiple_cpgs_per_gene[,i-1] &lt;- aggregate(methyl_250_2cpgs[,i] ~ methyl_250_2cpgs[,1], data = methyl_250_2cpgs, mean)[,2]
+}
+
+colnames(avg_methylation_multiple_cpgs_per_gene) &lt;- colnames(methyl_250_2cpgs[,2:33])
+
+# Get the gene names
+
+gene_names &lt;- array(data = NA, dim = c(7725,1))
+
+for (i in 2){
+gene_names[,i-1] &lt;- aggregate(methyl_250_2cpgs[,i] ~ methyl_250_2cpgs[,1], data = methyl_250_2cpgs, mean)[,1]
+}
+
+# Make file with average values and gene names
+
+matrix_methyl &lt;- cbind(avg_methylation_multiple_cpgs_per_gene, gene_names)
+#write.table(matrix_methyl, &quot;../data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt&quot;)
+
+# PCA with just the humans and chimps
+
+pca_genes &lt;- prcomp(t(avg_methylation_multiple_cpgs_per_gene), scale = T)
+scores &lt;- pca_genes$x
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+summary &lt;- summary(pca_genes)
+
+
+samples &lt;- read.csv(&quot;../data/Sample_info_RNAseq.csv&quot;)
+
+tissue &lt;- samples$Tissue[1:32]
+species &lt;- samples$Species[1:32]
+
+# Load colors 
+
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Make PCA
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue))) + bjp  + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=pcs, aes(x=pc3, y=pc2, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue))) + bjp + xlab(paste(&quot;PC3 (&quot;,(summary$importance[2,3]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-21-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Bryan&#39;s code for clustering 
+
+library(dendextend)
+library(colorspace)
+library(tidyverse)
+
+#Function to make pearson correlation matrix and convert into distance matrix
+pearson &lt;- function(x, ...) {
+    x &lt;- as.matrix(x)
+    res &lt;- as.dist(1 - cor(x, method = &quot;pearson&quot;, use = &quot;everything&quot;))
+    res &lt;- as.dist(res)
+    attr(res, &quot;method&quot;) &lt;- &quot;pearson&quot;
+    return(res)
+}
+
+
+
+cor(avg_methylation_multiple_cpgs_per_gene[,1:32])-&gt;all_data
+
+hc &lt;- avg_methylation_multiple_cpgs_per_gene[,1:32] %&gt;% pearson %&gt;% hclust(method=&quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram 
+
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(5, 5), trace=&#39;none&#39;, denscol=&quot;white&quot;, Colv=dend,Rowv=dend, ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(tissue))+9])</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-21-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="find-the-average-size-of-the-region-1" class="section level2">
+<h2>Find the average size of the region</h2>
+<pre class="r"><code># PCA with just the humans and chimps
+
+lungs &lt;- c(4, 8, 12, 16, 20, 24, 28, 32)
+
+pca_genes &lt;- prcomp(t(avg_methylation_multiple_cpgs_per_gene[,-(lungs)]), scale = T, center = T)
+scores &lt;- pca_genes$x
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+summary &lt;- summary(pca_genes)
+
+tissue &lt;- samples$Tissue[1:32]
+tissue_no_lungs &lt;- tissue[-lungs]
+species &lt;- samples$Species[1:32]
+species_no_lungs &lt;- species[-lungs]
+
+# Make PCA
+
+cbPalette &lt;- c(&quot;black&quot;, &quot;red&quot;, &quot;blue&quot;)
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=tissue_no_lungs, shape=species_no_lungs, size=2)) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + geom_point(aes(colour = as.factor(tissue_no_lungs))) + bjp +  scale_colour_manual(values=cbPalette) + scale_shape_manual(values=c(17, 15))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="pca-with-the-10-million-orthologous-cpg-sites-between-humans-and-chimps-1" class="section level3">
+<h3>PCA with the 10 million orthologous CpG sites between humans and chimps</h3>
+<pre class="r"><code># Load data (PCA)
+pcs_10mil &lt;- read.csv(&quot;../data/pcs_10mil.txt&quot;, sep=&quot;&quot;)
+
+# Load libraries
+library(&quot;ggplot2&quot;)
+library(&quot;RColorBrewer&quot;)
+
+# Load sample information 
+samples &lt;- read.csv(&quot;../data/Sample_info_RNAseq.csv&quot;)
+tissue &lt;- samples$Tissue[1:32]
+species &lt;- samples$Species[1:32]
+
+# Run PCA
+pc1 &lt;- pcs_10mil[,1]
+pc2 &lt;- pcs_10mil[,2]
+pc3 &lt;- pcs_10mil[,3]
+pc4 &lt;- pcs_10mil[,4]
+pc5 &lt;- pcs_10mil[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue))) + bjp</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-23-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=pcs, aes(x=pc2, y=pc3, color=tissue, shape=species, size=2)) + geom_point(aes(colour = as.factor(tissue)))</code></pre>
+<p><img src="figure/Hg19_PanTro3_TSS.Rmd/unnamed-chunk-23-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
