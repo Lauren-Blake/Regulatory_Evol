@@ -2,7 +2,7 @@
 title: "Identifying DMRs"
 author: "Lauren Blake"
 date: "January 5, 2018"
-output: word_document
+output: html_document
 ---
 
 Since identifying DMRs is computationally intensive using the BSmooth package, we needed to run this on the cluster (/mnt/gluster/home/leblake/Methylation/tissue\_DMRs and /mnt/gluster/home/leblake/Methylation/species\_DMRs)
