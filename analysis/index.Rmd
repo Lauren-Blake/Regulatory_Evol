@@ -52,6 +52,7 @@ title: "Home"
 ## Differentiatlly methylated regions
 
 *  [Pairwise tDMRs](../analysis/Finding_DMRs.html)
+*  [Finding conserved tDMRs](../analysis/Finding_conserved_DMRs.html)
 
 ## Integration of gene expression levels and methylatiom levels: humans and chimpanzees
 
