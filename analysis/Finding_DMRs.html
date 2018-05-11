@@ -21,8 +21,8 @@
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="libs/navigation-1.1/tabsets.js"></script>
-<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="libs/highlightjs-1.1/highlight.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">
 
@@ -66,10 +66,12 @@ body {
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -213,16 +215,13 @@ $(document).ready(function () {
 <p>First, we will examine the results of the tissue DMRs</p>
 <pre class="r"><code># Import libraries
 
-library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
-<pre><code>Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+library(&quot;ggplot2&quot;)
+library(&quot;VennDiagram&quot;)</code></pre>
 <pre><code>Loading required package: grid</code></pre>
 <pre><code>Loading required package: futile.logger</code></pre>
-<pre><code>Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code>library(plyr)</code></pre>
-<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code># Import the data
+<pre class="r"><code>library(plyr)
+
+# Import the data
 
 # Human tDMRs
 humans_heart_kidney_DMRs &lt;- read.delim(&quot;../data/humans_heart_kidney_DMRs.txt&quot;)
@@ -360,11 +359,10 @@ levels(factor(rhesus_heart_kidney_DMRs[,1]))</code></pre>
 <div id="how-many-regions-overlap-eachother" class="section level1">
 <h1>How many regions overlap eachother?</h1>
 <pre class="r"><code>library(&quot;bedr&quot;)</code></pre>
-<pre><code>Warning: package &#39;bedr&#39; was built under R version 3.2.5</code></pre>
 <pre><code>
 
 ######################
-#### bedr v1.0.3 ####
+#### bedr v1.0.4 ####
 ######################
 
 checking binary availability...
@@ -446,7 +444,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c04badea8f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c056beffa.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f28238996.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1f1ea859.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     5.0   255.0   473.0   584.5   795.0  4797.0 </code></pre>
@@ -454,8 +452,8 @@ VALIDATE REGIONS
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     0.0     0.0     0.0   102.3     0.0  3167.0 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   18703    3858       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   18703    3858 </code></pre>
 <pre class="r"><code>lung_heart &lt;- bedr(input = list(a = sort_humans_heart_lung_DMRs_bed, b = sort_humans_heart_liver_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.5 -F 0.5&quot;)</code></pre>
 <pre><code> * Processing input (1): a
 CONVERT TO BED
@@ -481,21 +479,21 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c06d891e88.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01fba4622.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f493b258e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f2035aefc.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     0.0     0.0     0.0   162.5   162.0  3167.0 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   10350    3858       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   10350    3858 </code></pre>
 <pre class="r"><code># Make a Venn diagram based on the results
 
 summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   18703    3858       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   18703    3858 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   10350    3858       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   10350    3858 </code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = 22561, area2 = 14208, cross.area = 3858, category = c(&quot;Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -503,6 +501,36 @@ draw.pairwise.venn(area1 = 22561, area2 = 14208, cross.area = 3858, category = c
 </div>
 <div id="how-does-the-overlap-change-based-on-bp" class="section level1">
 <h1>How does the overlap change based on % bp?</h1>
+<pre class="r"><code># 1 bp overlap
+heart_liver_1 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 1E-9 -F 1E-9&quot;)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2bf4679b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f48cb56de.bed -wao -f 1E-9 -F 1E-9</code></pre>
+<pre class="r"><code>summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   16965    5607 </code></pre>
 <pre class="r"><code># 10% overlap
 heart_liver_10 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.10 -F 0.10&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -529,10 +557,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0487061c6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0443a24a8.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f626cc057.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f67f94a64.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17096    5472       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17096    5472 </code></pre>
 <pre class="r"><code># 20% overlap
 heart_liver_20 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.20 -F 0.20&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -559,10 +587,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c04d8f7528.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01b84129c.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1c57695f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f49375fcc.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17374    5189       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17374    5189 </code></pre>
 <pre class="r"><code># 25% overlap
 heart_liver_25 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.25 -F 0.25&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -589,10 +617,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c071c3202b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c07cb5bf2a.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7673dbce.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f79a69811.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17554    5007       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17554    5007 </code></pre>
 <pre class="r"><code># 30% overlap
 heart_liver_30 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.30 -F 0.30&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -619,10 +647,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c017c08639.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c061118c4e.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7c74d4e9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6eae3c48.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17737    4824       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17737    4824 </code></pre>
 <pre class="r"><code>#40% overlap
 heart_liver_40 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.4 -F 0.4&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -649,10 +677,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0673ec983.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c02e45125d.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4d4af8ce.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f396072c8.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   18161    4400       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   18161    4400 </code></pre>
 <pre class="r"><code># 50% overlap
 heart_liver_50 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.50 -F 0.50&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -679,10 +707,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c044543fd6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01be920ff.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f283256fd.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f125827f3.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   18703    3858       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   18703    3858 </code></pre>
 <pre class="r"><code>#60% overlap
 heart_liver_60 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.6 -F 0.6&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -709,10 +737,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0162831e4.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c04516b12.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f42291c0.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6e9a6811.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   19286    3275       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   19286    3275 </code></pre>
 <pre class="r"><code># 70% overlap
 heart_liver_70 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.70 -F 0.70&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -739,10 +767,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c02a151ccb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0302704ae.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f16872692.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f49dd7a54.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   19925    2636       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   19925    2636 </code></pre>
 <pre class="r"><code>#75% overlap
 heart_liver_75 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.75 -F 0.75&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -769,10 +797,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c044fc3bcf.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0716f118.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f14c93b57.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6d578104.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   20256    2305       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   20256    2305 </code></pre>
 <pre class="r"><code># 80% overlap
 heart_liver_80 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.80 -F 0.80&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -799,10 +827,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c049f1de89.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c05b5830ae.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f65593e9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7e433256.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   20597    1964       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   20597    1964 </code></pre>
 <pre class="r"><code>#90% overlap
 heart_liver_90 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.9 -F 0.9&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -829,10 +857,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c07fdd636f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0366e62d9.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f47a90739.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4ff060529.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   21223    1338       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   21223    1338 </code></pre>
 <pre class="r"><code>#100% overlap
 heart_liver_100 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 1 -F 1&quot;)</code></pre>
 <pre><code> * Processing input (1): a
@@ -859,57 +887,61 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c03b7b66.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01f6b135d.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f633afe84.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7b59111e.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   21587     974       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   21587     974 </code></pre>
 <div id="plot-the-overlap" class="section level2">
 <h2>Plot the overlap</h2>
 <pre class="r"><code># Find the number of tDMRs depending on the bp overlap
-summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17096    5472       0 </code></pre>
+summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   16965    5607 </code></pre>
+<pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17096    5472 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17374    5189       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17374    5189 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17554    5007       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17554    5007 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   17737    4824       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   17737    4824 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   18161    4400       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   18161    4400 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   18703    3858       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   18703    3858 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   19286    3275       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   19286    3275 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   19925    2636       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   19925    2636 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   20256    2305       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   20256    2305 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   20597    1964       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   20597    1964 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   21223    1338       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   21223    1338 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   21587     974       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   21587     974 </code></pre>
 <pre class="r"><code># Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung &lt;- c(5472, 5189, 5007, 4824, 4400, 3858, 3275, 2636, 2305,1964,1338, 974)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung &lt;- c(5607, 5472, 5189, 5007, 4824, 4400, 3858, 3275, 2636, 2305,1964,1338, 974)
+perc_overlap &lt;- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Number of human tDMRs (HvLi and HvLu)&quot;,  pch = 19)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Investigate the size of the tDMRs depending on the percentage overlap
 
+check_1 &lt;- heart_liver_10[which((as.integer(heart_liver_1[,9]) &gt; 0) == TRUE),]
 check_10 &lt;- heart_liver_10[which((as.integer(heart_liver_10[,9]) &gt; 0) == TRUE),]
 check_20 &lt;- heart_liver_20[which((as.integer(heart_liver_20[,9]) &gt; 0) == TRUE),]
 check_25 &lt;- heart_liver_25[which((as.integer(heart_liver_25[,9]) &gt; 0) == TRUE),]
@@ -923,7 +955,10 @@ check_80 &lt;- heart_liver_80[which((as.integer(heart_liver_80[,9]) &gt; 0) == T
 check_90 &lt;- heart_liver_90[which((as.integer(heart_liver_90[,9]) &gt; 0) == TRUE),]
 check_100 &lt;- heart_liver_100[which((as.integer(heart_liver_100[,9]) &gt; 0) == TRUE),]
 
-summary(as.integer(check_10[,9]))</code></pre>
+summary(as.integer(check_1[,9]))</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+    0.0     0.0   120.0   280.7   468.8  3167.0       1 </code></pre>
+<pre class="r"><code>summary(as.integer(check_10[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     6.0   228.0   419.0   501.7   697.0  3167.0 </code></pre>
 <pre class="r"><code>summary(as.integer(check_20[,9]))</code></pre>
@@ -960,8 +995,8 @@ summary(as.integer(check_10[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     6.0   223.2   410.5   502.5   707.8  2658.0 </code></pre>
 <pre class="r"><code># Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(419, 440, 454, 470, 500, 533, 574, 601, 604,599,522, 410.5)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(120, 419, 440, 454, 470, 500, 533, 574, 601, 604,599,522, 410.5)
+perc_overlap &lt;- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Median length of overlap (bp)&quot;, pch = 19, main = &quot;Median length of overlap between human tDMRs (HvLi and HvLu)&quot;)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -1040,7 +1075,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c077614e9e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c05f741538.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4fa089d3f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5a917a33.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     6.0   261.0   486.0   594.7   831.0  4630.0 </code></pre>
@@ -1048,8 +1083,8 @@ VALIDATE REGIONS
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    0.00    0.00    0.00   20.34    0.00 2071.00 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29136    1155       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29136    1155 </code></pre>
 <pre class="r"><code>lung_heart &lt;- bedr(input = list(a = sort_humans_heart_lung_DMRs_bed, b = sort_humans_heart_liver_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.5 -F 0.5&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
 CONVERT TO BED
@@ -1075,25 +1110,52 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c05acfa53e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c020f8c4fc.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f424eeb2b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f28bd9232.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    0.00    0.00    0.00   47.99    0.00 2071.00 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   11687    1155       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   11687    1155 </code></pre>
 <pre class="r"><code># Make a Venn diagram based on the results
 
 summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29136    1155       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29136    1155 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   11687    1155       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   11687    1155 </code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = (29136+1155), area2 = (11687+1155), cross.area = 1155, category = c(&quot;Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>(polygon[GRID.polygon.10], polygon[GRID.polygon.11], polygon[GRID.polygon.12], polygon[GRID.polygon.13], text[GRID.text.14], text[GRID.text.15], text[GRID.text.16], lines[GRID.lines.17], text[GRID.text.18], text[GRID.text.19]) </code></pre>
+<pre class="r"><code># 1 bp overlap
+heart_liver_1 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.00000001 -F 0.00000001&quot;)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f55fdda62.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4ffefbde9.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
 <pre class="r"><code># 10% overlap
 heart_liver_10 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.10 -F 0.10&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1120,10 +1182,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c07f577d82.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c011a3145f.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f436a3336.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4fdf8140d.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28021    2275       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28021    2275 </code></pre>
 <pre class="r"><code># 20% overlap
 heart_liver_20 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.20 -F 0.20&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1150,10 +1212,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c04228b6c6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c08d76e77.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f449ad598.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f123fc00c.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28295    1998       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28295    1998 </code></pre>
 <pre class="r"><code># 25% overlap
 heart_liver_25 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.25 -F 0.25&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1180,10 +1242,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c05a93d9a8.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c079193c57.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f236fd9fe.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5f9f2d90.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28422    1870       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28422    1870 </code></pre>
 <pre class="r"><code># 30% overlap
 heart_liver_30 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.30 -F 0.30&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1210,10 +1272,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c038a04c9c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c021a73b56.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5abaf7ef.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f2778295e.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28552    1739       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28552    1739 </code></pre>
 <pre class="r"><code>#40% overlap
 heart_liver_40 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.4 -F 0.4&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1240,10 +1302,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c02686caef.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c068ff987.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f20aafacc.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f71f2c394.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28840    1451       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28840    1451 </code></pre>
 <pre class="r"><code># 50% overlap
 heart_liver_50 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.50 -F 0.50&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1270,10 +1332,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c050279d47.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c05991c004.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5714ce16.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1ea0088d.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29136    1155       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29136    1155 </code></pre>
 <pre class="r"><code>#60% overlap
 heart_liver_60 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.6 -F 0.6&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1300,10 +1362,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c060184abb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01b16190e.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4ff54f416.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5a5165df.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29425     866       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29425     866 </code></pre>
 <pre class="r"><code># 70% overlap
 heart_liver_70 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.70 -F 0.70&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1330,10 +1392,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0c0a15d4.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01edbc7c0.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7618d4c4.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f3b5820b1.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29659     632       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29659     632 </code></pre>
 <pre class="r"><code>#75% overlap
 heart_liver_75 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.75 -F 0.75&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1360,10 +1422,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c034126f73.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0790f48bd.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f6f08e2af.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f15d4b8ff.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29784     507       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29784     507 </code></pre>
 <pre class="r"><code># 80% overlap
 heart_liver_80 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.80 -F 0.80&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1390,10 +1452,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c01d67d217.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c012d19934.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5c640281.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f727b60f8.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29865     426       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29865     426 </code></pre>
 <pre class="r"><code>#90% overlap
 heart_liver_90 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.9 -F 0.9&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1420,10 +1482,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c058fe010d.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c07b8cd420.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1784a1ef.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7fd8106b.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29997     294       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29997     294 </code></pre>
 <pre class="r"><code>#100% overlap
 heart_liver_100 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 1 -F 1&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1450,55 +1512,58 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c059203866.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0676652e.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f46444e8e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f11480dd4.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   30057     234       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   30057     234 </code></pre>
 <pre class="r"><code># Find the number of tDMRs depending on the bp overlap
-summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28021    2275       0 </code></pre>
+summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27864    2440 </code></pre>
+<pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28021    2275 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28295    1998       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28295    1998 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28422    1870       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28422    1870 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28552    1739       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28552    1739 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28840    1451       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28840    1451 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29136    1155       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29136    1155 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29425     866       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29425     866 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29659     632       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29659     632 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29784     507       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29784     507 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29865     426       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29865     426 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   29997     294       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   29997     294 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   30057     234       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   30057     234 </code></pre>
 <pre class="r"><code># Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung &lt;- c(2275, 1998, 1870, 1739, 1451, 1155, 866, 632, 507,426,294, 234)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung &lt;- c(2440, 2275, 1998, 1870, 1739, 1451, 1155, 866, 632, 507,426,294, 234)
+perc_overlap &lt;- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Number of overlapping chimp tDMRs&quot;,  pch = 19, main = &quot;Overlapping Human tDMRs (HvK and LivLu)&quot;)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Investigate the size of the tDMRs depending on the percentage overlap
-
+check_1 &lt;- heart_liver_1[which((as.integer(heart_liver_1[,9]) &gt; 0) == TRUE),]
 check_10 &lt;- heart_liver_10[which((as.integer(heart_liver_10[,9]) &gt; 0) == TRUE),]
 check_20 &lt;- heart_liver_20[which((as.integer(heart_liver_20[,9]) &gt; 0) == TRUE),]
 check_25 &lt;- heart_liver_25[which((as.integer(heart_liver_25[,9]) &gt; 0) == TRUE),]
@@ -1512,7 +1577,10 @@ check_80 &lt;- heart_liver_80[which((as.integer(heart_liver_80[,9]) &gt; 0) == T
 check_90 &lt;- heart_liver_90[which((as.integer(heart_liver_90[,9]) &gt; 0) == TRUE),]
 check_100 &lt;- heart_liver_100[which((as.integer(heart_liver_100[,9]) &gt; 0) == TRUE),]
 
-summary(as.integer(check_10[,9]))</code></pre>
+summary(as.integer(check_1[,9]))</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    2.0   151.8   301.0   378.3   522.0  2071.0 </code></pre>
+<pre class="r"><code>summary(as.integer(check_10[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     8.0   173.0   321.0   401.2   545.0  2071.0 </code></pre>
 <pre class="r"><code>summary(as.integer(check_20[,9]))</code></pre>
@@ -1549,8 +1617,8 @@ summary(as.integer(check_10[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    12.0   150.0   340.0   434.6   631.8  1866.0 </code></pre>
 <pre class="r"><code># Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(321, 357, 376, 394, 429, 467, 498.5, 503.5, 514, 475.5, 390.5, 340)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(301, 321, 357, 376, 394, 429, 467, 498.5, 503.5, 514, 475.5, 390.5, 340)
+perc_overlap &lt;- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Median length of overlap (bp)&quot;, pch = 19, main = &quot;Median length of overlap between human tDMRs (HvK and LivLu)&quot;)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -1632,7 +1700,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0472676aa.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0709dc02b.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f62d20590.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f245ec8f2.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     5.0   266.0   498.0   617.6   849.0  4950.0 </code></pre>
@@ -1640,8 +1708,8 @@ VALIDATE REGIONS
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    0.00    0.00    0.00   56.97    0.00 4186.00 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   26162    2607       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   26162    2607 </code></pre>
 <pre class="r"><code>lung_heart &lt;- bedr(input = list(a = sort_humans_heart_lung_DMRs_bed, b = sort_humans_heart_liver_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.5 -F 0.5&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
 CONVERT TO BED
@@ -1667,25 +1735,52 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c046a9b22f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01e8d4983.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3d43478.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f56cdbfa0.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     0.0     0.0     0.0   192.2   278.8  4186.0 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    5919    2607       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    5919    2607 </code></pre>
 <pre class="r"><code># Make a Venn diagram based on the results
 
 summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   26162    2607       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   26162    2607 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    5919    2607       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    5919    2607 </code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = (26162+2607), area2 = (5919+2607), cross.area = 2607, category = c(&quot;Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>(polygon[GRID.polygon.20], polygon[GRID.polygon.21], polygon[GRID.polygon.22], polygon[GRID.polygon.23], text[GRID.text.24], text[GRID.text.25], text[GRID.text.26], text[GRID.text.27], text[GRID.text.28]) </code></pre>
+<pre class="r"><code># 1 bp overlap
+heart_liver_1 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.00000001 -F 0.00000001&quot;, check.chr = FALSE)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f46acf245.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6019d8e3.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
 <pre class="r"><code># 10% overlap
 heart_liver_10 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.10 -F 0.10&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1712,10 +1807,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c058426f7e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c028fba397.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4683a5cf.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f153f8c42.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   24943    3837       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   24943    3837 </code></pre>
 <pre class="r"><code># 20% overlap
 heart_liver_20 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.20 -F 0.20&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1742,10 +1837,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c07f1fa8cb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c03069a199.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f485662af.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f3d48d18a.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25160    3614       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25160    3614 </code></pre>
 <pre class="r"><code># 25% overlap
 heart_liver_25 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.25 -F 0.25&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1772,10 +1867,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0b107849.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c056523c94.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1776e3ff.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f71fa6dcf.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25301    3472       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25301    3472 </code></pre>
 <pre class="r"><code># 30% overlap
 heart_liver_30 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.30 -F 0.30&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1802,10 +1897,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c07b6e5506.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c02633f846.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f542688c5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1cf6f24b.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25439    3332       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25439    3332 </code></pre>
 <pre class="r"><code>#40% overlap
 heart_liver_40 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.4 -F 0.4&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1832,10 +1927,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c023c4476e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01c06fcbb.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f619d8b76.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f535abaad.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25795    2974       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25795    2974 </code></pre>
 <pre class="r"><code># 50% overlap
 heart_liver_50 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.50 -F 0.50&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1862,10 +1957,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0529453e5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c03f31b79c.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2dfb20ed.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f402778b7.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   26162    2607       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   26162    2607 </code></pre>
 <pre class="r"><code>#60% overlap
 heart_liver_60 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.6 -F 0.6&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1892,10 +1987,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c068c56b5b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c020b08c62.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1daf0b9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f21f836e1.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   26589    2180       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   26589    2180 </code></pre>
 <pre class="r"><code># 70% overlap
 heart_liver_70 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.70 -F 0.70&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1922,10 +2017,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c06ba28e9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c06aed7f6b.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f44c7989f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f555c977b.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27029    1740       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27029    1740 </code></pre>
 <pre class="r"><code>#75% overlap
 heart_liver_75 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.75 -F 0.75&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1952,10 +2047,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c03b357534.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0ff8575d.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3aaffa85.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1ce7e979.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27267    1502       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27267    1502 </code></pre>
 <pre class="r"><code># 80% overlap
 heart_liver_80 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.80 -F 0.80&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1982,10 +2077,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c043c0b5f8.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c03016a0b4.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2cc89d44.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f4d29b7e1.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27515    1254       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27515    1254 </code></pre>
 <pre class="r"><code>#90% overlap
 heart_liver_90 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.9 -F 0.9&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2012,10 +2107,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c07c292264.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c055465b08.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7c0d0d79.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f4b5883d9.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27915     854       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27915     854 </code></pre>
 <pre class="r"><code>#100% overlap
 heart_liver_100 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 1 -F 1&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2042,55 +2137,59 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c060f3abcb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c01d57e337.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2fab101f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f2103314e.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28148     621       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28148     621 </code></pre>
 <pre class="r"><code># Find the number of tDMRs depending on the bp overlap
-summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   24943    3837       0 </code></pre>
+summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   24854    3940 </code></pre>
+<pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   24943    3837 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25160    3614       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25160    3614 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25301    3472       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25301    3472 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25439    3332       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25439    3332 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25795    2974       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25795    2974 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   26162    2607       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   26162    2607 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   26589    2180       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   26589    2180 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27029    1740       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27029    1740 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27267    1502       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27267    1502 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27515    1254       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27515    1254 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   27915     854       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   27915     854 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   28148     621       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   28148     621 </code></pre>
 <pre class="r"><code># Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung &lt;- c(3837, 3614, 3472, 3332, 2974, 2607, 2180, 1740, 1502,1254,854, 621)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung &lt;- c(621, 3837, 3614, 3472, 3332, 2974, 2607, 2180, 1740, 1502,1254,854, 621)
+perc_overlap &lt;- c(0.00000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Number of overlapping chimp tDMRs&quot;,  pch = 19, main = &quot;Overlapping Chimp tDMRs (HvLi and HvLu)&quot;)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Investigate the size of the tDMRs depending on the percentage overlap
 
+check_1 &lt;- heart_liver_1[which((as.integer(heart_liver_1[,9]) &gt; 0) == TRUE),]
 check_10 &lt;- heart_liver_10[which((as.integer(heart_liver_10[,9]) &gt; 0) == TRUE),]
 check_20 &lt;- heart_liver_20[which((as.integer(heart_liver_20[,9]) &gt; 0) == TRUE),]
 check_25 &lt;- heart_liver_25[which((as.integer(heart_liver_25[,9]) &gt; 0) == TRUE),]
@@ -2104,7 +2203,10 @@ check_80 &lt;- heart_liver_80[which((as.integer(heart_liver_80[,9]) &gt; 0) == T
 check_90 &lt;- heart_liver_90[which((as.integer(heart_liver_90[,9]) &gt; 0) == TRUE),]
 check_100 &lt;- heart_liver_100[which((as.integer(heart_liver_100[,9]) &gt; 0) == TRUE),]
 
-summary(as.integer(check_10[,9]))</code></pre>
+summary(as.integer(check_1[,9]))</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    5.0   228.0   423.5   509.1   703.0  4186.0 </code></pre>
+<pre class="r"><code>summary(as.integer(check_10[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     9.0   242.0   433.0   520.8   709.0  4186.0 </code></pre>
 <pre class="r"><code>summary(as.integer(check_20[,9]))</code></pre>
@@ -2141,22 +2243,40 @@ summary(as.integer(check_10[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    15.0   230.0   428.0   528.9   740.0  2637.0 </code></pre>
 <pre class="r"><code># Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(433, 459.5, 477.5, 491, 533.5, 560, 597, 608, 612,589,537.5, 428)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(301, 433, 459.5, 477.5, 491, 533.5, 560, 597, 608, 612,589,537.5, 428)
+perc_overlap &lt;- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Median length of overlap (bp)&quot;, pch = 19, main = &quot;Median length of overlap between chimp tDMRs (HvLi and HvLu)&quot;)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="rhesus-heart-versus-liver-and-rhesus-heart-versus-lung" class="section level2">
 <h2>Rhesus heart versus liver and rhesus heart versus lung</h2>
-<pre class="r"><code># columns to pull
+<pre class="r"><code># Heart versus liver
+
+# columns to pull
 pull_col &lt;- c(1:3, 16)
 
 # make bed style format: change name from human to rhesus
 humans_heart_liver_DMRs_bed &lt;- rhesus_heart_liver_DMRs[,pull_col]
 
+# Remove chr17_gl000204_random
+humans_heart_liver_DMRs_bed_noX &lt;- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != &quot;chr17_gl000204_random&quot;),]
+
+humans_heart_liver_DMRs_bed_noX[,1] &lt;- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] &lt;- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] &lt;- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+# Remove chr11_gl000202_random
+
+humans_heart_liver_DMRs_bed_noX &lt;- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != &quot;chr11_gl000202_random&quot;),]
+
+humans_heart_liver_DMRs_bed_noX[,1] &lt;- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] &lt;- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] &lt;- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+
 # Get DMRs on the autosomal chromosomes only
-humans_heart_liver_DMRs_bed_noX &lt;- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != &quot;chrX&quot;),]
+humans_heart_liver_DMRs_bed_noX &lt;- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != &quot;chrX&quot;),]
 
 humans_heart_liver_DMRs_bed_noX[,1] &lt;- as.character(humans_heart_liver_DMRs_bed_noX[,1])
 humans_heart_liver_DMRs_bed_noX[,2] &lt;- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
@@ -2164,7 +2284,7 @@ humans_heart_liver_DMRs_bed_noX[,3] &lt;- as.integer(humans_heart_liver_DMRs_bed
 
 summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    4.0   276.2   524.0   658.6   906.0  6805.0 </code></pre>
+    4.0   277.0   524.0   658.6   906.0  6805.0 </code></pre>
 <pre class="r"><code>sort_humans_heart_liver_DMRs_bed &lt;- bedr.sort.region(humans_heart_liver_DMRs_bed_noX, check.chr = FALSE)</code></pre>
 <pre><code>SORTING
 VALIDATE REGIONS
@@ -2176,9 +2296,24 @@ VALIDATE REGIONS
  * Check for larger start position... PASS.
  * Check if zero based... PASS
  * Overlapping regions can cause unexpected results.</code></pre>
-<pre class="r"><code># make bed style format
+<pre class="r"><code># Heart versus lung
 humans_heart_lung_DMRs_bed &lt;- rhesus_heart_lung_DMRs[,pull_col]
-humans_heart_lung_DMRs_bed_noX &lt;- humans_heart_lung_DMRs_bed[which(humans_heart_lung_DMRs_bed[,1] != &quot;chrX&quot;),]
+
+humans_heart_lung_DMRs_bed_noX &lt;- humans_heart_lung_DMRs_bed[which(humans_heart_lung_DMRs_bed[,1] != &quot;chr17_gl000204_random&quot;),]
+
+humans_heart_lung_DMRs_bed_noX[,1] &lt;- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] &lt;- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] &lt;- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+
+humans_heart_lung_DMRs_bed_noX &lt;- humans_heart_lung_DMRs_bed_noX[which(humans_heart_lung_DMRs_bed_noX[,1] != &quot;chr11_gl000202_random&quot;),]
+
+humans_heart_lung_DMRs_bed_noX[,1] &lt;- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] &lt;- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] &lt;- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+
+
+
+humans_heart_lung_DMRs_bed_noX &lt;- humans_heart_lung_DMRs_bed_noX[which(humans_heart_lung_DMRs_bed_noX[,1] != &quot;chrX&quot;),]
 
 humans_heart_lung_DMRs_bed_noX[,1] &lt;- as.character(humans_heart_lung_DMRs_bed_noX[,1])
 humans_heart_lung_DMRs_bed_noX[,2] &lt;- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
@@ -2196,7 +2331,7 @@ VALIDATE REGIONS
  * Overlapping regions can cause unexpected results.</code></pre>
 <pre class="r"><code>summary(humans_heart_lung_DMRs_bed_noX[,3] - humans_heart_lung_DMRs_bed_noX[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    6.0   226.0   419.0   521.9   723.5  4002.0 </code></pre>
+    6.0   226.0   419.0   521.9   723.8  4002.0 </code></pre>
 <pre class="r"><code>heart_lung &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.5 -F 0.5&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
 CONVERT TO BED
@@ -2222,16 +2357,16 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c021dd24f2.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0bdb5cbd.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3989684c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f515a16ca.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    4.0   276.2   524.0   658.6   906.0  6805.0 </code></pre>
+    4.0   277.0   524.0   658.6   906.0  6805.0 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_lung[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   0.00    0.00    0.00   35.25    0.00 3679.00 </code></pre>
+   0.00    0.00    0.00   35.26    0.00 3679.00 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39057    2229       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39051    2229 </code></pre>
 <pre class="r"><code>lung_heart &lt;- bedr(input = list(a = sort_humans_heart_lung_DMRs_bed, b = sort_humans_heart_liver_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.5 -F 0.5&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
 CONVERT TO BED
@@ -2257,25 +2392,55 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c023512164.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c06b60047d.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f448b56f9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7855e211.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    0.0     0.0     0.0   207.1   302.5  3679.0 </code></pre>
+    0.0     0.0     0.0   207.1   302.8  3679.0 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    4798    2229       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    4797    2229 </code></pre>
 <pre class="r"><code># Make a Venn diagram based on the results
 
 summary(as.integer(heart_lung[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39057    2229       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39051    2229 </code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    4798    2229       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    4797    2229 </code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = (39057+2229), area2 = (4798+2229), cross.area = 2229, category = c(&quot;Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>(polygon[GRID.polygon.29], polygon[GRID.polygon.30], polygon[GRID.polygon.31], polygon[GRID.polygon.32], text[GRID.text.33], text[GRID.text.34], text[GRID.text.35], text[GRID.text.36], text[GRID.text.37]) </code></pre>
+<pre class="r"><code># 1 bp overlap
+heart_liver_1 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.00000001 -F 0.00000001&quot;)</code></pre>
+<pre><code> * Processing input (1): a
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+ * Processing input (2): b
+CONVERT TO BED
+ * Checking input type... PASS
+   Input is in bed format
+VALIDATE REGIONS
+ * Check if index is a string... PASS
+ * Check index pattern... PASS
+ * Check for missing values... PASS
+ * Check for larger start position... PASS.
+ * Check if zero based... PASS
+ * Checking sort order... PASS
+ * Checking for overlapping &#39;contiguous&#39; regions... PASS
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2be6021b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1da6c96.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
+<pre class="r"><code>summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   37645    3654 </code></pre>
 <pre class="r"><code># 10% overlap
 heart_liver_10 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.10 -F 0.10&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2302,10 +2467,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c04d96fa85.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c064ff4941.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f33bb4d5e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f67087258.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   37781    3521       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   37776    3520 </code></pre>
 <pre class="r"><code># 20% overlap
 heart_liver_20 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.20 -F 0.20&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2332,10 +2497,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c02b642867.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c03575d566.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4fdbe3b90.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1497a244.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38051    3246       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38046    3245 </code></pre>
 <pre class="r"><code># 25% overlap
 heart_liver_25 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.25 -F 0.25&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2362,10 +2527,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c07091822a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c04fe03744.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f63b981ef.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f78bef2ec.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38211    3084       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38205    3084 </code></pre>
 <pre class="r"><code># 30% overlap
 heart_liver_30 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.30 -F 0.30&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2392,10 +2557,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c018275083.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c023506840.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2702f44a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4fc02fcd9.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38359    2931       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38353    2931 </code></pre>
 <pre class="r"><code>#40% overlap
 heart_liver_40 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.4 -F 0.4&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2422,10 +2587,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c015a25915.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c08d36cef.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f589c9a11.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f195d9f83.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38709    2577       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38703    2577 </code></pre>
 <pre class="r"><code># 50% overlap
 heart_liver_50 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.50 -F 0.50&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2452,10 +2617,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0dec267b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c02379598b.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2157d7c8.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f219a02fb.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39057    2229       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39051    2229 </code></pre>
 <pre class="r"><code>#60% overlap
 heart_liver_60 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.6 -F 0.6&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2482,10 +2647,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c057313560.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c06214c480.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f505de48f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f74198f65.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39427    1859       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39421    1859 </code></pre>
 <pre class="r"><code># 70% overlap
 heart_liver_70 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.70 -F 0.70&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2512,10 +2677,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0593ce203.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c084f9a.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4eef2d7b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f79ddd7e9.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39808    1478       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39802    1478 </code></pre>
 <pre class="r"><code>#75% overlap
 heart_liver_75 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.75 -F 0.75&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2542,10 +2707,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c043a3392a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c04fe5262b.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f6dc0d22b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f455225f5.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39998    1288       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39992    1288 </code></pre>
 <pre class="r"><code># 80% overlap
 heart_liver_80 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.80 -F 0.80&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2572,10 +2737,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c053fdc093.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c03806d73e.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2aa6de33.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5b6bf80b.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   40185    1101       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   40179    1101 </code></pre>
 <pre class="r"><code>#90% overlap
 heart_liver_90 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.9 -F 0.9&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2602,10 +2767,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c05e11a26c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0785b739a.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3e1dcf2c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f75d9aa2c.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   40548     738       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   40542     738 </code></pre>
 <pre class="r"><code>#100% overlap
 heart_liver_100 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 1 -F 1&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -2632,55 +2797,59 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c03537c184.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0fd9e79b.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f22572b43.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f53cc573c.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   40759     527       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   40753     527 </code></pre>
 <pre class="r"><code># Find the number of tDMRs depending on the bp overlap
-summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   37781    3521       0 </code></pre>
+summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   37645    3654 </code></pre>
+<pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   37776    3520 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38051    3246       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38046    3245 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38211    3084       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38205    3084 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38359    2931       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38353    2931 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   38709    2577       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   38703    2577 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39057    2229       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39051    2229 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39427    1859       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39421    1859 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39808    1478       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39802    1478 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   39998    1288       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   39992    1288 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   40185    1101       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   40179    1101 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   40548     738       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   40542     738 </code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   40759     527       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   40753     527 </code></pre>
 <pre class="r"><code># Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung &lt;- c(3521, 3246, 3084, 2931, 2577, 2229, 1859, 1478, 1288,1101,738, 527)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung &lt;- c(3654, 3520, 3245, 3472, 3332, 2974, 2607, 2180, 1740, 1502,1254,854, 621)
+perc_overlap &lt;- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Number of overlapping rhesus tDMRs (HvLi and HvLu)&quot;,  pch = 19)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Investigate the size of the tDMRs depending on the percentage overlap
 
+check_1 &lt;- heart_liver_1[which((as.integer(heart_liver_1[,9]) &gt; 0) == TRUE),]
 check_10 &lt;- heart_liver_10[which((as.integer(heart_liver_10[,9]) &gt; 0) == TRUE),]
 check_20 &lt;- heart_liver_20[which((as.integer(heart_liver_20[,9]) &gt; 0) == TRUE),]
 check_25 &lt;- heart_liver_25[which((as.integer(heart_liver_25[,9]) &gt; 0) == TRUE),]
@@ -2694,12 +2863,15 @@ check_80 &lt;- heart_liver_80[which((as.integer(heart_liver_80[,9]) &gt; 0) == T
 check_90 &lt;- heart_liver_90[which((as.integer(heart_liver_90[,9]) &gt; 0) == TRUE),]
 check_100 &lt;- heart_liver_100[which((as.integer(heart_liver_100[,9]) &gt; 0) == TRUE),]
 
-summary(as.integer(check_10[,9]))</code></pre>
+summary(as.integer(check_1[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   12.0   231.0   418.0   526.1   723.0  3679.0 </code></pre>
+    2.0   209.0   404.0   509.5   705.8  3679.0 </code></pre>
+<pre class="r"><code>summary(as.integer(check_10[,9]))</code></pre>
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   12.0   231.0   418.0   526.2   723.2  3679.0 </code></pre>
 <pre class="r"><code>summary(as.integer(check_20[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   12.0   264.0   450.5   556.6   761.0  3679.0 </code></pre>
+   12.0   264.0   451.0   556.7   761.0  3679.0 </code></pre>
 <pre class="r"><code>summary(as.integer(check_25[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    12.0   281.0   473.0   574.0   781.8  3679.0 </code></pre>
@@ -2731,8 +2903,8 @@ summary(as.integer(check_10[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    12.0   182.0   378.0   489.2   710.5  2266.0 </code></pre>
 <pre class="r"><code># Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(418, 450.5, 473, 497, 533, 564, 590, 619.5, 621,602,501, 378)
-perc_overlap &lt;- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp &lt;- c(404, 418, 450.5, 473, 497, 533, 564, 590, 619.5, 621,602,501, 378)
+perc_overlap &lt;- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = &quot;Percentage of overlap (bp)&quot;, ylab = &quot;Median length of overlap (bp)&quot;, pch = 19, main = &quot;Median length of overlap between rhesus tDMRs (HvLi and HvLu)&quot;)</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2844,7 +3016,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c067194bd6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c02745faaa.bed -wao -f 0.75 -F 0.75
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2cea1a36.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7a9686c6.bed -wao -f 0.75 -F 0.75
  * Processing input (1): a
 CONVERT TO BED
  * Checking input type... PASS
@@ -2869,9 +3041,9 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c05bee892e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c046b6020d.bed -wao -f 0.75 -F 0.75</code></pre>
-<pre><code>         V1   V2 V3    V4   V5 V6
-FALSE 20256 2305  0 11903 2305  0</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5013aa.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5fd964c1.bed -wao -f 0.75 -F 0.75</code></pre>
+<pre><code>         V1   V2   V3    V4   V5   V6
+FALSE 20256 2305 &lt;NA&gt; 11903 2305 &lt;NA&gt;</code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = (20256+2305), area2 = (11903+2305), cross.area = 2305, category = c(&quot;Human Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2921,7 +3093,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c020d7dbe.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0724a4e6b.bed -wao -f 0.75 -F 0.75
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f536cd92b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f75f35299.bed -wao -f 0.75 -F 0.75
  * Processing input (1): a
 CONVERT TO BED
  * Checking input type... PASS
@@ -2946,9 +3118,9 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c052851815.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0345cc194.bed -wao -f 0.75 -F 0.75</code></pre>
-<pre><code>         V1   V2 V3   V4   V5 V6
-FALSE 27267 1502  0 7024 1502  0</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3b3e8ecb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1fd85c9c.bed -wao -f 0.75 -F 0.75</code></pre>
+<pre><code>         V1   V2   V3   V4   V5   V6
+FALSE 27267 1502 &lt;NA&gt; 7024 1502 &lt;NA&gt;</code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = (27267+1502), area2 = (7024+1502), cross.area = 1502, category = c(&quot;Chimp Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2998,7 +3170,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c05eb4b692.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c03bc648f0.bed -wao -f 0.75 -F 0.75
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f10e5dae6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f917b893.bed -wao -f 0.75 -F 0.75
  * Processing input (1): a
 CONVERT TO BED
  * Checking input type... PASS
@@ -3023,9 +3195,9 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c034cf9058.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0fbbeeeb.bed -wao -f 0.75 -F 0.75</code></pre>
-<pre><code>         V1   V2 V3   V4   V5 V6
-FALSE 39998 1288  0 5739 1288  0</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3d120f3a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f37250ddf.bed -wao -f 0.75 -F 0.75</code></pre>
+<pre><code>         V1   V2   V3   V4   V5   V6
+FALSE 39998 1288 &lt;NA&gt; 5739 1288 &lt;NA&gt;</code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = (39998+1288), area2 = (5739+1288), cross.area = 1288, category = c(&quot;Chimp Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
@@ -3105,7 +3277,7 @@ VALIDATE REGIONS
 CONVERT TO BED
  * Checking input type... PASS
    Input seems to be in bed format but chr/start/end column names are missing
-   bedtools merge -i /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/i_47c01566a00f.bed -d 0 -c 4 -o collapse
+   bedtools merge -i /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/i_2d4f36b08482.bed -d 0 -c 4 -o collapse
  * Collapsing 4149 --&gt; 3939 regions... NOTE</code></pre>
 <pre class="r"><code># Various percentages 
 
@@ -3137,10 +3309,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0326c6e61.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c05836a1f.bed -wao -f 0.1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f16e887cb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f69c3c44c.bed -wao -f 0.1</code></pre>
 <pre class="r"><code>summary(heart_liver_promoter_10[,11] &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    3979     171       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    3979     171 </code></pre>
 <pre class="r"><code>heart_liver_promoter_50 &lt;- bedr(input = list(a = boundaries_within_250_humans, b = sort_humans_heart_liver_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.5&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
 CONVERT TO BED
@@ -3169,10 +3341,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c078054131.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c018f85904.bed -wao -f 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f51130c5a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f570a9044.bed -wao -f 0.5</code></pre>
 <pre class="r"><code>summary(heart_liver_promoter_50[,11] &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    4030     119       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    4030     119 </code></pre>
 <pre class="r"><code>heart_liver_promoter_100 &lt;- bedr(input = list(a = boundaries_within_250_humans, b = sort_humans_heart_liver_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 1&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
 CONVERT TO BED
@@ -3201,10 +3373,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c03b0c3bee.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c09629ceb.bed -wao -f 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4342cc7b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f63c195f3.bed -wao -f 1</code></pre>
 <pre class="r"><code>summary(heart_liver_promoter_100[,11] &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    4083      66       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    4083      66 </code></pre>
 <pre class="r"><code># What if we look at 100% coverage in the human hearts and lungs?
 
 heart_lung_promoter_100 &lt;- bedr(input = list(a = boundaries_within_250_humans, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 1&quot;, check.chr = FALSE)</code></pre>
@@ -3235,10 +3407,10 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/a_47c0919548c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpReSwcM/b_47c0323ac895.bed -wao -f 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3becb4eb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7677c439.bed -wao -f 1</code></pre>
 <pre class="r"><code>summary(heart_lung_promoter_100[,11] &gt; 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical    4144       5       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    4144       5 </code></pre>
 </div>
 
 

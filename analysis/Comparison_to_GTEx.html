@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-04-28" />
+
+<title>Comparison_to_GTEx</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Comparison_to_GTEx</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>April 28, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#overlap-between-gtex-and-our-dataset">Overlap between GTEx and our dataset</a></li>
+<li><a href="#upregulated-in-heart-only">Upregulated in heart only</a></li>
+<li><a href="#downregulated-in-heart-only">Downregulated in heart only</a></li>
+<li><a href="#function-for-updownregulation">Function for up/downregulation</a></li>
+<li><a href="#ranking-in-our-data">Ranking in our data</a></li>
+<li><a href="#run-topgo-on-the-heart-data-suppplementary-table">Run topGO on the heart data (suppplementary table)</a></li>
+<li><a href="#run-topgo-on-the-kidney-data-supplementary-table">Run topGO on the kidney data (supplementary table)</a></li>
+<li><a href="#run-topgo-on-the-liver-data-supplementary-table">Run topGO on the liver data (supplementary table)</a></li>
+<li><a href="#run-topgo-on-the-lung-data-supplementary-table">Run topGO on the lung data (supplementary table)</a></li>
+</ul>
+</div>
+
+<p>The goal of this script is to compare the conserved tissue specific data with the tissue’s ranking in the GTEx data v6 data.</p>
+<pre class="r"><code># Import GTEx data
+
+gtex_data &lt;- read.csv(&quot;../data/GTEx_genes_tissues.csv&quot;, stringsAsFactors = FALSE)
+
+# Find which genes are in both datasets
+
+cpm_12184 &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/cpm_12184.txt&quot;)
+
+# Tissue up/downreg
+heart_upreg_data &lt;- read.csv(&quot;../data/specific_upreg_heart_genes.csv&quot;, stringsAsFactors = FALSE)
+heart_downreg_data &lt;- read.csv(&quot;../data/specific_downreg_heart_genes.csv&quot;, stringsAsFactors = FALSE)
+
+kidney_upreg_data &lt;- read.csv(&quot;../data/specific_upreg_kidney_genes.csv&quot;, stringsAsFactors = FALSE)
+kidney_downreg_data &lt;- read.csv(&quot;../data/specific_downreg_kidney_genes.csv&quot;, stringsAsFactors = FALSE)
+
+liver_upreg_data &lt;- read.csv(&quot;../data/specific_upreg_liver_genes.csv&quot;, stringsAsFactors = FALSE)
+liver_downreg_data &lt;- read.csv(&quot;../data/specific_downreg_liver_genes.csv&quot;, stringsAsFactors = FALSE)
+
+lung_upreg_data &lt;- read.csv(&quot;../data/specific_upreg_lung_genes.csv&quot;, stringsAsFactors = FALSE)
+lung_downreg_data &lt;- read.csv(&quot;../data/specific_downreg_lung_genes.csv&quot;, stringsAsFactors = FALSE)</code></pre>
+<div id="overlap-between-gtex-and-our-dataset" class="section level1">
+<h1>Overlap between GTEx and our dataset</h1>
+<pre class="r"><code>summary(rownames(cpm_12184) %in% gtex_data$ENSG)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     407   11777</code></pre>
+<p>11,777 genes are in both datasets.</p>
+</div>
+<div id="upregulated-in-heart-only" class="section level1">
+<h1>Upregulated in heart only</h1>
+<pre class="r"><code># Subset 
+summary(heart_upreg_data$x %in% gtex_data$ENSG)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical       1      56</code></pre>
+<pre class="r"><code>inshared_lists = gtex_data$ENSG %in% heart_upreg_data$x
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the highest?
+
+upreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
+
+upreg_heart_ranking[,5]</code></pre>
+<pre><code>##  [1] 1 1 1 1 1 2 1 1 1 1 1 4 1 1 1 1 2 2 2 1 1 1 1 3 3 2 4 1 1 1 1 1 1 1 1
+## [36] 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 2 1</code></pre>
+</div>
+<div id="downregulated-in-heart-only" class="section level1">
+<h1>Downregulated in heart only</h1>
+<pre class="r"><code># Subset 
+summary(heart_downreg_data$x %in% gtex_data$ENSG)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical       1      38</code></pre>
+<pre class="r"><code>inshared_lists = gtex_data$ENSG %in% heart_downreg_data$x
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the lowest?
+
+downreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
+
+downreg_heart_ranking[,5]</code></pre>
+<pre><code>##  [1] 4 4 4 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+## [36] 4 4 4</code></pre>
+</div>
+<div id="function-for-updownregulation" class="section level1">
+<h1>Function for up/downregulation</h1>
+<pre class="r"><code>ranking_in_gtex &lt;- function(tissue_name){
+# Subset 
+summary(tissue_name %in% gtex_data$ENSG)
+
+inshared_lists = gtex_data$ENSG %in% tissue_name
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the highest?
+
+upreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
+
+return(upreg_heart_ranking)
+}
+
+upreg_heart_ranking &lt;- ranking_in_gtex(heart_upreg_data$x)[,5]
+downreg_heart_ranking &lt;- ranking_in_gtex(heart_downreg_data$x)[,5]
+
+upreg_kidney_ranking &lt;- ranking_in_gtex(kidney_upreg_data$x)[,6]
+downreg_kidney_ranking &lt;- ranking_in_gtex(kidney_downreg_data$x)[,6]
+
+upreg_liver_ranking &lt;- ranking_in_gtex(liver_upreg_data$x)[,7]
+downreg_liver_ranking &lt;- ranking_in_gtex(liver_downreg_data$x)[,7]
+
+upreg_lung_ranking &lt;- ranking_in_gtex(lung_upreg_data$x)[,8]
+downreg_lung_ranking &lt;- ranking_in_gtex(lung_downreg_data$x)[,8]</code></pre>
+</div>
+<div id="ranking-in-our-data" class="section level1">
+<h1>Ranking in our data</h1>
+<pre class="r"><code># Heart
+upreg_heart_num &lt;- array(1, dim=c(length(upreg_heart_ranking), 1))
+
+heart_cor1 &lt;- cbind(upreg_heart_num, upreg_heart_ranking)
+
+downreg_heart_num &lt;- array(4, dim=c(length(downreg_heart_ranking), 1))
+
+heart_cor2 &lt;- cbind(downreg_heart_num, downreg_heart_ranking)
+
+# Kidney
+upreg_kidney_num &lt;- array(1, dim=c(length(upreg_kidney_ranking), 1))
+
+kidney_cor1 &lt;- cbind(upreg_kidney_num, upreg_kidney_ranking)
+
+downreg_kidney_num &lt;- array(4, dim=c(length(downreg_kidney_ranking), 1))
+
+kidney_cor2 &lt;- cbind(downreg_kidney_num, downreg_kidney_ranking)
+
+# Liver
+upreg_liver_num &lt;- array(1, dim=c(length(upreg_liver_ranking), 1))
+
+liver_cor1 &lt;- cbind(upreg_liver_num, upreg_liver_ranking)
+
+downreg_liver_num &lt;- array(4, dim=c(length(downreg_liver_ranking), 1))
+
+liver_cor2 &lt;- cbind(downreg_liver_num, downreg_liver_ranking)
+
+# Lung
+upreg_lung_num &lt;- array(1, dim=c(length(upreg_lung_ranking), 1))
+
+lung_cor1 &lt;- cbind(upreg_lung_num, upreg_lung_ranking)
+
+downreg_lung_num &lt;- array(4, dim=c(length(downreg_lung_ranking), 1))
+
+lung_cor2 &lt;- cbind(downreg_lung_num, downreg_lung_ranking)
+
+tissue_cor &lt;- rbind(heart_cor1, heart_cor2, kidney_cor1, kidney_cor2, liver_cor1, liver_cor2, lung_cor1, lung_cor2)
+
+# Get the correlation between tissues
+cor(tissue_cor[,1], tissue_cor[,2])</code></pre>
+<pre><code>## [1] 0.9063901</code></pre>
+<pre class="r"><code># How many times does the ranking in our data match the ranking in GTEx?
+summary(tissue_cor[,1] == tissue_cor[,2])</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      31     259</code></pre>
+<pre class="r"><code>136/(136+30)</code></pre>
+<pre><code>## [1] 0.8192771</code></pre>
+<pre class="r"><code>259/(31+259)</code></pre>
+<pre><code>## [1] 0.8931034</code></pre>
+</div>
+<div id="run-topgo-on-the-heart-data-suppplementary-table" class="section level1">
+<h1>Run topGO on the heart data (suppplementary table)</h1>
+<pre class="r"><code># Load libraries
+
+library(&quot;topGO&quot;)</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, cbind, colMeans,
+##     colnames, colSums, do.call, duplicated, eval, evalq, Filter,
+##     Find, get, grep, grepl, intersect, is.unsorted, lapply,
+##     lengths, Map, mapply, match, mget, order, paste, pmax,
+##     pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce,
+##     rowMeans, rownames, rowSums, sapply, setdiff, sort, table,
+##     tapply, union, unique, unsplit, which, which.max, which.min</code></pre>
+<pre><code>## Loading required package: graph</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## Loading required package: GO.db</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     expand.grid</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Loading required package: SparseM</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SparseM&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     backsolve</code></pre>
+<pre><code>## 
+## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;topGO&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     members</code></pre>
+<pre class="r"><code>#library(&quot;biomaRt&quot;)
+library(&quot;clusterProfiler&quot;)</code></pre>
+<pre><code>## Loading required package: DOSE</code></pre>
+<pre><code>## DOSE v3.4.0  For help: https://guangchuangyu.github.io/DOSE
+## 
+## If you use DOSE in published research, please cite:
+## Guangchuang Yu, Li-Gen Wang, Guang-Rong Yan, Qing-Yu He. DOSE: an R/Bioconductor package for Disease Ontology Semantic and Enrichment analysis. Bioinformatics 2015, 31(4):608-609</code></pre>
+<pre><code>## clusterProfiler v3.6.0  For help: https://guangchuangyu.github.io/clusterProfiler
+## 
+## If you use clusterProfiler in published research, please cite:
+## Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287.</code></pre>
+<pre class="r"><code>library(&quot;org.Hs.eg.db&quot;)</code></pre>
+<pre><code>## </code></pre>
+<pre class="r"><code># Combine the upregulated and downregulated tissues
+
+combine_hearts &lt;- rbind(heart_upreg_data, heart_downreg_data)
+combine_kidneys &lt;- rbind(kidney_upreg_data, kidney_downreg_data)
+combine_livers &lt;- rbind(liver_upreg_data, liver_downreg_data)
+combine_lungs &lt;- rbind(lung_upreg_data, lung_downreg_data)
+
+# Matrix for which are in the test set
+
+true_false &lt;- rownames(cpm_12184) %in% combine_hearts$x
+true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(cpm_12184)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 10269 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 14352 GO terms and 33417 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 10194 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 1875 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 15:  5 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  17 nodes to be scored   (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  33 nodes to be scored   (146 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  52 nodes to be scored   (558 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  89 nodes to be scored   (2124 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  138 nodes to be scored  (3124 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   199 nodes to be scored  (4692 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   242 nodes to be scored  (6011 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   301 nodes to be scored  (6939 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   316 nodes to be scored  (8384 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   252 nodes to be scored  (9044 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   140 nodes to be scored  (9605 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   72 nodes to be scored   (9853 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   18 nodes to be scored   (9965 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10056 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0030049                     muscle filament sliding        23
+## 2  GO:0060048                  cardiac muscle contraction        93
+## 3  GO:0002026 regulation of the force of heart contrac...        23
+## 4  GO:0055010 ventricular cardiac muscle tissue morpho...        36
+## 5  GO:0006942 regulation of striated muscle contractio...        61
+## 6  GO:0055003                  cardiac myofibril assembly        14
+## 7  GO:0030240      skeletal muscle thin filament assembly         5
+## 8  GO:0071688 striated muscle myosin thick filament as...         8
+## 9  GO:0007512                     adult heart development         8
+## 10 GO:0045214                      sarcomere organization        27
+## 11 GO:0003009                 skeletal muscle contraction        20
+## 12 GO:0014898 cardiac muscle hypertrophy in response t...        18
+## 13 GO:0090131                        mesenchyme migration         5
+## 14 GO:0050982            detection of mechanical stimulus        22
+## 15 GO:0048739            cardiac muscle fiber development         7
+## 16 GO:0035331      negative regulation of hippo signaling         8
+## 17 GO:0045199 maintenance of epithelial cell apical/ba...         8
+## 18 GO:0055008         cardiac muscle tissue morphogenesis        45
+## 19 GO:0014733    regulation of skeletal muscle adaptation         9
+## 20 GO:0007519          skeletal muscle tissue development        95
+## 21 GO:0035994                  response to muscle stretch        16
+## 22 GO:0055002            striated muscle cell development        96
+## 23 GO:1904591       positive regulation of protein import        70
+##    Significant Expected weightFisher
+## 1            9     0.19      8.4e-14
+## 2           11     0.77      5.2e-12
+## 3            6     0.19      2.4e-08
+## 4            6     0.30      4.2e-07
+## 5            6     0.50      2.0e-06
+## 6            4     0.12      4.0e-06
+## 7            3     0.04      5.3e-06
+## 8            3     0.07      2.9e-05
+## 9            3     0.07      2.9e-05
+## 10           4     0.22      6.5e-05
+## 11           4     0.16      0.00022
+## 12           3     0.15      0.00040
+## 13           2     0.04      0.00066
+## 14           3     0.18      0.00074
+## 15           2     0.06      0.00137
+## 16           2     0.07      0.00182
+## 17           2     0.07      0.00182
+## 18           8     0.37      0.00202
+## 19           2     0.07      0.00233
+## 20           5     0.78      0.00406
+## 21           2     0.13      0.00747
+## 22           9     0.79      0.00753
+## 23           2     0.58      0.00820</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, &quot;../data/GO_conserved_tissue_specific_heart.csv&quot;, quote = FALSE, row.names = FALSE)
+
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults[&quot;GO:0030049&quot;] # muscle filament sliding &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot; &quot;ENSG00000143632&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
+<pre><code>## $`GO:0030049`
+## [1] &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot;
+## [5] &quot;ENSG00000143632&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000173991&quot;
+## [9] &quot;ENSG00000197616&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0060048&quot;] # cardiac muscle contraction &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129170&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
+<pre><code>## $`GO:0060048`
+##  [1] &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000114279&quot;
+##  [4] &quot;ENSG00000129170&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot;
+##  [7] &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000173991&quot;
+## [10] &quot;ENSG00000174437&quot; &quot;ENSG00000197616&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0055010&quot;] # ventricular cardiac muscle tissue morpho &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
+<pre><code>## $`GO:0055010`
+## [1] &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot;
+## [5] &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
+</div>
+<div id="run-topgo-on-the-kidney-data-supplementary-table" class="section level1">
+<h1>Run topGO on the kidney data (supplementary table)</h1>
+<pre class="r"><code># Matrix for which are in the test set
+
+true_false &lt;- rownames(cpm_12184) %in% combine_kidneys$x
+true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(cpm_12184)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 10269 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 14352 GO terms and 33417 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 10194 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 965 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 15:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  4 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  11 nodes to be scored   (32 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  32 nodes to be scored   (187 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  46 nodes to be scored   (410 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  70 nodes to be scored   (2364 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   101 nodes to be scored  (3768 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   117 nodes to be scored  (4877 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   134 nodes to be scored  (5978 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   155 nodes to be scored  (7397 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   149 nodes to be scored  (8693 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   88 nodes to be scored   (9403 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   40 nodes to be scored   (9750 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   16 nodes to be scored   (9926 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10036 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0043252 sodium-independent organic anion transpo...        13
+## 2  GO:0015698                   inorganic anion transport        89
+## 3  GO:1903825        organic acid transmembrane transport        70
+## 4  GO:0072235       metanephric distal tubule development         5
+## 5  GO:0072205     metanephric collecting duct development         6
+## 6  GO:0046415                     urate metabolic process         9
+## 7  GO:0042359                 vitamin D metabolic process         9
+## 8  GO:0042953                       lipoprotein transport        12
+## 9  GO:2000179 positive regulation of neural precursor ...        24
+## 10 GO:0098656               anion transmembrane transport       156
+## 11 GO:0007588                                   excretion        35
+## 12 GO:0006814                        sodium ion transport       127
+##    Significant Expected weightFisher
+## 1            3     0.03      4.1e-06
+## 2            4     0.23      8.8e-06
+## 3            3     0.18      3.5e-05
+## 4            2     0.01      6.2e-05
+## 5            2     0.02      9.3e-05
+## 6            2     0.02      0.00022
+## 7            2     0.02      0.00022
+## 8            2     0.03      0.00041
+## 9            2     0.06      0.00167
+## 10           4     0.40      0.00184
+## 11           2     0.09      0.00353
+## 12           3     0.32      0.00433</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, &quot;../data/GO_conserved_tissue_specific_kidney.csv&quot;, quote = FALSE, row.names = FALSE)
+
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults[&quot;GO:1903825&quot;] #  organic acid transmembrane transport &quot;ENSG00000092068&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
+<pre><code>## $`GO:1903825`
+## [1] &quot;ENSG00000081479&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0072205&quot;] # metanephric distal tubule development &quot;ENSG00000104327&quot; &quot;ENSG00000167580&quot;</code></pre>
+<pre><code>## $`GO:0072205`
+## [1] &quot;ENSG00000104327&quot; &quot;ENSG00000167580&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0015698&quot;] # inorganic anion transport &quot;ENSG00000074803&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
+<pre><code>## $`GO:0015698`
+## [1] &quot;ENSG00000074803&quot; &quot;ENSG00000149452&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0007588&quot;] # excretion &quot;ENSG00000167580&quot; &quot;ENSG00000169344&quot;</code></pre>
+<pre><code>## $`GO:0007588`
+## [1] &quot;ENSG00000167580&quot; &quot;ENSG00000169344&quot;</code></pre>
+</div>
+<div id="run-topgo-on-the-liver-data-supplementary-table" class="section level1">
+<h1>Run topGO on the liver data (supplementary table)</h1>
+<pre class="r"><code># Matrix for which are in the test set
+
+true_false &lt;- rownames(cpm_12184) %in% combine_livers$x
+true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(cpm_12184)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 10269 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 14352 GO terms and 33417 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 10194 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 2421 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 17:  2 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  4 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  11 nodes to be scored   (32 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  23 nodes to be scored   (74 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  43 nodes to be scored   (210 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  74 nodes to be scored   (576 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  130 nodes to be scored  (2193 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  199 nodes to be scored  (3099 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   285 nodes to be scored  (4561 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   329 nodes to be scored  (6010 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   381 nodes to be scored  (7405 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   377 nodes to be scored  (8660 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   300 nodes to be scored  (9235 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   167 nodes to be scored  (9683 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   76 nodes to be scored   (9880 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   19 nodes to be scored   (9965 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10067 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0002576                      platelet degranulation       106
+## 2  GO:0010951 negative regulation of endopeptidase act...       130
+## 3  GO:0006953                        acute-phase response        27
+## 4  GO:0051715                 cytolysis in other organism         5
+## 5  GO:0042730                                fibrinolysis        19
+## 6  GO:0072378    blood coagulation, fibrin clot formation        21
+## 7  GO:0031639                      plasminogen activation        20
+## 8  GO:0034116 positive regulation of heterotypic cell-...         8
+## 9  GO:0051918         negative regulation of fibrinolysis         9
+## 10 GO:0043687     post-translational protein modification       307
+## 11 GO:1900026 positive regulation of substrate adhesio...        29
+## 12 GO:0007597        blood coagulation, intrinsic pathway        14
+## 13 GO:0030212                hyaluronan metabolic process        28
+## 14 GO:0045907     positive regulation of vasoconstriction        15
+## 15 GO:0006641              triglyceride metabolic process        65
+## 16 GO:0015721           bile acid and bile salt transport        19
+## 17 GO:1904478         regulation of intestinal absorption         5
+## 18 GO:0030299           intestinal cholesterol absorption         5
+## 19 GO:2000352 negative regulation of endothelial cell ...        22
+## 20 GO:0006555                methionine metabolic process        16
+## 21 GO:0006207 &#39;de novo&#39; pyrimidine nucleobase biosynth...         6
+## 22 GO:0006536                 glutamate metabolic process        24
+## 23 GO:0007595                                   lactation        26
+## 24 GO:0010873 positive regulation of cholesterol ester...         7
+## 25 GO:0042167                      heme catabolic process         7
+## 26 GO:0051006 positive regulation of lipoprotein lipas...         7
+## 27 GO:1902042 negative regulation of extrinsic apoptot...        28
+## 28 GO:0033700                         phospholipid efflux         8
+## 29 GO:0034378                        chylomicron assembly         8
+## 30 GO:0034372 very-low-density lipoprotein particle re...         9
+## 31 GO:0030193             regulation of blood coagulation        66
+## 32 GO:0006559           L-phenylalanine catabolic process        11
+## 33 GO:0031000                        response to caffeine        12
+## 34 GO:0034380 high-density lipoprotein particle assemb...        13
+## 35 GO:0046500      S-adenosylmethionine metabolic process        13
+## 36 GO:0051258                      protein polymerization       189
+## 37 GO:0032967 positive regulation of collagen biosynth...        14
+## 38 GO:0061844 antimicrobial humoral immune response me...        14
+## 39 GO:0034375 high-density lipoprotein particle remode...        14
+## 40 GO:0019731              antibacterial humoral response        14
+## 41 GO:0032259                                 methylation       259
+## 42 GO:0043691               reverse cholesterol transport        15
+## 43 GO:2000257    regulation of protein activation cascade        35
+## 44 GO:0055088                           lipid homeostasis        82
+## 45 GO:0042572                   retinol metabolic process        17
+##    Significant Expected weightFisher
+## 1           12     0.93      1.0e-10
+## 2            9     1.13      1.8e-06
+## 3            5     0.24      3.1e-06
+## 4            3     0.04      6.4e-06
+## 5            6     0.17      2.0e-05
+## 6            6     0.18      2.0e-05
+## 7            4     0.17      2.4e-05
+## 8            3     0.07      3.5e-05
+## 9            3     0.08      5.2e-05
+## 10          11     2.68      7.0e-05
+## 11           4     0.25      0.00011
+## 12           3     0.12      0.00022
+## 13           4     0.24      0.00026
+## 14           3     0.13      0.00027
+## 15           6     0.57      0.00052
+## 16           3     0.17      0.00056
+## 17           2     0.04      0.00074
+## 18           2     0.04      0.00074
+## 19           3     0.19      0.00088
+## 20           3     0.14      0.00108
+## 21           2     0.05      0.00111
+## 22           3     0.21      0.00114
+## 23           3     0.23      0.00145
+## 24           2     0.06      0.00154
+## 25           2     0.06      0.00154
+## 26           2     0.06      0.00154
+## 27           3     0.24      0.00180
+## 28           2     0.07      0.00204
+## 29           2     0.07      0.00204
+## 30           2     0.08      0.00261
+## 31           8     0.58      0.00286
+## 32           2     0.10      0.00394
+## 33           2     0.10      0.00470
+## 34           2     0.11      0.00552
+## 35           2     0.11      0.00552
+## 36           4     1.65      0.00583
+## 37           2     0.12      0.00641
+## 38           2     0.12      0.00641
+## 39           2     0.12      0.00641
+## 40           2     0.12      0.00641
+## 41           5     2.26      0.00697
+## 42           2     0.13      0.00735
+## 43           3     0.31      0.00856
+## 44           5     0.72      0.00892
+## 45           2     0.15      0.00941</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, &quot;../data/GO_conserved_tissue_specific_liver.csv&quot;, quote = FALSE, row.names = FALSE)
+
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+
+goresults[&quot;GO:1904478&quot;] # regulation of intestinal absorption &quot;ENSG00000110243&quot; &quot;ENSG00000158874&quot;</code></pre>
+<pre><code>## $`GO:1904478`
+## [1] &quot;ENSG00000110243&quot; &quot;ENSG00000158874&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0006641&quot;] # triglyceride metabolic process &quot;ENSG00000091583&quot; &quot;ENSG00000110243&quot; &quot;ENSG00000158874&quot;</code></pre>
+<pre><code>## $`GO:0006641`
+## [1] &quot;ENSG00000021826&quot; &quot;ENSG00000083807&quot; &quot;ENSG00000091583&quot; &quot;ENSG00000110243&quot;
+## [5] &quot;ENSG00000119927&quot; &quot;ENSG00000158874&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0015721&quot;] # bile acid and bile salt transport &quot;ENSG00000163631&quot; &quot;ENSG00000186350&quot;</code></pre>
+<pre><code>## $`GO:0015721`
+## [1] &quot;ENSG00000083807&quot; &quot;ENSG00000163631&quot; &quot;ENSG00000186350&quot;</code></pre>
+</div>
+<div id="run-topgo-on-the-lung-data-supplementary-table" class="section level1">
+<h1>Run topGO on the lung data (supplementary table)</h1>
+<pre class="r"><code># Matrix for which are in the test set
+
+true_false &lt;- rownames(cpm_12184) %in% combine_lungs$x
+true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(cpm_12184)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 10269 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 14352 GO terms and 33417 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 10194 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 2459 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 17:  2 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  4 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  11 nodes to be scored   (18 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  26 nodes to be scored   (69 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  58 nodes to be scored   (226 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  99 nodes to be scored   (651 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  153 nodes to be scored  (2182 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  212 nodes to be scored  (3302 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   295 nodes to be scored  (4739 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   320 nodes to be scored  (6028 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   396 nodes to be scored  (7228 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   366 nodes to be scored  (8494 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   269 nodes to be scored  (9153 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   158 nodes to be scored  (9588 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   70 nodes to be scored   (9861 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   19 nodes to be scored   (9957 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10043 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0019370            leukotriene biosynthetic process         9
+## 2  GO:0030214                hyaluronan catabolic process        13
+## 3  GO:0007585                respiratory gaseous exchange        41
+## 4  GO:0044267          cellular protein metabolic process      3534
+## 5  GO:0070374 positive regulation of ERK1 and ERK2 cas...       108
+## 6  GO:0097709               connective tissue replacement         5
+## 7  GO:1903039 positive regulation of leukocyte cell-ce...       132
+## 8  GO:0006777 Mo-molybdopterin cofactor biosynthetic p...         6
+## 9  GO:0045779      negative regulation of bone resorption         7
+## 10 GO:0032324 molybdopterin cofactor biosynthetic proc...         7
+## 11 GO:0048642 negative regulation of skeletal muscle t...         7
+## 12 GO:0043536 positive regulation of blood vessel endo...        31
+## 13 GO:0019372                        lipoxygenase pathway         9
+## 14 GO:0019048 modulation by virus of host morphology o...        31
+## 15 GO:0045589 regulation of regulatory T cell differen...        11
+## 16 GO:0019731              antibacterial humoral response        14
+## 17 GO:0051092 positive regulation of NF-kappaB transcr...       107
+## 18 GO:0042036 negative regulation of cytokine biosynth...        15
+## 19 GO:0002062                 chondrocyte differentiation        55
+## 20 GO:0030279         negative regulation of ossification        43
+## 21 GO:0045671 negative regulation of osteoclast differ...        17
+## 22 GO:0033138 positive regulation of peptidyl-serine p...        59
+## 23 GO:0070207                   protein homotrimerization        18
+## 24 GO:0071559 response to transforming growth factor b...       159
+## 25 GO:0001910 regulation of leukocyte mediated cytotox...        28
+## 26 GO:0044650           adhesion of symbiont to host cell         7
+## 27 GO:0044344 cellular response to fibroblast growth f...        95
+## 28 GO:0060333 interferon-gamma-mediated signaling path...        69
+## 29 GO:0070125      mitochondrial translational elongation        71
+## 30 GO:0032743 positive regulation of interleukin-2 pro...        23
+## 31 GO:0071549 cellular response to dexamethasone stimu...        25
+##    Significant Expected weightFisher
+## 1            3     0.05      1.2e-05
+## 2            3     0.07      4.1e-05
+## 3            4     0.22      6.6e-05
+## 4           29    19.07      0.00013
+## 5            5     0.58      0.00028
+## 6            2     0.03      0.00028
+## 7            5     0.71      0.00039
+## 8            2     0.03      0.00042
+## 9            2     0.04      0.00059
+## 10           2     0.04      0.00059
+## 11           2     0.04      0.00059
+## 12           3     0.17      0.00060
+## 13           2     0.05      0.00100
+## 14           3     0.17      0.00121
+## 15           2     0.06      0.00152
+## 16           2     0.08      0.00250
+## 17           4     0.58      0.00259
+## 18           2     0.08      0.00287
+## 19           3     0.30      0.00318
+## 20           3     0.23      0.00358
+## 21           2     0.09      0.00369
+## 22           3     0.32      0.00390
+## 23           2     0.10      0.00414
+## 24           4     0.86      0.00518
+## 25           3     0.15      0.00521
+## 26           2     0.04      0.00530
+## 27           3     0.51      0.00550
+## 28           3     0.37      0.00606
+## 29           3     0.38      0.00656
+## 30           2     0.12      0.00672
+## 31           2     0.13      0.00792</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, &quot;../data/GO_conserved_tissue_specific_lung.csv&quot;, quote = FALSE, row.names = FALSE)
+
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults[&quot;GO:0007585&quot;] # respiratory gaseous exchange &quot;ENSG00000168484&quot; &quot;ENSG00000168878&quot;</code></pre>
+<pre><code>## $`GO:0007585`
+## [1] &quot;ENSG00000014919&quot; &quot;ENSG00000133661&quot; &quot;ENSG00000168484&quot; &quot;ENSG00000168878&quot;</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0019372&quot;] # lipoxygenase pathway &quot;ENSG00000012779&quot; &quot;ENSG00000132965&quot;</code></pre>
+<pre><code>## $`GO:0019372`
+## [1] &quot;ENSG00000012779&quot; &quot;ENSG00000132965&quot;</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

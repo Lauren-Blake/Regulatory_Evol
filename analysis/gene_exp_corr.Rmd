@@ -1,0 +1,975 @@
+---
+title: "Correlation of gene expression levels by category"
+author: "Lauren Blake"
+date: "February 20, 2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This is an R Markdown document to investigate the correlations of gene expression levels across categories. 
+
+```{r}
+# Load libraries
+
+library(plyr)
+library(dplyr)
+library("tidyr")
+library("RColorBrewer")
+library("ggplot2")
+library("cowplot")
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Load data
+
+## Load counts
+
+cpm_12184 <- read.delim("../../../Reg_Evo_Primates/data/PC_cpm_cyclic_loess_random_var_gene_exp")
+
+## RNA-seq
+
+sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+sample_features <- sample_info_RNAseq[-17,]
+
+samples <- read.delim("../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt")
+
+# Eliminate H1H
+samples <- samples[-17,]
+
+```
+
+# All correlations
+
+```{r}
+pair_cor <- cor(cpm_12184)
+pair_cor <- as.data.frame(pair_cor)
+pair_cor$sample1 <- rownames(pair_cor)
+
+pair_cor_long <- gather(pair_cor, key = "sample2", value = "r", -sample1) %>%
+  mutate(sample2 = as.character(sample2)) %>%
+  filter(sample1 < sample2) %>% # ensures only one of the two entries is
+  arrange(sample1, sample2)     # maintained
+stopifnot(pair_cor_long$r < 1,
+          nrow(pair_cor_long) == (47*47 - 47) / 2)
+
+head(pair_cor_long)
+
+rownames(sample_features) <- colnames(cpm_12184)
+pair_cor_long$tissue1 <- ""
+pair_cor_long$tissue2 <- ""
+
+pair_cor_long$individual1 <- ""
+pair_cor_long$individual2 <- ""
+
+for (i in 1:nrow(pair_cor_long)) {
+  pair_cor_long$tissue1[i] <- sample_features[pair_cor_long$sample1[i], "Tissue"]
+  pair_cor_long$tissue2[i] <- sample_features[pair_cor_long$sample2[i], "Tissue"]
+  pair_cor_long$individual1[i] <- sample_features[pair_cor_long$sample1[i], "Individual"]
+  pair_cor_long$individual2[i] <- sample_features[pair_cor_long$sample2[i], "Individual"]
+}
+head(pair_cor_long)
+
+summary(pair_cor_long$r)
+```
+
+# Correlations for different individuals, same tissues
+
+```{r}
+# Subset for different individuals
+
+subset_pair_cor_long_diff_ind_same_tissues <- pair_cor_long[which(pair_cor_long$tissue1 == pair_cor_long$tissue2 & pair_cor_long$individual1 != pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_diff_ind_same_tissues$r)
+```
+
+# Correlations for same individuals, different tissues
+
+```{r}
+subset_pair_cor_long_same_ind_diff_tissues <- pair_cor_long[which(pair_cor_long$tissue1 != pair_cor_long$tissue2 & pair_cor_long$individual1 == pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_same_ind_diff_tissues$r)
+```
+
+# Correlations for different individuals, different tissues
+
+```{r}
+subset_pair_cor_long_diff_ind_diff_tissues <- pair_cor_long[which(pair_cor_long$tissue1 != pair_cor_long$tissue2 & pair_cor_long$individual1 != pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_diff_ind_diff_tissues$r)
+```
+
+# Combine and plot the information
+
+```{r}
+# Make col of 
+
+values_all <- as.data.frame(pair_cor_long$r)
+colnames(values_all) <- c("Pearson's Correlation")
+
+values_same_ind <- as.data.frame(subset_pair_cor_long_same_ind_diff_tissues$r)
+colnames(values_same_ind) <- c("Pearson's Correlation")
+
+values_diff_both <- as.data.frame(subset_pair_cor_long_diff_ind_diff_tissues$r)
+colnames(values_diff_both) <- c("Pearson's Correlation")
+
+values_diff_ind <- as.data.frame(subset_pair_cor_long_diff_ind_same_tissues$r)
+colnames(values_diff_ind) <- c("Pearson's Correlation")
+
+all_r_values <- rbind(values_all, values_same_ind, values_diff_both, values_diff_ind)
+
+# Make labels
+
+labels_all <- array("ALL", dim = c(nrow(pair_cor_long),1))
+
+labels_diff_tissues <- array("SIDT", dim = c(nrow(subset_pair_cor_long_same_ind_diff_tissues),1))
+
+labels_diff_both <- array("DIDT", dim = c(nrow(subset_pair_cor_long_diff_ind_diff_tissues),1))
+
+labels_diff_ind <- array("DIST", dim = c(nrow(subset_pair_cor_long_diff_ind_same_tissues),1))
+
+labels_all_r_values <- rbind(labels_all, labels_diff_tissues, labels_diff_both, labels_diff_ind)
+
+rvalues_table <- cbind(all_r_values, labels_all_r_values)
+
+rvalues_table$labels_all_r_values <- ordered(rvalues_table$labels_all_r_values, levels=c("ALL", "DIST", "SIDT", "DIDT"))
+
+plot.corr <- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1], fill = rvalues_table[,2])) +
+  geom_boxplot()  +
+  labs(x = "Condition", y = "Pearson's r")
+
+#+ theme(axis.text.x = element_text(angle = 70, vjust = 0.5))
+
+plot.corr <- plot.corr + theme(legend.position = "top") + scale_fill_discrete(name = c("Conditions"), breaks = c("ALL", "DIST", "SIDT", "DIDT"), labels = c("All", "Same tissue", "Same individual", "Different ind. & tissue")) 
+
+#plot_grid(NULL, plot.corr, NULL, NULL, NULL, labels = c("A", "B", "C", "D", "E"), ncol = 2)
+
+
+
+# Make col of 
+
+values_all <- as.data.frame(pair_cor_long$r)
+colnames(values_all) <- c("Pearson's Correlation")
+
+values_same_ind <- as.data.frame(subset_pair_cor_long_same_ind_diff_tissues$r)
+colnames(values_same_ind) <- c("Pearson's Correlation")
+
+values_diff_both <- as.data.frame(subset_pair_cor_long_diff_ind_diff_tissues$r)
+colnames(values_diff_both) <- c("Pearson's Correlation")
+
+values_diff_ind <- as.data.frame(subset_pair_cor_long_diff_ind_same_tissues$r)
+colnames(values_diff_ind) <- c("Pearson's Correlation")
+
+all_r_values <- rbind(values_all, values_same_ind, values_diff_both, values_diff_ind)
+
+# Make labels
+
+labels_all <- array("All", dim = c(nrow(pair_cor_long),1))
+
+labels_diff_tissues <- array("Different tissue", dim = c(nrow(subset_pair_cor_long_same_ind_diff_tissues),1))
+
+labels_diff_both <- array("Both different", dim = c(nrow(subset_pair_cor_long_diff_ind_diff_tissues),1))
+
+labels_diff_ind <- array("Different individual", dim = c(nrow(subset_pair_cor_long_diff_ind_same_tissues),1))
+
+labels_all_r_values <- rbind(labels_all, labels_diff_tissues, labels_diff_both, labels_diff_ind)
+
+rvalues_table <- cbind(all_r_values, labels_all_r_values)
+
+rvalues_table$labels_all_r_values <- ordered(rvalues_table$labels_all_r_values, levels=c("All", "Different individual", "Different tissue", "Both different"))
+
+plot.corr <- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1])) +
+  geom_boxplot()  +
+  labs(x = "Condition", y = "Pearson's \n correlation") + theme(axis.text.x = element_text(angle = 90, vjust = 1)) + scale_x_discrete( breaks = c("All", "Different individual", "Different tissue", "Both different"), labels = c("All", "Same \n tissue", "Same \n individual", "Both \n different"))
+
+#plot.corr <- plot.corr + theme(legend.position = "top") + scale_fill_discrete(name = c("Conditions"), breaks = c("ALL", "DIST", "SIDT", "DIDT"), labels = c("All", "Same tissue", "Same individual", "Different ind. & tissue")) 
+
+#plot_grid(NULL, plot.corr, labels = c("A", "B"), ncol = 1)
+
+
+```
+
+# Create main figure 1
+
+## Make PCA for gene expression and methylation data
+
+Gene expression data for all genes passing filtering and all orthologous CpGs
+
+```{r}
+pca_genes <- prcomp(t(cpm_12184) , scale = T, center = TRUE)
+#pca_genes <- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.true <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Tissue), shape=as.factor(sample_features$Species), size=2)) + geom_point(alpha = 1) + xlab("PC1 (21.8% of variance)") + ylab(paste("PC2 (17.5% of variance)")) + theme(legend.position="none")
+
+plot.pca.true <- plot.pca.true + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+plot.pca.true <- plot.pca.true + scale_color_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung"))
+#plot_grid(plot.pca.true, p2, labels = c("A", "B"), ncol = 1)
+
+svg("./plot.pca.svg")
+plot.pca.true
+dev.off()
+
+pdf("./plot.pca.pdf")
+plot.pca.true
+dev.off()
+
+
+## Data for methylation
+
+# Code from cluster to get PCs and correlations from all 2 million orthologous CpGs
+#all_methyl <- read.table("/mnt/gluster/home/leblake/Methylation/dfCovnoXposMeth.txt")
+#all_methyl_48 <- all_methyl[,2:49]
+#pca_genes <- prcomp(t(all_methyl_48) , scale = T, center = TRUE)
+#pca_genes_scores <- pca_genes$x
+#write.table(pca_genes_scores, file = "./Methylation/Methylation_figures/pca_all_methyl_samples.txt")
+#pca_genes_summary <- summary(pca_genes)$importance
+#write.table(pca_genes_summary, file = "./Methylation/Methylation_figures/pca_summary_all_methyl_samples.txt")
+
+pca_all <- read.csv("../data/pca_all_methyl_samples.txt", sep="")
+pca_all_summary <- read.csv("../data/pca_summary_all_methyl_samples.txt", sep="")
+
+pc1 <- pca_all[,1]
+pc2 <- pca_all[,2]
+pc3 <- pca_all[,3]
+pc4 <- pca_all[,4]
+pc5 <- pca_all[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- pca_all_summary
+
+#dev.off()
+
+plot.pca.methyl <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Species), shape=as.factor(sample_info_RNAseq$Tissue), size=2)) + geom_point(alpha = 0.8) + xlab(paste("PC1 (",(summary[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary[2,2]*100), "% of variance)")) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "bottom") + scale_color_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+plot.pca.methyl <- plot.pca.methyl + scale_shape_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) + ggtitle("PCA of promoter DNA methylation")
+
+plot.pca.methyl
+
+
+
+
+# corr_all_methyl <- cor(all_methyl_48)
+#write.table(corr_all_methyl, file = "./Methylation/Methylation_figures/corr_matrix_all_methyl_samples.txt")
+
+check_methyl <- read.csv("../../../Reg_Evo_Primates/data/250_avg_methyl_hcr_4155_genes_unmerged.txt", sep="")
+methyl_4155 <- check_methyl[,-1]
+pca_genes <- prcomp(t(methyl_4155) , scale = T, center = TRUE)
+#pca_genes <- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.methyl <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Tissue), shape=as.factor(sample_info_RNAseq$Species), size=2)) + geom_point(alpha = 1) + xlab("PC1 (11.1% of variance)") + ylab("PC2 (6.8% of variance)") + theme(legend.position="none")
+
+plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rh. macaque")) 
+plot.pca.methyl <- plot.pca.methyl + scale_color_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung"))
+#plot_grid(plot.pca.true, p2, labels = c("A", "B"), ncol = 1)
+
+svg("./plot.methyl.svg")
+plot.pca.methyl
+dev.off()
+
+#plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+#plot.pca.methyl <- plot.pca.methyl + scale_color_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung"))
+
+#plot_grid(plot.pca.methyl)
+
+
+
+#plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "top") + scale_color_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+#plot.pca.methyl <- plot.pca.methyl + scale_shape_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung"))
+
+
+plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "top") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+
+
+p1 <- ggdraw()+draw_image("/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/Study_design.svg")
+p2 <- ggdraw()+draw_image("./plot.pca.svg")
+p3 <- ggdraw()+draw_image("./plot.methyl.svg")
+
+
+make_fig1 <- plot_grid(p1, p2, plot.corr, p3, labels = c("1A.", "1B.", "1C.", "1D."), ncol = 2)
+
+save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/fig1.pdf", make_fig1,
+          ncol = 2, # we're saving a grid plot of 2 columns
+          nrow = 2, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3
+          )
+```
+
+# Clustering
+
+```{r}
+# Bryan's code for clustering 
+library("viridis")
+library(dendextend)
+library(colorspace)
+library(tidyverse)
+library(gplots)
+
+#Function to make pearson correlation matrix and convert into distance matrix
+pearson <- function(x, ...) {
+    x <- as.matrix(x)
+    res <- as.dist(1 - cor(x, method = "pearson", use = "everything"))
+    res <- as.dist(res)
+    attr(res, "method") <- "pearson"
+    return(res)
+}
+
+cor(cpm_12184)-> all_data
+hc <- cpm_12184 %>% pearson %>% hclust(method = "average")
+dend <- hc %>% as.dendrogram
+
+labels <- paste(samples$Species, samples$Tissue, sep=" ")
+
+#dev.off()
+tiff(file = "RNAseq_heatmap.tiff")
+heatmap.2(all_data, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white",ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend, labRow = labels, labCol = labels)
+dev.off()
+
+
+
+
+cor(methyl_4155)-> all_data
+hc <- methyl_4155 %>% pearson %>% hclust(method = "average")
+dend <- hc %>% as.dendrogram
+
+dev.off()
+tiff(file = "Methyl_heatmap.tiff")
+heatmap.2(all_data, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white",ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue))+9], Colv=dend,Rowv=dend)
+dev.off()
+
+
+#ggdraw() +
+#  draw_plot(NULL, x = 0, y = .5, width = .5, height = .5) +
+#  draw_plot(dp, x = .5, y = .5, width = .5, height = .5) +
+#  draw_plot(bp, x = 0, y = 0, width = 1, height = 0.5) +
+#  draw_plot_label(label = c("A", "B", "C"), size = 15,
+#                  x = c(0, 0.5, 0), y = c(1, 1, 0.5))
+
+p1 <- ggdraw()+draw_image("RNAseq_heatmap.tiff")
+p2 <- ggdraw()+draw_image("Methyl_heatmap.tiff")
+plot_grid(p1, p2, labels = c("A", "B"), ncol = 1)
+
+```
+
+
+# Figure: Clustering with gene expression and methylation levels on the orthologous genes/promoters only
+
+```{r}
+
+check_methyl <- read.csv("../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt", sep="")
+
+express <- check_methyl[,2:48]
+methyl <- check_methyl[,49:95]
+
+cor_var <- array(NA, dim = c(47,1))
+  for (i in 1:47){
+  cor_var[i,] <- cor(express[,i], methyl[,i])
+
+}
+  
+# Clustering
+
+cor(express)-> all_data
+hc <- express %>% pearson %>% hclust(method = "average")
+dend <- hc %>% as.dendrogram
+
+heatmap.2(all_data, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white",ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend)
+
+cor(methyl)-> all_data
+hc <- methyl %>% pearson %>% hclust(method = "average")
+dend <- hc %>% as.dendrogram 
+
+heatmap.2(all_data, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white",ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend, labRow = labels, labCol = labels)
+
+# Check PCA
+
+pca_genes <- prcomp(t(express) , scale = T, center = TRUE)
+#pca_genes <- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.true <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species), shape=as.factor(sample_features$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.true <- plot.pca.true + theme(legend.position = "bottom") + scale_color_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+plot.pca.true <- plot.pca.true + scale_shape_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) + ggtitle("PCA of normalized gene expression data")
+
+plot.pca.true
+
+
+
+pca_genes <- prcomp(t(methyl) , scale = T, center = TRUE)
+#pca_genes <- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.methyl <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species), shape=as.factor(sample_features$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "bottom") + scale_color_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+plot.pca.true <- plot.pca.true + scale_shape_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) + ggtitle("PCA of normalized gene expression data")
+
+plot.pca.methyl
+
+
+# Look in humans and chimps only
+
+hkl <- c(1:3, 5:7, 9:11, 13:15, 17:18, 20:22, 24:26, 28:30)
+
+
+pca_genes <- prcomp(t(methyl[,hkl]) , scale = T, center = TRUE)
+#pca_genes <- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.methyl <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species[hkl]), shape=as.factor(sample_features$Tissue[hkl]))) + geom_point(alpha = 1) + xlab("PC1 (11.6% of variance)") + ylab("PC2 (10.4% of variance)") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "right") + scale_color_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+plot.pca.methyl <- plot.pca.methyl + scale_shape_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) 
+
+plot.pca.methyl
+
+pca_genes <- prcomp(t(express[,hkl]) , scale = T, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.exp <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species[hkl]), shape=as.factor(sample_features$Tissue[hkl]))) + geom_point(alpha = 1) + xlab("PC1 (26.7% of variance)") + ylab("PC 2 (16.8% of variance)") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.exp <- plot.pca.exp + theme(legend.position = "right") + scale_color_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+plot.pca.exp <- plot.pca.exp + scale_shape_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) 
+
+plot.pca.exp
+
+make_fig_s9 <- plot_grid(plot.pca.methyl, plot.pca.exp, labels = c("9A.", "9B."), ncol = 1)
+
+save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Supp_figures/fig9.pdf", make_fig_s9,
+          ncol = 1, # we're saving a grid plot of 2 columns
+          nrow = 2, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3
+          )
+```
+
+# Correlations
+
+```{r}
+Sample_characteristics <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/Sample_characteristics.csv", comment.char="#")
+sample_characteristics <- Sample_characteristics[-17,]
+
+
+# Expression
+
+pca_genes <- prcomp(t(cpm_12184) , scale = T, center = TRUE)
+#pca_genes <- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+summary(lm(pcs$pc1 ~ sample_features$Tissue)) # 0.81
+summary(lm(pcs$pc1 ~ sample_features$Species)) #0.1286
+summary(lm(pcs$pc1 ~ sample_characteristics$Individual)) #0.1441
+summary(lm(pcs$pc1 ~ sample_characteristics$Age.quantile)) #0.15
+
+summary(lm(pcs$pc2 ~ sample_features$Species)) #0.26
+summary(lm(pcs$pc2 ~ sample_features$Tissue)) #0.70
+summary(lm(pcs$pc2 ~ sample_characteristics$Individual)) # 0.27
+summary(lm(pcs$pc2 ~ sample_characteristics$Age.quantile)) #0.01966
+
+summary(lm(pcs$pc3 ~ sample_features$Species)) #0.50
+summary(lm(pcs$pc3 ~ sample_features$Tissue)) #0.42
+
+methylation_pcs_noX <- read.csv("~/Desktop/Tissue paper w Julien/methylation_pcs_noX.txt", sep="")
+dim(methylation_pcs_noX)
+head(methylation_pcs_noX)
+
+sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+
+summary(lm(methylation_pcs_noX$PC1 ~ sample_info_RNAseq$Tissue)) # 0.030
+summary(lm(methylation_pcs_noX$PC1 ~ sample_info_RNAseq$Species)) #0.959
+summary(lm(methylation_pcs_noX$PC1 ~ Sample_characteristics$Individual)) # 0.96
+summary(lm(methylation_pcs_noX$PC1 ~ Sample_characteristics$Age.quantile)) #0.18
+
+summary(lm(methylation_pcs_noX$PC2 ~ sample_info_RNAseq$Species)) #0.02
+summary(lm(methylation_pcs_noX$PC2 ~ sample_info_RNAseq$Tissue)) #0.9255
+summary(lm(methylation_pcs_noX$PC2 ~ Sample_characteristics$Individual)) # 0.03
+
+summary(lm(methylation_pcs_noX$PC3 ~ sample_info_RNAseq$Species)) #0.26
+summary(lm(methylation_pcs_noX$PC3 ~ sample_info_RNAseq$Tissue)) #0.6966
+summary(lm(methylation_pcs_noX$PC3 ~ Sample_characteristics$Individual)) # 0.26
+
+
+
+check_methyl <- read.csv("../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt", sep="")
+methyl <- check_methyl[,49:95]
+pca_genes <- prcomp(t(methyl) , scale = T, center = TRUE)
+#pca_genes <- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary(lm(pcs$pc1 ~ sample_features$Tissue)) # 0.0073
+summary(lm(pcs$pc1 ~ sample_features$Species)) #0.98
+summary(lm(pcs$pc1 ~ sample_features$Individual))
+
+summary(lm(pcs$pc2 ~ sample_features$Species)) #0.1
+summary(lm(pcs$pc2 ~ sample_features$Tissue)) #0.84
+
+summary(lm(pcs$pc3 ~ sample_features$Species)) #0.74
+summary(lm(pcs$pc3 ~ sample_features$Tissue)) #0.144
+
+
+```
+
+# Is gene expression and methylation from the same individual more highly correlated than from different individuals of the same species?
+
+```{r}
+check_methyl <- read.csv("../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt", sep="")
+express <- check_methyl[,2:48]
+methyl <- check_methyl[,49:95]
+
+
+# Calculate the correlations for the RNA-seq and methylation correct individual comparison
+cor_real <- c()
+
+for (i in 1:47){
+calc_cor <- cor(express[,i], methyl[,i])
+cor_real <- c(cor_real, calc_cor)
+}
+
+max(cor_real)
+min(cor_real)
+
+
+# Subset to correlation of all non-matching individuals
+
+ch1 <- c(5, 9, 13)
+ch1_cor <- c()
+for (i in ch1){
+calc_cor <- cor(express[,1], methyl[,i])
+ch1_cor <- c(ch1_cor, calc_cor)
+}
+
+ch1_cor
+
+ch2 <- c(1, 9, 13)
+ch2_cor <- c()
+for (i in ch2){
+calc_cor <- cor(express[,5], methyl[,i])
+ch2_cor <- c(ch2_cor, calc_cor)
+}
+ch2_cor
+
+ch3 <- c(1, 5, 13)
+ch3_cor <- c()
+for (i in ch3){
+calc_cor <- cor(express[,9], methyl[,i])
+ch3_cor <- c(ch3_cor, calc_cor)
+}
+ch3_cor
+
+ch4 <- c(1, 5, 9)
+ch4_cor <- c()
+for (i in ch4){
+calc_cor <- cor(express[,13], methyl[,i])
+ch4_cor <- c(ch4_cor, calc_cor)
+}
+ch4_cor
+
+make_correlations <- function(list_array_rows, expression_row){
+ch1 <- list_array_rows
+ch1_cor <- c()
+for (i in ch1){
+calc_cor <- cor(express[,expression_row], methyl[,i])
+ch1_cor <- c(ch1_cor, calc_cor)
+  }
+return(ch1_cor)
+}
+
+# Chimp heart 
+ch1_cor_func <- make_correlations(c(5, 9, 13), 1)
+ch2_cor_func <- make_correlations(c(1, 9, 13), 5)
+ch3_cor_func <- make_correlations(c(1, 5, 13), 9)
+ch4_cor_func <- make_correlations(c(1, 5, 9), 13)
+
+# Chimp kidney
+ck1_cor_func <- make_correlations(c(6, 10, 14), 2)
+ck2_cor_func <- make_correlations(c(2, 10, 14), 6)
+ck3_cor_func <- make_correlations(c(2, 6, 14), 10)
+ck4_cor_func <- make_correlations(c(2, 6, 10), 14)
+
+# Chimp liver
+cli1_cor_func <- make_correlations(c(7, 11, 15), 3)
+cli2_cor_func <- make_correlations(c(3, 11, 15), 7)
+cli3_cor_func <- make_correlations(c(3, 7, 15), 11)
+cli4_cor_func <- make_correlations(c(3, 7, 11), 15)
+
+# Chimp lung
+clu1_cor_func <- make_correlations(c(8, 12, 16), 4)
+clu2_cor_func <- make_correlations(c(4, 12, 16), 8)
+clu3_cor_func <- make_correlations(c(4, 8, 16), 12)
+clu4_cor_func <- make_correlations(c(4, 8, 12), 16)
+
+# Human heart 
+
+hh2_cor_func <- make_correlations(c(24, 28), 20)
+hh3_cor_func <- make_correlations(c(20, 28), 24)
+hh4_cor_func <- make_correlations(c(20, 24), 28)
+
+# Human kidney
+hk1_cor_func <- make_correlations(c(21, 25, 29), 17)
+hk2_cor_func <- make_correlations(c(17, 25, 29), 21)
+hk3_cor_func <- make_correlations(c(17, 21, 29), 25)
+hk4_cor_func <- make_correlations(c(17, 21, 25), 29)
+
+# Human liver
+hli1_cor_func <- make_correlations(c(22, 26, 30), 18)
+hli2_cor_func <- make_correlations(c(18, 26, 30), 22)
+hli3_cor_func <- make_correlations(c(18, 22, 30), 26)
+hli4_cor_func <- make_correlations(c(18, 22, 26), 30)
+
+# Human lung
+hlu1_cor_func <- make_correlations(c(23, 27, 31), 19)
+hlu2_cor_func <- make_correlations(c(19, 27, 31), 23)
+hlu3_cor_func <- make_correlations(c(19, 23, 31), 27)
+hlu4_cor_func <- make_correlations(c(19, 23, 27), 31)
+
+# Rhesus heart 
+rh1_cor_func <- make_correlations(c(36, 40, 44), 32)
+rh2_cor_func <- make_correlations(c(32, 40, 44), 36)
+rh3_cor_func <- make_correlations(c(32, 36, 44), 40)
+rh4_cor_func <- make_correlations(c(32, 36, 40), 44)
+
+# Rhesus kidney
+rk1_cor_func <- make_correlations(c(37, 41, 45), 33)
+rk2_cor_func <- make_correlations(c(33, 41, 45), 37)
+rk3_cor_func <- make_correlations(c(33, 37, 45), 41)
+rk4_cor_func <- make_correlations(c(33, 37, 41), 45)
+
+# Rhesus liver
+rli1_cor_func <- make_correlations(c(38, 42, 46), 34)
+rli2_cor_func <- make_correlations(c(34, 42, 46), 38)
+rli3_cor_func <- make_correlations(c(34, 38, 46), 42)
+rli4_cor_func <- make_correlations(c(34, 38, 42), 46)
+
+# Rhesus lung
+rlu1_cor_func <- make_correlations(c(39, 43, 47), 35)
+rlu2_cor_func <- make_correlations(c(35, 43, 47), 39)
+rlu3_cor_func <- make_correlations(c(35, 39, 47), 43)
+rlu4_cor_func <- make_correlations(c(35, 39, 43), 47)
+
+hcr_cor <- c(ch1_cor_func, ch2_cor_func, ch3_cor_func, ch4_cor_func, ck1_cor_func, ck2_cor_func, ck3_cor_func, ck4_cor_func, cli1_cor_func, cli2_cor_func, cli3_cor_func, cli4_cor_func, clu1_cor_func, clu2_cor_func, clu3_cor_func, clu4_cor_func, hh2_cor_func, hh3_cor_func, hh4_cor_func, hk1_cor_func, hk2_cor_func, hk3_cor_func, hk4_cor_func, hli1_cor_func, hli2_cor_func, hli3_cor_func, hli4_cor_func, hlu1_cor_func, hlu2_cor_func, hlu3_cor_func, hlu4_cor_func, rh1_cor_func, rh2_cor_func, rh3_cor_func, rh4_cor_func, rk1_cor_func, rk2_cor_func, rk3_cor_func, rk4_cor_func, rli1_cor_func, rli2_cor_func, rli3_cor_func, rli4_cor_func, rlu1_cor_func, rlu2_cor_func, rlu3_cor_func, rlu4_cor_func)
+
+max(hcr_cor)
+min(hcr_cor)
+
+summary(cor_real)
+summary(hcr_cor)
+
+boxplot(cor_real, hcr_cor, xaxt = "n", xlab = "RNA-seq and BS-seq from same individuals", ylab = "Correlation", main = "Correlation of RNAseq and BSseq in all 3 species")
+axis(1, at = 1:2, labels = c("Matched", "Non-matched"))
+
+```
+
+# Look at possible switches
+
+```{r}
+express <- check_methyl[,2:48]
+methyl <- check_methyl[,49:95]
+
+
+methyl_switch <- methyl
+methyl_switch[,38] <- methyl[,42]
+methyl_switch[,42] <- methyl[,38]
+
+methyl_switch[,39] <- methyl[,43]
+methyl_switch[,43] <- methyl[,39]
+# Calculate the correlations for the RNA-seq and methylation correct individual comparison
+cor_real <- c()
+
+for (i in 1:47){
+calc_cor <- cor(express[,i], methyl_switch[,i])
+cor_real <- c(cor_real, calc_cor)
+}
+
+max(cor_real)
+min(cor_real)
+
+
+# Subset to correlation of all non-matching individuals
+
+
+make_correlations <- function(list_array_rows, expression_row){
+ch1 <- list_array_rows
+ch1_cor <- c()
+for (i in ch1){
+calc_cor <- cor(express[,expression_row], methyl_switch[,i])
+ch1_cor <- c(ch1_cor, calc_cor)
+  }
+return(ch1_cor)
+}
+
+# Chimp heart 
+ch1_cor_func <- make_correlations(c(5, 9, 13), 1)
+ch2_cor_func <- make_correlations(c(1, 9, 13), 5)
+ch3_cor_func <- make_correlations(c(1, 5, 13), 9)
+ch4_cor_func <- make_correlations(c(1, 5, 9), 13) #12
+
+# Chimp kidney
+ck1_cor_func <- make_correlations(c(6, 10, 14), 2)
+ck2_cor_func <- make_correlations(c(2, 10, 14), 6)
+ck3_cor_func <- make_correlations(c(2, 6, 14), 10)
+ck4_cor_func <- make_correlations(c(2, 6, 10), 14) # 24
+
+# Chimp liver
+cli1_cor_func <- make_correlations(c(7, 11, 15), 3)
+cli2_cor_func <- make_correlations(c(3, 11, 15), 7)
+cli3_cor_func <- make_correlations(c(3, 7, 15), 11)
+cli4_cor_func <- make_correlations(c(3, 7, 11), 15) # 36
+
+# Chimp lung
+clu1_cor_func <- make_correlations(c(8, 12, 16), 4)
+clu2_cor_func <- make_correlations(c(4, 12, 16), 8)
+clu3_cor_func <- make_correlations(c(4, 8, 16), 12)
+clu4_cor_func <- make_correlations(c(4, 8, 12), 16) # 48
+
+# Human heart 
+
+hh2_cor_func <- make_correlations(c(24, 28), 20)
+hh3_cor_func <- make_correlations(c(20, 28), 24)
+hh4_cor_func <- make_correlations(c(20, 24), 28) #54
+
+# Human kidney
+hk1_cor_func <- make_correlations(c(21, 25, 29), 17)
+hk2_cor_func <- make_correlations(c(17, 25, 29), 21)
+hk3_cor_func <- make_correlations(c(17, 21, 29), 25)
+hk4_cor_func <- make_correlations(c(17, 21, 25), 29) #66
+
+# Human liver
+hli1_cor_func <- make_correlations(c(22, 26, 30), 18)
+hli2_cor_func <- make_correlations(c(18, 26, 30), 22)
+hli3_cor_func <- make_correlations(c(18, 22, 30), 26)
+hli4_cor_func <- make_correlations(c(18, 22, 26), 30) #78
+
+# Human lung
+hlu1_cor_func <- make_correlations(c(23, 27, 31), 19)
+hlu2_cor_func <- make_correlations(c(19, 27, 31), 23)
+hlu3_cor_func <- make_correlations(c(19, 23, 31), 27)
+hlu4_cor_func <- make_correlations(c(19, 23, 27), 31) #90
+
+# Rhesus heart 
+rh1_cor_func <- make_correlations(c(36, 40, 44), 32)
+rh2_cor_func <- make_correlations(c(32, 40, 44), 36)
+rh3_cor_func <- make_correlations(c(32, 36, 44), 40)
+rh4_cor_func <- make_correlations(c(32, 36, 40), 44) #102
+
+# Rhesus kidney
+rk1_cor_func <- make_correlations(c(37, 41, 45), 33)
+rk2_cor_func <- make_correlations(c(33, 41, 45), 37)
+rk3_cor_func <- make_correlations(c(33, 37, 45), 41)
+rk4_cor_func <- make_correlations(c(33, 37, 41), 45) #114
+
+cor(express[,41], methyl[,41])
+
+# Rhesus liver
+rli1_cor_func <- make_correlations(c(38, 42, 46), 34)
+rli2_cor_func <- make_correlations(c(34, 42, 46), 38)
+rli3_cor_func <- make_correlations(c(34, 38, 46), 42)
+rli4_cor_func <- make_correlations(c(34, 38, 42), 46)
+
+# Rhesus lung
+rlu1_cor_func <- make_correlations(c(39, 43, 47), 35)
+rlu2_cor_func <- make_correlations(c(35, 43, 47), 39)
+rlu3_cor_func <- make_correlations(c(35, 39, 47), 43)
+rlu4_cor_func <- make_correlations(c(35, 39, 43), 47)
+
+hcr_cor <- c(ch1_cor_func, ch2_cor_func, ch3_cor_func, ch4_cor_func, ck1_cor_func, ck2_cor_func, ck3_cor_func, ck4_cor_func, cli1_cor_func, cli2_cor_func, cli3_cor_func, cli4_cor_func, clu1_cor_func, clu2_cor_func, clu3_cor_func, clu4_cor_func, hh2_cor_func, hh3_cor_func, hh4_cor_func, hk1_cor_func, hk2_cor_func, hk3_cor_func, hk4_cor_func, hli1_cor_func, hli2_cor_func, hli3_cor_func, hli4_cor_func, hlu1_cor_func, hlu2_cor_func, hlu3_cor_func, hlu4_cor_func, rh1_cor_func, rh2_cor_func, rh3_cor_func, rh4_cor_func, rk1_cor_func, rk2_cor_func, rk3_cor_func, rk4_cor_func, rli1_cor_func, rli2_cor_func, rli3_cor_func, rli4_cor_func, rlu1_cor_func, rlu2_cor_func, rlu3_cor_func, rlu4_cor_func)
+
+max(hcr_cor)
+min(hcr_cor)
+
+which(grepl(min(hcr_cor), hcr_cor))
+
+summary(cor_real)
+summary(hcr_cor)
+
+boxplot(cor_real, hcr_cor)
+
+boxplot(cor_real, hcr_cor, xaxt = "n", xlab = "RNA-seq and BS-seq from same individuals", ylab = "Correlation")
+axis(1, at = 1:2, labels = c("Matched", "Non-matched"))
+```
+
+# Look at human/chimpanzee data only
+
+```{r}
+methyl_values <- read.csv("../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt", sep="", stringsAsFactors=FALSE)
+
+express <- methyl_values[,2:32]
+methyl <- methyl_values[,49:79]
+
+
+# Calculate the correlations for the RNA-seq and methylation correct individual comparison
+cor_real <- c()
+
+for (i in 1:31){
+calc_cor <- cor(express[,i], methyl[,i])
+cor_real <- c(cor_real, calc_cor)
+}
+
+max(cor_real)
+min(cor_real)
+
+make_correlations <- function(list_array_rows, expression_row){
+ch1 <- list_array_rows
+ch1_cor <- c()
+for (i in ch1){
+calc_cor <- cor(express[,expression_row], methyl[,i])
+ch1_cor <- c(ch1_cor, calc_cor)
+  }
+return(ch1_cor)
+}
+# Chimp heart 
+ch1_cor_func <- make_correlations(c(5, 9, 13), 1)
+ch2_cor_func <- make_correlations(c(1, 9, 13), 5)
+ch3_cor_func <- make_correlations(c(1, 5, 13), 9)
+ch4_cor_func <- make_correlations(c(1, 5, 9), 13) #12
+
+# Chimp kidney
+ck1_cor_func <- make_correlations(c(6, 10, 14), 2)
+ck2_cor_func <- make_correlations(c(2, 10, 14), 6)
+ck3_cor_func <- make_correlations(c(2, 6, 14), 10)
+ck4_cor_func <- make_correlations(c(2, 6, 10), 14) # 24
+
+# Chimp liver
+cli1_cor_func <- make_correlations(c(7, 11, 15), 3)
+cli2_cor_func <- make_correlations(c(3, 11, 15), 7)
+cli3_cor_func <- make_correlations(c(3, 7, 15), 11)
+cli4_cor_func <- make_correlations(c(3, 7, 11), 15) # 36
+
+# Chimp lung
+clu1_cor_func <- make_correlations(c(8, 12, 16), 4)
+clu2_cor_func <- make_correlations(c(4, 12, 16), 8)
+clu3_cor_func <- make_correlations(c(4, 8, 16), 12)
+clu4_cor_func <- make_correlations(c(4, 8, 12), 16) # 48
+
+# Human heart 
+
+hh2_cor_func <- make_correlations(c(24, 28), 20)
+hh3_cor_func <- make_correlations(c(20, 28), 24)
+hh4_cor_func <- make_correlations(c(20, 24), 28) #54
+
+# Human kidney
+hk1_cor_func <- make_correlations(c(21, 25, 29), 17)
+hk2_cor_func <- make_correlations(c(17, 25, 29), 21)
+hk3_cor_func <- make_correlations(c(17, 21, 29), 25)
+hk4_cor_func <- make_correlations(c(17, 21, 25), 29) #66
+
+# Human liver
+hli1_cor_func <- make_correlations(c(22, 26, 30), 18)
+hli2_cor_func <- make_correlations(c(18, 26, 30), 22)
+hli3_cor_func <- make_correlations(c(18, 22, 30), 26)
+hli4_cor_func <- make_correlations(c(18, 22, 26), 30) #78
+
+# Human lung
+hlu1_cor_func <- make_correlations(c(23, 27, 31), 19)
+hlu2_cor_func <- make_correlations(c(19, 27, 31), 23)
+hlu3_cor_func <- make_correlations(c(19, 23, 31), 27)
+hlu4_cor_func <- make_correlations(c(19, 23, 27), 31) #90
+
+hc_cor <- c(ch1_cor_func, ch2_cor_func, ch3_cor_func, ch4_cor_func, ck1_cor_func, ck2_cor_func, ck3_cor_func, ck4_cor_func, cli1_cor_func, cli2_cor_func, cli3_cor_func, cli4_cor_func, clu1_cor_func, clu2_cor_func, clu3_cor_func, clu4_cor_func, hh2_cor_func, hh3_cor_func, hh4_cor_func, hk1_cor_func, hk2_cor_func, hk3_cor_func, hk4_cor_func, hli1_cor_func, hli2_cor_func, hli3_cor_func, hli4_cor_func, hlu1_cor_func, hlu2_cor_func, hlu3_cor_func, hlu4_cor_func)
+
+max(hc_cor)
+min(hc_cor)
+
+summary(cor_real)
+summary(hc_cor)
+
+boxplot(cor_real, hc_cor, xaxt = "n", xlab = "RNA-seq and BS-seq from same individuals", ylab = "Correlation", main = "Correlation of RNAseq and BSseq in human and chimpanzee samples")
+axis(1, at = 1:2, labels = c("Matched", "Non-matched"))
+
+t.test(cor_real, hc_cor)
+```
+

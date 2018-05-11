@@ -22,8 +22,8 @@
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="libs/navigation-1.1/tabsets.js"></script>
-<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="libs/highlightjs-1.1/highlight.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">
 
@@ -67,10 +67,12 @@ body {
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -192,7 +194,7 @@ $(document).ready(function () {
 <li><a href="#function-that-will-perform-the-intertissue-analysis--non-de-genes">Function that will perform the intertissue analysis- non-DE genes</a><ul>
 <li><a href="#results-human-heart-versus-human-kidney">Results: human heart versus human kidney</a></li>
 <li><a href="#results-chimp-heart-versus-chimp-kidney">Results: chimp heart versus chimp kidney</a></li>
-<li><a href="#human-heart-kidney-versus-human-kidney">Human heart kidney versus human kidney</a></li>
+<li><a href="#human-heart-versus-human-kidney">Human heart versus human kidney</a></li>
 <li><a href="#chimp-heart-versus-chimp-liver">Chimp heart versus chimp liver</a></li>
 <li><a href="#human-heart-versus-human-lung">Human heart versus human lung</a></li>
 <li><a href="#chimp-heart-versus-chimp-lung">Chimp heart versus chimp lung</a></li>
@@ -210,24 +212,28 @@ $(document).ready(function () {
 <div id="load-in-data" class="section level2">
 <h2>Load in data</h2>
 <pre class="r"><code># import sample labels
-samples &lt;- read.delim(&quot;../data/Sample_info_RNAseq_RIN.txt&quot;)
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt&quot;)
 # expression
-exprs &lt;- read.table(&quot;../data/human_chimp_orth_exp_methyl_7725_hum.txt&quot;, sep=&quot;&quot;)
+exprs &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt&quot;, sep=&quot;&quot;)
 # methylation data
-methyl &lt;- read.csv(&quot;../data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt&quot;, sep=&quot;&quot;)
+methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt&quot;, sep=&quot;&quot;)
 
 # Normalized gene expression data
-cpm.voom.cyclic &lt;- readRDS(&quot;../data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)
+cpm.voom.cyclic &lt;- readRDS(&quot;../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)
 
 # Load libraries
 library(&quot;edgeR&quot;)</code></pre>
-<pre><code>Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
 <pre><code>Loading required package: limma</code></pre>
-<pre><code>Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
 <pre class="r"><code>library(&quot;limma&quot;)
-library(&quot;plyr&quot;)</code></pre>
-<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code>library(&quot;ashr&quot;)</code></pre>
+library(&quot;plyr&quot;)
+library(&quot;ashr&quot;)
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>Loading required package: ggplot2</code></pre>
+<pre><code>
+Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:ggplot2&#39;:
+
+    ggsave</code></pre>
 </div>
 <div id="function-that-will-perform-the-interspecies-analysis--de-genes" class="section level2">
 <h2>Function that will perform the interspecies analysis- DE genes</h2>
@@ -524,7 +530,7 @@ return(make_plot)
 <h3>Results: Human heart versus chimp heart</h3>
 <pre class="r"><code>######### Human heart versus chimp heart ###############
 
-hc_heart_DE_make_plot &lt;- effect_size_hc_species_DE(c(1, 5, 9, 13, 20, 24, 28), 0.05, 0.05)</code></pre>
+hc_heart_DE_make_plot &lt;- as.data.frame(effect_size_hc_species_DE(c(1, 5, 9, 13, 20, 24, 28), 0.05, 0.05))</code></pre>
 <pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
 <pre class="r"><code>plot(x=hc_heart_DE_make_plot[,1], y=hc_heart_DE_make_plot[,2],
      ylab = &quot;Standard error of the difference&quot;,
@@ -533,6 +539,13 @@ hc_heart_DE_make_plot &lt;- effect_size_hc_species_DE(c(1, 5, 9, 13, 20, 24, 28)
      pch=16, cex=.6, col = hc_heart_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
 <p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p5 &lt;- plot(x=hc_heart_DE_make_plot[,1], y=hc_heart_DE_make_plot[,2],
+     ylab = &quot;Standard error of the difference&quot;,
+     xlab = &quot;Difference in effect size from 2 lms&quot;, 
+     main = &quot; &quot;,
+     pch=16, cex=.6, col = hc_heart_DE_make_plot[,3])
+legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hc_heart_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 122</code></pre>
 <pre class="r"><code>length(hc_heart_DE_make_plot[,3])</code></pre>
@@ -545,7 +558,14 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05
      main = &quot;Difference of effect size (non DE genes in human versus chimp heart)&quot;,
      pch=16, cex=.6, col = hc_heart_non_DE_make_plot[,3])
 legend(&quot;topright&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p6 &lt;- plot(x=hc_heart_non_DE_make_plot[,1], y=hc_heart_non_DE_make_plot[,2],
+     ylab = &quot;Standard error of the difference&quot;,
+     xlab = &quot;Difference in effect size from 2 lms&quot;, 
+     main = &quot; &quot;,
+     pch=16, cex=.6, col = hc_heart_non_DE_make_plot[,3])
+legend(&quot;topright&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hc_heart_non_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 5</code></pre>
 <pre class="r"><code>length(hc_heart_non_DE_make_plot[,3])</code></pre>
@@ -560,7 +580,7 @@ hc_heart_DE_make_plot &lt;- effect_size_hc_species_DE(c(1, 5, 9, 13, 20, 24, 28)
      main = &quot;Difference of effect size (DE genes in human versus chimp heart)&quot;,
      pch=16, cex=.6, col = hc_heart_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-5.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hc_heart_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 75</code></pre>
 <pre class="r"><code>length(hc_heart_DE_make_plot[,3])</code></pre>
@@ -573,7 +593,7 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01
      main = &quot;Difference of effect size (non DE genes in human versus chimp heart)&quot;,
      pch=16, cex=.6, col = hc_heart_non_DE_make_plot[,3])
 legend(&quot;topright&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-6.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hc_heart_non_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 4</code></pre>
 <pre class="r"><code>length(hc_heart_non_DE_make_plot[,3])</code></pre>
@@ -588,7 +608,7 @@ hc_heart_DE_make_plot &lt;- effect_size_hc_species_DE(c(1, 5, 9, 13, 20, 24, 28)
      main = &quot;Difference of effect size (DE genes in human versus chimp heart)&quot;,
      pch=16, cex=.6, col = hc_heart_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.1&quot;, &quot;s &gt;= 0.1&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-7.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hc_heart_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 137</code></pre>
 <pre class="r"><code>length(hc_heart_DE_make_plot[,3])</code></pre>
@@ -601,7 +621,7 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.1&quot;, &quot;s &gt;= 0.1&q
      main = &quot;Difference of effect size (non DE genes in human versus chimp heart)&quot;,
      pch=16, cex=.6, col = hc_heart_non_DE_make_plot[,3])
 legend(&quot;topright&quot;, legend=c(&quot;s &lt; 0.1&quot;, &quot;s &gt;= 0.1&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-4-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hc_heart_non_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 3</code></pre>
 <pre class="r"><code>length(hc_heart_non_DE_make_plot[,3])</code></pre>
@@ -1021,6 +1041,13 @@ hk_DE_make_plot &lt;- effect_size_hc_tissue_DE(c(17, 20, 21, 24, 25, 28, 29), 0.
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
 <p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p1 &lt;- plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
+     ylab = &quot;Standard error of the difference&quot;,
+     xlab = &quot;Difference in effect size from 2 lms&quot;, 
+     main = &quot; &quot;,
+     pch=16, cex=.6, col = hk_DE_make_plot[,3])
+legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 230</code></pre>
 <pre class="r"><code>length(hk_DE_make_plot[,3])</code></pre>
@@ -1033,7 +1060,14 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05
      main = &quot;Difference of effect size (non-DE genes in human heart vs human kidney)&quot;,
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p2 &lt;- plot(x=hk_make_plot[,1], y=hk_make_plot[,2],
+     ylab = &quot;Standard error of the difference&quot;,
+     xlab = &quot;Difference in effect size from 2 lms&quot;, 
+     main = &quot; &quot;,
+     pch=16, cex=.6, col = hk_make_plot[,3])
+legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(hk_make_plot[,3])</code></pre>
@@ -1048,7 +1082,7 @@ hk_DE_make_plot &lt;- effect_size_hc_tissue_DE(c(17, 20, 21, 24, 25, 28, 29), 0.
      main = &quot;Difference of effect size (DE genes in human heart vs human kidney)&quot;,
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 158</code></pre>
 <pre class="r"><code>length(hk_DE_make_plot[,3])</code></pre>
@@ -1061,7 +1095,7 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01
      main = &quot;Difference of effect size (non-DE genes in human heart vs human kidney)&quot;,
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(hk_make_plot[,3])</code></pre>
@@ -1076,7 +1110,7 @@ hk_DE_make_plot &lt;- effect_size_hc_tissue_DE(c(17, 20, 21, 24, 25, 28, 29), 0.
      main = &quot;Difference of effect size (DE genes in human heart vs human kidney)&quot;,
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-7.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 248</code></pre>
 <pre class="r"><code>length(hk_DE_make_plot[,3])</code></pre>
@@ -1089,7 +1123,7 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05
      main = &quot;Difference of effect size (non-DE genes in human heart vs human kidney)&quot;,
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.1&quot;, &quot;s &gt;= 0.1&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-10-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(hk_make_plot[,3])</code></pre>
@@ -1108,6 +1142,13 @@ hk_DE_make_plot &lt;- effect_size_hc_tissue_DE(c(1, 2, 5, 6, 9, 10, 13, 14), 0.0
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
 <p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p3 &lt;- plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
+     ylab = &quot;Standard error of the difference&quot;,
+     xlab = &quot;Difference in effect size from 2 lms&quot;, 
+     main = &quot; &quot;,
+     pch=16, cex=.6, col = hk_DE_make_plot[,3])
+legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 462</code></pre>
 <pre class="r"><code>length(hk_DE_make_plot[,3])</code></pre>
@@ -1120,7 +1161,14 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05
      main = &quot;Difference of effect size (non-DE genes in chimp heart vs chimp kidney)&quot;,
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p4 &lt;- plot(x=hk_make_plot[,1], y=hk_make_plot[,2],
+     ylab = &quot;Standard error of the difference&quot;,
+     xlab = &quot;Difference in effect size from 2 lms&quot;, 
+     main = &quot; &quot;,
+     pch=16, cex=.6, col = hk_make_plot[,3])
+legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(hk_make_plot[,3])</code></pre>
@@ -1135,7 +1183,7 @@ hk_DE_make_plot &lt;- effect_size_hc_tissue_DE(c(1, 2, 5, 6, 9, 10, 13, 14), 0.0
      main = &quot;Difference of effect size (DE genes in chimp heart vs chimp kidney)&quot;,
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 343</code></pre>
 <pre class="r"><code>length(hk_DE_make_plot[,3])</code></pre>
@@ -1148,7 +1196,7 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01
      main = &quot;Difference of effect size (non-DE genes in chimp heart vs chimp kidney)&quot;,
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.01&quot;, &quot;s &gt;= 0.01&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(hk_make_plot[,3])</code></pre>
@@ -1163,7 +1211,7 @@ hk_DE_make_plot &lt;- effect_size_hc_tissue_DE(c(1, 2, 5, 6, 9, 10, 13, 14), 0.1
      main = &quot;Difference of effect size (DE genes in chimp heart vs chimp kidney)&quot;,
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.1&quot;, &quot;s &gt;= 0.1&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-7.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_DE_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 518</code></pre>
 <pre class="r"><code>length(hk_DE_make_plot[,3])</code></pre>
@@ -1176,14 +1224,14 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.1&quot;, &quot;s &gt;= 0.1&q
      main = &quot;Difference of effect size (non-DE genes in chimp heart vs chimp kidney)&quot;,
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.1&quot;, &quot;s &gt;= 0.1&quot;), col=c(&quot;red&quot;, &quot;black&quot;), pch=16:16, cex=0.8)</code></pre>
-<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Effect_size_2lms.Rmd/unnamed-chunk-11-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>sum(hk_make_plot[,3] == &quot;red&quot;)</code></pre>
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(hk_make_plot[,3])</code></pre>
 <pre><code>[1] 3667</code></pre>
 </div>
-<div id="human-heart-kidney-versus-human-kidney" class="section level3">
-<h3>Human heart kidney versus human kidney</h3>
+<div id="human-heart-versus-human-kidney" class="section level3">
+<h3>Human heart versus human kidney</h3>
 <pre class="r"><code>hk_DE_make_plot &lt;- effect_size_hc_tissue_DE(c(18, 20, 22, 24, 26, 28, 30), 0.05, 0.05)</code></pre>
 <pre><code>Due to absence of package REBayes, switching to EM algorithm</code></pre>
 <pre class="r"><code>plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
@@ -1475,6 +1523,7 @@ legend(&quot;topleft&quot;, legend=c(&quot;s &lt; 0.05&quot;, &quot;s &gt;= 0.05
 <pre><code>[1] 1</code></pre>
 <pre class="r"><code>length(hk_make_plot[,3])</code></pre>
 <pre><code>[1] 4462</code></pre>
+<p>`</p>
 </div>
 </div>
 

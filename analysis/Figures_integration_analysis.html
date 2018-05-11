@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Figures_data_integration</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Figures_data_integration</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>April 5, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#chimp-versus-human-comparisons">Chimp versus human comparisons</a></li>
+<li><a href="#human-intertissue">Human intertissue</a></li>
+<li><a href="#human-intertissue-conserved-versus-human-specific">Human intertissue conserved versus human-specific</a><ul>
+<li><a href="#difference-of-proportions-in-human-and-rhesus">Difference of proportions in human and rhesus</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>This script is for generating figures about the contribution of DNA methylation variability to differential gene expression levels between tissues.</p>
+<pre class="r"><code>library(ggplot2)
+library(cowplot)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
+<div id="chimp-versus-human-comparisons" class="section level1">
+<h1>Chimp versus human comparisons</h1>
+<pre class="r"><code># Make a table
+
+comparison1 = data.frame(c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+#comparison = data.frame(c(&quot;Heart v Lung&quot;, &quot;Heart v Kidney&quot;, &quot;Kidney v Lung&quot;, &quot;Liver v Lung&quot;, &quot;Kidney v Liver&quot;, &quot;Heart v Liver&quot;))
+percentage1 = data.frame(c(0.164, 0.145, 0.192, 0.069))
+
+df1 &lt;- cbind(comparison1, percentage1)
+colnames(df1) &lt;- c(&quot;Species_comparison&quot;, &quot;Percentage&quot;)
+df1$Species_comparison &lt;- factor(df1$Species_comparison, levels = df1$Species_comparison)
+
+Number1 &lt;- c(&quot;***&quot;, &quot;***&quot;, &quot;***&quot;, &quot;**&quot;)
+
+plot_interspecies &lt;- ggplot(data=df1, aes(x=Species_comparison, y=Percentage)) +
+  geom_bar(stat=&quot;identity&quot;) + xlab(&quot;Human-Chimpanzee Tissue Comparison&quot;) + ylab(&quot;% of genes for which DNAm \n could underlie intertissue \n differential expression \n (rel. to permuted null)&quot;) + geom_text(aes(label=Number1), position=position_dodge(width=0.9), vjust=-0.25)
+
+#p1 &lt;- ggplot(data=df, aes(x=Species_comparison, y=Percentage)) +
+#  geom_bar(stat=&quot;identity&quot;) + xlab(&quot;Human-Chimpanzee Tissue Comparison&quot;) + ylab(&quot;% of genes for which DNAm \n could underlie intertissue \n differential expression \n (rel. to permuted null)&quot;) +
+#     geom_text(aes(label=Number), position=position_dodge(width=0.9), vjust=-0.25)
+
+#plot_interspecies
+
+#plot_grid(plot_interspecies)</code></pre>
+</div>
+<div id="human-intertissue" class="section level1">
+<h1>Human intertissue</h1>
+<pre class="r"><code># Make a table
+
+#comparison = data.frame(c(&quot;H v Lu&quot;, &quot;H v K&quot;, &quot;K v Lu&quot;, &quot;Li v Lu&quot;, &quot;K v Li&quot;, &quot;H v Li&quot;))
+#comparison = data.frame(c(&quot;Heart v Lung&quot;, &quot;Heart v Kidney&quot;, &quot;Kidney v Lung&quot;, &quot;Liver v Lung&quot;, &quot;Kidney v Liver&quot;, &quot;Heart v Liver&quot;))
+#percentage = data.frame(c(0.186, 0.248, 0.276, 0.302, 0.311, 0.398))
+
+comparison = data.frame(c(&quot;H v K&quot;, &quot;H v Li&quot;, &quot;H v Lu&quot;, &quot;K v Li&quot;, &quot;K v Lu&quot;, &quot;Li v Lu&quot;))
+#comparison = data.frame(c(&quot;Heart v Lung&quot;, &quot;Heart v Kidney&quot;, &quot;Kidney v Lung&quot;, &quot;Liver v Lung&quot;, &quot;Kidney v Liver&quot;, &quot;Heart v Liver&quot;))
+percentage = data.frame(c(0.248, 0.398, 0.186, 0.311, 0.276, 0.302))
+
+
+
+df &lt;- cbind(comparison, percentage)
+colnames(df) &lt;- c(&quot;Tissue_comparison&quot;, &quot;Percentage&quot;)
+df$Tissue_comparison &lt;- factor(df$Tissue_comparison , levels = df$Tissue_comparison )
+
+Number &lt;- c(&quot;**&quot;, &quot;***&quot;, &quot;**&quot;, &quot;***&quot;, &quot;***&quot;, &quot;***&quot;)
+
+plot_intertissue &lt;- ggplot(data=df, aes(x=Tissue_comparison, y=Percentage)) +
+  geom_bar(stat=&quot;identity&quot;) + xlab(&quot;Human tissue comparison&quot;) + ylab(&quot;% of genes for which DNAm \n could underlie intertissue \n differential expression \n (rel. to permuted null)&quot;) +
+     geom_text(aes(label=Number), position=position_dodge(width=0.9), vjust=-0.25)
+
+plot_grid(plot_intertissue)</code></pre>
+<p><img src="Figures_integration_analysis_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="human-intertissue-conserved-versus-human-specific" class="section level1">
+<h1>Human intertissue conserved versus human-specific</h1>
+<pre class="r"><code># FDR 5%
+# Heart versus kidney
+
+prop.test(c(48, 405), c(238, 1606)) #0.11</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(48, 405) out of c(238, 1606)
+## X-squared = 2.5865, df = 1, p-value = 0.1078
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.108135896  0.007138585
+## sample estimates:
+##    prop 1    prop 2 
+## 0.2016807 0.2521793</code></pre>
+<pre class="r"><code># Heart versus liver
+
+prop.test(c(23, 719), c(141, 1837)) #1.125e-07</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(23, 719) out of c(141, 1837)
+## X-squared = 28.146, df = 1, p-value = 1.125e-07
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.2970376 -0.1595193
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1631206 0.3913990</code></pre>
+<pre class="r"><code># Heart versus lung
+
+prop.test(c(36, 319), c(232, 1521)) #0.07</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(36, 319) out of c(232, 1521)
+## X-squared = 3.3799, df = 1, p-value = 0.06599
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.107926695 -0.001189358
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1551724 0.2097304</code></pre>
+<pre class="r"><code># Kidney versus liver
+
+prop.test(c(40, 636), c(241, 1775)) #4.579e-09</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(40, 636) out of c(241, 1775)
+## X-squared = 34.361, df = 1, p-value = 4.579e-09
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.2466920 -0.1379775
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1659751 0.3583099</code></pre>
+<pre class="r"><code># Kidney versus lung
+
+prop.test(c(12, 345), c(66, 1124)) #0.04</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(12, 345) out of c(66, 1124)
+## X-squared = 4.0706, df = 1, p-value = 0.04363
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.2300205 -0.0202221
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1818182 0.3069395</code></pre>
+<pre class="r"><code># Liver versus lung
+
+prop.test(c(22, 594), c(142, 1776)) # 1.592e-05</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(22, 594) out of c(142, 1776)
+## X-squared = 18.624, df = 1, p-value = 1.592e-05
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.2467625 -0.1122972
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1549296 0.3344595</code></pre>
+<pre class="r"><code>(48/238-405/1606 + 23/141-719/1837 + 36/232-319/1521+40/241-636/1775+12/66-345/1124+22/142-594/1776)/6</code></pre>
+<pre><code>## [1] -0.1383868</code></pre>
+<pre class="r"><code>comparison = data.frame(c(&quot;H v Lu&quot;, &quot;H v Lu&quot;, &quot;H v K&quot;,  &quot;H v K&quot;, &quot;K v Lu&quot;, &quot;K v Lu&quot;, &quot;Li v Lu&quot;, &quot;Li v Lu&quot;, &quot;K v Li&quot;, &quot;K v Li&quot;, &quot;H v Li&quot;, &quot;H v Li&quot;))
+#comparison = data.frame(c(&quot;Heart v Lung&quot;, &quot;Heart v Lung&quot;, &quot;Heart v Kidney&quot;,  &quot;Heart v Kidney&quot;, &quot;Kidney v Lung&quot;, &quot;Kidney v Lung&quot;, &quot;Liver v Lung&quot;, &quot;Liver v Lung&quot;, &quot;Kidney v Liver&quot;, &quot;Kidney v Liver&quot;, &quot;Heart v Liver&quot;, &quot;Heart v Liver&quot;))
+type = data.frame(c(&quot;Human only&quot;, &quot;Conserved&quot;, &quot;Human only&quot;, &quot;Conserved&quot;, &quot;Human only&quot;, &quot;Conserved&quot;, &quot;Human only&quot;, &quot;Conserved&quot;, &quot;Human only&quot;, &quot;Conserved&quot;, &quot;Human only&quot;, &quot;Conserved&quot;))
+percentage = data.frame(c(0.155, 0.209, 0.202, 0.252, 0.182, 0.307, 0.155, 0.334, 0.166, 0.358, 0.163, 0.391))
+row_num &lt;- data.frame(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6))
+p_val &lt;- data.frame(c(0.11, &quot; &quot;, 1.1e-7, &quot; &quot;, 0.07, &quot; &quot;, 4.6e-9, &quot; &quot;, 0.04, &quot; &quot;, 1.6e-5, &quot; &quot;))
+df &lt;- cbind(comparison, type, percentage, row_num)
+colnames(df) &lt;- c(&quot;Tissue_comparison&quot;, &quot;Type&quot;, &quot;Percentage&quot;, &quot;row_num&quot;)
+#df$Tissue_comparison &lt;- factor(df$Tissue_comparison , levels = df$Tissue_comparison )
+make_labels &lt;- matrix(c(&quot;H v Lu&quot;, &quot;H v K&quot;, &quot;K v Lu&quot;, &quot;Li v Lu&quot;, &quot;K v Li&quot;, &quot;H v Li&quot;), nrow = 6)
+make_labels2 &lt;- matrix(make_labels, nrow = 2, ncol = 3)
+
+make_labels &lt;- matrix(c(&quot;H v Lu&quot;, &quot;H v Lu&quot;, &quot;H v K&quot;,  &quot;H v K&quot;, &quot;K v Lu&quot;, &quot;K v Lu&quot;, &quot;Li v Lu&quot;, &quot;Li v Lu&quot;, &quot;K v Li&quot;, &quot;K v Li&quot;, &quot;H v Li&quot;, &quot;H v Li&quot;), nrow = 12)
+
+#df$Type &lt;- factor(df$Type , levels = df$Type)
+
+plot_intertissue_cons &lt;- ggplot(data=df, aes(x=Type, y=Percentage), fill = df$Type) +
+  geom_bar(stat=&quot;identity&quot;, aes(fill = df$Type)) + xlab(&quot;Human tissue comparison&quot;) + ylab(&quot;% of genes for which DNAm \n could underlie intertissue \n differential expression \n (rel. to permuted null)&quot;) + facet_wrap(~ Tissue_comparison) +  theme(legend.position=&quot;none&quot;)  + geom_text(aes(x = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5), y = c(0.3, 0.45, 0.44, 0.45, 0.26, 0.45, 0.41, 0.45, 0.36, 0.45, 0.39, 0.45), label = p_val)) + geom_segment(aes(x = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), y = c(0.28, 0.28, 0.42, 0.42, 0.24, 0.24, 0.39, 0.39, 0.34, 0.34, 0.37, 0.37), xend = c(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2), yend = c(0.28, 0.28, 0.42, 0.42, 0.24, 0.24, 0.39, 0.39, 0.34, 0.34, 0.37, 0.37))) + geom_segment(aes(x = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), y = c(0.26, 0.26, 0.4, 0.4, 0.22, 0.22, 0.37, 0.37, 0.32, 0.32, 0.35, 0.35), xend = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), yend = c(0.28, 0.28, 0.42, 0.42, 0.24, 0.24, 0.39, 0.39, 0.34, 0.34, 0.37, 0.37))) + geom_segment(aes(x = c(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2), y = c(0.21, 0.21, 0.17, 0.17, 0.165, 0.165, 0.175, 0.175, 0.19, 0.19, 0.165, 0.165), xend = c(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2), yend = c(0.28, 0.28, 0.42, 0.42, 0.24, 0.24, 0.39, 0.39, 0.34, 0.34, 0.37, 0.37)))
+
+pdf(&quot;./plot_intertissue_cons.pdf&quot;)
+plot_intertissue_cons</code></pre>
+<pre><code>## Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># FDR 10% 
+
+# Heart versus kidney
+
+prop.test(c(124-69, 817-421), c(387, 1969)) #0.0086</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(124 - 69, 817 - 421) out of c(387, 1969)
+## X-squared = 6.8973, df = 1, p-value = 0.008633
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.09957872 -0.01841819
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1421189 0.2011173</code></pre>
+<pre class="r"><code># Heart versus liver
+
+prop.test(c(80-47, 1299-508), c(264, 2256)) #2.397e-13</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(80 - 47, 1299 - 508) out of c(264, 2256)
+## X-squared = 53.649, df = 1, p-value = 2.397e-13
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.2722245 -0.1790167
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1250000 0.3506206</code></pre>
+<pre class="r"><code># Heart versus lung
+
+prop.test(c(114-77, 740-427), c(393, 1926)) # 0.0007436</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(114 - 77, 740 - 427) out of c(393, 1926)
+## X-squared = 11.377, df = 1, p-value = 0.0007436
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.10314007 -0.03359072
+## sample estimates:
+##     prop 1     prop 2 
+## 0.09414758 0.16251298</code></pre>
+<pre class="r"><code># Kidney versus liver
+
+prop.test(c(119-51, 908-330), c(405, 1874)) #1.806e-08</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(119 - 51, 908 - 330) out of c(405, 1874)
+## X-squared = 31.693, df = 1, p-value = 1.806e-08
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.18401232 -0.09704754
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1679012 0.3084312</code></pre>
+<pre class="r"><code># Kidney versus lung
+
+prop.test(c(48-26, 763-376), c(129, 1486)) #0.03</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(48 - 26, 763 - 376) out of c(129, 1486)
+## X-squared = 4.6071, df = 1, p-value = 0.03184
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.16273245 -0.01704365
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1705426 0.2604307</code></pre>
+<pre class="r"><code># Liver versus lung
+
+prop.test(c(68-38, 1184-559), c(214, 2284)) # 3.141e-05</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(68 - 38, 1184 - 559) out of c(214, 2284)
+## X-squared = 17.331, df = 1, p-value = 3.141e-05
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.18599100 -0.08092063
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1401869 0.2736427</code></pre>
+<pre class="r"><code>p3 &lt;- ggdraw()+draw_image(&quot;./plot_intertissue_cons.pdf&quot;)
+  
+plot_fig5 &lt;- plot_grid(plot_interspecies, plot_intertissue, plot_intertissue_cons,  labels = c(&quot;5A.&quot;, &quot;5B.&quot;, &quot;5C.&quot;), ncol = 1)</code></pre>
+<pre><code>## Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
+<pre class="r"><code>save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/Figure_5.pdf&quot;, plot_fig5,
+          ncol = 1, # we&#39;re saving a grid plot of 2 columns
+          nrow = 3, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3)</code></pre>
+<div id="difference-of-proportions-in-human-and-rhesus" class="section level2">
+<h2>Difference of proportions in human and rhesus</h2>
+<pre class="r"><code>(218/965-15/84+338/943-19/86+157/917-5/70+269/960-12/102+177/614-1/25+276/988-12/102)/6</code></pre>
+<pre><code>## [1] 0.1428596</code></pre>
+<pre class="r"><code># FDR 5%
+# Heart versus kidney
+prop.test(c(15, 218), c(84, 965)) #0.37</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(15, 218) out of c(84, 965)
+## X-squared = 0.74685, df = 1, p-value = 0.3875
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.13985359  0.04518298
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1785714 0.2259067</code></pre>
+<pre class="r"><code># Heart versus liver
+prop.test(c(19, 338), c(86, 943)) #0.0144</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(19, 338) out of c(86, 943)
+## X-squared = 5.9836, df = 1, p-value = 0.01444
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.23671564 -0.03828498
+## sample estimates:
+##    prop 1    prop 2 
+## 0.2209302 0.3584305</code></pre>
+<pre class="r"><code># Heart versus lung
+prop.test(c(5, 157), c(70, 917)) #0.04495</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(5, 157) out of c(70, 917)
+## X-squared = 4.0205, df = 1, p-value = 0.04495
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.17254149 -0.02702231
+## sample estimates:
+##     prop 1     prop 2 
+## 0.07142857 0.17121047</code></pre>
+<pre class="r"><code># Kidney versus liver
+prop.test(c(12, 269), c(102, 960)) # 0.0006248</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(12, 269) out of c(102, 960)
+## X-squared = 11.7, df = 1, p-value = 0.0006248
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.23666126 -0.08846129
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1176471 0.2802083</code></pre>
+<pre class="r"><code># Kidney versus lung
+prop.test(c(1, 177), c(25, 614)) #0.01289</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(1, 177) out of c(25, 614)
+## X-squared = 6.1844, df = 1, p-value = 0.01289
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.3538472 -0.1427000
+## sample estimates:
+##    prop 1    prop 2 
+## 0.0400000 0.2882736</code></pre>
+<pre class="r"><code># Liver versus lung
+prop.test(c(8, 276), c(37, 988)) # 0.5122</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(8, 276) out of c(37, 988)
+## X-squared = 0.42954, df = 1, p-value = 0.5122
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.21271856  0.08644654
+## sample estimates:
+##    prop 1    prop 2 
+## 0.2162162 0.2793522</code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

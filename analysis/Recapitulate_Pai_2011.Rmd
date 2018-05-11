@@ -1,0 +1,87 @@
+---
+title: "Recapitulate Pai et al. 2011"
+author: "Lauren Blake"
+date: "May 9, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Recapitulate observed/expected/pvalue from Pai et al. 2011
+
+Calculating the observed versus expected from Figure 3 Pai et al. 2011
+
+## Liver specific
+```{r}
+m <- 470+367
+n <- 9911-(470+367)
+x <- 367
+q = x
+k <- (603+367)
+phyper(q, m, n, k, lower.tail = FALSE)
+dhyper(1:x, m, n, k)
+max(dhyper(1:x, m, n, k))
+
+plot(dhyper(1:x, m, n, k))
+
+which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+```
+
+## Kidney specific
+```{r}
+m <- 85+127
+n <- 9911-(85+127)
+x <- 85
+q = x
+k <- (129+85)
+phyper(q, m, n, k, lower.tail = FALSE)
+dhyper(1:x, m, n, k)
+max(dhyper(1:x, m, n, k))
+
+plot(dhyper(1:x, m, n, k))
+
+which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+```
+
+## Heart specific
+```{r}
+m <- 112+240
+n <- 9911-(112+240)
+x <- 112
+q = x
+k <- (282+112)
+phyper(q, m, n, k, lower.tail = FALSE)
+dhyper(1:x, m, n, k)
+max(dhyper(1:x, m, n, k))
+
+plot(dhyper(1:x, m, n, k))
+
+which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+```
+
+# Comparison to Joyce's Method
+
+```{r}
+# Liver specific
+
+which(grepl(max(dhyper(1:367, m=970, n=9911-970, k=837)), dhyper(1:367, m=970, n=9911-970, k=837)))
+
+phyper(367, m=970, n=9911-970, k=837, lower.tail = FALSE)
+
+# Kidney specific
+
+which(grepl(max(dhyper(1:85, m=129+85, n=9911-129-85, k=127+85)), dhyper(1:85, m=129+85, n=9911-129-85, k=127+85)))
+
+phyper(85, m=129+85, n=9911-129-85, k=127+85, lower.tail = FALSE)
+
+# Heart specific 
+
+which(grepl(max(dhyper(1:112, m=282+112, n=9911-282-112, k=112+240)), dhyper(1:112, m=282+112, n=9911-282-112, k=112+240)))
+
+phyper(112, m=282+112, n=9911-282-112, k=112+240, lower.tail = FALSE)
+
+
+```
+

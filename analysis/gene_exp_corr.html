@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-02-20" />
+
+<title>Correlation of gene expression levels by category</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Correlation of gene expression levels by category</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>February 20, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#all-correlations">All correlations</a></li>
+<li><a href="#correlations-for-different-individuals-same-tissues">Correlations for different individuals, same tissues</a></li>
+<li><a href="#correlations-for-same-individuals-different-tissues">Correlations for same individuals, different tissues</a></li>
+<li><a href="#correlations-for-different-individuals-different-tissues">Correlations for different individuals, different tissues</a></li>
+<li><a href="#combine-and-plot-the-information">Combine and plot the information</a></li>
+<li><a href="#create-main-figure-1">Create main figure 1</a><ul>
+<li><a href="#make-pca-for-gene-expression-and-methylation-data">Make PCA for gene expression and methylation data</a></li>
+</ul></li>
+<li><a href="#clustering">Clustering</a></li>
+<li><a href="#figure-clustering-with-gene-expression-and-methylation-levels-on-the-orthologous-genespromoters-only">Figure: Clustering with gene expression and methylation levels on the orthologous genes/promoters only</a></li>
+<li><a href="#correlations">Correlations</a></li>
+<li><a href="#is-gene-expression-and-methylation-from-the-same-individual-more-highly-correlated-than-from-different-individuals-of-the-same-species">Is gene expression and methylation from the same individual more highly correlated than from different individuals of the same species?</a></li>
+</ul>
+</div>
+
+<p>This is an R Markdown document to investigate the correlations of gene expression levels across categories.</p>
+<pre class="r"><code># Load libraries
+
+library(plyr)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:plyr&#39;:
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(&quot;tidyr&quot;)
+library(&quot;RColorBrewer&quot;)
+library(&quot;ggplot2&quot;)
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
+<pre class="r"><code>colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Load data
+
+## Load counts
+
+cpm_12184 &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/PC_cpm_cyclic_loess_random_var_gene_exp&quot;)
+
+## RNA-seq
+
+sample_info_RNAseq &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv&quot;)
+sample_features &lt;- sample_info_RNAseq[-17,]
+
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt&quot;)
+
+# Eliminate H1H
+samples &lt;- samples[-17,]</code></pre>
+<div id="all-correlations" class="section level1">
+<h1>All correlations</h1>
+<pre class="r"><code>pair_cor &lt;- cor(cpm_12184)
+pair_cor &lt;- as.data.frame(pair_cor)
+pair_cor$sample1 &lt;- rownames(pair_cor)
+
+pair_cor_long &lt;- gather(pair_cor, key = &quot;sample2&quot;, value = &quot;r&quot;, -sample1) %&gt;%
+  mutate(sample2 = as.character(sample2)) %&gt;%
+  filter(sample1 &lt; sample2) %&gt;% # ensures only one of the two entries is
+  arrange(sample1, sample2)     # maintained
+stopifnot(pair_cor_long$r &lt; 1,
+          nrow(pair_cor_long) == (47*47 - 47) / 2)
+
+head(pair_cor_long)</code></pre>
+<pre><code>##   sample1 sample2         r
+## 1     C1H     C1K 0.7121519
+## 2     C1H    C1Li 0.6845819
+## 3     C1H    C1Lu 0.7875100
+## 4     C1H     C2H 0.9473379
+## 5     C1H     C2K 0.7110097
+## 6     C1H    C2Li 0.6114119</code></pre>
+<pre class="r"><code>rownames(sample_features) &lt;- colnames(cpm_12184)
+pair_cor_long$tissue1 &lt;- &quot;&quot;
+pair_cor_long$tissue2 &lt;- &quot;&quot;
+
+pair_cor_long$individual1 &lt;- &quot;&quot;
+pair_cor_long$individual2 &lt;- &quot;&quot;
+
+for (i in 1:nrow(pair_cor_long)) {
+  pair_cor_long$tissue1[i] &lt;- sample_features[pair_cor_long$sample1[i], &quot;Tissue&quot;]
+  pair_cor_long$tissue2[i] &lt;- sample_features[pair_cor_long$sample2[i], &quot;Tissue&quot;]
+  pair_cor_long$individual1[i] &lt;- sample_features[pair_cor_long$sample1[i], &quot;Individual&quot;]
+  pair_cor_long$individual2[i] &lt;- sample_features[pair_cor_long$sample2[i], &quot;Individual&quot;]
+}
+head(pair_cor_long)</code></pre>
+<pre><code>##   sample1 sample2         r tissue1 tissue2 individual1 individual2
+## 1     C1H     C1K 0.7121519       1       2           2           2
+## 2     C1H    C1Li 0.6845819       1       3           2           2
+## 3     C1H    C1Lu 0.7875100       1       4           2           2
+## 4     C1H     C2H 0.9473379       1       1           2           4
+## 5     C1H     C2K 0.7110097       1       2           2           4
+## 6     C1H    C2Li 0.6114119       1       3           2           4</code></pre>
+<pre class="r"><code>summary(pair_cor_long$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.4172  0.5831  0.6636  0.6750  0.7432  0.9846</code></pre>
+</div>
+<div id="correlations-for-different-individuals-same-tissues" class="section level1">
+<h1>Correlations for different individuals, same tissues</h1>
+<pre class="r"><code># Subset for different individuals
+
+subset_pair_cor_long_diff_ind_same_tissues &lt;- pair_cor_long[which(pair_cor_long$tissue1 == pair_cor_long$tissue2 &amp; pair_cor_long$individual1 != pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_diff_ind_same_tissues$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.7092  0.8176  0.8412  0.8572  0.9034  0.9846</code></pre>
+</div>
+<div id="correlations-for-same-individuals-different-tissues" class="section level1">
+<h1>Correlations for same individuals, different tissues</h1>
+<pre class="r"><code>subset_pair_cor_long_same_ind_diff_tissues &lt;- pair_cor_long[which(pair_cor_long$tissue1 != pair_cor_long$tissue2 &amp; pair_cor_long$individual1 == pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_same_ind_diff_tissues$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.5259  0.6570  0.6951  0.6781  0.7204  0.8205</code></pre>
+</div>
+<div id="correlations-for-different-individuals-different-tissues" class="section level1">
+<h1>Correlations for different individuals, different tissues</h1>
+<pre class="r"><code>subset_pair_cor_long_diff_ind_diff_tissues &lt;- pair_cor_long[which(pair_cor_long$tissue1 != pair_cor_long$tissue2 &amp; pair_cor_long$individual1 != pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_diff_ind_diff_tissues$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.4172  0.5638  0.6140  0.6140  0.6754  0.7792</code></pre>
+</div>
+<div id="combine-and-plot-the-information" class="section level1">
+<h1>Combine and plot the information</h1>
+<pre class="r"><code># Make col of 
+
+values_all &lt;- as.data.frame(pair_cor_long$r)
+colnames(values_all) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_same_ind &lt;- as.data.frame(subset_pair_cor_long_same_ind_diff_tissues$r)
+colnames(values_same_ind) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_diff_both &lt;- as.data.frame(subset_pair_cor_long_diff_ind_diff_tissues$r)
+colnames(values_diff_both) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_diff_ind &lt;- as.data.frame(subset_pair_cor_long_diff_ind_same_tissues$r)
+colnames(values_diff_ind) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+all_r_values &lt;- rbind(values_all, values_same_ind, values_diff_both, values_diff_ind)
+
+# Make labels
+
+labels_all &lt;- array(&quot;ALL&quot;, dim = c(nrow(pair_cor_long),1))
+
+labels_diff_tissues &lt;- array(&quot;SIDT&quot;, dim = c(nrow(subset_pair_cor_long_same_ind_diff_tissues),1))
+
+labels_diff_both &lt;- array(&quot;DIDT&quot;, dim = c(nrow(subset_pair_cor_long_diff_ind_diff_tissues),1))
+
+labels_diff_ind &lt;- array(&quot;DIST&quot;, dim = c(nrow(subset_pair_cor_long_diff_ind_same_tissues),1))
+
+labels_all_r_values &lt;- rbind(labels_all, labels_diff_tissues, labels_diff_both, labels_diff_ind)
+
+rvalues_table &lt;- cbind(all_r_values, labels_all_r_values)
+
+rvalues_table$labels_all_r_values &lt;- ordered(rvalues_table$labels_all_r_values, levels=c(&quot;ALL&quot;, &quot;DIST&quot;, &quot;SIDT&quot;, &quot;DIDT&quot;))
+
+plot.corr &lt;- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1], fill = rvalues_table[,2])) +
+  geom_boxplot()  +
+  labs(x = &quot;Condition&quot;, y = &quot;Pearson&#39;s r&quot;)
+
+#+ theme(axis.text.x = element_text(angle = 70, vjust = 0.5))
+
+plot.corr &lt;- plot.corr + theme(legend.position = &quot;top&quot;) + scale_fill_discrete(name = c(&quot;Conditions&quot;), breaks = c(&quot;ALL&quot;, &quot;DIST&quot;, &quot;SIDT&quot;, &quot;DIDT&quot;), labels = c(&quot;All&quot;, &quot;Same tissue&quot;, &quot;Same individual&quot;, &quot;Different ind. &amp; tissue&quot;)) 
+
+#plot_grid(NULL, plot.corr, NULL, NULL, NULL, labels = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;), ncol = 2)
+
+
+
+# Make col of 
+
+values_all &lt;- as.data.frame(pair_cor_long$r)
+colnames(values_all) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_same_ind &lt;- as.data.frame(subset_pair_cor_long_same_ind_diff_tissues$r)
+colnames(values_same_ind) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_diff_both &lt;- as.data.frame(subset_pair_cor_long_diff_ind_diff_tissues$r)
+colnames(values_diff_both) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_diff_ind &lt;- as.data.frame(subset_pair_cor_long_diff_ind_same_tissues$r)
+colnames(values_diff_ind) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+all_r_values &lt;- rbind(values_all, values_same_ind, values_diff_both, values_diff_ind)
+
+# Make labels
+
+labels_all &lt;- array(&quot;All&quot;, dim = c(nrow(pair_cor_long),1))
+
+labels_diff_tissues &lt;- array(&quot;Different tissue&quot;, dim = c(nrow(subset_pair_cor_long_same_ind_diff_tissues),1))
+
+labels_diff_both &lt;- array(&quot;Both different&quot;, dim = c(nrow(subset_pair_cor_long_diff_ind_diff_tissues),1))
+
+labels_diff_ind &lt;- array(&quot;Different individual&quot;, dim = c(nrow(subset_pair_cor_long_diff_ind_same_tissues),1))
+
+labels_all_r_values &lt;- rbind(labels_all, labels_diff_tissues, labels_diff_both, labels_diff_ind)
+
+rvalues_table &lt;- cbind(all_r_values, labels_all_r_values)
+
+rvalues_table$labels_all_r_values &lt;- ordered(rvalues_table$labels_all_r_values, levels=c(&quot;All&quot;, &quot;Different individual&quot;, &quot;Different tissue&quot;, &quot;Both different&quot;))
+
+plot.corr &lt;- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1])) +
+  geom_boxplot()  +
+  labs(x = &quot;Condition&quot;, y = &quot;Pearson&#39;s \n correlation&quot;) + theme(axis.text.x = element_text(angle = 90, vjust = 1)) + scale_x_discrete( breaks = c(&quot;All&quot;, &quot;Different individual&quot;, &quot;Different tissue&quot;, &quot;Both different&quot;), labels = c(&quot;All&quot;, &quot;Same \n tissue&quot;, &quot;Same \n individual&quot;, &quot;Both \n different&quot;))
+
+#plot.corr &lt;- plot.corr + theme(legend.position = &quot;top&quot;) + scale_fill_discrete(name = c(&quot;Conditions&quot;), breaks = c(&quot;ALL&quot;, &quot;DIST&quot;, &quot;SIDT&quot;, &quot;DIDT&quot;), labels = c(&quot;All&quot;, &quot;Same tissue&quot;, &quot;Same individual&quot;, &quot;Different ind. &amp; tissue&quot;)) 
+
+#plot_grid(NULL, plot.corr, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)</code></pre>
+</div>
+<div id="create-main-figure-1" class="section level1">
+<h1>Create main figure 1</h1>
+<div id="make-pca-for-gene-expression-and-methylation-data" class="section level2">
+<h2>Make PCA for gene expression and methylation data</h2>
+<p>Gene expression data for all genes passing filtering and all orthologous CpGs</p>
+<pre class="r"><code>pca_genes &lt;- prcomp(t(cpm_12184) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.true &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Tissue), shape=as.factor(sample_features$Species), size=2)) + geom_point(alpha = 1) + xlab(&quot;PC1 (21.8% of variance)&quot;) + ylab(paste(&quot;PC2 (17.5% of variance)&quot;)) + theme(legend.position=&quot;none&quot;)
+
+plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.true &lt;- plot.pca.true + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+#plot_grid(plot.pca.true, p2, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)
+
+svg(&quot;./plot.pca.svg&quot;)
+plot.pca.true
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>pdf(&quot;./plot.pca.pdf&quot;)
+plot.pca.true
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>## Data for methylation
+
+# Code from cluster to get PCs and correlations from all 2 million orthologous CpGs
+#all_methyl &lt;- read.table(&quot;/mnt/gluster/home/leblake/Methylation/dfCovnoXposMeth.txt&quot;)
+#all_methyl_48 &lt;- all_methyl[,2:49]
+#pca_genes &lt;- prcomp(t(all_methyl_48) , scale = T, center = TRUE)
+#pca_genes_scores &lt;- pca_genes$x
+#write.table(pca_genes_scores, file = &quot;./Methylation/Methylation_figures/pca_all_methyl_samples.txt&quot;)
+#pca_genes_summary &lt;- summary(pca_genes)$importance
+#write.table(pca_genes_summary, file = &quot;./Methylation/Methylation_figures/pca_summary_all_methyl_samples.txt&quot;)
+
+pca_all &lt;- read.csv(&quot;../data/pca_all_methyl_samples.txt&quot;, sep=&quot;&quot;)
+pca_all_summary &lt;- read.csv(&quot;../data/pca_summary_all_methyl_samples.txt&quot;, sep=&quot;&quot;)
+
+pc1 &lt;- pca_all[,1]
+pc2 &lt;- pca_all[,2]
+pc3 &lt;- pca_all[,3]
+pc4 &lt;- pca_all[,4]
+pc5 &lt;- pca_all[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- pca_all_summary
+
+#dev.off()
+
+plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Species), shape=as.factor(sample_info_RNAseq$Tissue), size=2)) + geom_point(alpha = 0.8) + xlab(paste(&quot;PC1 (&quot;,(summary[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.methyl &lt;- plot.pca.methyl + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + ggtitle(&quot;PCA of promoter DNA methylation&quot;)
+
+plot.pca.methyl</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code># corr_all_methyl &lt;- cor(all_methyl_48)
+#write.table(corr_all_methyl, file = &quot;./Methylation/Methylation_figures/corr_matrix_all_methyl_samples.txt&quot;)
+
+check_methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/250_avg_methyl_hcr_4155_genes_unmerged.txt&quot;, sep=&quot;&quot;)
+methyl_4155 &lt;- check_methyl[,-1]
+pca_genes &lt;- prcomp(t(methyl_4155) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Tissue), shape=as.factor(sample_info_RNAseq$Species), size=2)) + geom_point(alpha = 1) + xlab(&quot;PC1 (11.1% of variance)&quot;) + ylab(&quot;PC2 (6.8% of variance)&quot;) + theme(legend.position=&quot;none&quot;)
+
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rh. macaque&quot;)) 
+plot.pca.methyl &lt;- plot.pca.methyl + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+#plot_grid(plot.pca.true, p2, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)
+
+svg(&quot;./plot.methyl.svg&quot;)
+plot.pca.methyl
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>#plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+#plot.pca.methyl &lt;- plot.pca.methyl + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+
+#plot_grid(plot.pca.methyl)
+
+
+
+#plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;top&quot;) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+#plot.pca.methyl &lt;- plot.pca.methyl + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+
+
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;top&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) </code></pre>
+<pre><code>## Scale for &#39;shape&#39; is already present. Adding another scale for &#39;shape&#39;,
+## which will replace the existing scale.</code></pre>
+<pre class="r"><code>p1 &lt;- ggdraw()+draw_image(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/Study_design.svg&quot;)
+p2 &lt;- ggdraw()+draw_image(&quot;./plot.pca.svg&quot;)
+p3 &lt;- ggdraw()+draw_image(&quot;./plot.methyl.svg&quot;)
+
+
+make_fig1 &lt;- plot_grid(p1, p2, plot.corr, p3, labels = c(&quot;1A.&quot;, &quot;1B.&quot;, &quot;1C.&quot;, &quot;1D.&quot;), ncol = 2)
+
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/fig1.pdf&quot;, make_fig1,
+          ncol = 2, # we&#39;re saving a grid plot of 2 columns
+          nrow = 2, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3
+          )</code></pre>
+</div>
+</div>
+<div id="clustering" class="section level1">
+<h1>Clustering</h1>
+<pre class="r"><code># Bryan&#39;s code for clustering 
+library(&quot;viridis&quot;)</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre class="r"><code>library(dendextend)</code></pre>
+<pre><code>## 
+## ---------------------
+## Welcome to dendextend version 1.7.0
+## Type citation(&#39;dendextend&#39;) for how to cite the package.
+## 
+## Type browseVignettes(package = &#39;dendextend&#39;) for the package vignette.
+## The github page is: https://github.com/talgalili/dendextend/
+## 
+## Suggestions and bug-reports can be submitted at: https://github.com/talgalili/dendextend/issues
+## Or contact: &lt;tal.galili@gmail.com&gt;
+## 
+##  To suppress this message use:  suppressPackageStartupMessages(library(dendextend))
+## ---------------------</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dendextend&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     cutree</code></pre>
+<pre class="r"><code>library(colorspace)
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.4
+## ✔ readr   1.1.1     ✔ stringr 1.3.0
+## ✔ tibble  1.4.2     ✔ forcats 0.2.0</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::arrange()   masks plyr::arrange()
+## ✖ purrr::compact()   masks plyr::compact()
+## ✖ dplyr::count()     masks plyr::count()
+## ✖ dplyr::failwith()  masks plyr::failwith()
+## ✖ dplyr::filter()    masks stats::filter()
+## ✖ cowplot::ggsave()  masks ggplot2::ggsave()
+## ✖ dplyr::id()        masks plyr::id()
+## ✖ dplyr::lag()       masks stats::lag()
+## ✖ dplyr::mutate()    masks plyr::mutate()
+## ✖ dplyr::rename()    masks plyr::rename()
+## ✖ dplyr::summarise() masks plyr::summarise()
+## ✖ dplyr::summarize() masks plyr::summarize()</code></pre>
+<pre class="r"><code>library(gplots)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>#Function to make pearson correlation matrix and convert into distance matrix
+pearson &lt;- function(x, ...) {
+    x &lt;- as.matrix(x)
+    res &lt;- as.dist(1 - cor(x, method = &quot;pearson&quot;, use = &quot;everything&quot;))
+    res &lt;- as.dist(res)
+    attr(res, &quot;method&quot;) &lt;- &quot;pearson&quot;
+    return(res)
+}
+
+cor(cpm_12184)-&gt; all_data
+hc &lt;- cpm_12184 %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram
+
+labels &lt;- paste(samples$Species, samples$Tissue, sep=&quot; &quot;)
+
+#dev.off()
+tiff(file = &quot;RNAseq_heatmap.tiff&quot;)
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend, labRow = labels, labCol = labels)
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>cor(methyl_4155)-&gt; all_data
+hc &lt;- methyl_4155 %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram
+
+dev.off()</code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+<pre class="r"><code>tiff(file = &quot;Methyl_heatmap.tiff&quot;)
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue))+9], Colv=dend,Rowv=dend)
+dev.off()</code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+<pre class="r"><code>#ggdraw() +
+#  draw_plot(NULL, x = 0, y = .5, width = .5, height = .5) +
+#  draw_plot(dp, x = .5, y = .5, width = .5, height = .5) +
+#  draw_plot(bp, x = 0, y = 0, width = 1, height = 0.5) +
+#  draw_plot_label(label = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;), size = 15,
+#                  x = c(0, 0.5, 0), y = c(1, 1, 0.5))
+
+p1 &lt;- ggdraw()+draw_image(&quot;RNAseq_heatmap.tiff&quot;)
+p2 &lt;- ggdraw()+draw_image(&quot;Methyl_heatmap.tiff&quot;)
+plot_grid(p1, p2, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)</code></pre>
+</div>
+<div id="figure-clustering-with-gene-expression-and-methylation-levels-on-the-orthologous-genespromoters-only" class="section level1">
+<h1>Figure: Clustering with gene expression and methylation levels on the orthologous genes/promoters only</h1>
+<pre class="r"><code>check_methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt&quot;, sep=&quot;&quot;)
+
+express &lt;- check_methyl[,2:48]
+methyl &lt;- check_methyl[,49:95]
+
+cor_var &lt;- array(NA, dim = c(47,1))
+  for (i in 1:47){
+  cor_var[i,] &lt;- cor(express[,i], methyl[,i])
+
+}
+  
+# Clustering
+
+cor(express)-&gt; all_data
+hc &lt;- express %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram
+
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend)</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>cor(methyl)-&gt; all_data
+hc &lt;- methyl %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram 
+
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend, labRow = labels, labCol = labels)</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<pre class="r"><code># Check PCA
+
+pca_genes &lt;- prcomp(t(express) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.true &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species), shape=as.factor(sample_features$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;bottom&quot;) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.true &lt;- plot.pca.true + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + ggtitle(&quot;PCA of normalized gene expression data&quot;)
+
+plot.pca.true</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
+<pre class="r"><code>pca_genes &lt;- prcomp(t(methyl) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species), shape=as.factor(sample_features$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.true &lt;- plot.pca.true + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + ggtitle(&quot;PCA of normalized gene expression data&quot;)</code></pre>
+<pre><code>## Scale for &#39;shape&#39; is already present. Adding another scale for &#39;shape&#39;,
+## which will replace the existing scale.</code></pre>
+<pre class="r"><code>plot.pca.methyl</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-9-4.png" width="672" /></p>
+<pre class="r"><code># Look in humans and chimps only
+
+hkl &lt;- c(1:3, 5:7, 9:11, 13:15, 17:18, 20:22, 24:26, 28:30)
+
+
+pca_genes &lt;- prcomp(t(methyl[,hkl]) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species[hkl]), shape=as.factor(sample_features$Tissue[hkl]))) + geom_point(alpha = 1) + xlab(&quot;PC1 (11.6% of variance)&quot;) + ylab(&quot;PC2 (10.4% of variance)&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;right&quot;) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.methyl &lt;- plot.pca.methyl + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) 
+
+plot.pca.methyl</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-9-5.png" width="672" /></p>
+<pre class="r"><code>pca_genes &lt;- prcomp(t(express[,hkl]) , scale = T, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.exp &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species[hkl]), shape=as.factor(sample_features$Tissue[hkl]))) + geom_point(alpha = 1) + xlab(&quot;PC1 (26.7% of variance)&quot;) + ylab(&quot;PC 2 (16.8% of variance)&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.exp &lt;- plot.pca.exp + theme(legend.position = &quot;right&quot;) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.exp &lt;- plot.pca.exp + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) 
+
+plot.pca.exp</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-9-6.png" width="672" /></p>
+<pre class="r"><code>make_fig_s9 &lt;- plot_grid(plot.pca.methyl, plot.pca.exp, labels = c(&quot;9A.&quot;, &quot;9B.&quot;), ncol = 1)
+
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Supp_figures/fig9.pdf&quot;, make_fig_s9,
+          ncol = 1, # we&#39;re saving a grid plot of 2 columns
+          nrow = 2, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3
+          )</code></pre>
+</div>
+<div id="correlations" class="section level1">
+<h1>Correlations</h1>
+<pre class="r"><code>Sample_characteristics &lt;- read.csv(&quot;~/Desktop/Regulatory_Evol/ashlar-trial/data/Sample_characteristics.csv&quot;, comment.char=&quot;#&quot;)
+sample_characteristics &lt;- Sample_characteristics[-17,]
+
+
+# Expression
+
+pca_genes &lt;- prcomp(t(cpm_12184) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+summary(lm(pcs$pc1 ~ sample_features$Tissue)) # 0.81</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc1 ~ sample_features$Tissue)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -57.834 -12.655  -2.726  16.612  39.530 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                   -29.426      7.000  -4.204  0.00013 ***
+## sample_features$Tissuekidney   37.050      9.691   3.823  0.00042 ***
+## sample_features$Tissueliver    99.239      9.691  10.241 4.17e-13 ***
+## sample_features$Tissuelung    -21.037      9.691  -2.171  0.03551 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 23.22 on 43 degrees of freedom
+## Multiple R-squared:  0.8107, Adjusted R-squared:  0.7975 
+## F-statistic:  61.4 on 3 and 43 DF,  p-value: 1.381e-15</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc1 ~ sample_features$Species)) #0.1286</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc1 ~ sample_features$Species)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -63.737 -36.148  -0.158  25.360  87.577 
+## 
+## Coefficients:
+##                                       Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                             -6.356     12.311  -0.516   0.6082
+## sample_features$Specieshuman           -12.902     17.698  -0.729   0.4699
+## sample_features$Speciesrhesus macaque   30.768     17.410   1.767   0.0841
+##                                        
+## (Intercept)                            
+## sample_features$Specieshuman           
+## sample_features$Speciesrhesus macaque .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 49.24 on 44 degrees of freedom
+## Multiple R-squared:  0.1286, Adjusted R-squared:  0.08898 
+## F-statistic: 3.246 on 2 and 44 DF,  p-value: 0.04841</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc1 ~ sample_characteristics$Individual)) #0.1441</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc1 ~ sample_characteristics$Individual)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -65.64 -35.50 -18.58  28.70  85.08 
+## 
+## Coefficients:
+##                                                  Estimate Std. Error
+## (Intercept)                                      -0.00809   27.36045
+## sample_characteristics$Individual4x0519         -12.95428   38.69352
+## sample_characteristics$Individual60705           -0.82705   41.79377
+## sample_characteristics$Individual61317          -25.27094   38.69352
+## sample_characteristics$Individual62789          -18.92408   38.69352
+## sample_characteristics$Individual62905          -27.37435   38.69352
+## sample_characteristics$Individualc0563-YN07-147  -9.19635   38.69352
+## sample_characteristics$IndividualYN07-314        24.26652   38.69352
+## sample_characteristics$IndividualYN07-315        27.59538   38.69352
+## sample_characteristics$IndividualYN07-317        23.35026   38.69352
+## sample_characteristics$IndividualYN07-330        22.46589   38.69352
+## sample_characteristics$IndividualYN07-387        -3.24272   38.69352
+##                                                 t value Pr(&gt;|t|)
+## (Intercept)                                       0.000    1.000
+## sample_characteristics$Individual4x0519          -0.335    0.740
+## sample_characteristics$Individual60705           -0.020    0.984
+## sample_characteristics$Individual61317           -0.653    0.518
+## sample_characteristics$Individual62789           -0.489    0.628
+## sample_characteristics$Individual62905           -0.707    0.484
+## sample_characteristics$Individualc0563-YN07-147  -0.238    0.814
+## sample_characteristics$IndividualYN07-314         0.627    0.535
+## sample_characteristics$IndividualYN07-315         0.713    0.480
+## sample_characteristics$IndividualYN07-317         0.603    0.550
+## sample_characteristics$IndividualYN07-330         0.581    0.565
+## sample_characteristics$IndividualYN07-387        -0.084    0.934
+## 
+## Residual standard error: 54.72 on 35 degrees of freedom
+## Multiple R-squared:  0.1441, Adjusted R-squared:  -0.1249 
+## F-statistic: 0.5355 on 11 and 35 DF,  p-value: 0.8655</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc1 ~ sample_characteristics$Age.quantile)) #0.15</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc1 ~ sample_characteristics$Age.quantile)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -73.68 -41.14  -7.93  29.92 107.87 
+## 
+## Coefficients:
+##                                     Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                           25.052     23.548   1.064    0.293
+## sample_characteristics$Age.quantile   -9.199      8.196  -1.122    0.268
+## 
+## Residual standard error: 51.45 on 45 degrees of freedom
+## Multiple R-squared:  0.02723,    Adjusted R-squared:  0.005615 
+## F-statistic:  1.26 on 1 and 45 DF,  p-value: 0.2676</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc2 ~ sample_features$Species)) #0.26</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc2 ~ sample_features$Species)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -82.003 -11.884   8.865  26.961  48.082 
+## 
+## Coefficients:
+##                                       Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                              8.829     10.090   0.875  0.38633
+## sample_features$Specieshuman            15.606     14.505   1.076  0.28783
+## sample_features$Speciesrhesus macaque  -40.565     14.269  -2.843  0.00676
+##                                         
+## (Intercept)                             
+## sample_features$Specieshuman            
+## sample_features$Speciesrhesus macaque **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 40.36 on 44 degrees of freedom
+## Multiple R-squared:  0.2686, Adjusted R-squared:  0.2353 
+## F-statistic: 8.078 on 2 and 44 DF,  p-value: 0.001027</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc2 ~ sample_features$Tissue)) #0.70</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc2 ~ sample_features$Tissue)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -47.685 -22.275   6.966  14.536  52.703 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                   -66.054      7.831  -8.435 1.16e-10 ***
+## sample_features$Tissuekidney   68.289     10.841   6.299 1.34e-07 ***
+## sample_features$Tissueliver    90.522     10.841   8.350 1.52e-10 ***
+## sample_features$Tissuelung     99.901     10.841   9.215 9.72e-12 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 25.97 on 43 degrees of freedom
+## Multiple R-squared:  0.704,  Adjusted R-squared:  0.6834 
+## F-statistic: 34.09 on 3 and 43 DF,  p-value: 1.934e-11</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc2 ~ sample_characteristics$Individual)) # 0.27</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc2 ~ sample_characteristics$Individual)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -81.268  -9.666   8.579  28.062  47.533 
+## 
+## Coefficients:
+##                                                 Estimate Std. Error
+## (Intercept)                                       6.3263    22.5051
+## sample_characteristics$Individual4x0519           7.9565    31.8270
+## sample_characteristics$Individual60705           29.9911    34.3771
+## sample_characteristics$Individual61317           17.0772    31.8270
+## sample_characteristics$Individual62789           14.7042    31.8270
+## sample_characteristics$Individual62905           13.6326    31.8270
+## sample_characteristics$Individualc0563-YN07-147   1.7788    31.8270
+## sample_characteristics$IndividualYN07-314       -39.3441    31.8270
+## sample_characteristics$IndividualYN07-315       -38.9302    31.8270
+## sample_characteristics$IndividualYN07-317       -35.1786    31.8270
+## sample_characteristics$IndividualYN07-330       -38.7977    31.8270
+## sample_characteristics$IndividualYN07-387         0.2739    31.8270
+##                                                 t value Pr(&gt;|t|)
+## (Intercept)                                       0.281    0.780
+## sample_characteristics$Individual4x0519           0.250    0.804
+## sample_characteristics$Individual60705            0.872    0.389
+## sample_characteristics$Individual61317            0.537    0.595
+## sample_characteristics$Individual62789            0.462    0.647
+## sample_characteristics$Individual62905            0.428    0.671
+## sample_characteristics$Individualc0563-YN07-147   0.056    0.956
+## sample_characteristics$IndividualYN07-314        -1.236    0.225
+## sample_characteristics$IndividualYN07-315        -1.223    0.229
+## sample_characteristics$IndividualYN07-317        -1.105    0.277
+## sample_characteristics$IndividualYN07-330        -1.219    0.231
+## sample_characteristics$IndividualYN07-387         0.009    0.993
+## 
+## Residual standard error: 45.01 on 35 degrees of freedom
+## Multiple R-squared:  0.2764, Adjusted R-squared:  0.04897 
+## F-statistic: 1.215 on 11 and 35 DF,  p-value: 0.3134</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc2 ~ sample_characteristics$Age.quantile)) #0.01966</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc2 ~ sample_characteristics$Age.quantile)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -117.16  -17.76   15.79   27.27   57.13 
+## 
+## Coefficients:
+##                                     Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                          -33.709     20.691  -1.629   0.1103  
+## sample_characteristics$Age.quantile   12.377      7.201   1.719   0.0925 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 45.2 on 45 degrees of freedom
+## Multiple R-squared:  0.0616, Adjusted R-squared:  0.04075 
+## F-statistic: 2.954 on 1 and 45 DF,  p-value: 0.09253</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc3 ~ sample_features$Species)) #0.50</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc3 ~ sample_features$Species)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -42.521 -25.426   8.176  22.493  49.046 
+## 
+## Coefficients:
+##                                       Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                            -13.583      7.096  -1.914   0.0621
+## sample_features$Specieshuman           -12.287     10.202  -1.204   0.2349
+## sample_features$Speciesrhesus macaque   51.418     10.036   5.124  6.4e-06
+##                                          
+## (Intercept)                           .  
+## sample_features$Specieshuman             
+## sample_features$Speciesrhesus macaque ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 28.39 on 44 degrees of freedom
+## Multiple R-squared:  0.5031, Adjusted R-squared:  0.4805 
+## F-statistic: 22.28 on 2 and 44 DF,  p-value: 2.079e-07</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc3 ~ sample_features$Tissue)) #0.42</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc3 ~ sample_features$Tissue)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -38.68 -23.61 -10.63  33.10  49.32 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                   -30.471      9.285  -3.282 0.002053 ** 
+## sample_features$Tissuekidney   47.292     12.855   3.679 0.000647 ***
+## sample_features$Tissueliver    10.030     12.855   0.780 0.439492    
+## sample_features$Tissuelung     62.022     12.855   4.825 1.79e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 30.8 on 43 degrees of freedom
+## Multiple R-squared:  0.4284, Adjusted R-squared:  0.3886 
+## F-statistic: 10.74 on 3 and 43 DF,  p-value: 2.144e-05</code></pre>
+<pre class="r"><code>methylation_pcs_noX &lt;- read.csv(&quot;~/Desktop/Tissue paper w Julien/methylation_pcs_noX.txt&quot;, sep=&quot;&quot;)
+dim(methylation_pcs_noX)</code></pre>
+<pre><code>## [1] 48 48</code></pre>
+<pre class="r"><code>head(methylation_pcs_noX)</code></pre>
+<pre><code>##            PC1       PC2       PC3       PC4        PC5        PC6
+## C1H  -31.52720  23.92183 114.73874 -25.54364  51.374288 -15.427580
+## C1K  -77.92939  30.96364 -47.41293 -96.52993  25.409316  -4.971104
+## C1Li -22.59072 -93.98212  58.52859 -51.38756   4.521381  33.954497
+## C1Lu -56.14895  22.26071  53.63766 -45.68383 -54.586970 -26.439817
+## C2H  -39.10089  28.18274 114.36284 -24.46496  47.914893 -16.776639
+## C2K  -76.95124  32.91180 -27.50363 -76.89450  10.578040 -12.559596
+##             PC7        PC8       PC9       PC10       PC11       PC12
+## C1H   19.341690 -22.196437 33.222058  -5.817451   7.070603 -2.1764742
+## C1K  -34.351330   8.693776  2.193791  17.442981  24.680521 -7.4620901
+## C1Li   4.315893   5.366904  5.745497 -32.494576  14.818866  0.3409389
+## C1Lu   9.541868  -6.843792 -4.575436   7.107056  11.074604 -9.9997731
+## C2H   14.505784 -27.642278 28.601563   6.650691 -10.558204 11.6153956
+## C2K  -25.601805  11.864324 -6.641421  25.987920  -7.950449 -1.7216589
+##           PC13       PC14       PC15        PC16      PC17       PC18
+## C1H   3.495213  17.685553  -3.253919  -9.5651380  26.01517  -6.772323
+## C1K  -1.160390  -9.259627 -29.009229 -19.1752918  20.11575 -14.925130
+## C1Li  5.059765   7.875831 -13.993612 -11.9552283  34.02128   1.904146
+## C1Lu -4.043707   6.706109  10.538442   9.7874315  35.64693   1.147527
+## C2H  16.287830  19.945487   8.195698  -0.2758083 -42.67631  22.826438
+## C2K   2.241925 -18.463691 -37.375149 -14.4603915 -35.00177  32.266715
+##             PC19       PC20      PC21      PC22       PC23       PC24
+## C1H   -6.9667963 -17.019628 28.016319 -9.967094 -12.889306 -26.111537
+## C1K    6.5162057 -16.352439 25.628046  2.111572 -30.386345  12.945228
+## C1Li -17.4718924  14.306987 21.316140 -4.214079   4.697326   2.946973
+## C1Lu  -9.1439714  -6.103875 35.453388 -1.312627 -15.173511   9.395119
+## C2H    0.5263187  -5.268262  3.324507  7.012948  -5.249809  -5.883572
+## C2K    3.4433118  -5.498772 10.426625 -1.713036  19.091886 -23.030388
+##             PC25          PC26       PC27       PC28       PC29       PC30
+## C1H    8.1763082  17.489911774   3.893813   5.944639  22.960493  13.467573
+## C1K   -0.5758671   0.007537274  -1.240303   6.371178   1.724434   4.709594
+## C1Li   0.1324863  -2.890411782  -9.406956  -6.847792 -10.383655 -12.088930
+## C1Lu  -5.1699690   1.719837596  -5.969334 -11.691924  -7.844644  -6.293835
+## C2H   -2.6643464   3.181154021   8.742191  15.309485  -4.088509  38.412030
+## C2K  -51.9666704 -13.002284575 -25.747811 -18.354678  19.052204  -5.128564
+##            PC31       PC32        PC33       PC34       PC35       PC36
+## C1H  -48.947037  -5.227097   0.8318863  13.583155  12.644977   1.731493
+## C1K   38.456342 -15.269131  17.3450634 -21.972833  34.174910  -8.052453
+## C1Li   5.941047  11.940869  -8.3039628   7.132755 -16.695547 -10.121411
+## C1Lu  13.203740  -7.085696 -12.1489181   5.478209 -35.803249   6.581606
+## C2H   45.023240  30.335250  -1.9804154   2.296270  -9.287807   4.285291
+## C2K  -19.050551  -5.449394  -3.2255795   3.278995  -7.173900  -2.334615
+##            PC37       PC38       PC39        PC40       PC41        PC42
+## C1H   18.921639 -12.268827 -6.4461268  -1.4905547 -2.5762562 -0.41274639
+## C1K   16.098308  -1.956100 -1.5481434  -0.2720689 -9.3732230  4.05240469
+## C1Li -27.837971 -20.278766  8.8101266  51.9602245  0.7793677  0.97241182
+## C1Lu -26.896350  16.777330  4.2903720 -46.6864835  4.1029071 -0.09532277
+## C2H   -7.114655   3.810168 -0.3010687   6.6477884 -9.3662153  0.63924803
+## C2K   -8.523902   6.513531  5.6164970   1.2639610 -3.9486533  1.89011853
+##             PC43       PC44        PC45      PC46       PC47          PC48
+## C1H   -8.0721733 -2.6236823  18.7090631 -4.913413  2.1399735  4.345729e-13
+## C1K    4.7389987  1.0170501 -10.6115858  3.214791 -6.0172376 -4.239553e-13
+## C1Li  16.2710840 -1.0831378  -8.8802710  3.648238  0.3601476  9.057496e-13
+## C1Lu -10.7762794 -0.8027636   1.9827349  0.528354  5.8274047 -2.149558e-12
+## C2H   -4.3306323 -6.4654549  10.3694458  1.370338  3.1566502  1.432656e-12
+## C2K   -0.9020713 -3.8594528   0.6276624 -1.571751 -0.5294884  3.357211e-12</code></pre>
+<pre class="r"><code>sample_info_RNAseq &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv&quot;)
+
+summary(lm(methylation_pcs_noX$PC1 ~ sample_info_RNAseq$Tissue)) # 0.030</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC1 ~ sample_info_RNAseq$Tissue)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -101.59  -67.31  -51.78  122.22  134.15 
+## 
+## Coefficients:
+##                                 Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                        6.119     27.175   0.225    0.823
+## sample_info_RNAseq$Tissuekidney  -28.262     38.431  -0.735    0.466
+## sample_info_RNAseq$Tissueliver    15.425     38.431   0.401    0.690
+## sample_info_RNAseq$Tissuelung    -11.637     38.431  -0.303    0.763
+## 
+## Residual standard error: 94.14 on 44 degrees of freedom
+## Multiple R-squared:  0.03051,    Adjusted R-squared:  -0.0356 
+## F-statistic: 0.4615 on 3 and 44 DF,  p-value: 0.7106</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC1 ~ sample_info_RNAseq$Species)) #0.959</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC1 ~ sample_info_RNAseq$Species)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -28.357 -14.469  -0.618  12.553  47.337 
+## 
+## Coefficients:
+##                                          Estimate Std. Error t value
+## (Intercept)                               -50.965      4.747 -10.736
+## sample_info_RNAseq$Specieshuman           -24.115      6.714  -3.592
+## sample_info_RNAseq$Speciesrhesus macaque  177.010      6.714  26.366
+##                                          Pr(&gt;|t|)    
+## (Intercept)                              5.37e-14 ***
+## sample_info_RNAseq$Specieshuman          0.000809 ***
+## sample_info_RNAseq$Speciesrhesus macaque  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 18.99 on 45 degrees of freedom
+## Multiple R-squared:  0.9597, Adjusted R-squared:  0.9579 
+## F-statistic: 535.2 on 2 and 45 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC1 ~ Sample_characteristics$Individual)) # 0.96</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC1 ~ Sample_characteristics$Individual)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -30.880 -13.067  -0.074  13.835  44.466 
+## 
+## Coefficients:
+##                                                 Estimate Std. Error
+## (Intercept)                                      -60.303     10.370
+## Sample_characteristics$Individual4x0519           13.254     14.666
+## Sample_characteristics$Individual60705           -13.228     14.666
+## Sample_characteristics$Individual61317           -18.980     14.666
+## Sample_characteristics$Individual62789           -11.906     14.666
+## Sample_characteristics$Individual62905           -14.995     14.666
+## Sample_characteristics$Individualc0563-YN07-147   15.251     14.666
+## Sample_characteristics$IndividualYN07-314        186.549     14.666
+## Sample_characteristics$IndividualYN07-315        186.749     14.666
+## Sample_characteristics$IndividualYN07-317        183.000     14.666
+## Sample_characteristics$IndividualYN07-330        189.092     14.666
+## Sample_characteristics$IndividualYN07-387          8.847     14.666
+##                                                 t value Pr(&gt;|t|)    
+## (Intercept)                                      -5.815 1.23e-06 ***
+## Sample_characteristics$Individual4x0519           0.904    0.372    
+## Sample_characteristics$Individual60705           -0.902    0.373    
+## Sample_characteristics$Individual61317           -1.294    0.204    
+## Sample_characteristics$Individual62789           -0.812    0.422    
+## Sample_characteristics$Individual62905           -1.022    0.313    
+## Sample_characteristics$Individualc0563-YN07-147   1.040    0.305    
+## Sample_characteristics$IndividualYN07-314        12.720 6.97e-15 ***
+## Sample_characteristics$IndividualYN07-315        12.734 6.75e-15 ***
+## Sample_characteristics$IndividualYN07-317        12.478 1.23e-14 ***
+## Sample_characteristics$IndividualYN07-330        12.894 4.66e-15 ***
+## Sample_characteristics$IndividualYN07-387         0.603    0.550    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 20.74 on 36 degrees of freedom
+## Multiple R-squared:  0.9615, Adjusted R-squared:  0.9497 
+## F-statistic: 81.72 on 11 and 36 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC1 ~ Sample_characteristics$Age.quantile)) #0.18</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC1 ~ Sample_characteristics$Age.quantile)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -133.29  -62.76  -17.78   78.71  164.55 
+## 
+## Coefficients:
+##                                     Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                           115.46      38.37   3.009  0.00424
+## Sample_characteristics$Age.quantile   -41.98      13.23  -3.174  0.00268
+##                                       
+## (Intercept)                         **
+## Sample_characteristics$Age.quantile **
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 84.69 on 46 degrees of freedom
+## Multiple R-squared:  0.1797, Adjusted R-squared:  0.1619 
+## F-statistic: 10.08 on 1 and 46 DF,  p-value: 0.002677</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC2 ~ sample_info_RNAseq$Species)) #0.02</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC2 ~ sample_info_RNAseq$Species)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -156.122    4.713   36.644   43.006   48.820 
+## 
+## Coefficients:
+##                                          Estimate Std. Error t value
+## (Intercept)                               -12.148     17.400  -0.698
+## sample_info_RNAseq$Specieshuman             9.315     24.607   0.379
+## sample_info_RNAseq$Speciesrhesus macaque   27.130     24.607   1.102
+##                                          Pr(&gt;|t|)
+## (Intercept)                                 0.489
+## sample_info_RNAseq$Specieshuman             0.707
+## sample_info_RNAseq$Speciesrhesus macaque    0.276
+## 
+## Residual standard error: 69.6 on 45 degrees of freedom
+## Multiple R-squared:  0.02714,    Adjusted R-squared:  -0.0161 
+## F-statistic: 0.6276 on 2 and 45 DF,  p-value: 0.5385</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC2 ~ sample_info_RNAseq$Tissue)) #0.9255</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC2 ~ sample_info_RNAseq$Tissue)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -45.412 -12.088  -4.579  14.964  69.335 
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                       41.9514     5.6220   7.462 2.42e-09 ***
+## sample_info_RNAseq$Tissuekidney   -0.3583     7.9507  -0.045    0.964    
+## sample_info_RNAseq$Tissueliver  -155.4944     7.9507 -19.557  &lt; 2e-16 ***
+## sample_info_RNAseq$Tissuelung    -11.9529     7.9507  -1.503    0.140    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 19.48 on 44 degrees of freedom
+## Multiple R-squared:  0.9255, Adjusted R-squared:  0.9204 
+## F-statistic: 182.3 on 3 and 44 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC2 ~ Sample_characteristics$Individual)) # 0.03</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC2 ~ Sample_characteristics$Individual)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -145.26   -7.33   35.44   43.73   57.34 
+## 
+## Coefficients:
+##                                                 Estimate Std. Error
+## (Intercept)                                       -8.641     38.752
+## Sample_characteristics$Individual4x0519            4.432     54.804
+## Sample_characteristics$Individual60705            17.852     54.804
+## Sample_characteristics$Individual61317             4.465     54.804
+## Sample_characteristics$Individual62789            -5.058     54.804
+## Sample_characteristics$Individual62905             5.973     54.804
+## Sample_characteristics$Individualc0563-YN07-147  -12.419     54.804
+## Sample_characteristics$IndividualYN07-314         23.346     54.804
+## Sample_characteristics$IndividualYN07-315         21.363     54.804
+## Sample_characteristics$IndividualYN07-317         24.568     54.804
+## Sample_characteristics$IndividualYN07-330         25.213     54.804
+## Sample_characteristics$IndividualYN07-387         -6.042     54.804
+##                                                 t value Pr(&gt;|t|)
+## (Intercept)                                      -0.223    0.825
+## Sample_characteristics$Individual4x0519           0.081    0.936
+## Sample_characteristics$Individual60705            0.326    0.747
+## Sample_characteristics$Individual61317            0.081    0.936
+## Sample_characteristics$Individual62789           -0.092    0.927
+## Sample_characteristics$Individual62905            0.109    0.914
+## Sample_characteristics$Individualc0563-YN07-147  -0.227    0.822
+## Sample_characteristics$IndividualYN07-314         0.426    0.673
+## Sample_characteristics$IndividualYN07-315         0.390    0.699
+## Sample_characteristics$IndividualYN07-317         0.448    0.657
+## Sample_characteristics$IndividualYN07-330         0.460    0.648
+## Sample_characteristics$IndividualYN07-387        -0.110    0.913
+## 
+## Residual standard error: 77.5 on 36 degrees of freedom
+## Multiple R-squared:  0.0349, Adjusted R-squared:  -0.26 
+## F-statistic: 0.1183 on 11 and 36 DF,  p-value: 0.9997</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC3 ~ sample_info_RNAseq$Species)) #0.26</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC3 ~ sample_info_RNAseq$Species)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -88.206 -41.991   5.227  34.730  82.163 
+## 
+## Coefficients:
+##                                          Estimate Std. Error t value
+## (Intercept)                                 40.79      12.83   3.179
+## sample_info_RNAseq$Specieshuman            -69.18      18.15  -3.811
+## sample_info_RNAseq$Speciesrhesus macaque   -53.20      18.15  -2.931
+##                                          Pr(&gt;|t|)    
+## (Intercept)                              0.002677 ** 
+## sample_info_RNAseq$Specieshuman          0.000417 ***
+## sample_info_RNAseq$Speciesrhesus macaque 0.005289 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 51.34 on 45 degrees of freedom
+## Multiple R-squared:  0.2614, Adjusted R-squared:  0.2286 
+## F-statistic: 7.965 on 2 and 45 DF,  p-value: 0.001093</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC3 ~ sample_info_RNAseq$Tissue)) #0.6966</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC3 ~ sample_info_RNAseq$Tissue)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -42.199 -27.957  -9.494  30.845  65.009 
+## 
+## Coefficients:
+##                                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                       63.589      9.606   6.620 4.13e-08 ***
+## sample_info_RNAseq$Tissuekidney -134.599     13.585  -9.908 8.88e-13 ***
+## sample_info_RNAseq$Tissueliver   -70.070     13.585  -5.158 5.71e-06 ***
+## sample_info_RNAseq$Tissuelung    -49.689     13.585  -3.658 0.000677 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 33.28 on 44 degrees of freedom
+## Multiple R-squared:  0.6966, Adjusted R-squared:  0.6759 
+## F-statistic: 33.67 on 3 and 44 DF,  p-value: 1.825e-11</code></pre>
+<pre class="r"><code>summary(lm(methylation_pcs_noX$PC3 ~ Sample_characteristics$Individual)) # 0.26</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = methylation_pcs_noX$PC3 ~ Sample_characteristics$Individual)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -92.286 -42.151   5.783  34.769  79.211 
+## 
+## Coefficients:
+##                                                 Estimate Std. Error
+## (Intercept)                                        29.51      28.57
+## Sample_characteristics$Individual4x0519            15.37      40.40
+## Sample_characteristics$Individual60705            -54.87      40.40
+## Sample_characteristics$Individual61317            -63.74      40.40
+## Sample_characteristics$Individual62789            -52.50      40.40
+## Sample_characteristics$Individual62905            -60.45      40.40
+## Sample_characteristics$Individualc0563-YN07-147    17.39      40.40
+## Sample_characteristics$IndividualYN07-314         -41.07      40.40
+## Sample_characteristics$IndividualYN07-315         -42.71      40.40
+## Sample_characteristics$IndividualYN07-317         -42.30      40.40
+## Sample_characteristics$IndividualYN07-330         -41.58      40.40
+## Sample_characteristics$IndividualYN07-387          12.39      40.40
+##                                                 t value Pr(&gt;|t|)
+## (Intercept)                                       1.033    0.309
+## Sample_characteristics$Individual4x0519           0.380    0.706
+## Sample_characteristics$Individual60705           -1.358    0.183
+## Sample_characteristics$Individual61317           -1.578    0.123
+## Sample_characteristics$Individual62789           -1.299    0.202
+## Sample_characteristics$Individual62905           -1.496    0.143
+## Sample_characteristics$Individualc0563-YN07-147   0.430    0.669
+## Sample_characteristics$IndividualYN07-314        -1.017    0.316
+## Sample_characteristics$IndividualYN07-315        -1.057    0.298
+## Sample_characteristics$IndividualYN07-317        -1.047    0.302
+## Sample_characteristics$IndividualYN07-330        -1.029    0.310
+## Sample_characteristics$IndividualYN07-387         0.307    0.761
+## 
+## Residual standard error: 57.14 on 36 degrees of freedom
+## Multiple R-squared:  0.268,  Adjusted R-squared:  0.04432 
+## F-statistic: 1.198 on 11 and 36 DF,  p-value: 0.323</code></pre>
+<pre class="r"><code>check_methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt&quot;, sep=&quot;&quot;)
+methyl &lt;- check_methyl[,49:95]
+pca_genes &lt;- prcomp(t(methyl) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary(lm(pcs$pc1 ~ sample_features$Tissue)) # 0.0073</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc1 ~ sample_features$Tissue)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -23.02 -15.60 -13.02  27.08  34.33 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                     2.941      6.682   0.440    0.662
+## sample_features$Tissuekidney   -3.033      9.251  -0.328    0.745
+## sample_features$Tissueliver    -3.317      9.251  -0.359    0.722
+## sample_features$Tissuelung     -5.167      9.251  -0.559    0.579
+## 
+## Residual standard error: 22.16 on 43 degrees of freedom
+## Multiple R-squared:  0.007352,   Adjusted R-squared:  -0.0619 
+## F-statistic: 0.1062 on 3 and 43 DF,  p-value: 0.956</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc1 ~ sample_features$Species)) #0.98</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc1 ~ sample_features$Species)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.2664  -2.0822  -0.0797   2.2594   4.6261 
+## 
+## Coefficients:
+##                                       Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                           -14.9837     0.7606 -19.701   &lt;2e-16
+## sample_features$Specieshuman           -0.3199     1.0934  -0.293    0.771
+## sample_features$Speciesrhesus macaque  44.3145     1.0756  41.200   &lt;2e-16
+##                                          
+## (Intercept)                           ***
+## sample_features$Specieshuman             
+## sample_features$Speciesrhesus macaque ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.042 on 44 degrees of freedom
+## Multiple R-squared:  0.9809, Adjusted R-squared:   0.98 
+## F-statistic:  1127 on 2 and 44 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc1 ~ sample_features$Individual))</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc1 ~ sample_features$Individual)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -7.660 -2.059 -0.278  2.223  5.930 
+## 
+## Coefficients:
+##                                                Estimate Std. Error t value
+## (Intercept)                                    -14.2466     1.5797  -9.019
+## sample_features$Individualchimp 4x0519           1.4960     2.2340   0.670
+## sample_features$Individualchimp c0563-YN07-147  -1.1005     2.2340  -0.493
+## sample_features$Individualchimp YN07-387        -3.3438     2.2340  -1.497
+## sample_features$Individualhum  60705            -1.4578     2.4130  -0.604
+## sample_features$Individualhum 61317             -0.3381     2.2340  -0.151
+## sample_features$Individualhum 62789             -1.6482     2.2340  -0.738
+## sample_features$Individualhum 62905             -0.8838     2.2340  -0.396
+## sample_features$Individualrhe YN07-314          44.2400     2.2340  19.803
+## sample_features$Individualrhe YN07-315          43.8630     2.2340  19.634
+## sample_features$Individualrhe YN07-317          43.2151     2.2340  19.344
+## sample_features$Individualrhe YN07-330          42.9915     2.2340  19.244
+##                                                Pr(&gt;|t|)    
+## (Intercept)                                    1.18e-10 ***
+## sample_features$Individualchimp 4x0519            0.507    
+## sample_features$Individualchimp c0563-YN07-147    0.625    
+## sample_features$Individualchimp YN07-387          0.143    
+## sample_features$Individualhum  60705              0.550    
+## sample_features$Individualhum 61317               0.881    
+## sample_features$Individualhum 62789               0.466    
+## sample_features$Individualhum 62905               0.695    
+## sample_features$Individualrhe YN07-314          &lt; 2e-16 ***
+## sample_features$Individualrhe YN07-315          &lt; 2e-16 ***
+## sample_features$Individualrhe YN07-317          &lt; 2e-16 ***
+## sample_features$Individualrhe YN07-330          &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 3.159 on 35 degrees of freedom
+## Multiple R-squared:  0.9836, Adjusted R-squared:  0.9784 
+## F-statistic: 190.6 on 11 and 35 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc2 ~ sample_features$Species)) #0.1</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc2 ~ sample_features$Species)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -34.757  -7.017   6.376  11.472  16.997 
+## 
+## Coefficients:
+##                                       Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                              6.632      4.076   1.627   0.1109
+## sample_features$Specieshuman           -13.439      5.860  -2.293   0.0267
+## sample_features$Speciesrhesus macaque   -6.883      5.764  -1.194   0.2389
+##                                        
+## (Intercept)                            
+## sample_features$Specieshuman          *
+## sample_features$Speciesrhesus macaque  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 16.3 on 44 degrees of freedom
+## Multiple R-squared:  0.1069, Adjusted R-squared:  0.06629 
+## F-statistic: 2.633 on 2 and 44 DF,  p-value: 0.08317</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc2 ~ sample_features$Tissue)) #0.84</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc2 ~ sample_features$Tissue)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -14.9087  -4.1224   0.5346   4.1757  19.2277 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                    13.991      2.095   6.677 3.79e-08 ***
+## sample_features$Tissuekidney  -10.917      2.901  -3.763 0.000503 ***
+## sample_features$Tissueliver   -39.304      2.901 -13.548  &lt; 2e-16 ***
+## sample_features$Tissuelung     -4.576      2.901  -1.577 0.122029    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6.95 on 43 degrees of freedom
+## Multiple R-squared:  0.8414, Adjusted R-squared:  0.8303 
+## F-statistic: 76.05 on 3 and 43 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc3 ~ sample_features$Species)) #0.74</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc3 ~ sample_features$Species)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -22.026  -6.842   2.198   5.216  16.544 
+## 
+## Coefficients:
+##                                       Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                            -15.313      1.948  -7.861 6.39e-10
+## sample_features$Specieshuman            32.144      2.800  11.478 8.04e-15
+## sample_features$Speciesrhesus macaque   14.847      2.755   5.389 2.64e-06
+##                                          
+## (Intercept)                           ***
+## sample_features$Specieshuman          ***
+## sample_features$Speciesrhesus macaque ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7.792 on 44 degrees of freedom
+## Multiple R-squared:  0.7498, Adjusted R-squared:  0.7384 
+## F-statistic: 65.92 on 2 and 44 DF,  p-value: 5.798e-14</code></pre>
+<pre class="r"><code>summary(lm(pcs$pc3 ~ sample_features$Tissue)) #0.144</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pcs$pc3 ~ sample_features$Tissue)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -35.503 -10.968  -1.063  14.232  26.386 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)                     3.262      4.395   0.742   0.4620  
+## sample_features$Tissuekidney    3.727      6.085   0.613   0.5434  
+## sample_features$Tissueliver   -11.405      6.085  -1.874   0.0677 .
+## sample_features$Tissuelung     -5.098      6.085  -0.838   0.4067  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 14.58 on 43 degrees of freedom
+## Multiple R-squared:  0.1442, Adjusted R-squared:  0.08448 
+## F-statistic: 2.415 on 3 and 43 DF,  p-value: 0.07955</code></pre>
+</div>
+<div id="is-gene-expression-and-methylation-from-the-same-individual-more-highly-correlated-than-from-different-individuals-of-the-same-species" class="section level1">
+<h1>Is gene expression and methylation from the same individual more highly correlated than from different individuals of the same species?</h1>
+<pre class="r"><code>check_methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt&quot;, sep=&quot;&quot;)
+express &lt;- check_methyl[,2:48]
+methyl &lt;- check_methyl[,49:95]
+
+
+# Calculate the correlations for the RNA-seq and methylation correct individual comparison
+cor_real &lt;- c()
+
+for (i in 1:47){
+calc_cor &lt;- cor(express[,i], methyl[,i])
+cor_real &lt;- c(cor_real, calc_cor)
+}
+
+max(cor_real)</code></pre>
+<pre><code>## [1] -0.0836772</code></pre>
+<pre class="r"><code>min(cor_real)</code></pre>
+<pre><code>## [1] -0.2034074</code></pre>
+<pre class="r"><code># Correlation between all
+
+
+cor_all &lt;- array(NA, dim = c(1, 47^2))
+k = 0
+for (i in 1:47){
+  for (j in 1:47){
+cor_all[1,j+k] &lt;- cor(express[,i], methyl[,j])
+  }
+  k = k+47
+}
+
+cor_all &lt;- as.data.frame(cor_all)
+
+col_real_cor &lt;- seq(from =1, to = 2209, by = 48)
+
+# Subset to correlation from same individuals
+
+cor_real_columns &lt;- cor_all[,col_real_cor]
+head(cor_real_columns)</code></pre>
+<pre><code>##           V1       V49        V97        V145       V193       V241
+## 1 -0.1160573 -0.150417 -0.1205982 -0.09738797 -0.1797781 -0.1417088
+##         V289       V337       V385       V433       V481       V529
+## 1 -0.1488905 -0.1231521 -0.1661752 -0.1662982 -0.1750191 -0.1450716
+##         V577       V625       V673       V721       V769       V817
+## 1 -0.1767404 -0.1562833 -0.1608468 -0.1344182 -0.1451725 -0.1388683
+##         V865       V913      V961      V1009      V1057      V1105
+## 1 -0.1019507 -0.1409032 -0.186046 -0.1357739 -0.1474011 -0.1359983
+##       V1153     V1201      V1249      V1297      V1345       V1393
+## 1 -0.166648 -0.133361 -0.1183131 -0.1079932 -0.1292397 -0.08481581
+##        V1441      V1489      V1537      V1585      V1633      V1681
+## 1 -0.0836772 -0.1938342 -0.1882745 -0.1791351 -0.1314871 -0.1931271
+##        V1729      V1777      V1825      V1873      V1921     V1969
+## 1 -0.1755261 -0.1784575 -0.1368084 -0.1674308 -0.2034074 -0.192077
+##        V2017      V2065      V2113     V2161      V2209
+## 1 -0.1283305 -0.1642173 -0.1962765 -0.165948 -0.1373311</code></pre>
+<pre class="r"><code>min(cor_real_columns)</code></pre>
+<pre><code>## [1] -0.2034074</code></pre>
+<pre class="r"><code>max(cor_real_columns)</code></pre>
+<pre><code>## [1] -0.0836772</code></pre>
+<pre class="r"><code># Subset to correlation of all non-matching individuals
+
+ch1 &lt;- c(5, 9, 13)
+ch1_cor &lt;- c()
+for (i in ch1){
+calc_cor &lt;- cor(express[,1], methyl[,i])
+ch1_cor &lt;- c(ch1_cor, calc_cor)
+}
+
+ch1_cor</code></pre>
+<pre><code>## [1] -0.1227097 -0.1186107 -0.1169487</code></pre>
+<pre class="r"><code>ch2 &lt;- c(1, 9, 13)
+ch2_cor &lt;- c()
+for (i in ch2){
+calc_cor &lt;- cor(express[,5], methyl[,i])
+ch2_cor &lt;- c(ch2_cor, calc_cor)
+}
+ch2_cor</code></pre>
+<pre><code>## [1] -0.1717955 -0.1767650 -0.1723924</code></pre>
+<pre class="r"><code>ch3 &lt;- c(1, 5, 13)
+ch3_cor &lt;- c()
+for (i in ch3){
+calc_cor &lt;- cor(express[,9], methyl[,i])
+ch3_cor &lt;- c(ch3_cor, calc_cor)
+}
+ch3_cor</code></pre>
+<pre><code>## [1] -0.1615990 -0.1690810 -0.1618944</code></pre>
+<pre class="r"><code>ch4 &lt;- c(1, 5, 9)
+ch4_cor &lt;- c()
+for (i in ch4){
+calc_cor &lt;- cor(express[,13], methyl[,i])
+ch4_cor &lt;- c(ch4_cor, calc_cor)
+}
+ch4_cor</code></pre>
+<pre><code>## [1] -0.1758886 -0.1831965 -0.1799355</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

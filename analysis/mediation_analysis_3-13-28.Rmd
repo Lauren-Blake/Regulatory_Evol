@@ -1,0 +1,163 @@
+---
+title: "R Notebook"
+output: word_document
+---
+
+This is a test of the mediation analysis. 
+
+# Load libraries/data
+```{r}
+sessionInfo()
+# Load Joyce's package
+devtools::install_github("jhsiao999/mediation/pkg")
+library(medinome)
+library(limma)
+library(ashr)
+getwd()
+
+# Load data
+exp_methyl <- read.csv("../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt", sep="")
+sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+samples <- sample_info_RNAseq[-17,]
+
+species <- as.data.frame(samples[,3])
+tissue <- as.data.frame(samples[,4])
+RIN <- as.data.frame(samples[,5])
+cpm.voom.cyclic <- readRDS("../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds")
+
+chimp_human_heart <- c(17,20,21,24,25,28,29)
+```
+
+# Find DE genes (FDR = 1%)
+```{r}
+# Set FSR and FDR_level
+
+FSR_level <- 0.01
+FDR_level <- 0.01
+
+# Find DE genes
+
+tissue <- as.data.frame(samples[,4])
+  tissue <- tissue[chimp_human_heart,]
+  tissue_no_extra <- droplevels.factor(tissue)
+
+
+  design <- model.matrix(~ as.factor(tissue_no_extra) + RIN[chimp_human_heart,])
+  fit_all <- lmFit(cpm.voom.cyclic[,chimp_human_heart], design)
+  fit_all <- eBayes(fit_all)
+  
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+  HvC_Heart_fit_all_5perc <-HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+
+
+  # For the DE genes, find which ones we have methylation values for                                                                                                                                                              
+#  rownames(exp_methyl) <- row.names(cpm.voom.cyclic)                             
+
+  human_chimp_heart <-  rownames(exp_methyl) %in%
+HvC_Heart_fit_all_5perc$genes
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exp_methyl, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+  counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+
+
+```
+
+# Run the mediation analysis on unscaled data
+```{r}
+# Run on non-scaled data
+  
+     # Prepare for mediation analysis                                                               
+Y <- expression_values_only[,chimp_human_heart]
+X <- as.integer(tissue_no_extra)
+M <- methylation_values_only[,chimp_human_heart]
+
+dim(Y)
+dim(X)
+dim(M)
+nsam <- ncol(Y)
+
+fit.voom <- mediate.test.voom(Y, X, M)
+
+fit.ash.tau.fs <- ash(fit.voom$d, fit.voom$se.fs, df=nsam-2, mixcompdist = "halfuniform", method = "fdr")
+
+svalue_table <- fit.ash.tau.fs$result$svalue < FSR_level
+svalue_true <- length(which(svalue_table == TRUE))
+svalue_total <- length(svalue_table)
+
+svalue_true/svalue_total
+
+```
+
+# Run the mediation analysis on scaled data 
+```{r}
+# Transpose by gene
+
+Y <- t(scale(t(expression_values_only[,chimp_human_heart])))
+M <- t(scale(t(methylation_values_only[,chimp_human_heart])))
+
+fit.voom <- mediate.test.voom(Y, X, M)
+
+fit.ash.tau.fs <- ash(fit.voom$d, fit.voom$se.fs, df=nsam-2, mixcompdist = "halfuniform", method = "fdr")
+
+svalue_table <- fit.ash.tau.fs$result$svalue < FSR_level
+svalue_true <- length(which(svalue_table == TRUE))
+svalue_total <- length(svalue_table)
+
+svalue_true/svalue_total
+
+```
+
+# Permute the methylation values, scale the methylation values, and then
+```{r}
+# Permute the methylation values and then run
+
+run1 <- array(0, dim = c(nrow(expression_values_only), length(chimp_human_heart)))
+
+for (i in 1:nrow(expression_values_only)){
+  df <- as.data.frame(methylation_values_only[i,chimp_human_heart])
+  new_df <- as.data.frame(sample(df))
+  run1[i,] <- t(new_df)
+}
+
+
+M_perm <- t(scale(t(run1)))
+
+fit.voom <- mediate.test.voom(Y, X, M_perm)
+
+fit.ash.tau.fs <- ash(fit.voom$d, fit.voom$se.fs, df=nsam-2, mixcompdist = "halfuniform", method = "fdr")
+
+svalue_table <- fit.ash.tau.fs$result$svalue < FSR_level
+svalue_true <- length(which(svalue_table == TRUE))
+svalue_total <- length(svalue_table)
+
+svalue_true/svalue_total
+```
+
+## Permute the scaled values and then run the mediation analysis
+```{r}
+# Another way to permute
+M <- t(scale(t(methylation_values_only[,chimp_human_heart])))
+run1 <- array(0, dim = c(nrow(expression_values_only), length(chimp_human_heart)))
+
+for (i in 1:nrow(expression_values_only)){
+  new_df <- sample(M[i,])
+  run1[i,] <- t(new_df)
+}
+
+fit.voom <- mediate.test.voom(Y, X, run1)
+
+fit.ash.tau.fs <- ash(fit.voom$d, fit.voom$se.fs, df=nsam-2, mixcompdist = "halfuniform", method = "fdr")
+
+svalue_table <- fit.ash.tau.fs$result$svalue < FSR_level
+svalue_true <- length(which(svalue_table == TRUE))
+svalue_total <- length(svalue_table)
+
+svalue_true/svalue_total
+```
+

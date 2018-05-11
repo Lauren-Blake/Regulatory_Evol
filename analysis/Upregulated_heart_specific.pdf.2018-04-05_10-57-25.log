@@ -1,0 +1,7 @@
+INFO [2018-04-05 10:57:25] [[1]]
+INFO [2018-04-05 10:57:25] mylist
+INFO [2018-04-05 10:57:25] 
+INFO [2018-04-05 10:57:25] $filename
+INFO [2018-04-05 10:57:25] [1] "Upregulated_heart_specific.pdf"
+INFO [2018-04-05 10:57:25] 
+ERROR [2018-04-05 11:04:30] Impossible: a2 <- n12 - n123 produces negative area

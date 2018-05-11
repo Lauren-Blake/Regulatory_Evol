@@ -3,6 +3,8 @@ title: "Identifying DMRs"
 author: "Lauren Blake"
 date: "January 5, 2018"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 Since identifying DMRs is computationally intensive using the BSmooth package, we needed to run this on the cluster (/mnt/gluster/home/leblake/Methylation/tissue\_DMRs and /mnt/gluster/home/leblake/Methylation/species\_DMRs)
@@ -115,6 +117,10 @@ draw.pairwise.venn(area1 = 22561, area2 = 14208, cross.area = 3858, category = c
 # How does the overlap change based on % bp?
 
 ```{r}
+# 1 bp overlap
+heart_liver_1 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 1E-9 -F 1E-9")
+
+summary(as.integer(heart_liver_1[,9]) > 0)
 
 # 10% overlap
 heart_liver_10 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.10 -F 0.10")
@@ -181,6 +187,7 @@ summary(as.integer(heart_liver_100[,9]) > 0)
 
 ```{r}
 # Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_liver_1[,9]) > 0)
 summary(as.integer(heart_liver_10[,9]) > 0)
 summary(as.integer(heart_liver_20[,9]) > 0)
 summary(as.integer(heart_liver_25[,9]) > 0)
@@ -195,13 +202,14 @@ summary(as.integer(heart_liver_90[,9]) > 0)
 summary(as.integer(heart_liver_100[,9]) > 0)
 
 # Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung <- c(5472, 5189, 5007, 4824, 4400, 3858, 3275, 2636, 2305,1964,1338, 974)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung <- c(5607, 5472, 5189, 5007, 4824, 4400, 3858, 3275, 2636, 2305,1964,1338, 974)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of human tDMRs (HvLi and HvLu)",  pch = 19)
 
 # Investigate the size of the tDMRs depending on the percentage overlap
 
+check_1 <- heart_liver_10[which((as.integer(heart_liver_1[,9]) > 0) == TRUE),]
 check_10 <- heart_liver_10[which((as.integer(heart_liver_10[,9]) > 0) == TRUE),]
 check_20 <- heart_liver_20[which((as.integer(heart_liver_20[,9]) > 0) == TRUE),]
 check_25 <- heart_liver_25[which((as.integer(heart_liver_25[,9]) > 0) == TRUE),]
@@ -215,6 +223,7 @@ check_80 <- heart_liver_80[which((as.integer(heart_liver_80[,9]) > 0) == TRUE),]
 check_90 <- heart_liver_90[which((as.integer(heart_liver_90[,9]) > 0) == TRUE),]
 check_100 <- heart_liver_100[which((as.integer(heart_liver_100[,9]) > 0) == TRUE),]
 
+summary(as.integer(check_1[,9]))
 summary(as.integer(check_10[,9]))
 summary(as.integer(check_20[,9]))
 summary(as.integer(check_25[,9]))
@@ -229,8 +238,8 @@ summary(as.integer(check_90[,9]))
 summary(as.integer(check_100[,9]))
 
 # Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp <- c(419, 440, 454, 470, 500, 533, 574, 601, 604,599,522, 410.5)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp <- c(120, 419, 440, 454, 470, 500, 533, 574, 601, 604,599,522, 410.5)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between human tDMRs (HvLi and HvLu)")
 
@@ -288,6 +297,9 @@ draw.pairwise.venn(area1 = (29136+1155), area2 = (11687+1155), cross.area = 1155
 
 
 ```{r}
+# 1 bp overlap
+heart_liver_1 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.00000001 -F 0.00000001")
+
 # 10% overlap
 heart_liver_10 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.10 -F 0.10", check.chr = FALSE)
 
@@ -349,6 +361,7 @@ heart_liver_100 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = s
 summary(as.integer(heart_liver_100[,9]) > 0)
 
 # Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_liver_1[,9]) > 0)
 summary(as.integer(heart_liver_10[,9]) > 0)
 summary(as.integer(heart_liver_20[,9]) > 0)
 summary(as.integer(heart_liver_25[,9]) > 0)
@@ -363,13 +376,13 @@ summary(as.integer(heart_liver_90[,9]) > 0)
 summary(as.integer(heart_liver_100[,9]) > 0)
 
 # Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung <- c(2275, 1998, 1870, 1739, 1451, 1155, 866, 632, 507,426,294, 234)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung <- c(2440, 2275, 1998, 1870, 1739, 1451, 1155, 866, 632, 507,426,294, 234)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of overlapping chimp tDMRs",  pch = 19, main = "Overlapping Human tDMRs (HvK and LivLu)")
 
 # Investigate the size of the tDMRs depending on the percentage overlap
-
+check_1 <- heart_liver_1[which((as.integer(heart_liver_1[,9]) > 0) == TRUE),]
 check_10 <- heart_liver_10[which((as.integer(heart_liver_10[,9]) > 0) == TRUE),]
 check_20 <- heart_liver_20[which((as.integer(heart_liver_20[,9]) > 0) == TRUE),]
 check_25 <- heart_liver_25[which((as.integer(heart_liver_25[,9]) > 0) == TRUE),]
@@ -383,6 +396,7 @@ check_80 <- heart_liver_80[which((as.integer(heart_liver_80[,9]) > 0) == TRUE),]
 check_90 <- heart_liver_90[which((as.integer(heart_liver_90[,9]) > 0) == TRUE),]
 check_100 <- heart_liver_100[which((as.integer(heart_liver_100[,9]) > 0) == TRUE),]
 
+summary(as.integer(check_1[,9]))
 summary(as.integer(check_10[,9]))
 summary(as.integer(check_20[,9]))
 summary(as.integer(check_25[,9]))
@@ -397,8 +411,8 @@ summary(as.integer(check_90[,9]))
 summary(as.integer(check_100[,9]))
 
 # Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp <- c(321, 357, 376, 394, 429, 467, 498.5, 503.5, 514, 475.5, 390.5, 340)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp <- c(301, 321, 357, 376, 394, 429, 467, 498.5, 503.5, 514, 475.5, 390.5, 340)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between human tDMRs (HvK and LivLu)")
 
@@ -458,6 +472,9 @@ draw.pairwise.venn(area1 = (26162+2607), area2 = (5919+2607), cross.area = 2607,
 ```
 
 ```{r}
+# 1 bp overlap
+heart_liver_1 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.00000001 -F 0.00000001", check.chr = FALSE)
+
 # 10% overlap
 heart_liver_10 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.10 -F 0.10", check.chr = FALSE)
 
@@ -519,6 +536,7 @@ heart_liver_100 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = s
 summary(as.integer(heart_liver_100[,9]) > 0)
 
 # Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_liver_1[,9]) > 0)
 summary(as.integer(heart_liver_10[,9]) > 0)
 summary(as.integer(heart_liver_20[,9]) > 0)
 summary(as.integer(heart_liver_25[,9]) > 0)
@@ -533,13 +551,14 @@ summary(as.integer(heart_liver_90[,9]) > 0)
 summary(as.integer(heart_liver_100[,9]) > 0)
 
 # Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung <- c(3837, 3614, 3472, 3332, 2974, 2607, 2180, 1740, 1502,1254,854, 621)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung <- c(621, 3837, 3614, 3472, 3332, 2974, 2607, 2180, 1740, 1502,1254,854, 621)
+perc_overlap <- c(0.00000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of overlapping chimp tDMRs",  pch = 19, main = "Overlapping Chimp tDMRs (HvLi and HvLu)")
 
 # Investigate the size of the tDMRs depending on the percentage overlap
 
+check_1 <- heart_liver_1[which((as.integer(heart_liver_1[,9]) > 0) == TRUE),]
 check_10 <- heart_liver_10[which((as.integer(heart_liver_10[,9]) > 0) == TRUE),]
 check_20 <- heart_liver_20[which((as.integer(heart_liver_20[,9]) > 0) == TRUE),]
 check_25 <- heart_liver_25[which((as.integer(heart_liver_25[,9]) > 0) == TRUE),]
@@ -553,6 +572,7 @@ check_80 <- heart_liver_80[which((as.integer(heart_liver_80[,9]) > 0) == TRUE),]
 check_90 <- heart_liver_90[which((as.integer(heart_liver_90[,9]) > 0) == TRUE),]
 check_100 <- heart_liver_100[which((as.integer(heart_liver_100[,9]) > 0) == TRUE),]
 
+summary(as.integer(check_1[,9]))
 summary(as.integer(check_10[,9]))
 summary(as.integer(check_20[,9]))
 summary(as.integer(check_25[,9]))
@@ -567,8 +587,8 @@ summary(as.integer(check_90[,9]))
 summary(as.integer(check_100[,9]))
 
 # Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp <- c(433, 459.5, 477.5, 491, 533.5, 560, 597, 608, 612,589,537.5, 428)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp <- c(301, 433, 459.5, 477.5, 491, 533.5, 560, 597, 608, 612,589,537.5, 428)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between chimp tDMRs (HvLi and HvLu)")
 
@@ -577,14 +597,33 @@ plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage 
 
 ## Rhesus heart versus liver and rhesus heart versus lung
 ```{r}
+
+# Heart versus liver
+
 # columns to pull
 pull_col <- c(1:3, 16)
 
 # make bed style format: change name from human to rhesus
 humans_heart_liver_DMRs_bed <- rhesus_heart_liver_DMRs[,pull_col]
 
+# Remove chr17_gl000204_random
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+# Remove chr11_gl000202_random
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+
 # Get DMRs on the autosomal chromosomes only
-humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chrX"),]
 
 humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
 humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
@@ -594,9 +633,24 @@ summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2
 
 sort_humans_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX, check.chr = FALSE)
 
-# make bed style format
+# Heart versus lung
 humans_heart_lung_DMRs_bed <- rhesus_heart_lung_DMRs[,pull_col]
-humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed[which(humans_heart_lung_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed[which(humans_heart_lung_DMRs_bed[,1] != "chr17_gl000204_random"),]
+
+humans_heart_lung_DMRs_bed_noX[,1] <- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] <- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] <- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+
+humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed_noX[which(humans_heart_lung_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_lung_DMRs_bed_noX[,1] <- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] <- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] <- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+
+
+
+humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed_noX[which(humans_heart_lung_DMRs_bed_noX[,1] != "chrX"),]
 
 humans_heart_lung_DMRs_bed_noX[,1] <- as.character(humans_heart_lung_DMRs_bed_noX[,1])
 humans_heart_lung_DMRs_bed_noX[,2] <- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
@@ -604,6 +658,10 @@ humans_heart_lung_DMRs_bed_noX[,3] <- as.integer(humans_heart_lung_DMRs_bed_noX[
 sort_humans_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_lung_DMRs_bed_noX, check.chr = FALSE)
 
 summary(humans_heart_lung_DMRs_bed_noX[,3] - humans_heart_lung_DMRs_bed_noX[,2])
+
+
+
+
 
 heart_lung <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
 
@@ -626,6 +684,11 @@ draw.pairwise.venn(area1 = (39057+2229), area2 = (4798+2229), cross.area = 2229,
 ```
 
 ```{r}
+# 1 bp overlap
+heart_liver_1 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.00000001 -F 0.00000001")
+
+summary(as.integer(heart_liver_1[,9]) > 0)
+
 # 10% overlap
 heart_liver_10 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.10 -F 0.10", check.chr = FALSE)
 
@@ -687,6 +750,7 @@ heart_liver_100 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = s
 summary(as.integer(heart_liver_100[,9]) > 0)
 
 # Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_liver_1[,9]) > 0)
 summary(as.integer(heart_liver_10[,9]) > 0)
 summary(as.integer(heart_liver_20[,9]) > 0)
 summary(as.integer(heart_liver_25[,9]) > 0)
@@ -701,13 +765,14 @@ summary(as.integer(heart_liver_90[,9]) > 0)
 summary(as.integer(heart_liver_100[,9]) > 0)
 
 # Plot the number of tDMRs
-conserved_tdmr_heart_liver_heart_lung <- c(3521, 3246, 3084, 2931, 2577, 2229, 1859, 1478, 1288,1101,738, 527)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung <- c(3654, 3520, 3245, 3472, 3332, 2974, 2607, 2180, 1740, 1502,1254,854, 621)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of overlapping rhesus tDMRs (HvLi and HvLu)",  pch = 19)
 
 # Investigate the size of the tDMRs depending on the percentage overlap
 
+check_1 <- heart_liver_1[which((as.integer(heart_liver_1[,9]) > 0) == TRUE),]
 check_10 <- heart_liver_10[which((as.integer(heart_liver_10[,9]) > 0) == TRUE),]
 check_20 <- heart_liver_20[which((as.integer(heart_liver_20[,9]) > 0) == TRUE),]
 check_25 <- heart_liver_25[which((as.integer(heart_liver_25[,9]) > 0) == TRUE),]
@@ -721,6 +786,7 @@ check_80 <- heart_liver_80[which((as.integer(heart_liver_80[,9]) > 0) == TRUE),]
 check_90 <- heart_liver_90[which((as.integer(heart_liver_90[,9]) > 0) == TRUE),]
 check_100 <- heart_liver_100[which((as.integer(heart_liver_100[,9]) > 0) == TRUE),]
 
+summary(as.integer(check_1[,9]))
 summary(as.integer(check_10[,9]))
 summary(as.integer(check_20[,9]))
 summary(as.integer(check_25[,9]))
@@ -735,14 +801,18 @@ summary(as.integer(check_90[,9]))
 summary(as.integer(check_100[,9]))
 
 # Plot the median tDMR length
-conserved_tdmr_heart_liver_heart_lung_bp <- c(418, 450.5, 473, 497, 533, 564, 590, 619.5, 621,602,501, 378)
-perc_overlap <- c(0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+conserved_tdmr_heart_liver_heart_lung_bp <- c(404, 418, 450.5, 473, 497, 533, 564, 590, 619.5, 621,602,501, 378)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
 
 plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between rhesus tDMRs (HvLi and HvLu)")
 
 ```
 
 An overlap of 0.70-0.80 maximizes the median length of overlap between tDMRs. This result appears robust to the tissues and species. 
+
+
+
+
 
 # Pairwise tDMRs
 

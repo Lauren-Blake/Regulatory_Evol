@@ -17,20 +17,21 @@ source("chunk-options.R")
 
 ```{r}
 # import sample labels
-samples <- read.delim("../data/Sample_info_RNAseq_RIN.txt")
+samples <- read.delim("../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt")
 # expression
-exprs <- read.table("../data/human_chimp_orth_exp_methyl_7725_hum.txt", sep="")
+exprs <- read.table("../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt", sep="")
 # methylation data
-methyl <- read.csv("../data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt", sep="")
+methyl <- read.csv("../../../Reg_Evo_Primates/data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt", sep="")
 
 # Normalized gene expression data
-cpm.voom.cyclic <- readRDS("../data/human_chimp_orth_cpm_voom_cyclic.rds")
+cpm.voom.cyclic <- readRDS("../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds")
 
 # Load libraries
 library("edgeR")
 library("limma")
 library("plyr")
 library("ashr")
+library("cowplot")
 ```
 
 ## Function that will perform the interspecies analysis- DE genes
@@ -334,7 +335,7 @@ return(make_plot)
 ```{r}
 ######### Human heart versus chimp heart ###############
 
-hc_heart_DE_make_plot <- effect_size_hc_species_DE(c(1, 5, 9, 13, 20, 24, 28), 0.05, 0.05)
+hc_heart_DE_make_plot <- as.data.frame(effect_size_hc_species_DE(c(1, 5, 9, 13, 20, 24, 28), 0.05, 0.05))
 
 plot(x=hc_heart_DE_make_plot[,1], y=hc_heart_DE_make_plot[,2],
      ylab = "Standard error of the difference",
@@ -342,6 +343,14 @@ plot(x=hc_heart_DE_make_plot[,1], y=hc_heart_DE_make_plot[,2],
      main = "Difference of effect size (DE genes in human versus chimp heart)",
      pch=16, cex=.6, col = hc_heart_DE_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+p5 <- plot(x=hc_heart_DE_make_plot[,1], y=hc_heart_DE_make_plot[,2],
+     ylab = "Standard error of the difference",
+     xlab = "Difference in effect size from 2 lms", 
+     main = " ",
+     pch=16, cex=.6, col = hc_heart_DE_make_plot[,3])
+legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
 
 sum(hc_heart_DE_make_plot[,3] == "red")
 length(hc_heart_DE_make_plot[,3])
@@ -354,6 +363,15 @@ plot(x=hc_heart_non_DE_make_plot[,1], y=hc_heart_non_DE_make_plot[,2],
      main = "Difference of effect size (non DE genes in human versus chimp heart)",
      pch=16, cex=.6, col = hc_heart_non_DE_make_plot[,3])
 legend("topright", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+
+p6 <- plot(x=hc_heart_non_DE_make_plot[,1], y=hc_heart_non_DE_make_plot[,2],
+     ylab = "Standard error of the difference",
+     xlab = "Difference in effect size from 2 lms", 
+     main = " ",
+     pch=16, cex=.6, col = hc_heart_non_DE_make_plot[,3])
+legend("topright", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
 
 sum(hc_heart_non_DE_make_plot[,3] == "red")
 length(hc_heart_non_DE_make_plot[,3])
@@ -427,6 +445,9 @@ plot(x=hc_heart_DE_make_plot[,1], y=hc_heart_DE_make_plot[,2],
      main = "Difference of effect size (DE genes in human versus chimp kidney)",
      pch=16, cex=.6, col = hc_heart_DE_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+
+
 
 a <- sum(hc_heart_DE_make_plot[,3] == "red")
 a
@@ -824,6 +845,14 @@ plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
 
+p1 <- plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
+     ylab = "Standard error of the difference",
+     xlab = "Difference in effect size from 2 lms", 
+     main = " ",
+     pch=16, cex=.6, col = hk_DE_make_plot[,3])
+legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+
 sum(hk_DE_make_plot[,3] == "red")
 length(hk_DE_make_plot[,3])
 
@@ -835,6 +864,14 @@ plot(x=hk_make_plot[,1], y=hk_make_plot[,2],
      main = "Difference of effect size (non-DE genes in human heart vs human kidney)",
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+p2 <- plot(x=hk_make_plot[,1], y=hk_make_plot[,2],
+     ylab = "Standard error of the difference",
+     xlab = "Difference in effect size from 2 lms", 
+     main = " ",
+     pch=16, cex=.6, col = hk_make_plot[,3])
+legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
 
 sum(hk_make_plot[,3] == "red")
 length(hk_make_plot[,3])
@@ -907,6 +944,14 @@ plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
 
+p3 <- plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
+     ylab = "Standard error of the difference",
+     xlab = "Difference in effect size from 2 lms", 
+     main = " ",
+     pch=16, cex=.6, col = hk_DE_make_plot[,3])
+legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+
 sum(hk_DE_make_plot[,3] == "red")
 length(hk_DE_make_plot[,3])
 
@@ -918,6 +963,14 @@ plot(x=hk_make_plot[,1], y=hk_make_plot[,2],
      main = "Difference of effect size (non-DE genes in chimp heart vs chimp kidney)",
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+p4 <- plot(x=hk_make_plot[,1], y=hk_make_plot[,2],
+     ylab = "Standard error of the difference",
+     xlab = "Difference in effect size from 2 lms", 
+     main = " ",
+     pch=16, cex=.6, col = hk_make_plot[,3])
+legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
 
 sum(hk_make_plot[,3] == "red")
 length(hk_make_plot[,3])
@@ -976,7 +1029,7 @@ length(hk_make_plot[,3])
 
 ```
 
-### Human heart kidney versus human kidney
+### Human heart versus human kidney
 
 ```{r}
 hk_DE_make_plot <- effect_size_hc_tissue_DE(c(18, 20, 22, 24, 26, 28, 30), 0.05, 0.05)
@@ -1002,6 +1055,8 @@ plot(x=hk_make_plot[,1], y=hk_make_plot[,2],
      pch=16, cex=.6, col = hk_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
 
+
+
 c <- sum(hk_make_plot[,3] == "red")
 c
 d <- length(hk_make_plot[,3])
@@ -1019,6 +1074,8 @@ plot(x=hk_DE_make_plot[,1], y=hk_DE_make_plot[,2],
      main = "Difference of effect size (DE genes in chimp heart vs chimp liver)",
      pch=16, cex=.6, col = hk_DE_make_plot[,3])
 legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=16:16, cex=0.8)
+
+
 
 sum(hk_DE_make_plot[,3] == "red")
 length(hk_DE_make_plot[,3])
@@ -1263,3 +1320,5 @@ legend("topleft", legend=c("s < 0.05", "s >= 0.05"), col=c("red", "black"), pch=
 sum(hk_make_plot[,3] == "red")
 length(hk_make_plot[,3])
 ```
+`
+

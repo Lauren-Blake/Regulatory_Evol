@@ -1,0 +1,384 @@
+---
+title: "Comparison_to_GTEx"
+author: "Lauren Blake"
+date: "April 28, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The goal of this script is to compare the conserved tissue specific data with the tissue's ranking in the GTEx data v6 data. 
+
+```{r cars}
+# Import GTEx data
+
+gtex_data <- read.csv("../data/GTEx_genes_tissues.csv", stringsAsFactors = FALSE)
+
+# Find which genes are in both datasets
+
+cpm_12184 <- read.delim("../../../Reg_Evo_Primates/data/cpm_12184.txt")
+
+# Tissue up/downreg
+heart_upreg_data <- read.csv("../data/specific_upreg_heart_genes.csv", stringsAsFactors = FALSE)
+heart_downreg_data <- read.csv("../data/specific_downreg_heart_genes.csv", stringsAsFactors = FALSE)
+
+kidney_upreg_data <- read.csv("../data/specific_upreg_kidney_genes.csv", stringsAsFactors = FALSE)
+kidney_downreg_data <- read.csv("../data/specific_downreg_kidney_genes.csv", stringsAsFactors = FALSE)
+
+liver_upreg_data <- read.csv("../data/specific_upreg_liver_genes.csv", stringsAsFactors = FALSE)
+liver_downreg_data <- read.csv("../data/specific_downreg_liver_genes.csv", stringsAsFactors = FALSE)
+
+lung_upreg_data <- read.csv("../data/specific_upreg_lung_genes.csv", stringsAsFactors = FALSE)
+lung_downreg_data <- read.csv("../data/specific_downreg_lung_genes.csv", stringsAsFactors = FALSE)
+
+```
+
+# Overlap between GTEx and our dataset
+
+```{r}
+summary(rownames(cpm_12184) %in% gtex_data$ENSG)
+```
+11,777 genes are in both datasets.
+
+# Upregulated in heart only
+```{r}
+# Subset 
+summary(heart_upreg_data$x %in% gtex_data$ENSG)
+
+inshared_lists = gtex_data$ENSG %in% heart_upreg_data$x
+inshared_lists_data <- as.data.frame(inshared_lists)
+counts_genes_in <- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre <- subset(counts_genes_in, inshared_lists_data == "TRUE")
+counts_genes_in_cutoff_pre <- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the highest?
+
+upreg_heart_ranking <- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method='min')))
+
+upreg_heart_ranking[,5]
+```
+
+# Downregulated in heart only
+```{r}
+# Subset 
+summary(heart_downreg_data$x %in% gtex_data$ENSG)
+
+inshared_lists = gtex_data$ENSG %in% heart_downreg_data$x
+inshared_lists_data <- as.data.frame(inshared_lists)
+counts_genes_in <- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre <- subset(counts_genes_in, inshared_lists_data == "TRUE")
+counts_genes_in_cutoff_pre <- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the lowest?
+
+downreg_heart_ranking <- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method='min')))
+
+downreg_heart_ranking[,5]
+```
+# Function for up/downregulation
+```{r}
+
+ranking_in_gtex <- function(tissue_name){
+# Subset 
+summary(tissue_name %in% gtex_data$ENSG)
+
+inshared_lists = gtex_data$ENSG %in% tissue_name
+inshared_lists_data <- as.data.frame(inshared_lists)
+counts_genes_in <- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre <- subset(counts_genes_in, inshared_lists_data == "TRUE")
+counts_genes_in_cutoff_pre <- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the highest?
+
+upreg_heart_ranking <- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method='min')))
+
+return(upreg_heart_ranking)
+}
+
+upreg_heart_ranking <- ranking_in_gtex(heart_upreg_data$x)[,5]
+downreg_heart_ranking <- ranking_in_gtex(heart_downreg_data$x)[,5]
+
+upreg_kidney_ranking <- ranking_in_gtex(kidney_upreg_data$x)[,6]
+downreg_kidney_ranking <- ranking_in_gtex(kidney_downreg_data$x)[,6]
+
+upreg_liver_ranking <- ranking_in_gtex(liver_upreg_data$x)[,7]
+downreg_liver_ranking <- ranking_in_gtex(liver_downreg_data$x)[,7]
+
+upreg_lung_ranking <- ranking_in_gtex(lung_upreg_data$x)[,8]
+downreg_lung_ranking <- ranking_in_gtex(lung_downreg_data$x)[,8]
+
+```
+
+# Ranking in our data
+```{r}
+# Heart
+upreg_heart_num <- array(1, dim=c(length(upreg_heart_ranking), 1))
+
+heart_cor1 <- cbind(upreg_heart_num, upreg_heart_ranking)
+
+downreg_heart_num <- array(4, dim=c(length(downreg_heart_ranking), 1))
+
+heart_cor2 <- cbind(downreg_heart_num, downreg_heart_ranking)
+
+# Kidney
+upreg_kidney_num <- array(1, dim=c(length(upreg_kidney_ranking), 1))
+
+kidney_cor1 <- cbind(upreg_kidney_num, upreg_kidney_ranking)
+
+downreg_kidney_num <- array(4, dim=c(length(downreg_kidney_ranking), 1))
+
+kidney_cor2 <- cbind(downreg_kidney_num, downreg_kidney_ranking)
+
+# Liver
+upreg_liver_num <- array(1, dim=c(length(upreg_liver_ranking), 1))
+
+liver_cor1 <- cbind(upreg_liver_num, upreg_liver_ranking)
+
+downreg_liver_num <- array(4, dim=c(length(downreg_liver_ranking), 1))
+
+liver_cor2 <- cbind(downreg_liver_num, downreg_liver_ranking)
+
+# Lung
+upreg_lung_num <- array(1, dim=c(length(upreg_lung_ranking), 1))
+
+lung_cor1 <- cbind(upreg_lung_num, upreg_lung_ranking)
+
+downreg_lung_num <- array(4, dim=c(length(downreg_lung_ranking), 1))
+
+lung_cor2 <- cbind(downreg_lung_num, downreg_lung_ranking)
+
+tissue_cor <- rbind(heart_cor1, heart_cor2, kidney_cor1, kidney_cor2, liver_cor1, liver_cor2, lung_cor1, lung_cor2)
+
+# Get the correlation between tissues
+cor(tissue_cor[,1], tissue_cor[,2])
+
+# How many times does the ranking in our data match the ranking in GTEx?
+summary(tissue_cor[,1] == tissue_cor[,2])
+
+136/(136+30)
+259/(31+259)
+```
+
+# Run topGO on the heart data (suppplementary table)
+
+```{r}
+# Load libraries
+
+library("topGO")
+#library("biomaRt")
+library("clusterProfiler")
+library("org.Hs.eg.db")
+
+# Combine the upregulated and downregulated tissues
+
+combine_hearts <- rbind(heart_upreg_data, heart_downreg_data)
+combine_kidneys <- rbind(kidney_upreg_data, kidney_downreg_data)
+combine_livers <- rbind(liver_upreg_data, liver_downreg_data)
+combine_lungs <- rbind(lung_upreg_data, lung_downreg_data)
+
+# Matrix for which are in the test set
+
+true_false <- rownames(cpm_12184) %in% combine_hearts$x
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(cpm_12184)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, "../data/GO_conserved_tissue_specific_heart.csv", quote = FALSE, row.names = FALSE)
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults["GO:0030049"] # muscle filament sliding "ENSG00000092054" "ENSG00000111245" "ENSG00000129991" "ENSG00000134571" "ENSG00000143632" "ENSG00000159251" "ENSG00000160808" "ENSG00000197616"
+goresults["GO:0060048"] # cardiac muscle contraction "ENSG00000092054" "ENSG00000111245" "ENSG00000129170" "ENSG00000129991" "ENSG00000134571" "ENSG00000159251" "ENSG00000160808" "ENSG00000197616"
+goresults["GO:0055010"] # ventricular cardiac muscle tissue morpho "ENSG00000092054" "ENSG00000111245" "ENSG00000129991" "ENSG00000134571" "ENSG00000160808" "ENSG00000197616"
+```
+
+# Run topGO on the kidney data (supplementary table)
+
+```{r}
+# Matrix for which are in the test set
+
+true_false <- rownames(cpm_12184) %in% combine_kidneys$x
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(cpm_12184)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, "../data/GO_conserved_tissue_specific_kidney.csv", quote = FALSE, row.names = FALSE)
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults["GO:1903825"] #  organic acid transmembrane transport "ENSG00000092068" "ENSG00000197891" "ENSG00000197901"
+goresults["GO:0072205"] # metanephric distal tubule development "ENSG00000104327" "ENSG00000167580"
+goresults["GO:0015698"] # inorganic anion transport "ENSG00000074803" "ENSG00000197891" "ENSG00000197901"
+goresults["GO:0007588"] # excretion "ENSG00000167580" "ENSG00000169344"
+```
+
+# Run topGO on the liver data (supplementary table)
+
+```{r}
+# Matrix for which are in the test set
+
+true_false <- rownames(cpm_12184) %in% combine_livers$x
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(cpm_12184)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, "../data/GO_conserved_tissue_specific_liver.csv", quote = FALSE, row.names = FALSE)
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+
+goresults["GO:1904478"] # regulation of intestinal absorption "ENSG00000110243" "ENSG00000158874"
+goresults["GO:0006641"] # triglyceride metabolic process "ENSG00000091583" "ENSG00000110243" "ENSG00000158874"
+goresults["GO:0015721"] # bile acid and bile salt transport "ENSG00000163631" "ENSG00000186350"
+ 
+```
+
+# Run topGO on the lung data (supplementary table)
+
+```{r}
+# Matrix for which are in the test set
+
+true_false <- rownames(cpm_12184) %in% combine_lungs$x
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(cpm_12184)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+# Make table
+
+write.csv(go_table, "../data/GO_conserved_tissue_specific_lung.csv", quote = FALSE, row.names = FALSE)
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults["GO:0007585"] # respiratory gaseous exchange "ENSG00000168484" "ENSG00000168878"
+goresults["GO:0019372"] # lipoxygenase pathway "ENSG00000012779" "ENSG00000132965"
+
+
+```

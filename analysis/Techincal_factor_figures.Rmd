@@ -1,0 +1,123 @@
+---
+title: "Figures_technical_factors"
+author: "Lauren Blake"
+date: "February 26, 2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+This is an R Markdown document to generate plots of technical versus biological factors of interest. 
+
+```{r setup, include=FALSE}
+source("chunk-options.R")
+```
+
+# Load data
+
+```{r}
+# Load libraries
+
+library(plyr)
+library(dplyr)
+library("tidyr")
+library("RColorBrewer")
+library("ggplot2")
+library("cowplot")
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Load data
+
+## Load counts
+
+cpm_12184 <- read.delim("../../../Reg_Evo_Primates/data/PC_cpm_cyclic_loess_random_var_gene_exp")
+
+## RNA-seq
+
+sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+sample_features <- sample_info_RNAseq[-17,]
+
+# Retrieve RIN score for each sample
+RNA_seq_info <- read.csv("../../../Reg_Evo_Primates/data/RNA_seq_info.csv")
+RIN <- as.data.frame(RNA_seq_info[,22])
+RIN <- as.matrix(RIN)
+#RIN <- as.data.frame(RIN[-1,])
+#RIN <- as.matrix(RIN)
+colnames(RIN) <- c("RIN")
+
+```
+
+# RIN score
+
+```{r}
+plot.RIN <- ggplot(sample_features, aes(x = Tissue, y = RIN.score, fill = Species)) +
+  geom_boxplot()  +
+  labs(x = "Tissue", y = "RIN Score") + ggtitle("RIN score by tissue and species") + theme(legend.position = "top") + scale_fill_discrete(name = c("Species"), breaks = c("Chimp", "Human", "Rhesus"), labels = c("Chimpanzee", "Human", "Rhesus Macaque")) + scale_x_discrete(name = c("Tissue"), labels = c("Heart", "Kidney", "Liver", "Lung"))
+
+plot.RIN2 <- ggplot(sample_features, aes(x = Species, y = RIN.score, fill = Tissue)) +
+  geom_boxplot()  +
+  labs(x = "Species", y = "RIN Score")  + theme(legend.position = "right") + scale_fill_discrete(name = c("Tissue"), labels = c("Heart", "Kidney", "Liver", "Lung")) + scale_x_discrete(name = c("Species"), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus Macaque")) 
+
+
+```
+
+# RNA extraction date
+
+```{r}
+# Get extraction date
+sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+sample_features <- sample_info_RNAseq[-17,]
+
+levels(RNA_seq_info$Species) <- c("Chimpanzee", "Human", "Rh. Macaque")
+
+plot.RNA.extract <- ggplot(RNA_seq_info, aes(x = Tissue, y = RNA.extraction.date, fill = Tissue)) +
+  geom_dotplot(binaxis = 'y', stackdir = 'center', dotsize = 0.8) + facet_grid(.~Species) +
+  labs(x = "Species", y = "RNA Extraction Date")  + scale_x_discrete(name = c("Tissue"), labels = c("H", "K", "Li", "Lu")) + guides(fill=FALSE)
+
+
+```
+
+# Human PCA
+
+```{r}
+human_cpm <- cpm_12184[,17:31]
+human_features <- RNA_seq_info[17:31,]
+
+pca_genes <- prcomp(t(human_cpm), scale = T, center = T)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+plot.human.pca <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=human_features$Tissue, shape = as.factor(human_features$RNA.extraction.date))) + geom_point(size = 3) + xlab("PC1 (26.3% of variance)") + ylab("PC2 (18.0% \n of variance)") + scale_size(guide = 'none') + theme(legend.position = "right") + scale_color_discrete(name = c("Tissue"), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) + scale_shape_discrete(name = c("RNA Extraction Date"))
+
+#pdf("./plot.human.pca.pdf")
+#plot.human.pca
+#dev.off()
+```
+
+# Combine into one figure
+
+```{r}
+plot_grid(plot.RIN2, plot.RNA.extract, plot.human.pca, labels = c("1A.", "1B.", "1C."), ncol = 1)
+
+#p3 <- ggdraw()+draw_image("./plot.human.pca.pdf")
+
+plot_final <- plot_grid(plot.RIN2, plot.RNA.extract, plot.human.pca, labels = c("1A.", "1B.", "1C."), ncol = 1)
+
+save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Supp_figures/Supplementary_Figure_1AC_Tech_Factors.pdf", plot_final,
+          ncol = 1, # we're saving a grid plot of 2 columns
+          nrow = 2, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3)
+
+```
+

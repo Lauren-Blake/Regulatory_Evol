@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-02-26" />
+
+<title>Human_heart_sample</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Human_heart_sample</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>February 26, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#load-libraries-and-data">Load libraries and data</a></li>
+<li><a href="#make-pca-with-48-samples">Make PCA with 48 samples</a></li>
+<li><a href="#load-other-figure-gatk-results">Load other figure (GATK results)</a></li>
+<li><a href="#pca-of-rna-expression-and-methylation">PCA of RNA expression and methylation</a><ul>
+<li><a href="#pca-all-rna-expression">PCA all RNA expression</a></li>
+<li><a href="#pca-all-methylation">PCA all methylation</a></li>
+<li><a href="#pca-rna-seq-and-bs-seq-for-integration">PCA RNA seq and bs seq for integration</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>This is to make a supplementary figure for the information about the humans and the chimpanzees.</p>
+<div id="load-libraries-and-data" class="section level1">
+<h1>Load libraries and data</h1>
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+library(&quot;edgeR&quot;)</code></pre>
+<pre><code>Loading required package: limma</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+source(&quot;functions.R&quot;)
+library(&quot;RColorBrewer&quot;)
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>
+Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:ggplot2&#39;:
+
+    ggsave</code></pre>
+<pre class="r"><code>colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+#Load the data
+
+  #Raw counts
+getwd()</code></pre>
+<pre><code>[1] &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/analysis&quot;</code></pre>
+<pre class="r"><code>counts_genes &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/counts_genes.txt&quot;)
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt&quot;)
+labels &lt;- paste(samples$Species, samples$Tissue, sep=&quot;.&quot;)
+# Set expression cutoff and sample number
+expr_cutoff &lt;- 1.5
+sample_number &lt;- 24
+
+# log2(CPM) adjusted for library sizes
+
+dge_original &lt;- DGEList(counts=as.matrix(counts_genes), genes=rownames(counts_genes), group = as.character(t(labels)))
+dge_original &lt;- calcNormFactors(dge_original)
+
+cpm &lt;- cpm(dge_original, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+design &lt;- model.matrix(~ samples$Tissue*samples$Species)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic &lt;- voom(dge_original, design, normalize.method=&quot;cyclicloess&quot;, plot=T)</code></pre>
+<p><img src="figure/Figures_samples_info.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+corfit.correlation &lt;- 0.125862
+cpm.voom.cyclic.48 &lt;- voom(dge_original, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit.correlation)</code></pre>
+<p><img src="figure/Figures_samples_info.Rmd/unnamed-chunk-1-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="make-pca-with-48-samples" class="section level1">
+<h1>Make PCA with 48 samples</h1>
+<pre class="r"><code>pca_genes &lt;- prcomp(t(cpm.voom.cyclic.48$E) , scale = T, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.true &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, shape=as.factor(samples$Species), color=as.factor(samples$Tissue))) + geom_point(alpha = 1) + xlab(&quot;PC1 (15.3% of variance)&quot;) + ylab(&quot;PC2 (11.9% of variance)&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;right&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;Chimp&quot;, &quot;Human&quot;, &quot;Rhesus&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus Macaque&quot;)) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+plot.pca.true</code></pre>
+<p><img src="figure/Figures_samples_info.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot.pca.true</code></pre>
+<p><img src="figure/Figures_samples_info.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Extract color legend
+#leg1 &lt;- gtable_filter(ggplot_gtable(ggplot_build(plot.pca.true)), &quot;guide-box&quot;)
+
+# Extract size legend
+#plot.pca.size &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, size=2)) + geom_point(aes(shape=as.factor(samples$Tissue))) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3))  + scale_shape_discrete(name = c(&quot;Tissue  &quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + ggtitle(&quot;PCA of normalized gene expression data (48 samples)&quot;) + theme(legend.position = &quot;top&quot;)
+
+#leg2 &lt;- gtable_filter(ggplot_gtable(ggplot_build(plot.pca.size)), &quot;guide-box&quot;) 
+
+# Draw with no legend
+
+#plot.pca.no.legend &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(samples$Species), shape=as.factor(samples$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) +  theme(legend.position = &quot;none&quot;)
+
+#plotNew &lt;- arrangeGrob(leg1, leg2, plot.pca.no.legend, 
+#         heights = unit.c(leg1$height, leg2$height, unit(1, &quot;npc&quot;) - 2*leg1$height), ncol = 1)
+
+#plotNew &lt;- arrangeGrob(plot.pca.no.legend, leg1, leg2, 
+#         heights = unit.c(unit(1, &quot;npc&quot;) - 2*leg1$height, leg1$height,leg1$height), ncol = 1)
+
+#grid.newpage()
+#grid.draw(plotNew)
+
+#plot.pca.no.legend &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(samples$Species), shape=as.factor(samples$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) +  theme(legend.position = &quot;none&quot;)
+
+#plot.pca.true &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(samples$Species), shape=as.factor(samples$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+#plot.pca.true &lt;- plot.pca.true + scale_color_discrete(name = c(&quot;Species&quot;), breaks = c(&quot;Chimp&quot;, &quot;Human&quot;, &quot;Rhesus&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+#plot.pca.true &lt;- plot.pca.true + scale_shape_discrete(name = c(&quot;Tissue&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + ggtitle(&quot;Normalized gene expression data PCA (n = 48)&quot;)
+#plot.pca.true</code></pre>
+</div>
+<div id="load-other-figure-gatk-results" class="section level1">
+<h1>Load other figure (GATK results)</h1>
+<pre class="r"><code>p2 &lt;- ggdraw()+draw_image(&quot;/Users/laurenblake/Dropbox/primate_BS-seq_project/Figures/Figure_S…_Irene_GATK_rnaSeq.pdf&quot;)
+#p3 &lt;- ggdraw()+draw_image(&quot;/Users/laurenblake/Dropbox/primate_BS-seq_project/Figures/Figure_S…_PCA_RNAseq_ALLchimps.pdf&quot;)
+make_fig2 &lt;- plot_grid(plot.pca.true, p2, labels = c(&quot;2A.&quot;, &quot;2B.&quot;), ncol = 1)
+
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/fig2.pdf&quot;, make_fig2,
+          ncol = 1, # we&#39;re saving a grid plot of 2 columns
+          nrow = 2, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3
+          )</code></pre>
+</div>
+<div id="pca-of-rna-expression-and-methylation" class="section level1">
+<h1>PCA of RNA expression and methylation</h1>
+<p>4 figure panel with PCA of RNA expression and methylation for global survey and just what we used</p>
+<div id="pca-all-rna-expression" class="section level2">
+<h2>PCA all RNA expression</h2>
+<pre class="r"><code># Load data
+
+## Load counts
+getwd()</code></pre>
+<pre><code>[1] &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/analysis&quot;</code></pre>
+<pre class="r"><code>cpm_12184 &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/PC_cpm_cyclic_loess_random_var_gene_exp&quot;)
+
+## RNA-seq
+
+sample_info_RNAseq &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv&quot;)
+sample_features &lt;- sample_info_RNAseq[-17,]
+
+pca_genes &lt;- prcomp(t(cpm_12184) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.true &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species), shape=as.factor(sample_features$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;right&quot;) + scale_color_discrete(name = c(&quot;Species&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.true &lt;- plot.pca.true + scale_shape_discrete(name = c(&quot;Tissue&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + ggtitle(&quot;PCA of normalized gene expression data&quot;)</code></pre>
+</div>
+<div id="pca-all-methylation" class="section level2">
+<h2>PCA all methylation</h2>
+<pre class="r"><code>pca_all_methyl_samples &lt;- read.csv(&quot;../data/pca_all_methyl_samples.txt&quot;, sep=&quot;&quot;)
+pca_summary_all_methyl_samples &lt;- read.csv(&quot;../data/pca_summary_all_methyl_samples.txt&quot;, sep=&quot;&quot;)
+
+matrixpca &lt;- pca_all_methyl_samples
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- pca_summary_all_methyl_samples
+
+#dev.off()
+
+plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(samples$Species), shape=as.factor(samples$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + theme(legend.position = &quot;none&quot;)</code></pre>
+</div>
+<div id="pca-rna-seq-and-bs-seq-for-integration" class="section level2">
+<h2>PCA RNA seq and bs seq for integration</h2>
+<pre class="r"><code>check_methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt&quot;, sep=&quot;&quot;)
+
+express &lt;- check_methyl[,2:48]
+methyl &lt;- check_methyl[,49:95]
+
+# PCA for RNA seq
+pca_genes &lt;- prcomp(t(express) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.rna.integ &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species), shape=as.factor(sample_features$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + theme(legend.position = &quot;none&quot;)
+
+# PCA for methylation
+pca_genes &lt;- prcomp(t(methyl) , scale = T, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.methyl.integ &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Species), shape=as.factor(sample_features$Tissue), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + theme(legend.position = &quot;none&quot;)
+
+# Re run with just humans and chimpanzees
+
+# PCA for methylation
+pca_genes &lt;- prcomp(t(methyl[,1:31]) , scale = T, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+pal[1:2]</code></pre>
+<pre><code>[1] &quot;#E41A1C&quot; &quot;#377EB8&quot;</code></pre>
+<pre class="r"><code>plot.methyl.integ.hc &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, fill=as.factor(sample_features$Species[1:31]), shape=as.factor(sample_features$Tissue[1:31]), size=2)) + geom_point(alpha = 0.6) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + theme(legend.position = &quot;none&quot;) + scale_fill_manual(values=c(&quot;#E41A1C&quot;,&quot;#377EB8&quot;, &quot;#4DAF4A&quot;))
+
+
+
+
+
+plot_grid(plot.pca.true,  plot.rna.integ, plot.pca.methyl, plot.methyl.integ, labels = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;), ncol = 2)</code></pre>
+<p><img src="figure/Figures_samples_info.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
