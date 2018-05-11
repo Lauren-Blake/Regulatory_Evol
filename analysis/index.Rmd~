@@ -38,21 +38,21 @@ title: "Home"
 
 ### Univariate analysis on gene expression
 
-* [Test for differentially expressed genes](../analysis/Test_DE_genes.html) 
 * [Test for DE genes with ASH](../analysis/DE_RIN_Plus_ASH.html)
-* [Test for significant interactions](../analysis/DE_RIN_Interactions_Plus_ASH.html) 
 
 ## Methylation Data
 
 *  [Human-chimpanzee orthologous promoters](../analysis/Hg19_PanTro3_TSS.html)
 *  [Human-chimpanzee-rhesus orthologous promoters](../analysis/hg19_to_rhesus_and_chimp_coor.html)
 *  Clustering after testing for technical variables 
-*  tissue DMRs
 
 ## Differentiatlly methylated regions
 
-*  [Pairwise tDMRs](../analysis/Finding_DMRs.html)
+*  [Pairwise tDMRs I](../analysis/Finding_DMRs.html)
+*  [Pairwise tDMRs II](../analysis/Pairwise_tDMRs.html)
 *  [Finding conserved tDMRs](../analysis/Finding_conserved_DMRs.html)
+*  [Overlap of tDMRs with H3K27ac and DHS](../analysis/Overlap_reg_features.html)
+
 
 ## Integration of gene expression levels and methylatiom levels: humans and chimpanzees
 
@@ -63,6 +63,14 @@ title: "Home"
 * [Effect size of DE and non-DE genes: humans and chimpanzees](../analysis/Effect_size_2lms.html)
 
 * [Effect size of DE and non-DE genes: humans and rhesus](../analysis/Effect_size_2lms_human_rhesus.html)
+
+## Additional figure/table generation
+
+* [Global surveys of RNA-seq and BS-seq data](../analysis/gene_exp_corr.html)
+* [About samples](../analysis/Figures_samples_info.html)
+
+
+
 
 ## Notes
 

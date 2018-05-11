@@ -39,6 +39,7 @@ title: "Home"
 ### Univariate analysis on gene expression
 
 * [Test for DE genes with ASH](../analysis/DE_RIN_Plus_ASH.html)
+* [Comparison of conserved tissue specific genes to other data](../analysis/Comparison_to_GTEx.html)
 
 ## Methylation Data
 
