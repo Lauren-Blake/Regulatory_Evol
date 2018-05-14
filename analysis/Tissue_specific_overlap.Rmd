@@ -1,0 +1,242 @@
+---
+title: "Observed_versus_expected_tissue_specific"
+author: "Lauren Blake"
+date: "May 11, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+```{r}
+RNA_seq_tissue_specific_overlap <- read.csv("../data/RNA_seq_tissue_specific_overlap.csv")
+
+RNA_seq_tissue_specific_overlap[,11] <- RNA_seq_tissue_specific_overlap[,3]+RNA_seq_tissue_specific_overlap[,5]
+
+library(ggplot2)
+```
+
+
+
+# Function for the human-chimpanzee tissue specific overlap
+
+* m is the chimpanzee genes
+* n is the Total genes - chimpanzee tissue-specific genes
+* x/q is the overlap between human and chimpanzee tissue-specific genes
+* k is the human tissue-specific genes
+
+```{r}
+# Add columns for results
+RNA_seq_tissue_specific_overlap[,12] <- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+RNA_seq_tissue_specific_overlap[,13] <- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+
+for (i in 1:nrow(RNA_seq_tissue_specific_overlap)){
+  m <- RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,5]+RNA_seq_tissue_specific_overlap[i,6]+RNA_seq_tissue_specific_overlap[i,7]
+  n <- 12184 - m
+  x <- RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,5]
+  q = x
+  k = RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,4]+RNA_seq_tissue_specific_overlap[i,5]+RNA_seq_tissue_specific_overlap[i,9]
+
+# Expected
+
+ # RNA_seq_tissue_specific_overlap[i,12] <- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  RNA_seq_tissue_specific_overlap[i,13] <- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+
+# Find the largest/least significant P value of the observed overlap between human and chimpanzees
+max(RNA_seq_tissue_specific_overlap$V13)
+
+max_pval <- which(grepl(max(RNA_seq_tissue_specific_overlap$V13), RNA_seq_tissue_specific_overlap$V13))
+
+RNA_seq_tissue_specific_overlap[max_pval,1:2]
+```
+
+# Plot of P values at each FDR/FSR cutoff
+
+```{r}
+FDR_01 <- seq(from = 1, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+FDR_05 <- seq(from = 2, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_1 <- seq(from = 3, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_5 <- seq(from = 4, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FDR_5) <- colnames(FDR_01)
+
+FSR_01 <- seq(from = 5, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_01) <- colnames(FDR_01)
+FSR_05 <- seq(from = 6, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_05) <- colnames(FDR_01)
+FSR_1 <- seq(from = 7, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_1) <- colnames(FDR_01)
+FSR_5 <- seq(from = 8, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_5) <- colnames(FDR_01)
+
+FDR_0.001 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_01,13])
+FDR_0.005 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_05,13])
+FDR_0.01 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_1,13])
+FDR_0.05 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_5,13])
+
+FSR_0.001 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_01,13])
+FSR_0.005 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_05,13])
+FSR_0.01 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_1,13])
+FSR_0.05 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_5,13])
+
+
+
+colnames(FDR_0.005) <- colnames(FDR_0.001)
+colnames(FDR_0.01) <- colnames(FDR_0.001)
+colnames(FDR_0.05) <- colnames(FDR_0.001)
+colnames(FSR_0.001) <- colnames(FDR_0.001)
+colnames(FSR_0.005) <- colnames(FDR_0.001)
+colnames(FSR_0.01) <- colnames(FDR_0.001)
+colnames(FSR_0.05) <- colnames(FDR_0.001)
+
+# Column 1 contains p values
+for_boxplot <- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+# Column 2 contains labels
+
+FDR_0.001 <- array("FDR 0.001", dim = c(64,1))
+FDR_0.005 <- array("FDR 0.005", dim = c(64,1))
+FDR_0.01 <- array("FDR 0.01", dim = c(64,1))
+FDR_0.05 <- array("FDR 0.05", dim = c(64,1))
+
+FSR_0.001 <- array("FSR 0.001", dim = c(64,1))
+FSR_0.005 <- array("FSR 0.005", dim = c(64,1))
+FSR_0.01 <- array("FSR 0.01", dim = c(64,1))
+FSR_0.05 <- array("FSR 0.05", dim = c(64,1))
+
+colnames(FDR_0.005) <- colnames(FDR_0.001)
+colnames(FDR_0.01) <- colnames(FDR_0.001)
+colnames(FDR_0.05) <- colnames(FDR_0.001)
+colnames(FSR_0.001) <- colnames(FDR_0.001)
+colnames(FSR_0.005) <- colnames(FDR_0.001)
+colnames(FSR_0.01) <- colnames(FDR_0.001)
+colnames(FSR_0.05) <- colnames(FDR_0.001)
+
+for_boxplot2 <- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+make_boxplot <- cbind(for_boxplot, for_boxplot2)
+colnames(make_boxplot) <- c("P_val", "Threshold")
+
+ggplot(make_boxplot, aes(Threshold, P_val)) + geom_boxplot() + ylab("P values") + ggtitle("Overlap of human and chimpanzee gene expression")
+```
+
+
+# Human-chimpanzee-rhesus macaque tissue specific overlap
+
+* m is the overlap of human+chimpanzee tissue-specific genes
+* n is the Total genes - (overlap of human+chimpanzee tissue-specific genes)
+* x/q is the overlap between human, chimpanzee, rhesus macaque tissue-specific genes
+* k is the total rhesus tissue-specific genes
+
+```{r}
+# Add columns for results
+RNA_seq_tissue_specific_overlap[,14] <- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+RNA_seq_tissue_specific_overlap[,15] <- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+
+for (i in 1:nrow(RNA_seq_tissue_specific_overlap)){
+  m <- RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,5]
+  n <- 12184 - m
+  x <- RNA_seq_tissue_specific_overlap[i,3] 
+  q = x
+  k = RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,7]+RNA_seq_tissue_specific_overlap[i,8]+RNA_seq_tissue_specific_overlap[i,9]
+
+# Expected
+
+#RNA_seq_tissue_specific_overlap[i,14] <- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+#RNA_seq_tissue_specific_overlap[i,15] <- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+# Find the largest/least significant P value of the observed overlap between human and chimpanzees
+max(RNA_seq_tissue_specific_overlap$V15)
+
+max_pval <- which(grepl(max(RNA_seq_tissue_specific_overlap$V15), RNA_seq_tissue_specific_overlap$V15))
+
+RNA_seq_tissue_specific_overlap[max_pval,1:2]
+```
+
+# Plot of P values at each FDR/FSR cutoff
+
+```{r}
+FDR_01 <- seq(from = 1, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+FDR_05 <- seq(from = 2, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_1 <- seq(from = 3, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_5 <- seq(from = 4, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FDR_5) <- colnames(FDR_01)
+
+FSR_01 <- seq(from = 5, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_01) <- colnames(FDR_01)
+FSR_05 <- seq(from = 6, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_05) <- colnames(FDR_01)
+FSR_1 <- seq(from = 7, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_1) <- colnames(FDR_01)
+FSR_5 <- seq(from = 8, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_5) <- colnames(FDR_01)
+
+FDR_0.001 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_01,15])
+FDR_0.005 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_05,15])
+FDR_0.01 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_1,15])
+FDR_0.05 <- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_5,15])
+
+FSR_0.001 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_01,15])
+FSR_0.005 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_05,15])
+FSR_0.01 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_1,15])
+FSR_0.05 <- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_5,15])
+
+
+
+colnames(FDR_0.005) <- colnames(FDR_0.001)
+colnames(FDR_0.01) <- colnames(FDR_0.001)
+colnames(FDR_0.05) <- colnames(FDR_0.001)
+colnames(FSR_0.001) <- colnames(FDR_0.001)
+colnames(FSR_0.005) <- colnames(FDR_0.001)
+colnames(FSR_0.01) <- colnames(FDR_0.001)
+colnames(FSR_0.05) <- colnames(FDR_0.001)
+
+# Column 1 contains p values
+for_boxplot <- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+# Column 2 contains labels
+
+FDR_0.001 <- array("FDR 0.001", dim = c(64,1))
+FDR_0.005 <- array("FDR 0.005", dim = c(64,1))
+FDR_0.01 <- array("FDR 0.01", dim = c(64,1))
+FDR_0.05 <- array("FDR 0.05", dim = c(64,1))
+
+FSR_0.001 <- array("FSR 0.001", dim = c(64,1))
+FSR_0.005 <- array("FSR 0.005", dim = c(64,1))
+FSR_0.01 <- array("FSR 0.01", dim = c(64,1))
+FSR_0.05 <- array("FSR 0.05", dim = c(64,1))
+
+colnames(FDR_0.005) <- colnames(FDR_0.001)
+colnames(FDR_0.01) <- colnames(FDR_0.001)
+colnames(FDR_0.05) <- colnames(FDR_0.001)
+colnames(FSR_0.001) <- colnames(FDR_0.001)
+colnames(FSR_0.005) <- colnames(FDR_0.001)
+colnames(FSR_0.01) <- colnames(FDR_0.001)
+colnames(FSR_0.05) <- colnames(FDR_0.001)
+
+for_boxplot2 <- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+make_boxplot <- cbind(for_boxplot, for_boxplot2)
+colnames(make_boxplot) <- c("P_val", "Threshold")
+
+ggplot(make_boxplot, aes(Threshold, P_val)) + geom_boxplot() + ylab("P values") + ggtitle("Overlap of 3 species' gene expression")
+
+# Write the file
+# write.csv(RNA_seq_tissue_specific_overlap, "../data/RNA_seq_tissue_specific_overlap.csv")
+
+
+```
+

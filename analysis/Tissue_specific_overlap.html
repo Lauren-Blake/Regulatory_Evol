@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-05-11" />
+
+<title>Observed_versus_expected_tissue_specific</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Observed_versus_expected_tissue_specific</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>May 11, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#function-for-the-human-chimpanzee-tissue-specific-overlap">Function for the human-chimpanzee tissue specific overlap</a></li>
+<li><a href="#plot-of-p-values-at-each-fdrfsr-cutoff">Plot of P values at each FDR/FSR cutoff</a></li>
+<li><a href="#human-chimpanzee-rhesus-macaque-tissue-specific-overlap">Human-chimpanzee-rhesus macaque tissue specific overlap</a></li>
+<li><a href="#plot-of-p-values-at-each-fdrfsr-cutoff-1">Plot of P values at each FDR/FSR cutoff</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<pre class="r"><code>RNA_seq_tissue_specific_overlap &lt;- read.csv(&quot;../data/RNA_seq_tissue_specific_overlap.csv&quot;)
+
+RNA_seq_tissue_specific_overlap[,11] &lt;- RNA_seq_tissue_specific_overlap[,3]+RNA_seq_tissue_specific_overlap[,5]</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[, 3],
+## RNA_seq_tissue_specific_overlap[, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
+</div>
+<div id="function-for-the-human-chimpanzee-tissue-specific-overlap" class="section level1">
+<h1>Function for the human-chimpanzee tissue specific overlap</h1>
+<ul>
+<li>m is the chimpanzee genes</li>
+<li>n is the Total genes - chimpanzee tissue-specific genes</li>
+<li>x/q is the overlap between human and chimpanzee tissue-specific genes</li>
+<li>k is the human tissue-specific genes</li>
+</ul>
+<pre class="r"><code># Add columns for results
+RNA_seq_tissue_specific_overlap[,12] &lt;- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+RNA_seq_tissue_specific_overlap[,13] &lt;- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+
+for (i in 1:nrow(RNA_seq_tissue_specific_overlap)){
+  m &lt;- RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,5]+RNA_seq_tissue_specific_overlap[i,6]+RNA_seq_tissue_specific_overlap[i,7]
+  n &lt;- 12184 - m
+  x &lt;- RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,5]
+  q = x
+  k = RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,4]+RNA_seq_tissue_specific_overlap[i,5]+RNA_seq_tissue_specific_overlap[i,9]
+
+# Expected
+
+ # RNA_seq_tissue_specific_overlap[i,12] &lt;- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  RNA_seq_tissue_specific_overlap[i,13] &lt;- phyper(q, m, n, k, lower.tail = FALSE)
+}</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors
+
+## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre class="r"><code># Find the largest/least significant P value of the observed overlap between human and chimpanzees
+max(RNA_seq_tissue_specific_overlap$V13)</code></pre>
+<pre><code>## [1] 1.612457e-06</code></pre>
+<pre class="r"><code>max_pval &lt;- which(grepl(max(RNA_seq_tissue_specific_overlap$V13), RNA_seq_tissue_specific_overlap$V13))
+
+RNA_seq_tissue_specific_overlap[max_pval,1:2]</code></pre>
+<pre><code>##     X                          Comparison
+## 64 64 Downregulated in kidney tissue only</code></pre>
+</div>
+<div id="plot-of-p-values-at-each-fdrfsr-cutoff" class="section level1">
+<h1>Plot of P values at each FDR/FSR cutoff</h1>
+<pre class="r"><code>FDR_01 &lt;- seq(from = 1, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+FDR_05 &lt;- seq(from = 2, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_1 &lt;- seq(from = 3, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_5 &lt;- seq(from = 4, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FDR_5) &lt;- colnames(FDR_01)
+
+FSR_01 &lt;- seq(from = 5, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_01) &lt;- colnames(FDR_01)
+FSR_05 &lt;- seq(from = 6, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_05) &lt;- colnames(FDR_01)
+FSR_1 &lt;- seq(from = 7, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_1) &lt;- colnames(FDR_01)
+FSR_5 &lt;- seq(from = 8, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_5) &lt;- colnames(FDR_01)
+
+FDR_0.001 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_01,13])
+FDR_0.005 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_05,13])
+FDR_0.01 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_1,13])
+FDR_0.05 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_5,13])
+
+FSR_0.001 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_01,13])
+FSR_0.005 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_05,13])
+FSR_0.01 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_1,13])
+FSR_0.05 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_5,13])
+
+
+
+colnames(FDR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.05) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.001) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.05) &lt;- colnames(FDR_0.001)
+
+# Column 1 contains p values
+for_boxplot &lt;- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+# Column 2 contains labels
+
+FDR_0.001 &lt;- array(&quot;FDR 0.001&quot;, dim = c(64,1))
+FDR_0.005 &lt;- array(&quot;FDR 0.005&quot;, dim = c(64,1))
+FDR_0.01 &lt;- array(&quot;FDR 0.01&quot;, dim = c(64,1))
+FDR_0.05 &lt;- array(&quot;FDR 0.05&quot;, dim = c(64,1))
+
+FSR_0.001 &lt;- array(&quot;FSR 0.001&quot;, dim = c(64,1))
+FSR_0.005 &lt;- array(&quot;FSR 0.005&quot;, dim = c(64,1))
+FSR_0.01 &lt;- array(&quot;FSR 0.01&quot;, dim = c(64,1))
+FSR_0.05 &lt;- array(&quot;FSR 0.05&quot;, dim = c(64,1))
+
+colnames(FDR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.05) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.001) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.05) &lt;- colnames(FDR_0.001)
+
+for_boxplot2 &lt;- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+make_boxplot &lt;- cbind(for_boxplot, for_boxplot2)
+colnames(make_boxplot) &lt;- c(&quot;P_val&quot;, &quot;Threshold&quot;)
+
+ggplot(make_boxplot, aes(Threshold, P_val)) + geom_boxplot() + ylab(&quot;P values&quot;) + ggtitle(&quot;Overlap of human and chimpanzee gene expression&quot;)</code></pre>
+<pre><code>## Warning: Removed 512 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="Tissue_specific_overlap_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="human-chimpanzee-rhesus-macaque-tissue-specific-overlap" class="section level1">
+<h1>Human-chimpanzee-rhesus macaque tissue specific overlap</h1>
+<ul>
+<li>m is the overlap of human+chimpanzee tissue-specific genes</li>
+<li>n is the Total genes - (overlap of human+chimpanzee tissue-specific genes)</li>
+<li>x/q is the overlap between human, chimpanzee, rhesus macaque tissue-specific genes</li>
+<li>k is the total rhesus tissue-specific genes</li>
+</ul>
+<pre class="r"><code># Add columns for results
+RNA_seq_tissue_specific_overlap[,14] &lt;- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+RNA_seq_tissue_specific_overlap[,15] &lt;- array(NA, dim = c(nrow(RNA_seq_tissue_specific_overlap),1))
+
+for (i in 1:nrow(RNA_seq_tissue_specific_overlap)){
+  m &lt;- RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,5]
+  n &lt;- 12184 - m
+  x &lt;- RNA_seq_tissue_specific_overlap[i,3] 
+  q = x
+  k = RNA_seq_tissue_specific_overlap[i,3] + RNA_seq_tissue_specific_overlap[i,7]+RNA_seq_tissue_specific_overlap[i,8]+RNA_seq_tissue_specific_overlap[i,9]
+
+# Expected
+
+#RNA_seq_tissue_specific_overlap[i,14] &lt;- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+#RNA_seq_tissue_specific_overlap[i,15] &lt;- phyper(q, m, n, k, lower.tail = FALSE)
+}</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre><code>## Warning in Ops.factor(RNA_seq_tissue_specific_overlap[i, 3],
+## RNA_seq_tissue_specific_overlap[i, : &#39;+&#39; not meaningful for factors</code></pre>
+<pre class="r"><code># Find the largest/least significant P value of the observed overlap between human and chimpanzees
+max(RNA_seq_tissue_specific_overlap$V15)</code></pre>
+<pre><code>## [1] 0.08605108</code></pre>
+<pre class="r"><code>max_pval &lt;- which(grepl(max(RNA_seq_tissue_specific_overlap$V15), RNA_seq_tissue_specific_overlap$V15))
+
+RNA_seq_tissue_specific_overlap[max_pval,1:2]</code></pre>
+<pre><code>##     X                         Comparison
+## 32 32 Downregulated in liver tissue only</code></pre>
+</div>
+<div id="plot-of-p-values-at-each-fdrfsr-cutoff-1" class="section level1">
+<h1>Plot of P values at each FDR/FSR cutoff</h1>
+<pre class="r"><code>FDR_01 &lt;- seq(from = 1, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+FDR_05 &lt;- seq(from = 2, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_1 &lt;- seq(from = 3, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+
+FDR_5 &lt;- seq(from = 4, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FDR_5) &lt;- colnames(FDR_01)
+
+FSR_01 &lt;- seq(from = 5, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_01) &lt;- colnames(FDR_01)
+FSR_05 &lt;- seq(from = 6, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_05) &lt;- colnames(FDR_01)
+FSR_1 &lt;- seq(from = 7, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_1) &lt;- colnames(FDR_01)
+FSR_5 &lt;- seq(from = 8, to = nrow(RNA_seq_tissue_specific_overlap), by = 8)
+colnames(FSR_5) &lt;- colnames(FDR_01)
+
+FDR_0.001 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_01,15])
+FDR_0.005 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_05,15])
+FDR_0.01 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_1,15])
+FDR_0.05 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FDR_5,15])
+
+FSR_0.001 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_01,15])
+FSR_0.005 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_05,15])
+FSR_0.01 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_1,15])
+FSR_0.05 &lt;- as.data.frame(RNA_seq_tissue_specific_overlap[FSR_5,15])
+
+
+
+colnames(FDR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.05) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.001) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.05) &lt;- colnames(FDR_0.001)
+
+# Column 1 contains p values
+for_boxplot &lt;- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+# Column 2 contains labels
+
+FDR_0.001 &lt;- array(&quot;FDR 0.001&quot;, dim = c(64,1))
+FDR_0.005 &lt;- array(&quot;FDR 0.005&quot;, dim = c(64,1))
+FDR_0.01 &lt;- array(&quot;FDR 0.01&quot;, dim = c(64,1))
+FDR_0.05 &lt;- array(&quot;FDR 0.05&quot;, dim = c(64,1))
+
+FSR_0.001 &lt;- array(&quot;FSR 0.001&quot;, dim = c(64,1))
+FSR_0.005 &lt;- array(&quot;FSR 0.005&quot;, dim = c(64,1))
+FSR_0.01 &lt;- array(&quot;FSR 0.01&quot;, dim = c(64,1))
+FSR_0.05 &lt;- array(&quot;FSR 0.05&quot;, dim = c(64,1))
+
+colnames(FDR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FDR_0.05) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.001) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.005) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.01) &lt;- colnames(FDR_0.001)
+colnames(FSR_0.05) &lt;- colnames(FDR_0.001)
+
+for_boxplot2 &lt;- rbind(FDR_0.001, FDR_0.005, FDR_0.01, FDR_0.05, FSR_0.001, FSR_0.005, FSR_0.01, FSR_0.05)
+
+make_boxplot &lt;- cbind(for_boxplot, for_boxplot2)
+colnames(make_boxplot) &lt;- c(&quot;P_val&quot;, &quot;Threshold&quot;)
+
+ggplot(make_boxplot, aes(Threshold, P_val)) + geom_boxplot() + ylab(&quot;P values&quot;) + ggtitle(&quot;Overlap of 3 species&#39; gene expression&quot;)</code></pre>
+<p><img src="Tissue_specific_overlap_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code># Write the file
+# write.csv(RNA_seq_tissue_specific_overlap, &quot;../data/RNA_seq_tissue_specific_overlap.csv&quot;)</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

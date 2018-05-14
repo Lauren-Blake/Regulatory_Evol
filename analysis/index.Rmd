@@ -39,6 +39,7 @@ title: "Home"
 ### Univariate analysis on gene expression
 
 * [Test for DE genes with ASH](../analysis/DE_RIN_Plus_ASH.html)
+* [Significance of conservation in tissue specific gene expression](../analysis/Tissue_specific_overlap.html)
 * [Comparison of conserved tissue specific genes to other data](../analysis/Comparison_to_GTEx.html)
 
 ## Methylation Data
@@ -69,7 +70,7 @@ title: "Home"
 
 * [Global surveys of RNA-seq and BS-seq data](../analysis/gene_exp_corr.html)
 * [About samples](../analysis/Figures_samples_info.html)
-
+* [Final figure](../analysis/Figures_integration_analysis.html)
 
 
 
