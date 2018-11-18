@@ -157,8 +157,7 @@ cor(tissue_cor[,1], tissue_cor[,2])
 # How many times does the ranking in our data match the ranking in GTEx?
 summary(tissue_cor[,1] == tissue_cor[,2])
 
-136/(136+30)
-259/(31+259)
+1540/(199+1540)
 ```
 
 # Run topGO on the heart data (suppplementary table)
@@ -381,4 +380,89 @@ goresults["GO:0007585"] # respiratory gaseous exchange "ENSG00000168484" "ENSG00
 goresults["GO:0019372"] # lipoxygenase pathway "ENSG00000012779" "ENSG00000132965"
 
 
+```
+
+# Rerun using human specific data
+
+```{r}
+# Tissue up/downreg
+heart_upreg_data <- read.csv("../data/human_specific_upreg_heart_genes.csv", stringsAsFactors = FALSE)
+heart_downreg_data <- read.csv("../data/human_specific_downreg_heart_genes.csv", stringsAsFactors = FALSE)
+
+kidney_upreg_data <- read.csv("../data/human_specific_upreg_kidney_genes.csv", stringsAsFactors = FALSE)
+kidney_downreg_data <- read.csv("../data/human_specific_downreg_kidney_genes.csv", stringsAsFactors = FALSE)
+
+liver_upreg_data <- read.csv("../data/human_specific_upreg_liver_genes.csv", stringsAsFactors = FALSE)
+liver_downreg_data <- read.csv("../data/human_specific_downreg_liver_genes.csv", stringsAsFactors = FALSE)
+
+lung_upreg_data <- read.csv("../data/human_specific_upreg_lung_genes.csv", stringsAsFactors = FALSE)
+lung_downreg_data <- read.csv("../data/human_specific_downreg_lung_genes.csv", stringsAsFactors = FALSE)
+
+```
+
+```{r}
+upreg_heart_ranking <- ranking_in_gtex(heart_upreg_data$x)[,5]
+downreg_heart_ranking <- ranking_in_gtex(heart_downreg_data$x)[,5]
+
+upreg_kidney_ranking <- ranking_in_gtex(kidney_upreg_data$x)[,6]
+downreg_kidney_ranking <- ranking_in_gtex(kidney_downreg_data$x)[,6]
+
+upreg_liver_ranking <- ranking_in_gtex(liver_upreg_data$x)[,7]
+downreg_liver_ranking <- ranking_in_gtex(liver_downreg_data$x)[,7]
+
+upreg_lung_ranking <- ranking_in_gtex(lung_upreg_data$x)[,8]
+downreg_lung_ranking <- ranking_in_gtex(lung_downreg_data$x)[,8]
+```
+
+
+# Ranking in our data
+```{r}
+# Heart
+upreg_heart_num <- array(1, dim=c(length(upreg_heart_ranking), 1))
+
+heart_cor1 <- cbind(upreg_heart_num, upreg_heart_ranking)
+
+downreg_heart_num <- array(4, dim=c(length(downreg_heart_ranking), 1))
+
+heart_cor2 <- cbind(downreg_heart_num, downreg_heart_ranking)
+
+# Kidney
+upreg_kidney_num <- array(1, dim=c(length(upreg_kidney_ranking), 1))
+
+kidney_cor1 <- cbind(upreg_kidney_num, upreg_kidney_ranking)
+
+downreg_kidney_num <- array(4, dim=c(length(downreg_kidney_ranking), 1))
+
+kidney_cor2 <- cbind(downreg_kidney_num, downreg_kidney_ranking)
+
+# Liver
+upreg_liver_num <- array(1, dim=c(length(upreg_liver_ranking), 1))
+
+liver_cor1 <- cbind(upreg_liver_num, upreg_liver_ranking)
+
+downreg_liver_num <- array(4, dim=c(length(downreg_liver_ranking), 1))
+
+liver_cor2 <- cbind(downreg_liver_num, downreg_liver_ranking)
+
+# Lung
+upreg_lung_num <- array(1, dim=c(length(upreg_lung_ranking), 1))
+
+lung_cor1 <- cbind(upreg_lung_num, upreg_lung_ranking)
+
+downreg_lung_num <- array(4, dim=c(length(downreg_lung_ranking), 1))
+
+lung_cor2 <- cbind(downreg_lung_num, downreg_lung_ranking)
+
+tissue_cor <- rbind(heart_cor1, heart_cor2, kidney_cor1, kidney_cor2, liver_cor1, liver_cor2, lung_cor1, lung_cor2)
+
+# Get the correlation between tissues
+cor(tissue_cor[,1], tissue_cor[,2])
+
+# How many times does the ranking in our data match the ranking in GTEx?
+summary(tissue_cor[,1] == tissue_cor[,2])
+
+1540/(199+1540)
+428/(259+428)
+
+prop.test(c(1540, 428), c(1739, 687))
 ```

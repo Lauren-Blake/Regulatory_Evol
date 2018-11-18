@@ -1,0 +1,485 @@
+---
+title: "Compare_initial_effect_sizes"
+author: "Lauren Blake"
+date: "July 22, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Human-chimp versus human-rhesus heart
+
+```{r}
+library("edgeR")
+library("limma")
+library("plyr")
+library("ashr")
+library("cowplot")
+library("vashr")
+library("devtools")
+
+
+exprs <- read.table("/Users/laurenblake/Desktop/Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt", sep="")
+hc_exprs <- exprs[,2:48]
+
+# Normalized gene expression data
+cpm.voom.cyclic <- readRDS("/Users/laurenblake/Desktop/Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds")
+
+# import sample labels
+samples <- read.delim("/Users/laurenblake/Desktop/Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt")
+RIN <- samples$RIN
+
+FDR_level <- 0.05
+
+human_chimp_heart <- c(20, 24, 28, 1, 5, 9, 13)
+
+two_species <- samples$Species[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+
+
+human_rhesus_heart <- c(20, 24, 28, 32, 36, 40, 44)
+
+two_species <- samples$Species[human_rhesus_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvR_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  
+```
+
+# Kidney
+
+```{r}
+human_chimp_heart <- c(17, 21, 25, 29, 2, 6, 10, 14)
+
+two_species <- samples$Species[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+
+
+human_rhesus_heart <- c(17, 21, 25, 29, 33, 37, 41, 45)
+
+two_species <- samples$Species[human_rhesus_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvR_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  
+```
+
+# Liver
+
+```{r}
+human_chimp_heart <- c(18, 22, 26, 30, 3, 7, 11, 15)
+
+two_species <- samples$Species[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+
+
+human_rhesus_heart <- c(18, 22, 26, 30, 34, 38, 42, 46)
+
+two_species <- samples$Species[human_rhesus_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvR_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  
+```
+
+# Lung
+
+```{r}
+human_chimp_heart <- c(19, 23, 27, 31, 4, 8, 12, 16)
+
+two_species <- samples$Species[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+
+
+human_rhesus_heart <- c(19, 23, 27, 31, 35, 39, 43, 47)
+
+two_species <- samples$Species[human_rhesus_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvR_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  
+```
+
+
+
+# Human-chimp conserved versus non conserved heart-kidney
+
+```{r}
+# Species no DE
+human_chimp_heart <- c(17, 20, 21, 24, 25, 28, 29)
+species_no_DE <- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+  
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) 
+```
+
+# Human-chimp conserved versus non conserved heart-liver
+
+```{r}
+# Species no DE
+human_chimp_heart <- c(18, 20, 22, 24, 26, 28, 30)
+species_no_DE <- c(1, 3, 5, 7, 9, 11, 13, 15)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+  
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) 
+```
+
+# Human-chimp conserved versus non conserved heart-lung
+
+```{r}
+# Species no DE
+human_chimp_heart <- c(19, 20, 23, 24, 27, 28, 31)
+species_no_DE <- c(1, 4, 5, 8, 9, 12, 13, 16)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+  
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) 
+```
+
+# Human-chimp conserved versus non conserved kidney-liver
+
+```{r}
+# Species no DE
+human_chimp_heart <- c(17, 18, 21, 22, 25, 26, 29, 30)
+species_no_DE <- c(2, 3, 6, 7, 10, 11, 14, 15)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+  
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) 
+```
+
+# Human-chimp conserved versus non conserved kidney-lung
+
+```{r}
+# Species no DE
+human_chimp_heart <- c(17, 19, 21, 23, 25, 27, 29, 31)
+species_no_DE <- c(2, 4, 6, 8, 10, 12, 14, 16)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+  
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) 
+```
+
+# Human-chimp conserved versus non conserved liver-lung
+
+```{r}
+# Species no DE
+human_chimp_heart <- c(18, 19, 22, 23, 26, 27, 30, 31)
+species_no_DE <- c(3, 4, 7, 8, 11, 12, 15, 16)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+  
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+RIN_subset <- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) 
+
+
+```

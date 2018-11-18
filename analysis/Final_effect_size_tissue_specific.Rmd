@@ -1,0 +1,746 @@
+---
+title: "Effect_size_tissue_specific"
+author: "Lauren Blake"
+date: "June 21, 2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# import sample labels
+samples <- read.delim("../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt")
+RIN <- samples$RIN
+# expression
+exprs <- read.table("../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt", sep="")
+
+# methylation data
+methyl <- read.csv("../../../Reg_Evo_Primates/data/250_avg_methyl_hcr_4155_genes_unmerged.txt", sep="")
+
+# Normalized gene expression data
+cpm.voom.cyclic <- readRDS("../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds")
+
+results <- readRDS("../data/combined-limma.rds")
+
+# Load libraries
+library("edgeR")
+library("limma")
+library("plyr")
+library("ashr")
+library("cowplot")
+library("devtools")
+library("vashr")
+devtools::install_github("jhsiao999/mediation/pkg")
+library("medinome")
+```
+
+# Run the linear model (FDR level = 0.01)
+
+```{r}
+human_rhesus_heart <- c(17:31) 
+FDR_level <- 0.01
+X <- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+RIN_subset <- RIN[human_rhesus_heart]
+
+# Run for hearts 
+
+# Run the linear model in limma
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+# Run for kidneys
+
+X <- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Kidney_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Kidney_fit_all_5perc <-
+HvC_Kidney_fit_all[which(HvC_Kidney_fit_all$adj.P.Val < FDR_level), ]
+    
+  
+# Run for livers
+
+X <- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Liver_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Liver_fit_all_5perc <-
+HvC_Liver_fit_all[which(HvC_Liver_fit_all$adj.P.Val < FDR_level), ]
+ 
+  # Run for lungs
+  
+X <- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Lung_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Lung_fit_all_5perc <- HvC_Lung_fit_all[which(HvC_Lung_fit_all$adj.P.Val < FDR_level), ]
+
+dim(HvC_Heart_fit_all_5perc)
+dim(HvC_Kidney_fit_all_5perc)
+dim(HvC_Liver_fit_all_5perc)
+dim(HvC_Lung_fit_all_5perc)
+
+```
+
+# Heart specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Kidney_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Heart_fit_all_5perc$genes, heart_spec) 
+
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+ 
+X <- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+
+#which(fit_ash_normal$result$svalue < 0.1 = TRUE)
+ 
+```
+
+# Kidney specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Kidney_fit_all_5perc$genes, heart_spec) 
+
+X <- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+# Liver specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Kidney_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Liver_fit_all_5perc$genes, heart_spec) 
+
+X <- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+# Lung specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Liver_fit_all_5perc), rownames(HvC_Heart_fit_all_5perc)), rownames(HvC_Kidney_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Lung_fit_all_5perc$genes, heart_spec_only) 
+X <- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+# Run the linear model (FDR level = 0.05)
+
+```{r}
+human_rhesus_heart <- c(17:31) 
+FDR_level <- 0.05
+X <- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+RIN_subset <- RIN[human_rhesus_heart]
+
+# Run for hearts 
+
+# Run the linear model in limma
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+# Run for kidneys
+
+X <- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Kidney_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Kidney_fit_all_5perc <-
+HvC_Kidney_fit_all[which(HvC_Kidney_fit_all$adj.P.Val < FDR_level), ]
+    
+  
+# Run for livers
+
+X <- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Liver_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Liver_fit_all_5perc <-
+HvC_Liver_fit_all[which(HvC_Liver_fit_all$adj.P.Val < FDR_level), ]
+ 
+  # Run for lungs
+  
+X <- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Lung_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Lung_fit_all_5perc <- HvC_Lung_fit_all[which(HvC_Lung_fit_all$adj.P.Val < FDR_level), ]
+
+dim(HvC_Heart_fit_all_5perc)
+dim(HvC_Kidney_fit_all_5perc)
+dim(HvC_Liver_fit_all_5perc)
+dim(HvC_Lung_fit_all_5perc)
+
+```
+
+# Heart specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Kidney_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Heart_fit_all_5perc$genes, heart_spec) 
+
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+ 
+X <- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+
+#which(fit_ash_normal$result$svalue < 0.1 = TRUE)
+ 
+```
+
+# Kidney specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Kidney_fit_all_5perc$genes, heart_spec) 
+
+X <- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+# Liver specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Kidney_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Liver_fit_all_5perc$genes, heart_spec) 
+
+X <- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+# Lung specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Liver_fit_all_5perc), rownames(HvC_Heart_fit_all_5perc)), rownames(HvC_Kidney_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Lung_fit_all_5perc$genes, heart_spec_only) 
+X <- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+
+
+```{r}
+# import sample labels
+samples <- read.delim("../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt")
+RIN <- samples$RIN
+
+# expression
+exprs <- read.table("../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt", sep="")
+# methylation data
+methyl <- read.csv("../../../Reg_Evo_Primates/data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt", sep="")
+
+# Normalized gene expression data
+cpm.voom.cyclic <- readRDS("../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds")
+
+```
+
+# Run the linear model (FDR level = 0.01)
+
+```{r}
+human_rhesus_heart <- c(17:31) 
+FDR_level <- 0.01
+X <- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+RIN_subset <- RIN[human_rhesus_heart]
+
+# Run for hearts 
+
+# Run the linear model in limma
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+# Run for kidneys
+
+X <- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Kidney_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Kidney_fit_all_5perc <-
+HvC_Kidney_fit_all[which(HvC_Kidney_fit_all$adj.P.Val < FDR_level), ]
+    
+  
+# Run for livers
+
+X <- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Liver_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Liver_fit_all_5perc <-
+HvC_Liver_fit_all[which(HvC_Liver_fit_all$adj.P.Val < FDR_level), ]
+ 
+  # Run for lungs
+  
+X <- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+  
+  design <- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Lung_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Lung_fit_all_5perc <- HvC_Lung_fit_all[which(HvC_Lung_fit_all$adj.P.Val < FDR_level), ]
+
+dim(HvC_Heart_fit_all_5perc)
+dim(HvC_Kidney_fit_all_5perc)
+dim(HvC_Liver_fit_all_5perc)
+dim(HvC_Lung_fit_all_5perc)
+
+```
+
+# Heart specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Kidney_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Heart_fit_all_5perc$genes, heart_spec) 
+
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+ 
+X <- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+
+#which(fit_ash_normal$result$svalue < 0.1 = TRUE)
+ 
+```
+
+# Kidney specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Kidney_fit_all_5perc$genes, heart_spec) 
+
+X <- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+# Liver specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Kidney_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Liver_fit_all_5perc$genes, heart_spec) 
+
+X <- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```
+
+# Lung specific
+
+```{r}
+
+heart_spec <- union(union(rownames(HvC_Liver_fit_all_5perc), rownames(HvC_Heart_fit_all_5perc)), rownames(HvC_Kidney_fit_all_5perc))
+
+heart_spec_only <- setdiff(HvC_Lung_fit_all_5perc$genes, heart_spec_only) 
+X <- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart <- exprs[,1] %in% heart_spec_only
+  human_chimp_heart <- as.data.frame(human_chimp_heart)
+  counts_genes_in <- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart ==
+"TRUE")
+ # counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:79]
+  expression_values_only <- counts_genes_in_cutoff[,2:32]
+  methylation_values_only <- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)
+  dim(methylation_values_only)
+  
+Y <- expression_values_only[,17:31]
+M <- methylation_values_only[,17:31]
+ 
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit <- vash(check_values$d_se,df=13, singlecomp = T, unimodal = "auto") 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col="blue")
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+summary(fit_ash_normal$result$svalue < 0.01)
+summary(fit_ash_normal$result$svalue < 0.05)
+summary(fit_ash_normal$result$svalue < 0.1)
+
+hist(fit_ash_normal$result$svalue, breaks = 50)
+```

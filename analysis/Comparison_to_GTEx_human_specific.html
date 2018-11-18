@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-04-28" />
+
+<title>Comparison_to_GTEx_human_specific</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Comparison_to_GTEx_human_specific</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>April 28, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#overlap-between-gtex-and-our-dataset">Overlap between GTEx and our dataset</a></li>
+<li><a href="#upregulated-in-heart-only">Upregulated in heart only</a></li>
+<li><a href="#downregulated-in-heart-only">Downregulated in heart only</a></li>
+<li><a href="#function-for-updownregulation">Function for up/downregulation</a></li>
+<li><a href="#ranking-in-our-data">Ranking in our data</a></li>
+</ul>
+</div>
+
+<p>The goal of this script is to compare the conserved tissue specific data with the tissue’s ranking in the GTEx data v6 data.</p>
+<pre class="r"><code># Import GTEx data
+
+gtex_data &lt;- read.csv(&quot;../data/GTEx_genes_tissues.csv&quot;, stringsAsFactors = FALSE)
+
+# Find which genes are in both datasets
+
+cpm_12184 &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/cpm_12184.txt&quot;)
+
+# Tissue up/downreg
+heart_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_heart_genes.csv&quot;, stringsAsFactors = FALSE)
+heart_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_heart_genes.csv&quot;, stringsAsFactors = FALSE)
+
+kidney_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_kidney_genes.csv&quot;, stringsAsFactors = FALSE)
+kidney_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_kidney_genes.csv&quot;, stringsAsFactors = FALSE)
+
+liver_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_liver_genes.csv&quot;, stringsAsFactors = FALSE)
+liver_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_liver_genes.csv&quot;, stringsAsFactors = FALSE)
+
+lung_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_lung_genes.csv&quot;, stringsAsFactors = FALSE)
+lung_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_lung_genes.csv&quot;, stringsAsFactors = FALSE)</code></pre>
+<div id="overlap-between-gtex-and-our-dataset" class="section level1">
+<h1>Overlap between GTEx and our dataset</h1>
+<pre class="r"><code>summary(rownames(cpm_12184) %in% gtex_data$ENSG)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     407   11777</code></pre>
+<p>11,777 genes are in both datasets.</p>
+</div>
+<div id="upregulated-in-heart-only" class="section level1">
+<h1>Upregulated in heart only</h1>
+<pre class="r"><code># Subset 
+summary(heart_upreg_data$x %in% gtex_data$ENSG)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      14     136</code></pre>
+<pre class="r"><code>inshared_lists = gtex_data$ENSG %in% heart_upreg_data$x
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the highest?
+
+upreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
+
+upreg_heart_ranking[,5]</code></pre>
+<pre><code>##   [1] 3 2 1 3 1 4 2 1 1 1 1 3 1 1 1 1 4 3 1 1 2 3 3 1 2 4 2 3 3 1 2 3 1 3 1
+##  [36] 1 1 1 3 2 3 3 2 4 3 1 4 3 1 1 3 3 4 3 1 3 3 2 2 3 1 4 4 1 2 2 3 2 2 4
+##  [71] 2 3 4 1 3 1 1 2 1 4 3 2 4 4 2 1 2 3 4 1 2 1 2 1 1 3 2 3 1 3 1 4 3 3 3
+## [106] 3 3 3 4 4 3 3 3 4 1 3 1 3 3 3 2 3 3 3 3 3 3 3 2 3 2 3 1 3 1 3</code></pre>
+</div>
+<div id="downregulated-in-heart-only" class="section level1">
+<h1>Downregulated in heart only</h1>
+<pre class="r"><code># Subset 
+summary(heart_downreg_data$x %in% gtex_data$ENSG)</code></pre>
+<pre><code>##    Mode    TRUE 
+## logical      69</code></pre>
+<pre class="r"><code>inshared_lists = gtex_data$ENSG %in% heart_downreg_data$x
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the lowest?
+
+downreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
+
+downreg_heart_ranking[,5]</code></pre>
+<pre><code>##  [1] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 3 4 4 4 3 4 4 4 4 4 4 4 3 4 4 4 1 4
+## [36] 4 4 4 4 4 4 4 4 4 4 3 4 4 4 4 3 4 4 4 3 3 4 4 4 4 2 4 4 4 4 4 4 4 4</code></pre>
+</div>
+<div id="function-for-updownregulation" class="section level1">
+<h1>Function for up/downregulation</h1>
+<pre class="r"><code>ranking_in_gtex &lt;- function(tissue_name){
+# Subset 
+summary(tissue_name %in% gtex_data$ENSG)
+
+inshared_lists = gtex_data$ENSG %in% tissue_name
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
+
+# Is the heart the highest?
+
+upreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
+
+return(upreg_heart_ranking)
+}
+
+upreg_heart_ranking &lt;- ranking_in_gtex(heart_upreg_data$x)[,5]
+downreg_heart_ranking &lt;- ranking_in_gtex(heart_downreg_data$x)[,5]
+
+upreg_kidney_ranking &lt;- ranking_in_gtex(kidney_upreg_data$x)[,6]
+downreg_kidney_ranking &lt;- ranking_in_gtex(kidney_downreg_data$x)[,6]
+
+upreg_liver_ranking &lt;- ranking_in_gtex(liver_upreg_data$x)[,7]
+downreg_liver_ranking &lt;- ranking_in_gtex(liver_downreg_data$x)[,7]
+
+upreg_lung_ranking &lt;- ranking_in_gtex(lung_upreg_data$x)[,8]
+downreg_lung_ranking &lt;- ranking_in_gtex(lung_downreg_data$x)[,8]</code></pre>
+</div>
+<div id="ranking-in-our-data" class="section level1">
+<h1>Ranking in our data</h1>
+<pre class="r"><code># Heart
+upreg_heart_num &lt;- array(1, dim=c(length(upreg_heart_ranking), 1))
+
+heart_cor1 &lt;- cbind(upreg_heart_num, upreg_heart_ranking)
+
+downreg_heart_num &lt;- array(4, dim=c(length(downreg_heart_ranking), 1))
+
+heart_cor2 &lt;- cbind(downreg_heart_num, downreg_heart_ranking)
+
+# Kidney
+upreg_kidney_num &lt;- array(1, dim=c(length(upreg_kidney_ranking), 1))
+
+kidney_cor1 &lt;- cbind(upreg_kidney_num, upreg_kidney_ranking)
+
+downreg_kidney_num &lt;- array(4, dim=c(length(downreg_kidney_ranking), 1))
+
+kidney_cor2 &lt;- cbind(downreg_kidney_num, downreg_kidney_ranking)
+
+# Liver
+upreg_liver_num &lt;- array(1, dim=c(length(upreg_liver_ranking), 1))
+
+liver_cor1 &lt;- cbind(upreg_liver_num, upreg_liver_ranking)
+
+downreg_liver_num &lt;- array(4, dim=c(length(downreg_liver_ranking), 1))
+
+liver_cor2 &lt;- cbind(downreg_liver_num, downreg_liver_ranking)
+
+# Lung
+upreg_lung_num &lt;- array(1, dim=c(length(upreg_lung_ranking), 1))
+
+lung_cor1 &lt;- cbind(upreg_lung_num, upreg_lung_ranking)
+
+downreg_lung_num &lt;- array(4, dim=c(length(downreg_lung_ranking), 1))
+
+lung_cor2 &lt;- cbind(downreg_lung_num, downreg_lung_ranking)
+
+tissue_cor &lt;- rbind(heart_cor1, heart_cor2, kidney_cor1, kidney_cor2, liver_cor1, liver_cor2, lung_cor1, lung_cor2)
+
+# Get the correlation between tissues
+cor(tissue_cor[,1], tissue_cor[,2])</code></pre>
+<pre><code>## [1] 0.7146797</code></pre>
+<pre class="r"><code># How many times does the ranking in our data match the ranking in GTEx?
+summary(tissue_cor[,1] == tissue_cor[,2])</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     259     428</code></pre>
+<pre class="r"><code>428/(259+428)</code></pre>
+<pre><code>## [1] 0.6229985</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

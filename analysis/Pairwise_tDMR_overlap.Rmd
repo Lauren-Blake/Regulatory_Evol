@@ -1,0 +1,465 @@
+---
+title: "TDMR_overlap"
+author: "Lauren Blake"
+date: "May 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Apply the hypergeometric distribution to evaluate the significance of conserved tDMRs. 
+
+```{r}
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+library("R.utils")
+library("plyr")
+library("limma")
+library("gridExtra")
+library("VennDiagram")
+source("functions.R")
+library(ashr)
+library(cowplot)
+
+tdmr_pairwise_overlap <- read.csv("../data/tDMR_overlap_data.csv")
+```
+
+# Function for the human-chimpanzee tDMR overlap
+
+* m is the total chimpanzee tDMRs
+* n is the Total chimpanzee methylated regions tested - chimpanzee specific tDMRs
+* x/q is the overlap between human and chimpanzee tDMRs
+* k is the total human tDMRs
+
+
+```{r}
+# Larger population- chimpanzees
+
+# Add columns for results
+tdmr_pairwise_overlap[,13] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,14] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m <- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5] + tdmr_pairwise_overlap[i,6] + tdmr_pairwise_overlap[i,7]
+  n <- tdmr_pairwise_overlap[i,11] - m
+  x <- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5]
+  q = x
+  k = tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,4]+tdmr_pairwise_overlap[i,5]+tdmr_pairwise_overlap[i,9]
+
+# Expected
+
+  tdmr_pairwise_overlap[i,13] <- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,14] <- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+
+
+
+# When the larger population is the humans
+
+# Add columns for results
+tdmr_pairwise_overlap[,15] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,16] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m <- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,4]+tdmr_pairwise_overlap[i,5]+tdmr_pairwise_overlap[i,9]
+  n <- tdmr_pairwise_overlap[i,12] - m
+  x <- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5]
+  q = x
+  k = tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5] + tdmr_pairwise_overlap[i,6] + tdmr_pairwise_overlap[i,7]
+  
+# Expected
+
+  tdmr_pairwise_overlap[i,15] <- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,16] <- phyper(q, m, n, k, lower.tail = FALSE)
+}
+```
+
+# Human-chimpanzee-rhesus macaque tDMR overlap
+
+* m is the overlap of human+chimpanzee tMDRs
+* n is the Human (or Chimp) methylated regions tested - (overlap of human+chimpanzee tMDRs)
+* x/q is the overlap between human, chimpanzee, rhesus macaque tDMRs
+* k is the total rhesus tDMRs
+
+```{r}
+# Chimpanzees as larger
+
+# Add columns for results
+tdmr_pairwise_overlap[,17] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,18] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m <- tdmr_pairwise_overlap[i,10]
+  n <- tdmr_pairwise_overlap[i,11] - m
+  x <- tdmr_pairwise_overlap[i,3] 
+  q = x
+  k =  tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,7] + tdmr_pairwise_overlap[i,8] + tdmr_pairwise_overlap[i,9]
+
+# Expected
+
+  tdmr_pairwise_overlap[i,17] <- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,18] <- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+
+# Humans as larger
+
+# Add columns for results
+tdmr_pairwise_overlap[,19] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,20] <- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m <- tdmr_pairwise_overlap[i,10]
+  n <- tdmr_pairwise_overlap[i,12] - m
+  x <- tdmr_pairwise_overlap[i,3] 
+  q = x
+  k =  tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,7] + tdmr_pairwise_overlap[i,8] + tdmr_pairwise_overlap[i,9]
+
+# Expected
+
+  tdmr_pairwise_overlap[i,19] <- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,20] <- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+# Observed versus expected
+
+tdmr_pairwise_overlap[,21] <- tdmr_pairwise_overlap[,3] - tdmr_pairwise_overlap[,19]
+
+summary(tdmr_pairwise_overlap[,21])
+```
+
+```{r}
+m <- 51
+  n <- 1750509 - m
+  x <- 5 
+  q = x
+  k =  5+20+488+13
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+
+
+m <- 42
+  n <- 942364 - m
+  x <- 4 
+  q = x
+  k =  10+179+9+4
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+m <- 42
+  n <- 942364 - m
+  x <- 4 
+  q = x
+  k =  10+179+9+4
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+
+m <- 46+5
+  n <- 10000 - m
+  x <- 5
+  q = x
+  k =  526
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+```
+
+# Heart specific
+
+```{r}
+library(RColorBrewer)
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+
+# RNA Seq hearts
+
+hs = 203+42+129+30
+ch = 233+75+192+59
+overlap = 73+57+44+39
+
+ m <- ch+overlap
+  n <- 12184 - m
+  x <- overlap
+  q = x
+  k = hs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+pdf("test.pdf", width = 7.2, height = 7.2)
+draw.pairwise.venn(hs+overlap, ch+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:2])
+dev.off()
+
+# First example
+# RNA Seq hearts
+
+hs = 866+495
+ch = 891+549
+overlap = 2304
+
+ m <- ch+overlap
+  n <- 12184 - m
+  x <- overlap
+  q = x
+  k = hs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+pdf("test.pdf", width = 7.2, height = 7.2)
+draw.pairwise.venn(hs+overlap, ch+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:2])
+dev.off()
+
+## pairwise DE 
+
+hs = 866+495
+ch = 891+1227
+overlap = 2304+549
+
+ m <- ch+overlap
+  n <- 12184 - m
+  x <- overlap
+  q = x
+  k = hs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+pdf("test2.pdf", width = 7.2, height = 7.2)
+draw.pairwise.venn(hs+overlap, ch+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:2], scaled = FALSE)
+dev.off()
+
+
+# RNA Seq hearts
+
+hs = 203+129
+ch = 233+192
+hc_overlap <- 73+44
+overlap = 57+39
+hr_overlap = 42+30
+cr_overlap = 75+59
+rs = 298+253
+
+ m <- hc_overlap
+  n <- 12184 - m
+  x <- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+pdf("test.pdf", width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:3])
+dev.off()
+
+# RNA seq hearts lenient
+
+hs = 211
+ch = 511
+hc_overlap <- 181
+overlap = 281
+hr_overlap = 101
+cr_overlap = 449
+rs = 729
+
+ m <- hc_overlap
+  n <- 12184 - m
+  x <- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+pdf("test.pdf", width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:3])
+dev.off()
+
+# Heart versus kidney
+
+hs = 20459
+ch = 9102
+hc_overlap <- 4913+2288
+overlap = 2288
+hr_overlap = 2631
+cr_overlap = 1426
+rs = 16708
+
+ m <- hc_overlap
+  n <- 550861+ 1183536-m
+  x <- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+
+
+pdf("test.pdf", width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:3])
+dev.off()
+
+hs = 247
+ch = 345
+hc_overlap <- 159
+overlap = 106
+hr_overlap = 105
+cr_overlap = 162
+rs = 480
+
+ m <- hc_overlap
+  n <- 12184-m
+  x <- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+
+
+pdf("test.pdf", width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:3])
+dev.off()
+
+
+
+# Heart versus kidney
+
+hs = 204
+ch = 9102
+hc_overlap <- 4913+2288
+overlap = 2288
+hr_overlap = 2631
+cr_overlap = 1426
+rs = 16708
+
+ m <- hc_overlap
+  n <- 550861+ 1183536-m
+  x <- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+
+# Heart versus kidney
+
+hs = 319+2094
+ch = 198+1014
+hc_overlap <- 38+351
+overlap = 4+62
+hr_overlap = 9+92
+cr_overlap = 10+66
+rs = 179+1175
+
+ m <- hc_overlap
+  n <- 550861+ 1183536
+  x <- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+
+pdf("test.pdf", width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= "Heart specific DE genes", main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05, fill = pal[1:3])
+dev.off()
+
+# Heart versus lung
+hs = 3752+7319
+ch = 2196+3287
+hc_overlap <- 625+130+1446+322
+overlap = 130+322
+hr_overlap = 223+401
+cr_overlap = 196+332
+rs = 2409+3013
+
+ m <- hc_overlap
+  n <- 550861+ 1183536
+  x <- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)
+
+
+
+
+```
+
+
+

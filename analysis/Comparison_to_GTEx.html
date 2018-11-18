@@ -127,6 +127,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -191,6 +194,8 @@ $(document).ready(function () {
 <li><a href="#run-topgo-on-the-kidney-data-supplementary-table">Run topGO on the kidney data (supplementary table)</a></li>
 <li><a href="#run-topgo-on-the-liver-data-supplementary-table">Run topGO on the liver data (supplementary table)</a></li>
 <li><a href="#run-topgo-on-the-lung-data-supplementary-table">Run topGO on the lung data (supplementary table)</a></li>
+<li><a href="#rerun-using-human-specific-data">Rerun using human specific data</a></li>
+<li><a href="#ranking-in-our-data-1">Ranking in our data</a></li>
 </ul>
 </div>
 
@@ -227,7 +232,7 @@ lung_downreg_data &lt;- read.csv(&quot;../data/specific_downreg_lung_genes.csv&q
 <pre class="r"><code># Subset 
 summary(heart_upreg_data$x %in% gtex_data$ENSG)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
-## logical       1      56</code></pre>
+## logical      14     354</code></pre>
 <pre class="r"><code>inshared_lists = gtex_data$ENSG %in% heart_upreg_data$x
 inshared_lists_data &lt;- as.data.frame(inshared_lists)
 counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
@@ -239,15 +244,24 @@ counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
 upreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
 
 upreg_heart_ranking[,5]</code></pre>
-<pre><code>##  [1] 1 1 1 1 1 2 1 1 1 1 1 4 1 1 1 1 2 2 2 1 1 1 1 3 3 2 4 1 1 1 1 1 1 1 1
-## [36] 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 2 1</code></pre>
+<pre><code>##   [1] 1 1 2 1 2 1 1 1 1 1 1 1 4 1 4 1 1 1 2 1 1 1 1 1 1 1 1 1 1 3 1 2 1 1 1
+##  [36] 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 2 1 1 1 1 2 2 3 1 1 1 1 1 1 1 1 1 2 1
+##  [71] 1 2 1 1 1 1 1 1 4 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+## [106] 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 1 1 1 1 1 1 1 1 1 1 2 1
+## [141] 2 1 1 1 1 2 1 2 2 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 1 1 1 1 1 2
+## [176] 1 1 1 2 3 1 3 1 1 1 1 1 1 3 1 2 4 1 1 1 1 1 1 3 1 1 2 1 1 1 1 1 1 1 1
+## [211] 2 1 1 1 1 3 2 2 1 1 1 1 2 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 2 1 1 1 1 1
+## [246] 1 1 1 1 1 2 1 1 2 1 1 1 1 1 2 1 1 1 1 2 1 1 1 1 3 1 1 3 1 2 3 3 1 1 2
+## [281] 1 1 1 1 2 1 1 1 2 1 1 1 1 1 1 1 1 1 2 1 1 1 2 1 1 2 1 1 2 1 3 2 1 1 1
+## [316] 1 1 1 1 2 1 1 1 1 1 1 3 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 2 1 1 1 1 1 1 1
+## [351] 1 1 1 1</code></pre>
 </div>
 <div id="downregulated-in-heart-only" class="section level1">
 <h1>Downregulated in heart only</h1>
 <pre class="r"><code># Subset 
 summary(heart_downreg_data$x %in% gtex_data$ENSG)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
-## logical       1      38</code></pre>
+## logical       2     112</code></pre>
 <pre class="r"><code>inshared_lists = gtex_data$ENSG %in% heart_downreg_data$x
 inshared_lists_data &lt;- as.data.frame(inshared_lists)
 counts_genes_in &lt;- cbind(gtex_data, inshared_lists_data)
@@ -259,8 +273,10 @@ counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:7]
 downreg_heart_ranking &lt;- data.frame(counts_genes_in_cutoff_pre[,4:7], t(apply(-counts_genes_in_cutoff_pre[,4:7], 1, rank, ties.method=&#39;min&#39;)))
 
 downreg_heart_ranking[,5]</code></pre>
-<pre><code>##  [1] 4 4 4 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
-## [36] 4 4 4</code></pre>
+<pre><code>##   [1] 4 4 4 4 4 4 4 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+##  [36] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+##  [71] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+## [106] 4 4 4 4 4 4 4</code></pre>
 </div>
 <div id="function-for-updownregulation" class="section level1">
 <h1>Function for up/downregulation</h1>
@@ -335,15 +351,13 @@ tissue_cor &lt;- rbind(heart_cor1, heart_cor2, kidney_cor1, kidney_cor2, liver_c
 
 # Get the correlation between tissues
 cor(tissue_cor[,1], tissue_cor[,2])</code></pre>
-<pre><code>## [1] 0.9063901</code></pre>
+<pre><code>## [1] 0.9143294</code></pre>
 <pre class="r"><code># How many times does the ranking in our data match the ranking in GTEx?
 summary(tissue_cor[,1] == tissue_cor[,2])</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
-## logical      31     259</code></pre>
-<pre class="r"><code>136/(136+30)</code></pre>
-<pre><code>## [1] 0.8192771</code></pre>
-<pre class="r"><code>259/(31+259)</code></pre>
-<pre><code>## [1] 0.8931034</code></pre>
+## logical     199    1540</code></pre>
+<pre class="r"><code>1540/(199+1540)</code></pre>
+<pre><code>## [1] 0.8855664</code></pre>
 </div>
 <div id="run-topgo-on-the-heart-data-suppplementary-table" class="section level1">
 <h1>Run topGO on the heart data (suppplementary table)</h1>
@@ -457,39 +471,47 @@ go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &qu
 <pre><code>## 
 ##           -- Weight01 Algorithm -- 
 ## 
-##       the algorithm is scoring 1875 nontrivial nodes
+##       the algorithm is scoring 4126 nontrivial nodes
 ##       parameters: 
 ##           test statistic: fisher</code></pre>
 <pre><code>## 
-##   Level 15:  5 nodes to be scored    (0 eliminated genes)</code></pre>
+##   Level 19:  1 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 14:  17 nodes to be scored   (0 eliminated genes)</code></pre>
+##   Level 18:  3 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 13:  33 nodes to be scored   (146 eliminated genes)</code></pre>
+##   Level 17:  4 nodes to be scored    (17 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 12:  52 nodes to be scored   (558 eliminated genes)</code></pre>
+##   Level 16:  9 nodes to be scored    (23 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 11:  89 nodes to be scored   (2124 eliminated genes)</code></pre>
+##   Level 15:  28 nodes to be scored   (39 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 10:  138 nodes to be scored  (3124 eliminated genes)</code></pre>
+##   Level 14:  60 nodes to be scored   (142 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 9:   199 nodes to be scored  (4692 eliminated genes)</code></pre>
+##   Level 13:  118 nodes to be scored  (532 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 8:   242 nodes to be scored  (6011 eliminated genes)</code></pre>
+##   Level 12:  186 nodes to be scored  (1207 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 7:   301 nodes to be scored  (6939 eliminated genes)</code></pre>
+##   Level 11:  293 nodes to be scored  (2865 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 6:   316 nodes to be scored  (8384 eliminated genes)</code></pre>
+##   Level 10:  431 nodes to be scored  (3997 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 5:   252 nodes to be scored  (9044 eliminated genes)</code></pre>
+##   Level 9:   540 nodes to be scored  (5462 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 4:   140 nodes to be scored  (9605 eliminated genes)</code></pre>
+##   Level 8:   565 nodes to be scored  (6990 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 3:   72 nodes to be scored   (9853 eliminated genes)</code></pre>
+##   Level 7:   609 nodes to be scored  (8125 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 2:   18 nodes to be scored   (9965 eliminated genes)</code></pre>
+##   Level 6:   558 nodes to be scored  (8955 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 1:   1 nodes to be scored    (10056 eliminated genes)</code></pre>
+##   Level 5:   383 nodes to be scored  (9425 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   217 nodes to be scored  (9726 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   99 nodes to be scored   (9895 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   21 nodes to be scored   (9976 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10069 eliminated genes)</code></pre>
 <pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
                          orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
                          topNodes = sum(score(go_test) &lt; .01))
@@ -497,52 +519,122 @@ go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &qu
 go_table</code></pre>
 <pre><code>##         GO.ID                                        Term Annotated
 ## 1  GO:0030049                     muscle filament sliding        23
-## 2  GO:0060048                  cardiac muscle contraction        93
-## 3  GO:0002026 regulation of the force of heart contrac...        23
+## 2  GO:0045214                      sarcomere organization        27
+## 3  GO:0060048                  cardiac muscle contraction        93
 ## 4  GO:0055010 ventricular cardiac muscle tissue morpho...        36
-## 5  GO:0006942 regulation of striated muscle contractio...        61
-## 6  GO:0055003                  cardiac myofibril assembly        14
-## 7  GO:0030240      skeletal muscle thin filament assembly         5
-## 8  GO:0071688 striated muscle myosin thick filament as...         8
-## 9  GO:0007512                     adult heart development         8
-## 10 GO:0045214                      sarcomere organization        27
-## 11 GO:0003009                 skeletal muscle contraction        20
-## 12 GO:0014898 cardiac muscle hypertrophy in response t...        18
-## 13 GO:0090131                        mesenchyme migration         5
-## 14 GO:0050982            detection of mechanical stimulus        22
-## 15 GO:0048739            cardiac muscle fiber development         7
-## 16 GO:0035331      negative regulation of hippo signaling         8
-## 17 GO:0045199 maintenance of epithelial cell apical/ba...         8
-## 18 GO:0055008         cardiac muscle tissue morphogenesis        45
-## 19 GO:0014733    regulation of skeletal muscle adaptation         9
-## 20 GO:0007519          skeletal muscle tissue development        95
-## 21 GO:0035994                  response to muscle stretch        16
-## 22 GO:0055002            striated muscle cell development        96
-## 23 GO:1904591       positive regulation of protein import        70
+## 5  GO:0002026 regulation of the force of heart contrac...        23
+## 6  GO:0071688 striated muscle myosin thick filament as...         8
+## 7  GO:0010881 regulation of cardiac muscle contraction...        17
+## 8  GO:0002027                    regulation of heart rate        59
+## 9  GO:0086064 cell communication by electrical couplin...        16
+## 10 GO:0055003                  cardiac myofibril assembly        14
+## 11 GO:1903779            regulation of cardiac conduction        46
+## 12 GO:0086012 membrane depolarization during cardiac m...        12
+## 13 GO:0086091 regulation of heart rate by cardiac cond...        21
+## 14 GO:0030240      skeletal muscle thin filament assembly         5
+## 15 GO:0035994                  response to muscle stretch        16
+## 16 GO:0006942 regulation of striated muscle contractio...        61
+## 17 GO:0006937            regulation of muscle contraction        94
+## 18 GO:0048739            cardiac muscle fiber development         7
+## 19 GO:0006941                 striated muscle contraction       113
+## 20 GO:0010460           positive regulation of heart rate        14
+## 21 GO:0007512                     adult heart development         8
+## 22 GO:0003009                 skeletal muscle contraction        20
+## 23 GO:1903115 regulation of actin filament-based movem...        30
+## 24 GO:0055008         cardiac muscle tissue morphogenesis        45
+## 25 GO:0014733    regulation of skeletal muscle adaptation         9
+## 26 GO:0003300                  cardiac muscle hypertrophy        57
+## 27 GO:0071313               cellular response to caffeine         5
+## 28 GO:0007519          skeletal muscle tissue development        95
+## 29 GO:0032780      negative regulation of ATPase activity        11
+## 30 GO:0008016             regulation of heart contraction       139
+## 31 GO:0086019 cell-cell signaling involved in cardiac ...        18
+## 32 GO:0055075                   potassium ion homeostasis         7
+## 33 GO:0032781      positive regulation of ATPase activity        44
+## 34 GO:0072659     protein localization to plasma membrane       182
+## 35 GO:0032386       regulation of intracellular transport       422
+## 36 GO:0006936                          muscle contraction       208
+## 37 GO:0060314 regulation of ryanodine-sensitive calciu...        20
+## 38 GO:0010765 positive regulation of sodium ion transp...        23
+## 39 GO:0014037                Schwann cell differentiation        27
+## 40 GO:0089718    amino acid import across plasma membrane         8
+## 41 GO:0010667 negative regulation of cardiac muscle ce...        16
+## 42 GO:0000165                                MAPK cascade       586
+## 43 GO:0051443 positive regulation of ubiquitin-protein...        85
+## 44 GO:0055119                relaxation of cardiac muscle        14
+## 45 GO:0071872 cellular response to epinephrine stimulu...         9
+## 46 GO:0010666 positive regulation of cardiac muscle ce...         9
+## 47 GO:0051639            actin filament network formation         9
+## 48 GO:0086014 atrial cardiac muscle cell action potent...        12
+## 49 GO:0010649 regulation of cell communication by elec...        10
+## 50 GO:0014898 cardiac muscle hypertrophy in response t...        18
+## 51 GO:0014912 negative regulation of smooth muscle cel...        18
+## 52 GO:0045445                    myoblast differentiation        58
+## 53 GO:0032469 endoplasmic reticulum calcium ion homeos...        19
+## 54 GO:0005513                    detection of calcium ion        10
+## 55 GO:0007274         neuromuscular synaptic transmission        10
+## 56 GO:0043092                         L-amino acid import        10
+## 57 GO:0007155                               cell adhesion       883
+## 58 GO:0060307 regulation of ventricular cardiac muscle...        11
 ##    Significant Expected weightFisher
-## 1            9     0.19      8.4e-14
-## 2           11     0.77      5.2e-12
-## 3            6     0.19      2.4e-08
-## 4            6     0.30      4.2e-07
-## 5            6     0.50      2.0e-06
-## 6            4     0.12      4.0e-06
-## 7            3     0.04      5.3e-06
-## 8            3     0.07      2.9e-05
-## 9            3     0.07      2.9e-05
-## 10           4     0.22      6.5e-05
-## 11           4     0.16      0.00022
-## 12           3     0.15      0.00040
-## 13           2     0.04      0.00066
-## 14           3     0.18      0.00074
-## 15           2     0.06      0.00137
-## 16           2     0.07      0.00182
-## 17           2     0.07      0.00182
-## 18           8     0.37      0.00202
-## 19           2     0.07      0.00233
-## 20           5     0.78      0.00406
-## 21           2     0.13      0.00747
-## 22           9     0.79      0.00753
-## 23           2     0.58      0.00820</code></pre>
+## 1           16     0.92      6.2e-18
+## 2           14     1.08      2.7e-13
+## 3           31     3.72      2.7e-13
+## 4           13     1.44      3.1e-10
+## 5           11     0.92      3.2e-10
+## 6            6     0.32      1.0e-07
+## 7            8     0.68      1.1e-07
+## 8           21     2.36      1.5e-07
+## 9            7     0.64      3.0e-07
+## 10           7     0.56      4.2e-07
+## 11          12     1.84      5.1e-07
+## 12           6     0.48      3.0e-06
+## 13           7     0.84      1.1e-05
+## 14           4     0.20      1.2e-05
+## 15           6     0.64      2.3e-05
+## 16          16     2.44      5.9e-05
+## 17          21     3.76      7.0e-05
+## 18           4     0.28      8.0e-05
+## 19          37     4.52      0.00012
+## 20           5     0.56      0.00015
+## 21           4     0.32      0.00016
+## 22           6     0.80      0.00021
+## 23          10     1.20      0.00024
+## 24          17     1.80      0.00024
+## 25           4     0.36      0.00027
+## 26          13     2.28      0.00057
+## 27           3     0.20      0.00060
+## 28          13     3.80      0.00067
+## 29           4     0.44      0.00067
+## 30          33     5.56      0.00077
+## 31           7     0.72      0.00113
+## 32           3     0.28      0.00159
+## 33           7     1.76      0.00166
+## 34          18     7.28      0.00199
+## 35          25    16.89      0.00216
+## 36          50     8.32      0.00227
+## 37           6     0.80      0.00301
+## 38           5     0.92      0.00304
+## 39           4     1.08      0.00306
+## 40           3     0.32      0.00307
+## 41           4     0.64      0.00314
+## 42          28    23.45      0.00377
+## 43           7     3.40      0.00396
+## 44           5     0.56      0.00441
+## 45           3     0.36      0.00446
+## 46           3     0.36      0.00446
+## 47           3     0.36      0.00446
+## 48           4     0.48      0.00463
+## 49           3     0.40      0.00465
+## 50           4     0.72      0.00495
+## 51           4     0.72      0.00495
+## 52           6     2.32      0.00605
+## 53           4     0.76      0.00607
+## 54           3     0.40      0.00619
+## 55           3     0.40      0.00619
+## 56           3     0.40      0.00619
+## 57          37    35.34      0.00673
+## 58           3     0.44      0.00826</code></pre>
 <pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
 
 # Make table
@@ -557,19 +649,32 @@ goresults &lt;- sapply(go_table$GO.ID, function(x)
 
 goresults[&quot;GO:0030049&quot;] # muscle filament sliding &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot; &quot;ENSG00000143632&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
 <pre><code>## $`GO:0030049`
-## [1] &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot;
-## [5] &quot;ENSG00000143632&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000173991&quot;
-## [9] &quot;ENSG00000197616&quot;</code></pre>
+##  [1] &quot;ENSG00000077522&quot; &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot;
+##  [4] &quot;ENSG00000114854&quot; &quot;ENSG00000118194&quot; &quot;ENSG00000129991&quot;
+##  [7] &quot;ENSG00000134571&quot; &quot;ENSG00000136842&quot; &quot;ENSG00000140416&quot;
+## [10] &quot;ENSG00000143632&quot; &quot;ENSG00000155657&quot; &quot;ENSG00000159251&quot;
+## [13] &quot;ENSG00000160808&quot; &quot;ENSG00000173991&quot; &quot;ENSG00000175084&quot;
+## [16] &quot;ENSG00000197616&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0060048&quot;] # cardiac muscle contraction &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129170&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
 <pre><code>## $`GO:0060048`
-##  [1] &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000114279&quot;
-##  [4] &quot;ENSG00000129170&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot;
-##  [7] &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000173991&quot;
-## [10] &quot;ENSG00000174437&quot; &quot;ENSG00000197616&quot;</code></pre>
+##  [1] &quot;ENSG00000018625&quot; &quot;ENSG00000055118&quot; &quot;ENSG00000057294&quot;
+##  [4] &quot;ENSG00000072062&quot; &quot;ENSG00000092054&quot; &quot;ENSG00000101400&quot;
+##  [7] &quot;ENSG00000104881&quot; &quot;ENSG00000105711&quot; &quot;ENSG00000111245&quot;
+## [10] &quot;ENSG00000114279&quot; &quot;ENSG00000114854&quot; &quot;ENSG00000116783&quot;
+## [13] &quot;ENSG00000118194&quot; &quot;ENSG00000118729&quot; &quot;ENSG00000129170&quot;
+## [16] &quot;ENSG00000129991&quot; &quot;ENSG00000130037&quot; &quot;ENSG00000134571&quot;
+## [19] &quot;ENSG00000140416&quot; &quot;ENSG00000145349&quot; &quot;ENSG00000151067&quot;
+## [22] &quot;ENSG00000155657&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000160808&quot;
+## [25] &quot;ENSG00000165995&quot; &quot;ENSG00000173991&quot; &quot;ENSG00000174437&quot;
+## [28] &quot;ENSG00000183023&quot; &quot;ENSG00000197616&quot; &quot;ENSG00000198523&quot;
+## [31] &quot;ENSG00000198626&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0055010&quot;] # ventricular cardiac muscle tissue morpho &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
 <pre><code>## $`GO:0055010`
-## [1] &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000134571&quot;
-## [5] &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;</code></pre>
+##  [1] &quot;ENSG00000057294&quot; &quot;ENSG00000092054&quot; &quot;ENSG00000111245&quot;
+##  [4] &quot;ENSG00000114854&quot; &quot;ENSG00000118194&quot; &quot;ENSG00000129991&quot;
+##  [7] &quot;ENSG00000130939&quot; &quot;ENSG00000134571&quot; &quot;ENSG00000135547&quot;
+## [10] &quot;ENSG00000140416&quot; &quot;ENSG00000160808&quot; &quot;ENSG00000197616&quot;
+## [13] &quot;ENSG00000198626&quot;</code></pre>
 </div>
 <div id="run-topgo-on-the-kidney-data-supplementary-table" class="section level1">
 <h1>Run topGO on the kidney data (supplementary table)</h1>
@@ -608,39 +713,43 @@ go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &qu
 <pre><code>## 
 ##           -- Weight01 Algorithm -- 
 ## 
-##       the algorithm is scoring 965 nontrivial nodes
+##       the algorithm is scoring 2833 nontrivial nodes
 ##       parameters: 
 ##           test statistic: fisher</code></pre>
 <pre><code>## 
-##   Level 15:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+##   Level 17:  5 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 14:  4 nodes to be scored    (0 eliminated genes)</code></pre>
+##   Level 16:  6 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 13:  11 nodes to be scored   (32 eliminated genes)</code></pre>
+##   Level 15:  15 nodes to be scored   (24 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 12:  32 nodes to be scored   (187 eliminated genes)</code></pre>
+##   Level 14:  29 nodes to be scored   (58 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 11:  46 nodes to be scored   (410 eliminated genes)</code></pre>
+##   Level 13:  59 nodes to be scored   (213 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 10:  70 nodes to be scored   (2364 eliminated genes)</code></pre>
+##   Level 12:  108 nodes to be scored  (741 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 9:   101 nodes to be scored  (3768 eliminated genes)</code></pre>
+##   Level 11:  172 nodes to be scored  (2170 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 8:   117 nodes to be scored  (4877 eliminated genes)</code></pre>
+##   Level 10:  251 nodes to be scored  (3167 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 7:   134 nodes to be scored  (5978 eliminated genes)</code></pre>
+##   Level 9:   335 nodes to be scored  (4879 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 6:   155 nodes to be scored  (7397 eliminated genes)</code></pre>
+##   Level 8:   386 nodes to be scored  (6050 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 5:   149 nodes to be scored  (8693 eliminated genes)</code></pre>
+##   Level 7:   431 nodes to be scored  (7085 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 4:   88 nodes to be scored   (9403 eliminated genes)</code></pre>
+##   Level 6:   445 nodes to be scored  (8183 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 3:   40 nodes to be scored   (9750 eliminated genes)</code></pre>
+##   Level 5:   314 nodes to be scored  (9272 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 2:   16 nodes to be scored   (9926 eliminated genes)</code></pre>
+##   Level 4:   177 nodes to be scored  (9658 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 1:   1 nodes to be scored    (10036 eliminated genes)</code></pre>
+##   Level 3:   80 nodes to be scored   (9870 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   19 nodes to be scored   (9964 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10057 eliminated genes)</code></pre>
 <pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
                          orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
                          topNodes = sum(score(go_test) &lt; .01))
@@ -648,30 +757,76 @@ go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &qu
 go_table</code></pre>
 <pre><code>##         GO.ID                                        Term Annotated
 ## 1  GO:0043252 sodium-independent organic anion transpo...        13
-## 2  GO:0015698                   inorganic anion transport        89
-## 3  GO:1903825        organic acid transmembrane transport        70
-## 4  GO:0072235       metanephric distal tubule development         5
-## 5  GO:0072205     metanephric collecting duct development         6
-## 6  GO:0046415                     urate metabolic process         9
-## 7  GO:0042359                 vitamin D metabolic process         9
-## 8  GO:0042953                       lipoprotein transport        12
-## 9  GO:2000179 positive regulation of neural precursor ...        24
-## 10 GO:0098656               anion transmembrane transport       156
-## 11 GO:0007588                                   excretion        35
-## 12 GO:0006814                        sodium ion transport       127
+## 2  GO:0072235       metanephric distal tubule development         5
+## 3  GO:0072205     metanephric collecting duct development         6
+## 4  GO:2000665      regulation of interleukin-13 secretion         6
+## 5  GO:0090383                     phagosome acidification        17
+## 6  GO:0015991     ATP hydrolysis coupled proton transport        19
+## 7  GO:0006814                        sodium ion transport       127
+## 8  GO:0033572                       transferrin transport        26
+## 9  GO:0042953                       lipoprotein transport        12
+## 10 GO:0015698                   inorganic anion transport        89
+## 11 GO:1903825        organic acid transmembrane transport        70
+## 12 GO:0007588                                   excretion        35
+## 13 GO:0042985 negative regulation of amyloid precursor...         5
+## 14 GO:2000662       regulation of interleukin-5 secretion         5
+## 15 GO:0015838                amino-acid betaine transport         5
+## 16 GO:2000147        positive regulation of cell motility       317
+## 17 GO:0032927 positive regulation of activin receptor ...         6
+## 18 GO:0046689                     response to mercury ion         6
+## 19 GO:1990573 potassium ion import across plasma membr...         6
+## 20 GO:0042472                     inner ear morphogenesis        42
+## 21 GO:0045880 positive regulation of smoothened signal...        22
+## 22 GO:0055074                     calcium ion homeostasis       213
+## 23 GO:0072182 regulation of nephron tubule epithelial ...         7
+## 24 GO:0072079                    nephron tubule formation         7
+## 25 GO:0001657                    ureteric bud development        61
+## 26 GO:0051048            negative regulation of secretion       118
+## 27 GO:0006590                  thyroid hormone generation         8
+## 28 GO:0071599                    otic vesicle development         8
+## 29 GO:0042359                 vitamin D metabolic process         9
+## 30 GO:0072488            ammonium transmembrane transport         9
+## 31 GO:0032352 positive regulation of hormone metabolic...         9
+## 32 GO:0002829 negative regulation of type 2 immune res...         9
+## 33 GO:0046415                     urate metabolic process         9
+## 34 GO:0006020                  inositol metabolic process         9
+## 35 GO:0015695                    organic cation transport        23
 ##    Significant Expected weightFisher
-## 1            3     0.03      4.1e-06
-## 2            4     0.23      8.8e-06
-## 3            3     0.18      3.5e-05
-## 4            2     0.01      6.2e-05
-## 5            2     0.02      9.3e-05
-## 6            2     0.02      0.00022
-## 7            2     0.02      0.00022
-## 8            2     0.03      0.00041
-## 9            2     0.06      0.00167
-## 10           4     0.40      0.00184
-## 11           2     0.09      0.00353
-## 12           3     0.32      0.00433</code></pre>
+## 1            4     0.19      2.6e-05
+## 2            3     0.07      2.8e-05
+## 3            3     0.09      5.6e-05
+## 4            3     0.09      5.6e-05
+## 5            4     0.24      8.3e-05
+## 6            4     0.27      0.00013
+## 7            9     1.82      0.00022
+## 8            4     0.37      0.00047
+## 9            3     0.17      0.00058
+## 10           7     1.27      0.00070
+## 11           7     1.00      0.00113
+## 12           4     0.50      0.00150
+## 13           2     0.07      0.00198
+## 14           2     0.07      0.00198
+## 15           2     0.07      0.00198
+## 16           7     4.54      0.00292
+## 17           2     0.09      0.00294
+## 18           2     0.09      0.00294
+## 19           2     0.09      0.00294
+## 20           4     0.60      0.00296
+## 21           3     0.32      0.00363
+## 22           7     3.05      0.00397
+## 23           2     0.10      0.00408
+## 24           2     0.10      0.00408
+## 25           5     0.87      0.00511
+## 26           5     1.69      0.00529
+## 27           2     0.11      0.00539
+## 28           2     0.11      0.00539
+## 29           2     0.13      0.00687
+## 30           2     0.13      0.00687
+## 31           2     0.13      0.00687
+## 32           2     0.13      0.00687
+## 33           2     0.13      0.00687
+## 34           2     0.13      0.00687
+## 35           5     0.33      0.00819</code></pre>
 <pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
 
 # Make table
@@ -686,16 +841,18 @@ goresults &lt;- sapply(go_table$GO.ID, function(x)
 
 goresults[&quot;GO:1903825&quot;] #  organic acid transmembrane transport &quot;ENSG00000092068&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
 <pre><code>## $`GO:1903825`
-## [1] &quot;ENSG00000081479&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
+## [1] &quot;ENSG00000081479&quot; &quot;ENSG00000092068&quot; &quot;ENSG00000138079&quot; &quot;ENSG00000158296&quot;
+## [5] &quot;ENSG00000167703&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0072205&quot;] # metanephric distal tubule development &quot;ENSG00000104327&quot; &quot;ENSG00000167580&quot;</code></pre>
 <pre><code>## $`GO:0072205`
-## [1] &quot;ENSG00000104327&quot; &quot;ENSG00000167580&quot;</code></pre>
+## [1] &quot;ENSG00000104327&quot; &quot;ENSG00000125618&quot; &quot;ENSG00000167580&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0015698&quot;] # inorganic anion transport &quot;ENSG00000074803&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
 <pre><code>## $`GO:0015698`
-## [1] &quot;ENSG00000074803&quot; &quot;ENSG00000149452&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
+## [1] &quot;ENSG00000074803&quot; &quot;ENSG00000114859&quot; &quot;ENSG00000126562&quot; &quot;ENSG00000131183&quot;
+## [5] &quot;ENSG00000149452&quot; &quot;ENSG00000197891&quot; &quot;ENSG00000197901&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0007588&quot;] # excretion &quot;ENSG00000167580&quot; &quot;ENSG00000169344&quot;</code></pre>
 <pre><code>## $`GO:0007588`
-## [1] &quot;ENSG00000167580&quot; &quot;ENSG00000169344&quot;</code></pre>
+## [1] &quot;ENSG00000116039&quot; &quot;ENSG00000166828&quot; &quot;ENSG00000167580&quot; &quot;ENSG00000169344&quot;</code></pre>
 </div>
 <div id="run-topgo-on-the-liver-data-supplementary-table" class="section level1">
 <h1>Run topGO on the liver data (supplementary table)</h1>
@@ -734,140 +891,350 @@ go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &qu
 <pre><code>## 
 ##           -- Weight01 Algorithm -- 
 ## 
-##       the algorithm is scoring 2421 nontrivial nodes
+##       the algorithm is scoring 5362 nontrivial nodes
 ##       parameters: 
 ##           test statistic: fisher</code></pre>
 <pre><code>## 
-##   Level 17:  2 nodes to be scored    (0 eliminated genes)</code></pre>
+##   Level 18:  2 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 16:  4 nodes to be scored    (0 eliminated genes)</code></pre>
+##   Level 17:  6 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 15:  11 nodes to be scored   (32 eliminated genes)</code></pre>
+##   Level 16:  17 nodes to be scored   (22 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 14:  23 nodes to be scored   (74 eliminated genes)</code></pre>
+##   Level 15:  40 nodes to be scored   (51 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 13:  43 nodes to be scored   (210 eliminated genes)</code></pre>
+##   Level 14:  80 nodes to be scored   (164 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 12:  74 nodes to be scored   (576 eliminated genes)</code></pre>
+##   Level 13:  159 nodes to be scored  (571 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 11:  130 nodes to be scored  (2193 eliminated genes)</code></pre>
+##   Level 12:  255 nodes to be scored  (1339 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 10:  199 nodes to be scored  (3099 eliminated genes)</code></pre>
+##   Level 11:  410 nodes to be scored  (2934 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 9:   285 nodes to be scored  (4561 eliminated genes)</code></pre>
+##   Level 10:  585 nodes to be scored  (4171 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 8:   329 nodes to be scored  (6010 eliminated genes)</code></pre>
+##   Level 9:   744 nodes to be scored  (5750 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 7:   381 nodes to be scored  (7405 eliminated genes)</code></pre>
+##   Level 8:   770 nodes to be scored  (7136 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 6:   377 nodes to be scored  (8660 eliminated genes)</code></pre>
+##   Level 7:   787 nodes to be scored  (8242 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 5:   300 nodes to be scored  (9235 eliminated genes)</code></pre>
+##   Level 6:   695 nodes to be scored  (8991 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 4:   167 nodes to be scored  (9683 eliminated genes)</code></pre>
+##   Level 5:   449 nodes to be scored  (9448 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 3:   76 nodes to be scored   (9880 eliminated genes)</code></pre>
+##   Level 4:   241 nodes to be scored  (9751 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 2:   19 nodes to be scored   (9965 eliminated genes)</code></pre>
+##   Level 3:   99 nodes to be scored   (9903 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 1:   1 nodes to be scored    (10067 eliminated genes)</code></pre>
+##   Level 2:   22 nodes to be scored   (9977 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10068 eliminated genes)</code></pre>
 <pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
                          orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
                          topNodes = sum(score(go_test) &lt; .01))
 
 go_table</code></pre>
-<pre><code>##         GO.ID                                        Term Annotated
-## 1  GO:0002576                      platelet degranulation       106
-## 2  GO:0010951 negative regulation of endopeptidase act...       130
-## 3  GO:0006953                        acute-phase response        27
-## 4  GO:0051715                 cytolysis in other organism         5
-## 5  GO:0042730                                fibrinolysis        19
-## 6  GO:0072378    blood coagulation, fibrin clot formation        21
-## 7  GO:0031639                      plasminogen activation        20
-## 8  GO:0034116 positive regulation of heterotypic cell-...         8
-## 9  GO:0051918         negative regulation of fibrinolysis         9
-## 10 GO:0043687     post-translational protein modification       307
-## 11 GO:1900026 positive regulation of substrate adhesio...        29
-## 12 GO:0007597        blood coagulation, intrinsic pathway        14
-## 13 GO:0030212                hyaluronan metabolic process        28
-## 14 GO:0045907     positive regulation of vasoconstriction        15
-## 15 GO:0006641              triglyceride metabolic process        65
-## 16 GO:0015721           bile acid and bile salt transport        19
-## 17 GO:1904478         regulation of intestinal absorption         5
-## 18 GO:0030299           intestinal cholesterol absorption         5
-## 19 GO:2000352 negative regulation of endothelial cell ...        22
-## 20 GO:0006555                methionine metabolic process        16
-## 21 GO:0006207 &#39;de novo&#39; pyrimidine nucleobase biosynth...         6
-## 22 GO:0006536                 glutamate metabolic process        24
-## 23 GO:0007595                                   lactation        26
-## 24 GO:0010873 positive regulation of cholesterol ester...         7
-## 25 GO:0042167                      heme catabolic process         7
-## 26 GO:0051006 positive regulation of lipoprotein lipas...         7
-## 27 GO:1902042 negative regulation of extrinsic apoptot...        28
-## 28 GO:0033700                         phospholipid efflux         8
-## 29 GO:0034378                        chylomicron assembly         8
-## 30 GO:0034372 very-low-density lipoprotein particle re...         9
-## 31 GO:0030193             regulation of blood coagulation        66
-## 32 GO:0006559           L-phenylalanine catabolic process        11
-## 33 GO:0031000                        response to caffeine        12
-## 34 GO:0034380 high-density lipoprotein particle assemb...        13
-## 35 GO:0046500      S-adenosylmethionine metabolic process        13
-## 36 GO:0051258                      protein polymerization       189
-## 37 GO:0032967 positive regulation of collagen biosynth...        14
-## 38 GO:0061844 antimicrobial humoral immune response me...        14
-## 39 GO:0034375 high-density lipoprotein particle remode...        14
-## 40 GO:0019731              antibacterial humoral response        14
-## 41 GO:0032259                                 methylation       259
-## 42 GO:0043691               reverse cholesterol transport        15
-## 43 GO:2000257    regulation of protein activation cascade        35
-## 44 GO:0055088                           lipid homeostasis        82
-## 45 GO:0042572                   retinol metabolic process        17
-##    Significant Expected weightFisher
-## 1           12     0.93      1.0e-10
-## 2            9     1.13      1.8e-06
-## 3            5     0.24      3.1e-06
-## 4            3     0.04      6.4e-06
-## 5            6     0.17      2.0e-05
-## 6            6     0.18      2.0e-05
-## 7            4     0.17      2.4e-05
-## 8            3     0.07      3.5e-05
-## 9            3     0.08      5.2e-05
-## 10          11     2.68      7.0e-05
-## 11           4     0.25      0.00011
-## 12           3     0.12      0.00022
-## 13           4     0.24      0.00026
-## 14           3     0.13      0.00027
-## 15           6     0.57      0.00052
-## 16           3     0.17      0.00056
-## 17           2     0.04      0.00074
-## 18           2     0.04      0.00074
-## 19           3     0.19      0.00088
-## 20           3     0.14      0.00108
-## 21           2     0.05      0.00111
-## 22           3     0.21      0.00114
-## 23           3     0.23      0.00145
-## 24           2     0.06      0.00154
-## 25           2     0.06      0.00154
-## 26           2     0.06      0.00154
-## 27           3     0.24      0.00180
-## 28           2     0.07      0.00204
-## 29           2     0.07      0.00204
-## 30           2     0.08      0.00261
-## 31           8     0.58      0.00286
-## 32           2     0.10      0.00394
-## 33           2     0.10      0.00470
-## 34           2     0.11      0.00552
-## 35           2     0.11      0.00552
-## 36           4     1.65      0.00583
-## 37           2     0.12      0.00641
-## 38           2     0.12      0.00641
-## 39           2     0.12      0.00641
-## 40           2     0.12      0.00641
-## 41           5     2.26      0.00697
-## 42           2     0.13      0.00735
-## 43           3     0.31      0.00856
-## 44           5     0.72      0.00892
-## 45           2     0.15      0.00941</code></pre>
+<pre><code>##          GO.ID                                        Term Annotated
+## 1   GO:0006953                        acute-phase response        27
+## 2   GO:0030449         regulation of complement activation        34
+## 3   GO:0055114                 oxidation-reduction process       712
+## 4   GO:0010951 negative regulation of endopeptidase act...       130
+## 5   GO:0070328                    triglyceride homeostasis        24
+## 6   GO:0006958    complement activation, classical pathway        23
+## 7   GO:0006536                 glutamate metabolic process        24
+## 8   GO:0017187        peptidyl-glutamic acid carboxylation         7
+## 9   GO:0015721           bile acid and bile salt transport        19
+## 10  GO:0042632                     cholesterol homeostasis        53
+## 11  GO:0006957 complement activation, alternative pathw...        11
+## 12  GO:1904478         regulation of intestinal absorption         5
+## 13  GO:0034378                        chylomicron assembly         8
+## 14  GO:0006641              triglyceride metabolic process        65
+## 15  GO:0006695            cholesterol biosynthetic process        58
+## 16  GO:0007597        blood coagulation, intrinsic pathway        14
+## 17  GO:0031639                      plasminogen activation        20
+## 18  GO:0036498     IRE1-mediated unfolded protein response        62
+## 19  GO:0043691               reverse cholesterol transport        15
+## 20  GO:0010873 positive regulation of cholesterol ester...         7
+## 21  GO:0019373                    epoxygenase P450 pathway         7
+## 22  GO:0002576                      platelet degranulation       106
+## 23  GO:0090110     cargo loading into COPII-coated vesicle        12
+## 24  GO:0033700                         phospholipid efflux         8
+## 25  GO:0008202                   steroid metabolic process       201
+## 26  GO:0033344                          cholesterol efflux        29
+## 27  GO:0032782                         bile acid secretion         5
+## 28  GO:0051715                 cytolysis in other organism         5
+## 29  GO:0015942                   formate metabolic process         5
+## 30  GO:0006572                  tyrosine catabolic process         5
+## 31  GO:0008203               cholesterol metabolic process       104
+## 32  GO:0019216       regulation of lipid metabolic process       278
+## 33  GO:0006805                xenobiotic metabolic process        62
+## 34  GO:0070508                          cholesterol import         9
+## 35  GO:0009071 serine family amino acid catabolic proce...         9
+## 36  GO:0034372 very-low-density lipoprotein particle re...         9
+## 37  GO:0034374 low-density lipoprotein particle remodel...         9
+## 38  GO:0051918         negative regulation of fibrinolysis         9
+## 39  GO:0006898               receptor-mediated endocytosis       207
+## 40  GO:0034375 high-density lipoprotein particle remode...        14
+## 41  GO:0017144                      drug metabolic process        20
+## 42  GO:0072329       monocarboxylic acid catabolic process        99
+## 43  GO:0034384 high-density lipoprotein particle cleara...        10
+## 44  GO:0001867       complement activation, lectin pathway         6
+## 45  GO:0006207 &#39;de novo&#39; pyrimidine nucleobase biosynth...         6
+## 46  GO:0034371                      chylomicron remodeling         6
+## 47  GO:0051917                  regulation of fibrinolysis        12
+## 48  GO:0006559           L-phenylalanine catabolic process        11
+## 49  GO:0044270 cellular nitrogen compound catabolic pro...       421
+## 50  GO:0030195    negative regulation of blood coagulation        38
+## 51  GO:0042157               lipoprotein metabolic process       112
+## 52  GO:0000098         sulfur amino acid catabolic process         7
+## 53  GO:0051006 positive regulation of lipoprotein lipas...         7
+## 54  GO:0008228                                opsonization         7
+## 55  GO:0001935              endothelial cell proliferation        94
+## 56  GO:0045723 positive regulation of fatty acid biosyn...        12
+## 57  GO:0045717 negative regulation of fatty acid biosyn...        12
+## 58  GO:0050714    positive regulation of protein secretion       147
+## 59  GO:0019835                                   cytolysis        23
+## 60  GO:0006699              bile acid biosynthetic process        25
+## 61  GO:0007595                                   lactation        26
+## 62  GO:0000050                                  urea cycle         8
+## 63  GO:0034379 very-low-density lipoprotein particle as...         8
+## 64  GO:0060192      negative regulation of lipase activity        14
+## 65  GO:0043401 steroid hormone mediated signaling pathw...       155
+## 66  GO:0006534                  cysteine metabolic process        11
+## 67  GO:0003071 renal system process involved in regulat...        12
+## 68  GO:0030522    intracellular receptor signaling pathway       224
+## 69  GO:0007200 phospholipase C-activating G-protein cou...        36
+## 70  GO:0048208                       COPII vesicle coating        53
+## 71  GO:0046717                              acid secretion        51
+## 72  GO:0014075                           response to amine        21
+## 73  GO:0006809           nitric oxide biosynthetic process        54
+## 74  GO:0006069                           ethanol oxidation         9
+## 75  GO:0035999            tetrahydrofolate interconversion         9
+## 76  GO:0051957 positive regulation of amino acid transp...         9
+## 77  GO:0055091                    phospholipid homeostasis         9
+## 78  GO:0045471                         response to ethanol        82
+## 79  GO:0045540 regulation of cholesterol biosynthetic p...        39
+## 80  GO:0045907     positive regulation of vasoconstriction        15
+## 81  GO:0051004 regulation of lipoprotein lipase activit...        17
+## 82  GO:0050994       regulation of lipid catabolic process        37
+## 83  GO:1900103 positive regulation of endoplasmic retic...        11
+## 84  GO:0008211            glucocorticoid metabolic process        15
+## 85  GO:0010898 positive regulation of triglyceride cata...         5
+## 86  GO:0002923 regulation of humoral immune response me...         5
+## 87  GO:0051005 negative regulation of lipoprotein lipas...         5
+## 88  GO:1902023                        L-arginine transport         5
+## 89  GO:0006526               arginine biosynthetic process         5
+## 90  GO:0006548                 histidine catabolic process         5
+## 91  GO:0042737                      drug catabolic process         5
+## 92  GO:0030299           intestinal cholesterol absorption         5
+## 93  GO:0010269                    response to selenium ion         5
+## 94  GO:0090277 positive regulation of peptide hormone s...        56
+## 95  GO:0016540                      protein autoprocessing        10
+## 96  GO:0042493                            response to drug       268
+## 97  GO:0046483               heterocycle metabolic process      4063
+## 98  GO:0001889                           liver development       106
+## 99  GO:0009395              phospholipid catabolic process        25
+## 100 GO:0043687     post-translational protein modification       307
+## 101 GO:0009914                           hormone transport       181
+## 102 GO:0036315                 cellular response to sterol        12
+## 103 GO:0009396 folic acid-containing compound biosynthe...         8
+## 104 GO:0032375 negative regulation of cholesterol trans...         6
+## 105 GO:0032489 regulation of Cdc42 protein signal trans...         6
+## 106 GO:0043031 negative regulation of macrophage activa...         6
+## 107 GO:0019530                   taurine metabolic process         6
+## 108 GO:0060850 regulation of transcription involved in ...         6
+## 109 GO:0034382               chylomicron remnant clearance         6
+## 110 GO:0046689                     response to mercury ion         6
+## 111 GO:0042538              hyperosmotic salinity response         6
+## 112 GO:0043603            cellular amide metabolic process       767
+## 113 GO:0010894 negative regulation of steroid biosynthe...        17
+## 114 GO:0055089                      fatty acid homeostasis        12
+## 115 GO:2000188       regulation of cholesterol homeostasis        12
+## 116 GO:0033189                       response to vitamin A        12
+## 117 GO:0008643                      carbohydrate transport       111
+## 118 GO:0018279 protein N-linked glycosylation via aspar...        35
+## 119 GO:0098869             cellular oxidant detoxification        59
+## 120 GO:0016525         negative regulation of angiogenesis        60
+## 121 GO:0031100                   animal organ regeneration        64
+## 122 GO:0043200                      response to amino acid        85
+## 123 GO:0006541                 glutamine metabolic process        20
+## 124 GO:0070542                      response to fatty acid        60
+## 125 GO:0051592                     response to calcium ion        85
+## 126 GO:0042730                                fibrinolysis        19
+## 127 GO:0034380 high-density lipoprotein particle assemb...        13
+## 128 GO:0010596 negative regulation of endothelial cell ...        36
+## 129 GO:0072378    blood coagulation, fibrin clot formation        21
+## 130 GO:0033240 positive regulation of cellular amine me...         7
+## 131 GO:0001976 neurological system process involved in ...         7
+## 132 GO:0038063 collagen-activated tyrosine kinase recep...         7
+## 133 GO:0046439                L-cysteine metabolic process         7
+## 134 GO:0042167                      heme catabolic process         7
+## 135 GO:0045346 regulation of MHC class II biosynthetic ...         7
+## 136 GO:0070365                  hepatocyte differentiation         7
+## 137 GO:1901890 positive regulation of cell junction ass...        28
+## 138 GO:1900026 positive regulation of substrate adhesio...        29
+## 139 GO:0010043                        response to zinc ion        26
+## 140 GO:0051258                      protein polymerization       189
+## 141 GO:0014068 positive regulation of phosphatidylinosi...        48
+## 142 GO:0019433              triglyceride catabolic process        23
+## 143 GO:0051180                           vitamin transport        23
+## 144 GO:0008209                  androgen metabolic process        14
+## 145 GO:0006465                   signal peptide processing        14
+## 146 GO:1903830       magnesium ion transmembrane transport        14
+## 147 GO:0010460           positive regulation of heart rate        14
+## 148 GO:0001523                  retinoid metabolic process        49
+## 149 GO:0050728 negative regulation of inflammatory resp...        66
+##     Significant Expected weightFisher
+## 1            14     1.67      1.0e-10
+## 2            16     2.10      1.8e-10
+## 3            86    44.07      6.5e-10
+## 4            27     8.05      7.0e-10
+## 5            13     1.49      9.8e-10
+## 6            12     1.42      2.1e-09
+## 7            12     1.49      3.9e-09
+## 8             6     0.43      3.6e-07
+## 9            12     1.18      4.2e-07
+## 10           17     3.28      5.7e-07
+## 11            7     0.68      8.9e-07
+## 12            5     0.31      9.0e-07
+## 13            6     0.50      1.4e-06
+## 14           21     4.02      7.5e-06
+## 15           17     3.59      7.8e-06
+## 16            7     0.87      7.9e-06
+## 17            8     1.24      9.2e-06
+## 18           15     3.84      1.1e-05
+## 19            7     0.93      1.4e-05
+## 20            5     0.43      1.7e-05
+## 21            5     0.43      1.7e-05
+## 22           19     6.56      2.3e-05
+## 23            6     0.74      3.7e-05
+## 24            5     0.50      4.3e-05
+## 25           52    12.44      5.5e-05
+## 26            9     1.80      6.4e-05
+## 27            4     0.31      6.9e-05
+## 28            4     0.31      6.9e-05
+## 29            4     0.31      6.9e-05
+## 30            4     0.31      6.9e-05
+## 31           29     6.44      8.0e-05
+## 32           50    17.21      8.7e-05
+## 33           13     3.84      8.8e-05
+## 34            5     0.56      9.1e-05
+## 35            5     0.56      9.1e-05
+## 36            5     0.56      9.1e-05
+## 37            5     0.56      9.1e-05
+## 38            5     0.56      9.1e-05
+## 39           25    12.81      9.4e-05
+## 40            6     0.87      0.00011
+## 41            9     1.24      0.00017
+## 42           12     6.13      0.00017
+## 43            5     0.62      0.00017
+## 44            4     0.37      0.00020
+## 45            4     0.37      0.00020
+## 46            4     0.37      0.00020
+## 47            8     0.74      0.00023
+## 48            5     0.68      0.00030
+## 49           30    26.06      0.00030
+## 50           16     2.35      0.00041
+## 51           16     6.93      0.00042
+## 52            4     0.43      0.00044
+## 53            4     0.43      0.00044
+## 54            4     0.43      0.00044
+## 55           13     5.82      0.00048
+## 56            5     0.74      0.00049
+## 57            5     0.74      0.00049
+## 58           20     9.10      0.00068
+## 59           11     1.42      0.00073
+## 60            8     1.55      0.00073
+## 61            7     1.61      0.00079
+## 62            4     0.50      0.00083
+## 63            4     0.50      0.00083
+## 64            7     0.87      0.00089
+## 65           16     9.59      0.00089
+## 66            6     0.68      0.00089
+## 67            5     0.74      0.00089
+## 68           19    13.87      0.00090
+## 69            8     2.23      0.00126
+## 70           10     3.28      0.00133
+## 71           11     3.16      0.00139
+## 72            5     1.30      0.00142
+## 73            7     3.34      0.00142
+## 74            4     0.56      0.00143
+## 75            4     0.56      0.00143
+## 76            4     0.56      0.00143
+## 77            4     0.56      0.00143
+## 78           13     5.08      0.00147
+## 79            9     2.41      0.00157
+## 80            5     0.93      0.00160
+## 81           10     1.05      0.00209
+## 82           11     2.29      0.00209
+## 83            5     0.68      0.00213
+## 84            4     0.93      0.00214
+## 85            3     0.31      0.00215
+## 86            3     0.31      0.00215
+## 87            3     0.31      0.00215
+## 88            3     0.31      0.00215
+## 89            3     0.31      0.00215
+## 90            3     0.31      0.00215
+## 91            3     0.31      0.00215
+## 92            3     0.31      0.00215
+## 93            3     0.31      0.00215
+## 94           10     3.47      0.00222
+## 95            4     0.62      0.00226
+## 96           31    16.59      0.00257
+## 97          213   251.50      0.00331
+## 98           17     6.56      0.00332
+## 99            6     1.55      0.00336
+## 100          32    19.00      0.00365
+## 101          23    11.20      0.00370
+## 102           4     0.74      0.00381
+## 103           3     0.50      0.00382
+## 104           3     0.37      0.00410
+## 105           3     0.37      0.00410
+## 106           3     0.37      0.00410
+## 107           3     0.37      0.00410
+## 108           3     0.37      0.00410
+## 109           3     0.37      0.00410
+## 110           3     0.37      0.00410
+## 111           3     0.37      0.00410
+## 112          48    47.48      0.00414
+## 113           5     1.05      0.00481
+## 114           4     0.74      0.00482
+## 115           4     0.74      0.00482
+## 116           4     0.74      0.00482
+## 117          15     6.87      0.00488
+## 118           7     2.17      0.00495
+## 119           9     3.65      0.00502
+## 120          10     3.71      0.00573
+## 121          10     3.96      0.00576
+## 122          13     5.26      0.00624
+## 123           5     1.24      0.00636
+## 124           8     3.71      0.00659
+## 125          11     5.26      0.00660
+## 126          11     1.18      0.00663
+## 127           4     0.80      0.00663
+## 128           5     2.23      0.00665
+## 129          10     1.30      0.00666
+## 130           3     0.43      0.00685
+## 131           3     0.43      0.00685
+## 132           3     0.43      0.00685
+## 133           3     0.43      0.00685
+## 134           3     0.43      0.00685
+## 135           3     0.43      0.00685
+## 136           3     0.43      0.00685
+## 137           4     1.73      0.00685
+## 138           6     1.80      0.00767
+## 139           6     1.61      0.00790
+## 140          11    11.70      0.00817
+## 141           8     2.97      0.00861
+## 142           9     1.42      0.00862
+## 143           7     1.42      0.00872
+## 144           4     0.87      0.00884
+## 145           4     0.87      0.00884
+## 146           4     0.87      0.00884
+## 147           4     0.87      0.00884
+## 148          11     3.03      0.00948
+## 149          12     4.09      0.00949</code></pre>
 <pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
 
 # Make table
@@ -883,14 +1250,23 @@ goresults &lt;- sapply(go_table$GO.ID, function(x)
 
 goresults[&quot;GO:1904478&quot;] # regulation of intestinal absorption &quot;ENSG00000110243&quot; &quot;ENSG00000158874&quot;</code></pre>
 <pre><code>## $`GO:1904478`
-## [1] &quot;ENSG00000110243&quot; &quot;ENSG00000158874&quot;</code></pre>
+## [1] &quot;ENSG00000005471&quot; &quot;ENSG00000105697&quot; &quot;ENSG00000110243&quot; &quot;ENSG00000118137&quot;
+## [5] &quot;ENSG00000158874&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0006641&quot;] # triglyceride metabolic process &quot;ENSG00000091583&quot; &quot;ENSG00000110243&quot; &quot;ENSG00000158874&quot;</code></pre>
 <pre><code>## $`GO:0006641`
-## [1] &quot;ENSG00000021826&quot; &quot;ENSG00000083807&quot; &quot;ENSG00000091583&quot; &quot;ENSG00000110243&quot;
-## [5] &quot;ENSG00000119927&quot; &quot;ENSG00000158874&quot;</code></pre>
+##  [1] &quot;ENSG00000021826&quot; &quot;ENSG00000025434&quot; &quot;ENSG00000073060&quot;
+##  [4] &quot;ENSG00000083807&quot; &quot;ENSG00000084674&quot; &quot;ENSG00000091583&quot;
+##  [7] &quot;ENSG00000110243&quot; &quot;ENSG00000110245&quot; &quot;ENSG00000112293&quot;
+## [10] &quot;ENSG00000114771&quot; &quot;ENSG00000118137&quot; &quot;ENSG00000119927&quot;
+## [13] &quot;ENSG00000121691&quot; &quot;ENSG00000125629&quot; &quot;ENSG00000130649&quot;
+## [16] &quot;ENSG00000151365&quot; &quot;ENSG00000158874&quot; &quot;ENSG00000163586&quot;
+## [19] &quot;ENSG00000166035&quot; &quot;ENSG00000169174&quot; &quot;ENSG00000186480&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0015721&quot;] # bile acid and bile salt transport &quot;ENSG00000163631&quot; &quot;ENSG00000186350&quot;</code></pre>
 <pre><code>## $`GO:0015721`
-## [1] &quot;ENSG00000083807&quot; &quot;ENSG00000163631&quot; &quot;ENSG00000186350&quot;</code></pre>
+##  [1] &quot;ENSG00000005471&quot; &quot;ENSG00000012504&quot; &quot;ENSG00000083807&quot;
+##  [4] &quot;ENSG00000103569&quot; &quot;ENSG00000108846&quot; &quot;ENSG00000134538&quot;
+##  [7] &quot;ENSG00000140396&quot; &quot;ENSG00000163631&quot; &quot;ENSG00000163959&quot;
+## [10] &quot;ENSG00000172345&quot; &quot;ENSG00000186350&quot; &quot;ENSG00000214530&quot;</code></pre>
 </div>
 <div id="run-topgo-on-the-lung-data-supplementary-table" class="section level1">
 <h1>Run topGO on the lung data (supplementary table)</h1>
@@ -929,112 +1305,220 @@ go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &qu
 <pre><code>## 
 ##           -- Weight01 Algorithm -- 
 ## 
-##       the algorithm is scoring 2459 nontrivial nodes
+##       the algorithm is scoring 4619 nontrivial nodes
 ##       parameters: 
 ##           test statistic: fisher</code></pre>
 <pre><code>## 
-##   Level 17:  2 nodes to be scored    (0 eliminated genes)</code></pre>
+##   Level 19:  1 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 16:  4 nodes to be scored    (0 eliminated genes)</code></pre>
+##   Level 18:  2 nodes to be scored    (0 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 15:  11 nodes to be scored   (18 eliminated genes)</code></pre>
+##   Level 17:  8 nodes to be scored    (17 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 14:  26 nodes to be scored   (69 eliminated genes)</code></pre>
+##   Level 16:  15 nodes to be scored   (22 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 13:  58 nodes to be scored   (226 eliminated genes)</code></pre>
+##   Level 15:  38 nodes to be scored   (50 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 12:  99 nodes to be scored   (651 eliminated genes)</code></pre>
+##   Level 14:  86 nodes to be scored   (173 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 11:  153 nodes to be scored  (2182 eliminated genes)</code></pre>
+##   Level 13:  140 nodes to be scored  (560 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 10:  212 nodes to be scored  (3302 eliminated genes)</code></pre>
+##   Level 12:  199 nodes to be scored  (1308 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 9:   295 nodes to be scored  (4739 eliminated genes)</code></pre>
+##   Level 11:  321 nodes to be scored  (2751 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 8:   320 nodes to be scored  (6028 eliminated genes)</code></pre>
+##   Level 10:  465 nodes to be scored  (3773 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 7:   396 nodes to be scored  (7228 eliminated genes)</code></pre>
+##   Level 9:   604 nodes to be scored  (5319 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 6:   366 nodes to be scored  (8494 eliminated genes)</code></pre>
+##   Level 8:   661 nodes to be scored  (6769 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 5:   269 nodes to be scored  (9153 eliminated genes)</code></pre>
+##   Level 7:   717 nodes to be scored  (8071 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 4:   158 nodes to be scored  (9588 eliminated genes)</code></pre>
+##   Level 6:   620 nodes to be scored  (8941 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 3:   70 nodes to be scored   (9861 eliminated genes)</code></pre>
+##   Level 5:   398 nodes to be scored  (9420 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 2:   19 nodes to be scored   (9957 eliminated genes)</code></pre>
+##   Level 4:   227 nodes to be scored  (9742 eliminated genes)</code></pre>
 <pre><code>## 
-##   Level 1:   1 nodes to be scored    (10043 eliminated genes)</code></pre>
+##   Level 3:   96 nodes to be scored   (9898 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   20 nodes to be scored   (9976 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (10069 eliminated genes)</code></pre>
 <pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
                          orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
                          topNodes = sum(score(go_test) &lt; .01))
 
 go_table</code></pre>
 <pre><code>##         GO.ID                                        Term Annotated
-## 1  GO:0019370            leukotriene biosynthetic process         9
-## 2  GO:0030214                hyaluronan catabolic process        13
-## 3  GO:0007585                respiratory gaseous exchange        41
-## 4  GO:0044267          cellular protein metabolic process      3534
-## 5  GO:0070374 positive regulation of ERK1 and ERK2 cas...       108
-## 6  GO:0097709               connective tissue replacement         5
-## 7  GO:1903039 positive regulation of leukocyte cell-ce...       132
-## 8  GO:0006777 Mo-molybdopterin cofactor biosynthetic p...         6
-## 9  GO:0045779      negative regulation of bone resorption         7
-## 10 GO:0032324 molybdopterin cofactor biosynthetic proc...         7
-## 11 GO:0048642 negative regulation of skeletal muscle t...         7
-## 12 GO:0043536 positive regulation of blood vessel endo...        31
-## 13 GO:0019372                        lipoxygenase pathway         9
-## 14 GO:0019048 modulation by virus of host morphology o...        31
-## 15 GO:0045589 regulation of regulatory T cell differen...        11
-## 16 GO:0019731              antibacterial humoral response        14
-## 17 GO:0051092 positive regulation of NF-kappaB transcr...       107
-## 18 GO:0042036 negative regulation of cytokine biosynth...        15
-## 19 GO:0002062                 chondrocyte differentiation        55
-## 20 GO:0030279         negative regulation of ossification        43
-## 21 GO:0045671 negative regulation of osteoclast differ...        17
-## 22 GO:0033138 positive regulation of peptidyl-serine p...        59
-## 23 GO:0070207                   protein homotrimerization        18
-## 24 GO:0071559 response to transforming growth factor b...       159
-## 25 GO:0001910 regulation of leukocyte mediated cytotox...        28
-## 26 GO:0044650           adhesion of symbiont to host cell         7
-## 27 GO:0044344 cellular response to fibroblast growth f...        95
-## 28 GO:0060333 interferon-gamma-mediated signaling path...        69
-## 29 GO:0070125      mitochondrial translational elongation        71
-## 30 GO:0032743 positive regulation of interleukin-2 pro...        23
-## 31 GO:0071549 cellular response to dexamethasone stimu...        25
+## 1  GO:0042102 positive regulation of T cell proliferat...        54
+## 2  GO:0045730                           respiratory burst        20
+## 3  GO:0043312                    neutrophil degranulation       368
+## 4  GO:0032729 positive regulation of interferon-gamma ...        31
+## 5  GO:0070125      mitochondrial translational elongation        71
+## 6  GO:0007166     cell surface receptor signaling pathway      1748
+## 7  GO:0043129                      surfactant homeostasis         7
+## 8  GO:0045579 positive regulation of B cell differenti...        13
+## 9  GO:0002250                    adaptive immune response       204
+## 10 GO:0044267          cellular protein metabolic process      3534
+## 11 GO:0045087                      innate immune response       521
+## 12 GO:0022617            extracellular matrix disassembly        52
+## 13 GO:0070374 positive regulation of ERK1 and ERK2 cas...       108
+## 14 GO:0050852           T cell receptor signaling pathway       136
+## 15 GO:0006635                   fatty acid beta-oxidation        61
+## 16 GO:0090023 positive regulation of neutrophil chemot...        16
+## 17 GO:0042554                 superoxide anion generation        18
+## 18 GO:0070126     mitochondrial translational termination        72
+## 19 GO:0009725                         response to hormone       607
+## 20 GO:0043407 negative regulation of MAP kinase activi...        56
+## 21 GO:0009083 branched-chain amino acid catabolic proc...        19
+## 22 GO:2001185 regulation of CD8-positive, alpha-beta T...         5
+## 23 GO:0001666                         response to hypoxia       263
+## 24 GO:0031295                        T cell costimulation        41
+## 25 GO:0007585                respiratory gaseous exchange        41
+## 26 GO:0000302         response to reactive oxygen species       158
+## 27 GO:0060333 interferon-gamma-mediated signaling path...        69
+## 28 GO:1903039 positive regulation of leukocyte cell-ce...       132
+## 29 GO:2000483 negative regulation of interleukin-8 sec...         6
+## 30 GO:0030889 negative regulation of B cell proliferat...        13
+## 31 GO:0002407                   dendritic cell chemotaxis        13
+## 32 GO:0032743 positive regulation of interleukin-2 pro...        23
+## 33 GO:0061154              endothelial tube morphogenesis        14
+## 34 GO:0030098                  lymphocyte differentiation       195
+## 35 GO:0030815 negative regulation of cAMP metabolic pr...        20
+## 36 GO:0071871                     response to epinephrine        11
+## 37 GO:0002381 immunoglobulin production involved in im...        29
+## 38 GO:1904994 regulation of leukocyte adhesion to vasc...         7
+## 39 GO:0032324 molybdopterin cofactor biosynthetic proc...         7
+## 40 GO:0032715 negative regulation of interleukin-6 pro...        22
+## 41 GO:2000406     positive regulation of T cell migration        15
+## 42 GO:0006968                   cellular defense response        26
+## 43 GO:2000727 positive regulation of cardiac muscle ce...        16
+## 44 GO:0031581                      hemidesmosome assembly         8
+## 45 GO:0035810         positive regulation of urine volume         8
+## 46 GO:0034599       cellular response to oxidative stress       209
+## 47 GO:0030279         negative regulation of ossification        43
+## 48 GO:0043011      myeloid dendritic cell differentiation         9
+## 49 GO:0001771             immunological synapse formation         9
+## 50 GO:0019370            leukotriene biosynthetic process         9
+## 51 GO:0045860 positive regulation of protein kinase ac...       364
+## 52 GO:0030168                         platelet activation       111
+## 53 GO:0046633             alpha-beta T cell proliferation        18
+## 54 GO:0043372 positive regulation of CD4-positive, alp...        14
+## 55 GO:0031589                     cell-substrate adhesion       245
+## 56 GO:0033138 positive regulation of peptidyl-serine p...        59
+## 57 GO:0043304       regulation of mast cell degranulation        19
+## 58 GO:0042832               defense response to protozoan        10
+## 59 GO:0046641 positive regulation of alpha-beta T cell...        10
+## 60 GO:0031330 negative regulation of cellular cataboli...       158
+## 61 GO:0001541                ovarian follicle development        32
+## 62 GO:0071356 cellular response to tumor necrosis fact...       188
+## 63 GO:0030593                       neutrophil chemotaxis        42
+## 64 GO:0035987             endodermal cell differentiation        33
+## 65 GO:0008544                       epidermis development       161
+## 66 GO:0071361                cellular response to ethanol        11
+## 67 GO:0045589 regulation of regulatory T cell differen...        11
+## 68 GO:0006954                       inflammatory response       403
+## 69 GO:0031532           actin cytoskeleton reorganization        76
+## 70 GO:0002696 positive regulation of leukocyte activat...       191
+## 71 GO:0050853           B cell receptor signaling pathway        34
+## 72 GO:2000352 negative regulation of endothelial cell ...        22
+## 73 GO:0043552 positive regulation of phosphatidylinosi...        22
+## 74 GO:0050731 positive regulation of peptidyl-tyrosine...        96
+## 75 GO:0032623                    interleukin-2 production        45
+## 76 GO:0032633                    interleukin-4 production        17
+## 77 GO:0030819 positive regulation of cAMP biosynthetic...        33
+## 78 GO:0050710 negative regulation of cytokine secretio...        36
+## 79 GO:0038083       peptidyl-tyrosine autophosphorylation        37
+## 80 GO:0050777      negative regulation of immune response        81
+## 81 GO:0042493                            response to drug       268
+## 82 GO:0030214                hyaluronan catabolic process        13
+## 83 GO:0051131 chaperone-mediated protein complex assem...        13
 ##    Significant Expected weightFisher
-## 1            3     0.05      1.2e-05
-## 2            3     0.07      4.1e-05
-## 3            4     0.22      6.6e-05
-## 4           29    19.07      0.00013
-## 5            5     0.58      0.00028
-## 6            2     0.03      0.00028
-## 7            5     0.71      0.00039
-## 8            2     0.03      0.00042
-## 9            2     0.04      0.00059
-## 10           2     0.04      0.00059
-## 11           2     0.04      0.00059
-## 12           3     0.17      0.00060
-## 13           2     0.05      0.00100
-## 14           3     0.17      0.00121
-## 15           2     0.06      0.00152
-## 16           2     0.08      0.00250
-## 17           4     0.58      0.00259
-## 18           2     0.08      0.00287
-## 19           3     0.30      0.00318
-## 20           3     0.23      0.00358
-## 21           2     0.09      0.00369
-## 22           3     0.32      0.00390
-## 23           2     0.10      0.00414
-## 24           4     0.86      0.00518
-## 25           3     0.15      0.00521
-## 26           2     0.04      0.00530
-## 27           3     0.51      0.00550
-## 28           3     0.37      0.00606
-## 29           3     0.38      0.00656
-## 30           2     0.12      0.00672
-## 31           2     0.13      0.00792</code></pre>
+## 1           13     1.87      1.5e-06
+## 2            7     0.69      2.4e-06
+## 3           31    12.74      7.3e-06
+## 4            8     1.07      7.5e-06
+## 5           11     2.46      2.9e-05
+## 6          109    60.53      2.9e-05
+## 7            4     0.24      4.6e-05
+## 8            5     0.45      5.0e-05
+## 9           27     7.06      5.6e-05
+## 10         136   122.38      6.3e-05
+## 11          41    18.04      6.3e-05
+## 12           9     1.80      6.6e-05
+## 13          13     3.74      8.7e-05
+## 14          15     4.71      0.00010
+## 15          12     2.11      0.00012
+## 16           5     0.55      0.00015
+## 17           5     0.62      0.00016
+## 18          10     2.49      0.00017
+## 19          30    21.02      0.00020
+## 20           8     1.94      0.00032
+## 21           5     0.66      0.00038
+## 22           3     0.17      0.00039
+## 23          21     9.11      0.00044
+## 24           7     1.42      0.00046
+## 25           7     1.42      0.00046
+## 26          12     5.47      0.00054
+## 27           9     2.39      0.00058
+## 28          24     4.57      0.00066
+## 29           3     0.21      0.00076
+## 30           4     0.45      0.00079
+## 31           4     0.45      0.00079
+## 32           5     0.80      0.00097
+## 33           4     0.48      0.00107
+## 34          25     6.75      0.00109
+## 35           4     0.69      0.00119
+## 36           3     0.38      0.00119
+## 37           3     1.00      0.00120
+## 38           3     0.24      0.00130
+## 39           3     0.24      0.00130
+## 40           5     0.76      0.00141
+## 41           4     0.52      0.00142
+## 42           5     0.90      0.00175
+## 43           4     0.55      0.00201
+## 44           3     0.28      0.00203
+## 45           3     0.28      0.00203
+## 46          15     7.24      0.00261
+## 47           5     1.49      0.00294
+## 48           3     0.31      0.00296
+## 49           3     0.31      0.00296
+## 50           3     0.31      0.00296
+## 51          25    12.60      0.00303
+## 52          11     3.84      0.00324
+## 53           6     0.62      0.00344
+## 54           3     0.48      0.00349
+## 55          16     8.48      0.00396
+## 56           7     2.04      0.00408
+## 57           4     0.66      0.00410
+## 58           3     0.35      0.00412
+## 59           3     0.35      0.00412
+## 60          10     5.47      0.00435
+## 61           5     1.11      0.00451
+## 62          12     6.51      0.00487
+## 63           9     1.45      0.00508
+## 64           5     1.14      0.00517
+## 65          11     5.58      0.00519
+## 66           3     0.38      0.00552
+## 67           3     0.38      0.00552
+## 68          31    13.96      0.00566
+## 69           9     2.63      0.00578
+## 70          29     6.61      0.00608
+## 71           8     1.18      0.00608
+## 72           4     0.76      0.00631
+## 73           4     0.76      0.00631
+## 74           9     3.32      0.00645
+## 75           8     1.56      0.00668
+## 76           4     0.59      0.00679
+## 77           4     1.14      0.00716
+## 78           7     1.25      0.00846
+## 79           5     1.28      0.00848
+## 80          11     2.80      0.00869
+## 81          17     9.28      0.00909
+## 82           3     0.45      0.00909
+## 83           3     0.45      0.00909</code></pre>
 <pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
 
 # Make table
@@ -1049,10 +1533,102 @@ goresults &lt;- sapply(go_table$GO.ID, function(x)
 
 goresults[&quot;GO:0007585&quot;] # respiratory gaseous exchange &quot;ENSG00000168484&quot; &quot;ENSG00000168878&quot;</code></pre>
 <pre><code>## $`GO:0007585`
-## [1] &quot;ENSG00000014919&quot; &quot;ENSG00000133661&quot; &quot;ENSG00000168484&quot; &quot;ENSG00000168878&quot;</code></pre>
+## [1] &quot;ENSG00000014919&quot; &quot;ENSG00000049540&quot; &quot;ENSG00000078401&quot; &quot;ENSG00000100368&quot;
+## [5] &quot;ENSG00000133661&quot; &quot;ENSG00000168484&quot; &quot;ENSG00000168878&quot;</code></pre>
 <pre class="r"><code>goresults[&quot;GO:0019372&quot;] # lipoxygenase pathway &quot;ENSG00000012779&quot; &quot;ENSG00000132965&quot;</code></pre>
-<pre><code>## $`GO:0019372`
-## [1] &quot;ENSG00000012779&quot; &quot;ENSG00000132965&quot;</code></pre>
+<pre><code>## $&lt;NA&gt;
+## NULL</code></pre>
+</div>
+<div id="rerun-using-human-specific-data" class="section level1">
+<h1>Rerun using human specific data</h1>
+<pre class="r"><code># Tissue up/downreg
+heart_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_heart_genes.csv&quot;, stringsAsFactors = FALSE)
+heart_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_heart_genes.csv&quot;, stringsAsFactors = FALSE)
+
+kidney_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_kidney_genes.csv&quot;, stringsAsFactors = FALSE)
+kidney_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_kidney_genes.csv&quot;, stringsAsFactors = FALSE)
+
+liver_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_liver_genes.csv&quot;, stringsAsFactors = FALSE)
+liver_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_liver_genes.csv&quot;, stringsAsFactors = FALSE)
+
+lung_upreg_data &lt;- read.csv(&quot;../data/human_specific_upreg_lung_genes.csv&quot;, stringsAsFactors = FALSE)
+lung_downreg_data &lt;- read.csv(&quot;../data/human_specific_downreg_lung_genes.csv&quot;, stringsAsFactors = FALSE)</code></pre>
+<pre class="r"><code>upreg_heart_ranking &lt;- ranking_in_gtex(heart_upreg_data$x)[,5]
+downreg_heart_ranking &lt;- ranking_in_gtex(heart_downreg_data$x)[,5]
+
+upreg_kidney_ranking &lt;- ranking_in_gtex(kidney_upreg_data$x)[,6]
+downreg_kidney_ranking &lt;- ranking_in_gtex(kidney_downreg_data$x)[,6]
+
+upreg_liver_ranking &lt;- ranking_in_gtex(liver_upreg_data$x)[,7]
+downreg_liver_ranking &lt;- ranking_in_gtex(liver_downreg_data$x)[,7]
+
+upreg_lung_ranking &lt;- ranking_in_gtex(lung_upreg_data$x)[,8]
+downreg_lung_ranking &lt;- ranking_in_gtex(lung_downreg_data$x)[,8]</code></pre>
+</div>
+<div id="ranking-in-our-data-1" class="section level1">
+<h1>Ranking in our data</h1>
+<pre class="r"><code># Heart
+upreg_heart_num &lt;- array(1, dim=c(length(upreg_heart_ranking), 1))
+
+heart_cor1 &lt;- cbind(upreg_heart_num, upreg_heart_ranking)
+
+downreg_heart_num &lt;- array(4, dim=c(length(downreg_heart_ranking), 1))
+
+heart_cor2 &lt;- cbind(downreg_heart_num, downreg_heart_ranking)
+
+# Kidney
+upreg_kidney_num &lt;- array(1, dim=c(length(upreg_kidney_ranking), 1))
+
+kidney_cor1 &lt;- cbind(upreg_kidney_num, upreg_kidney_ranking)
+
+downreg_kidney_num &lt;- array(4, dim=c(length(downreg_kidney_ranking), 1))
+
+kidney_cor2 &lt;- cbind(downreg_kidney_num, downreg_kidney_ranking)
+
+# Liver
+upreg_liver_num &lt;- array(1, dim=c(length(upreg_liver_ranking), 1))
+
+liver_cor1 &lt;- cbind(upreg_liver_num, upreg_liver_ranking)
+
+downreg_liver_num &lt;- array(4, dim=c(length(downreg_liver_ranking), 1))
+
+liver_cor2 &lt;- cbind(downreg_liver_num, downreg_liver_ranking)
+
+# Lung
+upreg_lung_num &lt;- array(1, dim=c(length(upreg_lung_ranking), 1))
+
+lung_cor1 &lt;- cbind(upreg_lung_num, upreg_lung_ranking)
+
+downreg_lung_num &lt;- array(4, dim=c(length(downreg_lung_ranking), 1))
+
+lung_cor2 &lt;- cbind(downreg_lung_num, downreg_lung_ranking)
+
+tissue_cor &lt;- rbind(heart_cor1, heart_cor2, kidney_cor1, kidney_cor2, liver_cor1, liver_cor2, lung_cor1, lung_cor2)
+
+# Get the correlation between tissues
+cor(tissue_cor[,1], tissue_cor[,2])</code></pre>
+<pre><code>## [1] 0.7146797</code></pre>
+<pre class="r"><code># How many times does the ranking in our data match the ranking in GTEx?
+summary(tissue_cor[,1] == tissue_cor[,2])</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     259     428</code></pre>
+<pre class="r"><code>1540/(199+1540)</code></pre>
+<pre><code>## [1] 0.8855664</code></pre>
+<pre class="r"><code>428/(259+428)</code></pre>
+<pre><code>## [1] 0.6229985</code></pre>
+<pre class="r"><code>prop.test(c(1540, 428), c(1739, 687))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(1540, 428) out of c(1739, 687)
+## X-squared = 219.98, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  0.2223457 0.3027900
+## sample estimates:
+##    prop 1    prop 2 
+## 0.8855664 0.6229985</code></pre>
 </div>
 
 

@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-05-30" />
+
+<title>More_lenient_overlaps</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">More_lenient_overlaps</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>May 30, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#p-value-cutoff">1 P value cutoff</a></li>
+<li><a href="#p-value-cutoff-figure">1 P value cutoff figure</a></li>
+<li><a href="#p-value-figure">2 P value figure</a></li>
+<li><a href="#conserved-versus-human-specific-figure">Conserved versus human specific figure</a></li>
+<li><a href="#overlap-with-tissue-versus-group">Overlap with tissue versus group</a></li>
+<li><a href="#p-value-figure-1">2 P value figure</a></li>
+</ul>
+</div>
+
+<div id="p-value-cutoff" class="section level1">
+<h1>1 P value cutoff</h1>
+<pre class="r"><code># Set FDR level
+
+FDR_level &lt;- 0.01
+FSR_level &lt;- 0.01
+
+# Combine the human ASH results
+combined_human &lt;- cbind(results[[&quot;H_HeartvLi&quot;]]$adj.P.Val, results[[&quot;H_HeartvLi&quot;]]$logFC, results[[&quot;H_HeartvLu&quot;]]$adj.P.Val, results[[&quot;H_HeartvLu&quot;]]$logFC, results[[&quot;H_HeartvK&quot;]]$adj.P.Val, results[[&quot;H_HeartvK&quot;]]$logFC, results[[&quot;H_LivLu&quot;]]$adj.P.Val, results[[&quot;H_LivLu&quot;]]$logFC, results[[&quot;H_LivK&quot;]]$adj.P.Val, results[[&quot;H_LivK&quot;]]$logFC, results[[&quot;H_LuvK&quot;]]$adj.P.Val, results[[&quot;H_LuvK&quot;]]$logFC)
+
+dim(combined_human)</code></pre>
+<pre><code>## [1] 12184    12</code></pre>
+<pre class="r"><code>rownames(combined_human) &lt;- rownames(cpm_12184)
+  
+# Combine the chimp ASH results
+combined_chimp &lt;- cbind(results[[&quot;C_HeartvLi&quot;]]$adj.P.Val, results[[&quot;C_HeartvLi&quot;]]$logFC, results[[&quot;C_HeartvLu&quot;]]$adj.P.Val, results[[&quot;C_HeartvLu&quot;]]$logFC, results[[&quot;C_HeartvK&quot;]]$adj.P.Val, results[[&quot;C_HeartvK&quot;]]$logFC, results[[&quot;C_LivLu&quot;]]$adj.P.Val, results[[&quot;C_LivLu&quot;]]$logFC, results[[&quot;C_LivK&quot;]]$adj.P.Val, results[[&quot;C_LivK&quot;]]$logFC, results[[&quot;C_LuvK&quot;]]$adj.P.Val, results[[&quot;C_LuvK&quot;]]$logFC)
+
+dim(combined_chimp)</code></pre>
+<pre><code>## [1] 12184    12</code></pre>
+<pre class="r"><code>rownames(combined_chimp) &lt;- rownames(cpm_12184)
+
+# Combine the rhesus ASH results
+combined_rhesus &lt;- cbind(results[[&quot;R_HeartvLi&quot;]]$adj.P.Val, results[[&quot;R_HeartvLi&quot;]]$logFC, results[[&quot;R_HeartvLu&quot;]]$adj.P.Val, results[[&quot;R_HeartvLu&quot;]]$logFC, results[[&quot;R_HeartvK&quot;]]$adj.P.Val, results[[&quot;R_HeartvK&quot;]]$logFC, results[[&quot;R_LivLu&quot;]]$adj.P.Val, results[[&quot;R_LivLu&quot;]]$logFC, results[[&quot;R_LivK&quot;]]$adj.P.Val, results[[&quot;R_LivK&quot;]]$logFC, results[[&quot;R_LuvK&quot;]]$adj.P.Val, results[[&quot;R_LuvK&quot;]]$logFC)
+
+dim(combined_rhesus)</code></pre>
+<pre><code>## [1] 12184    12</code></pre>
+<pre class="r"><code>rownames(combined_rhesus) &lt;- rownames(cpm_12184)
+
+
+# Tissue specific- humans
+
+
+spec_human_heart &lt;- as.data.frame(combined_human[which(combined_human[,1] &lt; FSR_level &amp;  combined_human[,3] &lt; FSR_level &amp; combined_human[,5] &lt; FSR_level &amp; combined_human[,7] &gt; FSR_level &amp; combined_human[,9] &gt; FSR_level &amp;  combined_human[,11] &gt; FSR_level),])
+
+spec_human_kidney &lt;- as.data.frame(combined_human[which(combined_human[,5] &lt; FSR_level &amp; combined_human[,9] &lt; FSR_level &amp; combined_human[,11] &lt; FSR_level &amp; combined_human[,1] &gt; FSR_level &amp; combined_human[,3] &gt; FSR_level &amp; combined_human[,7] &gt; FSR_level),])
+
+spec_human_liver &lt;- as.data.frame(combined_human[which(combined_human[,1] &lt; FSR_level &amp;  combined_human[,7] &lt; FSR_level &amp; combined_human[,9] &lt; FSR_level &amp; combined_human[,3] &gt; FSR_level &amp; combined_human[,5] &gt; FSR_level &amp; combined_human[,11] &gt; FSR_level),])
+
+spec_human_lung &lt;- as.data.frame(combined_human[which(combined_human[,3] &lt; FSR_level &amp; combined_human[,7] &lt; FSR_level &amp; combined_human[,11] &lt; FSR_level &amp; combined_human[,1] &gt; FSR_level &amp; combined_human[,5] &gt; FSR_level &amp; combined_human[,9] &gt; FSR_level),])
+
+# Tissue specific- chimps
+
+spec_chimp_heart &lt;- as.data.frame(combined_chimp[which(combined_chimp[,1] &lt; FSR_level &amp; combined_chimp[,3] &lt; FSR_level &amp; combined_chimp[,5] &lt; FSR_level &amp; combined_chimp[,7] &gt; FSR_level &amp; combined_chimp[,9] &gt; FSR_level &amp;  combined_chimp[,11] &gt; FSR_level),])
+
+spec_chimp_kidney &lt;- as.data.frame(combined_chimp[which(combined_chimp[,5] &lt; FSR_level &amp;  combined_chimp[,9] &lt; FSR_level &amp; combined_chimp[,11] &lt; FSR_level &amp; combined_chimp[,1] &gt; FSR_level &amp; combined_chimp[,3] &gt; FSR_level &amp;  combined_chimp[,7] &gt; FSR_level),])
+
+spec_chimp_liver &lt;- as.data.frame(combined_chimp[which(combined_chimp[,1] &lt; FSR_level &amp; combined_chimp[,7] &lt; FSR_level &amp; combined_chimp[,9] &lt; FSR_level &amp; combined_chimp[,3] &gt; FSR_level &amp; combined_chimp[,5] &gt; FSR_level &amp;  combined_chimp[,11] &gt; FSR_level),])
+
+spec_chimp_lung &lt;- as.data.frame(combined_chimp[which(combined_chimp[,3] &lt; FSR_level &amp; combined_chimp[,7] &lt; FSR_level &amp; combined_chimp[,11] &lt; FSR_level &amp; combined_chimp[,1] &gt; FSR_level &amp; combined_chimp[,5] &gt; FSR_level &amp;  combined_chimp[,9] &gt; FSR_level),])
+
+# Tissue specific- rhesus
+
+spec_rhesus_heart &lt;- as.data.frame(combined_rhesus[which(combined_rhesus[,1] &lt; FSR_level &amp; combined_rhesus[,3] &lt; FSR_level &amp; combined_rhesus[,5] &lt; FSR_level &amp; combined_rhesus[,7] &gt; FSR_level &amp; combined_rhesus[,9] &gt; FSR_level &amp;  combined_rhesus[,11] &gt; FSR_level),])
+
+spec_rhesus_kidney &lt;- as.data.frame(combined_rhesus[which(combined_rhesus[,5] &lt; FSR_level &amp;  combined_rhesus[,9] &lt; FSR_level &amp; combined_rhesus[,11] &lt; FSR_level &amp; combined_rhesus[,1] &gt; FSR_level &amp; combined_rhesus[,3] &gt; FSR_level &amp;  combined_rhesus[,7] &gt; FSR_level),])
+
+spec_rhesus_liver &lt;- as.data.frame(combined_rhesus[which(combined_rhesus[,1] &lt; FSR_level &amp; combined_rhesus[,7] &lt; FSR_level &amp; combined_rhesus[,9] &lt; FSR_level &amp; combined_rhesus[,3] &gt; FSR_level &amp; combined_rhesus[,5] &gt; FSR_level &amp;  combined_rhesus[,11] &gt; FSR_level),])
+
+spec_rhesus_lung &lt;- as.data.frame(combined_rhesus[which(combined_rhesus[,3] &lt; FSR_level &amp; combined_rhesus[,7] &lt; FSR_level &amp; combined_rhesus[,11] &lt; FSR_level &amp; combined_rhesus[,1] &gt; FSR_level &amp; combined_rhesus[,5] &gt; FSR_level &amp;  combined_rhesus[,9] &gt; FSR_level),])
+
+intersect(spec_rhesus_heart, spec_rhesus_kidney)</code></pre>
+<pre><code>## data frame with 0 columns and 0 rows</code></pre>
+<pre class="r"><code>intersect(spec_rhesus_heart, spec_rhesus_liver)</code></pre>
+<pre><code>## data frame with 0 columns and 0 rows</code></pre>
+<pre class="r"><code>intersect(spec_rhesus_heart, spec_rhesus_lung)</code></pre>
+<pre><code>## data frame with 0 columns and 0 rows</code></pre>
+<pre class="r"><code>intersect(spec_rhesus_kidney, spec_rhesus_liver)</code></pre>
+<pre><code>## data frame with 0 columns and 0 rows</code></pre>
+<pre class="r"><code>intersect(spec_rhesus_kidney, spec_rhesus_lung)</code></pre>
+<pre><code>## data frame with 0 columns and 0 rows</code></pre>
+<pre class="r"><code>intersect(spec_rhesus_liver, spec_rhesus_lung)</code></pre>
+<pre><code>## data frame with 0 columns and 0 rows</code></pre>
+</div>
+<div id="p-value-cutoff-figure" class="section level1">
+<h1>1 P value cutoff figure</h1>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;Hu&quot;]] &lt;- rownames(spec_human_heart)
+mylist[[&quot;Ch&quot;]] &lt;- rownames(spec_chimp_heart)
+mylist[[&quot;Rh&quot;]] &lt;- rownames(spec_rhesus_heart)
+
+
+# Make Venn Diagram
+#dev.off()
+svg(&quot;../data/check_heart_specific.svg&quot;, width = 7.2, height = 7.2)
+heart_diagram &lt;- venn.diagram(mylist, filename = NULL, category = c(&quot;Hu&quot;, &quot;Ch&quot;, &quot;Rh&quot;), fill = pal[1:3], main.cex = 3, cat.cex = 3, cex=3.5, lty=1, height=2000, width=2000, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05)
+grid.draw(heart_diagram)
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># 2 P value - human
+
+FSR_level &lt;- 0.01
+
+spec_human_heart_01 &lt;- as.data.frame(combined_human[which(combined_human[,1] &lt; FSR_level &amp;  combined_human[,3] &lt; FSR_level &amp; combined_human[,5] &lt; FSR_level &amp; combined_human[,7] &gt; FSR_level &amp; combined_human[,9] &gt; FSR_level &amp;  combined_human[,11] &gt; FSR_level),])
+
+spec_chimp_heart_01 &lt;- as.data.frame(combined_chimp[which(combined_chimp[,1] &lt; FSR_level &amp; combined_chimp[,3] &lt; FSR_level &amp; combined_chimp[,5] &lt; FSR_level &amp; combined_chimp[,7] &gt; FSR_level &amp; combined_chimp[,9] &gt; FSR_level &amp;  combined_chimp[,11] &gt; FSR_level),])
+
+spec_rhesus_heart_01 &lt;- as.data.frame(combined_rhesus[which(combined_rhesus[,1] &lt; FSR_level &amp; combined_rhesus[,3] &lt; FSR_level &amp; combined_rhesus[,5] &lt; FSR_level &amp; combined_rhesus[,7] &gt; FSR_level &amp; combined_rhesus[,9] &gt; FSR_level &amp;  combined_rhesus[,11] &gt; FSR_level),])
+
+
+
+FSR_level &lt;- 0.05
+
+spec_human_heart_05 &lt;- as.data.frame(combined_human[which(combined_human[,1] &lt; FSR_level &amp;  combined_human[,3] &lt; FSR_level &amp; combined_human[,5] &lt; FSR_level &amp; combined_human[,7] &gt; FSR_level &amp; combined_human[,9] &gt; FSR_level &amp;  combined_human[,11] &gt; FSR_level),])
+
+spec_chimp_heart_05 &lt;- as.data.frame(combined_chimp[which(combined_chimp[,1] &lt; FSR_level &amp; combined_chimp[,3] &lt; FSR_level &amp; combined_chimp[,5] &lt; FSR_level &amp; combined_chimp[,7] &gt; FSR_level &amp; combined_chimp[,9] &gt; FSR_level &amp;  combined_chimp[,11] &gt; FSR_level),])
+
+spec_rhesus_heart_05 &lt;- as.data.frame(combined_rhesus[which(combined_rhesus[,1] &lt; FSR_level &amp; combined_rhesus[,3] &lt; FSR_level &amp; combined_rhesus[,5] &lt; FSR_level &amp; combined_rhesus[,7] &gt; FSR_level &amp; combined_rhesus[,9] &gt; FSR_level &amp;  combined_rhesus[,11] &gt; FSR_level),])
+
+
+# Center: overlap with 3 species
+
+show_overlap &lt;- function(human_tissue, chimp_tissue, rhesus_tissue){
+  get_intersect &lt;- intersect(intersect(rownames(human_tissue), rownames(chimp_tissue)), rownames(rhesus_tissue))
+  return(get_intersect)
+}
+
+with_human &lt;- show_overlap(spec_human_heart_01, spec_chimp_heart_05, spec_rhesus_heart_05)
+length(with_human)</code></pre>
+<pre><code>## [1] 62</code></pre>
+<pre class="r"><code>with_chimp &lt;- show_overlap(spec_human_heart_05, spec_chimp_heart_01, spec_rhesus_heart_05)
+length(with_chimp)</code></pre>
+<pre><code>## [1] 76</code></pre>
+<pre class="r"><code>with_rhesus &lt;- show_overlap(spec_human_heart_05, spec_chimp_heart_05, spec_rhesus_heart_01)
+length(with_rhesus)</code></pre>
+<pre><code>## [1] 81</code></pre>
+<pre class="r"><code>length(union(union(with_human, with_chimp), with_rhesus))</code></pre>
+<pre><code>## [1] 106</code></pre>
+<pre class="r"><code>three_species &lt;- union(union(with_human, with_chimp), with_rhesus)
+
+
+
+# Overlap with 2 species- human and chimp
+
+with_human &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_chimp_heart_05))
+length(with_human)</code></pre>
+<pre><code>## [1] 182</code></pre>
+<pre class="r"><code>with_chimp &lt;- intersect(rownames(spec_human_heart_05), rownames(spec_chimp_heart_01))
+length(with_chimp)</code></pre>
+<pre><code>## [1] 218</code></pre>
+<pre class="r"><code>intermed &lt;- union(with_human, with_chimp)
+
+length(setdiff(intermed, three_species))</code></pre>
+<pre><code>## [1] 167</code></pre>
+<pre class="r"><code>hc_only &lt;- setdiff(intermed, three_species)
+length(hc_only)</code></pre>
+<pre><code>## [1] 167</code></pre>
+<pre class="r"><code># Overlap with 2 species- human and rhesus
+
+with_human &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_rhesus_heart_05))
+length(with_human)</code></pre>
+<pre><code>## [1] 119</code></pre>
+<pre class="r"><code>with_rhesus &lt;- intersect(rownames(spec_human_heart_05), rownames(spec_rhesus_heart_01))
+length(with_rhesus)</code></pre>
+<pre><code>## [1] 165</code></pre>
+<pre class="r"><code>intermed &lt;- union(with_human, with_rhesus)
+
+length(setdiff(intermed, three_species))</code></pre>
+<pre><code>## [1] 88</code></pre>
+<pre class="r"><code>hr_only &lt;- setdiff(intermed, three_species)
+
+# Overlap with 2 species- chimp and rhesus
+
+with_chimp &lt;- intersect(rownames(spec_chimp_heart_01), rownames(spec_rhesus_heart_05))
+length(with_chimp)</code></pre>
+<pre><code>## [1] 179</code></pre>
+<pre class="r"><code>with_rhesus &lt;- intersect(rownames(spec_chimp_heart_05), rownames(spec_rhesus_heart_01))
+length(with_rhesus)</code></pre>
+<pre><code>## [1] 214</code></pre>
+<pre class="r"><code>intermed &lt;- union(with_chimp, with_rhesus)
+
+length(setdiff(intermed, three_species))</code></pre>
+<pre><code>## [1] 161</code></pre>
+<pre class="r"><code>cr_only &lt;- setdiff(intermed, three_species)
+
+# Human only
+
+#setdiff(rownames(spec_human_heart_01), (union(union(hr_only, hc_only), three_species)))
+length(setdiff(rownames(spec_human_heart_01), (union(union(hr_only, hc_only), three_species))))</code></pre>
+<pre><code>## [1] 335</code></pre>
+<pre class="r"><code># Chimp only
+
+#setdiff(rownames(spec_chimp_heart_01), (union(union(cr_only, hc_only), three_species)))
+length(setdiff(rownames(spec_chimp_heart_01), (union(union(cr_only, hc_only), three_species))))</code></pre>
+<pre><code>## [1] 400</code></pre>
+<pre class="r"><code># Rhesus only
+
+#setdiff(rownames(spec_rhesus_heart_01), (union(union(cr_only, hr_only), three_species)))
+length(setdiff(rownames(spec_rhesus_heart_01), (union(union(cr_only, hr_only), three_species))))</code></pre>
+<pre><code>## [1] 519</code></pre>
+</div>
+<div id="p-value-figure" class="section level1">
+<h1>2 P value figure</h1>
+<pre class="r"><code>draw_venn_methylation &lt;- function(hs, cs, rs, hc, hr, cr, hcr){
+draw.triple.venn(hs+hc+hr+hcr, cs+hc+cr+hcr, rs+hr+cr+hcr, hc+hcr, cr+hcr, hr+hcr, hcr, filename = NULL, category = c(&quot;Hu&quot;, &quot;Ch&quot;, &quot;Rh&quot;), fill = pal[1:3], main.cex = 3, cat.cex = 3, cex=3.5, lty=1, height=2000, width=2000, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05)
+}
+
+# Heart specific
+svg(&quot;../data/heart_specific_2pval.svg&quot;, width = 7.2, height = 7.2)
+draw_venn_methylation(335, 400, 519, 167, 88, 161, 106)</code></pre>
+<pre><code>## (polygon[GRID.polygon.27], polygon[GRID.polygon.28], polygon[GRID.polygon.29], polygon[GRID.polygon.30], polygon[GRID.polygon.31], polygon[GRID.polygon.32], text[GRID.text.33], text[GRID.text.34], text[GRID.text.35], text[GRID.text.36], text[GRID.text.37], text[GRID.text.38], text[GRID.text.39], text[GRID.text.40], text[GRID.text.41], text[GRID.text.42])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>only_human_heart &lt;- setdiff(rownames(spec_human_heart_01), (union(union(hr_only, hc_only), three_species))) 
+
+(51-23)/212</code></pre>
+<pre><code>## [1] 0.1320755</code></pre>
+<pre class="r"><code>with_human &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_chimp_heart_05))
+length(with_human)</code></pre>
+<pre><code>## [1] 182</code></pre>
+<pre class="r"><code>with_chimp &lt;- intersect(rownames(spec_human_heart_05), rownames(spec_chimp_heart_01))
+length(with_chimp)</code></pre>
+<pre><code>## [1] 218</code></pre>
+<pre class="r"><code>union(with_human, with_chimp)</code></pre>
+<pre><code>##   [1] &quot;ENSG00000002330&quot; &quot;ENSG00000009307&quot; &quot;ENSG00000012061&quot;
+##   [4] &quot;ENSG00000012232&quot; &quot;ENSG00000015676&quot; &quot;ENSG00000029534&quot;
+##   [7] &quot;ENSG00000039068&quot; &quot;ENSG00000039560&quot; &quot;ENSG00000050327&quot;
+##  [10] &quot;ENSG00000052749&quot; &quot;ENSG00000054523&quot; &quot;ENSG00000065802&quot;
+##  [13] &quot;ENSG00000066468&quot; &quot;ENSG00000067221&quot; &quot;ENSG00000067365&quot;
+##  [16] &quot;ENSG00000068903&quot; &quot;ENSG00000069943&quot; &quot;ENSG00000075702&quot;
+##  [19] &quot;ENSG00000076604&quot; &quot;ENSG00000078804&quot; &quot;ENSG00000078814&quot;
+##  [22] &quot;ENSG00000082996&quot; &quot;ENSG00000087884&quot; &quot;ENSG00000092054&quot;
+##  [25] &quot;ENSG00000099849&quot; &quot;ENSG00000100292&quot; &quot;ENSG00000100316&quot;
+##  [28] &quot;ENSG00000100387&quot; &quot;ENSG00000100422&quot; &quot;ENSG00000101132&quot;
+##  [31] &quot;ENSG00000103479&quot; &quot;ENSG00000103932&quot; &quot;ENSG00000104611&quot;
+##  [34] &quot;ENSG00000104879&quot; &quot;ENSG00000104964&quot; &quot;ENSG00000104969&quot;
+##  [37] &quot;ENSG00000105289&quot; &quot;ENSG00000105968&quot; &quot;ENSG00000108582&quot;
+##  [40] &quot;ENSG00000108825&quot; &quot;ENSG00000111245&quot; &quot;ENSG00000111615&quot;
+##  [43] &quot;ENSG00000111664&quot; &quot;ENSG00000111786&quot; &quot;ENSG00000111877&quot;
+##  [46] &quot;ENSG00000112186&quot; &quot;ENSG00000112664&quot; &quot;ENSG00000112851&quot;
+##  [49] &quot;ENSG00000113161&quot; &quot;ENSG00000113296&quot; &quot;ENSG00000113645&quot;
+##  [52] &quot;ENSG00000114107&quot; &quot;ENSG00000114784&quot; &quot;ENSG00000115109&quot;
+##  [55] &quot;ENSG00000115415&quot; &quot;ENSG00000118640&quot; &quot;ENSG00000120049&quot;
+##  [58] &quot;ENSG00000122435&quot; &quot;ENSG00000122477&quot; &quot;ENSG00000124155&quot;
+##  [61] &quot;ENSG00000127054&quot; &quot;ENSG00000127445&quot; &quot;ENSG00000129170&quot;
+##  [64] &quot;ENSG00000129245&quot; &quot;ENSG00000129250&quot; &quot;ENSG00000129521&quot;
+##  [67] &quot;ENSG00000129991&quot; &quot;ENSG00000130545&quot; &quot;ENSG00000130560&quot;
+##  [70] &quot;ENSG00000130695&quot; &quot;ENSG00000130939&quot; &quot;ENSG00000134343&quot;
+##  [73] &quot;ENSG00000134571&quot; &quot;ENSG00000137764&quot; &quot;ENSG00000138771&quot;
+##  [76] &quot;ENSG00000139626&quot; &quot;ENSG00000141456&quot; &quot;ENSG00000143375&quot;
+##  [79] &quot;ENSG00000143420&quot; &quot;ENSG00000143479&quot; &quot;ENSG00000143499&quot;
+##  [82] &quot;ENSG00000143632&quot; &quot;ENSG00000144331&quot; &quot;ENSG00000145244&quot;
+##  [85] &quot;ENSG00000146950&quot; &quot;ENSG00000147044&quot; &quot;ENSG00000147140&quot;
+##  [88] &quot;ENSG00000147676&quot; &quot;ENSG00000148019&quot; &quot;ENSG00000148308&quot;
+##  [91] &quot;ENSG00000148356&quot; &quot;ENSG00000149657&quot; &quot;ENSG00000150401&quot;
+##  [94] &quot;ENSG00000151320&quot; &quot;ENSG00000152689&quot; &quot;ENSG00000154473&quot;
+##  [97] &quot;ENSG00000154914&quot; &quot;ENSG00000155158&quot; &quot;ENSG00000156471&quot;
+## [100] &quot;ENSG00000156508&quot; &quot;ENSG00000157168&quot; &quot;ENSG00000158022&quot;
+## [103] &quot;ENSG00000158321&quot; &quot;ENSG00000158417&quot; &quot;ENSG00000159251&quot;
+## [106] &quot;ENSG00000159348&quot; &quot;ENSG00000160703&quot; &quot;ENSG00000160808&quot;
+## [109] &quot;ENSG00000160867&quot; &quot;ENSG00000162105&quot; &quot;ENSG00000162630&quot;
+## [112] &quot;ENSG00000162896&quot; &quot;ENSG00000163435&quot; &quot;ENSG00000163611&quot;
+## [115] &quot;ENSG00000163634&quot; &quot;ENSG00000163719&quot; &quot;ENSG00000163754&quot;
+## [118] &quot;ENSG00000163950&quot; &quot;ENSG00000164124&quot; &quot;ENSG00000164125&quot;
+## [121] &quot;ENSG00000164199&quot; &quot;ENSG00000165105&quot; &quot;ENSG00000165215&quot;
+## [124] &quot;ENSG00000166167&quot; &quot;ENSG00000167118&quot; &quot;ENSG00000168256&quot;
+## [127] &quot;ENSG00000168286&quot; &quot;ENSG00000169155&quot; &quot;ENSG00000173821&quot;
+## [130] &quot;ENSG00000173848&quot; &quot;ENSG00000174437&quot; &quot;ENSG00000174456&quot;
+## [133] &quot;ENSG00000175550&quot; &quot;ENSG00000175707&quot; &quot;ENSG00000175745&quot;
+## [136] &quot;ENSG00000175931&quot; &quot;ENSG00000176871&quot; &quot;ENSG00000176978&quot;
+## [139] &quot;ENSG00000177479&quot; &quot;ENSG00000178307&quot; &quot;ENSG00000181027&quot;
+## [142] &quot;ENSG00000181885&quot; &quot;ENSG00000182768&quot; &quot;ENSG00000183291&quot;
+## [145] &quot;ENSG00000183421&quot; &quot;ENSG00000183785&quot; &quot;ENSG00000184012&quot;
+## [148] &quot;ENSG00000184162&quot; &quot;ENSG00000185909&quot; &quot;ENSG00000186376&quot;
+## [151] &quot;ENSG00000189227&quot; &quot;ENSG00000196236&quot; &quot;ENSG00000196262&quot;
+## [154] &quot;ENSG00000196730&quot; &quot;ENSG00000197062&quot; &quot;ENSG00000197616&quot;
+## [157] &quot;ENSG00000197822&quot; &quot;ENSG00000198125&quot; &quot;ENSG00000198860&quot;
+## [160] &quot;ENSG00000205302&quot; &quot;ENSG00000205744&quot; &quot;ENSG00000213199&quot;
+## [163] &quot;ENSG00000213221&quot; &quot;ENSG00000213281&quot; &quot;ENSG00000214899&quot;
+## [166] &quot;ENSG00000226245&quot; &quot;ENSG00000227495&quot; &quot;ENSG00000235236&quot;
+## [169] &quot;ENSG00000236540&quot; &quot;ENSG00000237187&quot; &quot;ENSG00000239388&quot;
+## [172] &quot;ENSG00000240857&quot; &quot;ENSG00000250741&quot; &quot;ENSG00000253144&quot;
+## [175] &quot;ENSG00000253972&quot; &quot;ENSG00000254129&quot; &quot;ENSG00000254459&quot;
+## [178] &quot;ENSG00000255449&quot; &quot;ENSG00000255863&quot; &quot;ENSG00000258056&quot;
+## [181] &quot;ENSG00000258444&quot; &quot;ENSG00000259075&quot; &quot;ENSG00000011485&quot;
+## [184] &quot;ENSG00000035687&quot; &quot;ENSG00000036448&quot; &quot;ENSG00000038002&quot;
+## [187] &quot;ENSG00000048028&quot; &quot;ENSG00000062716&quot; &quot;ENSG00000065135&quot;
+## [190] &quot;ENSG00000072401&quot; &quot;ENSG00000075975&quot; &quot;ENSG00000078269&quot;
+## [193] &quot;ENSG00000091490&quot; &quot;ENSG00000091542&quot; &quot;ENSG00000103067&quot;
+## [196] &quot;ENSG00000104863&quot; &quot;ENSG00000107854&quot; &quot;ENSG00000114279&quot;
+## [199] &quot;ENSG00000115361&quot; &quot;ENSG00000115687&quot; &quot;ENSG00000115884&quot;
+## [202] &quot;ENSG00000116337&quot; &quot;ENSG00000116906&quot; &quot;ENSG00000118242&quot;
+## [205] &quot;ENSG00000118496&quot; &quot;ENSG00000119004&quot; &quot;ENSG00000119446&quot;
+## [208] &quot;ENSG00000119630&quot; &quot;ENSG00000121848&quot; &quot;ENSG00000122042&quot;
+## [211] &quot;ENSG00000124380&quot; &quot;ENSG00000125812&quot; &quot;ENSG00000125967&quot;
+## [214] &quot;ENSG00000129197&quot; &quot;ENSG00000133424&quot; &quot;ENSG00000134247&quot;
+## [217] &quot;ENSG00000134508&quot; &quot;ENSG00000135124&quot; &quot;ENSG00000135373&quot;
+## [220] &quot;ENSG00000137692&quot; &quot;ENSG00000138621&quot; &quot;ENSG00000139132&quot;
+## [223] &quot;ENSG00000139921&quot; &quot;ENSG00000141030&quot; &quot;ENSG00000147124&quot;
+## [226] &quot;ENSG00000147457&quot; &quot;ENSG00000149633&quot; &quot;ENSG00000149679&quot;
+## [229] &quot;ENSG00000151065&quot; &quot;ENSG00000151718&quot; &quot;ENSG00000152242&quot;
+## [232] &quot;ENSG00000157796&quot; &quot;ENSG00000157881&quot; &quot;ENSG00000162777&quot;
+## [235] &quot;ENSG00000163681&quot; &quot;ENSG00000164144&quot; &quot;ENSG00000165548&quot;
+## [238] &quot;ENSG00000166340&quot; &quot;ENSG00000166343&quot; &quot;ENSG00000167306&quot;
+## [241] &quot;ENSG00000169045&quot; &quot;ENSG00000169740&quot; &quot;ENSG00000170525&quot;
+## [244] &quot;ENSG00000172478&quot; &quot;ENSG00000172725&quot; &quot;ENSG00000172890&quot;
+## [247] &quot;ENSG00000173960&quot; &quot;ENSG00000173991&quot; &quot;ENSG00000174720&quot;
+## [250] &quot;ENSG00000175220&quot; &quot;ENSG00000175455&quot; &quot;ENSG00000177425&quot;
+## [253] &quot;ENSG00000181856&quot; &quot;ENSG00000183597&quot; &quot;ENSG00000185418&quot;
+## [256] &quot;ENSG00000186340&quot; &quot;ENSG00000187715&quot; &quot;ENSG00000197555&quot;
+## [259] &quot;ENSG00000198001&quot; &quot;ENSG00000198208&quot; &quot;ENSG00000221890&quot;
+## [262] &quot;ENSG00000223343&quot; &quot;ENSG00000224597&quot; &quot;ENSG00000228106&quot;
+## [265] &quot;ENSG00000235837&quot; &quot;ENSG00000241782&quot; &quot;ENSG00000247595&quot;
+## [268] &quot;ENSG00000248919&quot; &quot;ENSG00000249141&quot; &quot;ENSG00000254691&quot;</code></pre>
+<pre class="r"><code>cons_human_chimp_heart &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_chimp_heart_01))
+
+(22-6)/124</code></pre>
+<pre><code>## [1] 0.1290323</code></pre>
+</div>
+<div id="conserved-versus-human-specific-figure" class="section level1">
+<h1>Conserved versus human specific figure</h1>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000105732&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, all_species, all_tissues), stringsAsFactors = F)
+make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
+make_exp_df[,2] &lt;- as.factor(make_exp_df[,2])
+levels(make_exp_df$all_species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rh. macaque&quot;)
+colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+
+
+sample_var &lt;- ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~make_exp_df[,2])  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;))  + theme(legend.position=&quot;none&quot;) 
+
+plot_grid(sample_var)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="overlap-with-tissue-versus-group" class="section level1">
+<h1>Overlap with tissue versus group</h1>
+<pre class="r"><code># Load count data
+
+counts_genes_in_cutoff &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/counts_12184.txt&quot;)
+cpm_12184 &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/cpm_12184.txt&quot;)
+all_samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt&quot;)
+samples &lt;- all_samples[-17,]
+labels &lt;- paste(samples$Species, samples$Tissue, sep=&quot;.&quot;)
+
+# TMM 
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+# Reassign tissues to be heart versus non-heart
+
+all_samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt&quot;)
+
+
+# Retrieve RIN score for each sample
+RNA_seq_info &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/RNA_seq_info.csv&quot;, stringsAsFactors = FALSE)
+all_RIN &lt;- as.data.frame(RNA_seq_info[,22])
+all_RIN &lt;- as.matrix(all_RIN)
+
+all_species &lt;- RNA_seq_info[,3]
+all_tissues &lt;- RNA_seq_info[,4]
+all_individiuals &lt;- RNA_seq_info[,5]
+
+###################### Run on hearts ###########################
+
+# Group the hearts
+
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, all_tissues) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+
+
+design &lt;- model.matrix(~ tissue_group*all_species + all_RIN)
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;heart&quot;
+colnames(design)[3] &lt;- &quot;human&quot;
+colnames(design)[4] &lt;- &quot;rhesus&quot;
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;humanHeart&quot;
+colnames(design)[7] &lt;- &quot;rhesusHeart&quot;
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=T)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>#corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=all_individiuals)
+
+corfit.consensus &lt;- -0.1009512
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=all_individiuals, correlation=corfit.consensus)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>fit_hearts &lt;- lmFit(cpm.voom.cyclic, design)
+fit_hearts &lt;- eBayes(fit_hearts)
+
+cm1 &lt;- makeContrasts(H_heart_v_non_heart = (heart + human + humanHeart) - human, 
+                     C_heart_v_non_heart = heart, 
+                     R_heart_v_non_heart = (heart + rhesus + rhesusHeart) - rhesus, 
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_hearts &lt;- contrasts.fit(fit_hearts, cm1)
+fit1 &lt;- eBayes(contrasts_hearts)
+
+
+fit_human_hearts &lt;- topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_chimp_hearts &lt;- topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_rhesus_hearts &lt;- topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+
+# Set FDR level at 1% 
+
+FDR_level &lt;- 0.01
+
+dim(fit_human_hearts[which(fit_human_hearts$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 1111    7</code></pre>
+<pre class="r"><code>dim(fit_chimp_hearts[which(fit_chimp_hearts$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 2057    7</code></pre>
+<pre class="r"><code>dim(fit_rhesus_hearts[which(fit_rhesus_hearts$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 3240    7</code></pre>
+<pre class="r"><code>###################### Run on kidneys ###########################
+
+# Group the tissues
+
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, all_tissues) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+
+
+design &lt;- model.matrix(~ tissue_group*all_species + all_RIN)
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;kidney&quot;
+colnames(design)[3] &lt;- &quot;human&quot;
+colnames(design)[4] &lt;- &quot;rhesus&quot;
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;humanKidney&quot;
+colnames(design)[7] &lt;- &quot;rhesusKidney&quot;
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=T)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<pre class="r"><code># corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=all_individiuals)
+
+corfit.consensus &lt;- -0.128052
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=all_individiuals, correlation=corfit.consensus)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-4.png" width="672" /></p>
+<pre class="r"><code>fit_kidney &lt;- lmFit(cpm.voom.cyclic, design)
+fit_kidney &lt;- eBayes(fit_kidney)
+
+cm1 &lt;- makeContrasts(H_heart_v_non_heart = (kidney + human + humanKidney) - human, 
+                     C_heart_v_non_heart = kidney, 
+                     R_heart_v_non_heart = (kidney + rhesus + rhesusKidney) - rhesus, 
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_kidney &lt;- contrasts.fit(fit_kidney, cm1)
+fit1 &lt;- eBayes(contrasts_kidney)
+
+
+fit_human_kidney &lt;- topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_chimp_kidney &lt;- topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_rhesus_kidney &lt;- topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+
+# Set FDR level at 1% 
+
+FDR_level &lt;- 0.01
+
+dim(fit_human_kidney[which(fit_human_kidney$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 504   7</code></pre>
+<pre class="r"><code>dim(fit_chimp_kidney[which(fit_chimp_kidney$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 642   7</code></pre>
+<pre class="r"><code>dim(fit_rhesus_kidney[which(fit_rhesus_kidney$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 1034    7</code></pre>
+<pre class="r"><code>###################### Run on livers ###########################
+
+# Group the tissues
+
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, all_tissues) 
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;lung&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+
+
+design &lt;- model.matrix(~ tissue_group*all_species + all_RIN)
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;liver&quot;
+colnames(design)[3] &lt;- &quot;human&quot;
+colnames(design)[4] &lt;- &quot;rhesus&quot;
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;humanLiver&quot;
+colnames(design)[7] &lt;- &quot;rhesusLiver&quot;
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=T)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-5.png" width="672" /></p>
+<pre class="r"><code>#corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=all_individiuals)
+
+corfit.consensus &lt;-  -0.0912331
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=all_individiuals, correlation=corfit.consensus)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-6.png" width="672" /></p>
+<pre class="r"><code>fit_liver &lt;- lmFit(cpm.voom.cyclic, design)
+fit_liver &lt;- eBayes(fit_liver)
+
+cm1 &lt;- makeContrasts(H_heart_v_non_heart = (liver + human + humanLiver) - human, 
+                     C_heart_v_non_heart = liver, 
+                     R_heart_v_non_heart = (liver + rhesus + rhesusLiver) - rhesus, 
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_liver &lt;- contrasts.fit(fit_liver, cm1)
+fit1 &lt;- eBayes(contrasts_liver)
+
+
+fit_human_liver &lt;- topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_chimp_liver &lt;- topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_rhesus_liver &lt;- topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+
+# Set FDR level at 1% 
+
+FDR_level &lt;- 0.01
+
+dim(fit_human_liver[which(fit_human_liver$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 1453    7</code></pre>
+<pre class="r"><code>dim(fit_chimp_liver[which(fit_chimp_liver$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 2406    7</code></pre>
+<pre class="r"><code>dim(fit_rhesus_liver[which(fit_rhesus_liver$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 3298    7</code></pre>
+<pre class="r"><code>###################### Run on lungs ###########################
+
+# Group the tissues
+
+tissue_group &lt;- gsub(&quot;heart&quot;, &quot;Grouped&quot;, all_tissues) 
+tissue_group &lt;- gsub(&quot;kidney&quot;, &quot;Grouped&quot;, tissue_group) 
+tissue_group &lt;- gsub(&quot;liver&quot;, &quot;Grouped&quot;, tissue_group) 
+
+
+
+
+design &lt;- model.matrix(~ tissue_group*all_species + all_RIN)
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design)[2] &lt;- &quot;lung&quot;
+colnames(design)[3] &lt;- &quot;human&quot;
+colnames(design)[4] &lt;- &quot;rhesus&quot;
+colnames(design)[5] &lt;- &quot;RIN&quot;
+colnames(design)[6] &lt;- &quot;humanLung&quot;
+colnames(design)[7] &lt;- &quot;rhesusLung&quot;
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=T)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-7.png" width="672" /></p>
+<pre class="r"><code>#corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=all_individiuals)
+
+corfit.consensus &lt;-  -0.09711687
+
+# Final voom on filtered data
+
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=all_individiuals, correlation=corfit.consensus)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-7-8.png" width="672" /></p>
+<pre class="r"><code>fit_lung &lt;- lmFit(cpm.voom.cyclic, design)
+fit_lung &lt;- eBayes(fit_lung)
+
+cm1 &lt;- makeContrasts(H_heart_v_non_heart = (lung + human + humanLung) - human, 
+                     C_heart_v_non_heart = lung, 
+                     R_heart_v_non_heart = (lung + rhesus + rhesusLung) - rhesus, 
+                     levels = design)
+
+# Implement contrasts
+
+contrasts_lung &lt;- contrasts.fit(fit_lung, cm1)
+fit1 &lt;- eBayes(contrasts_lung)
+
+
+fit_human_lung &lt;- topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_chimp_lung &lt;- topTable(fit1, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+fit_rhesus_lung &lt;- topTable(fit1, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+
+# Set FDR level at 1% 
+
+FDR_level &lt;- 0.01
+
+dim(fit_human_lung[which(fit_human_lung$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 852   7</code></pre>
+<pre class="r"><code>dim(fit_chimp_lung[which(fit_chimp_lung$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 1775    7</code></pre>
+<pre class="r"><code>dim(fit_rhesus_lung[which(fit_rhesus_lung$adj.P.Val &lt; FDR_level), ])</code></pre>
+<pre><code>## [1] 3298    7</code></pre>
+<pre class="r"><code># Bind together
+
+humans_together &lt;- cbind(fit_human_hearts$logFC, fit_human_hearts$adj.P.Val, fit_human_kidney$logFC, fit_human_kidney$adj.P.Val, fit_human_liver$logFC, fit_human_liver$adj.P.Val, fit_human_lung$logFC, fit_human_lung$adj.P.Val)
+
+rownames(humans_together) &lt;- rownames(fit_human_lung)
+
+chimps_together &lt;- cbind(fit_chimp_hearts$logFC, fit_chimp_hearts$adj.P.Val, fit_chimp_kidney$logFC, fit_chimp_kidney$adj.P.Val, fit_chimp_liver$logFC, fit_chimp_liver$adj.P.Val, fit_chimp_lung$logFC, fit_chimp_lung$adj.P.Val)
+
+rownames(chimps_together) &lt;- rownames(fit_chimp_lung)
+
+rhesus_together &lt;- cbind(fit_rhesus_hearts$logFC, fit_rhesus_hearts$adj.P.Val, fit_rhesus_kidney$logFC, fit_rhesus_kidney$adj.P.Val, fit_rhesus_liver$logFC, fit_rhesus_liver$adj.P.Val, fit_rhesus_lung$logFC, fit_rhesus_lung$adj.P.Val)
+
+rownames(rhesus_together) &lt;- rownames(fit_rhesus_lung)
+
+# Id tissue specific in each species
+
+FDR_level &lt;- 0.01
+
+human_heart_together &lt;-  humans_together[which(humans_together[,2] &lt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+dim(human_heart_together)</code></pre>
+<pre><code>## [1] 976   8</code></pre>
+<pre class="r"><code>upreg_human_heart &lt;- humans_together[which(humans_together[,1] &gt; 0 &amp; humans_together[,2] &lt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+dim(upreg_human_heart)</code></pre>
+<pre><code>## [1] 720   8</code></pre>
+<pre class="r"><code>downreg_human_heart &lt;- humans_together[which(humans_together[,1] &lt; 0 &amp;  humans_together[,2] &lt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+dim(downreg_human_heart)</code></pre>
+<pre><code>## [1] 256   8</code></pre>
+<pre class="r"><code>human_kidney_together &lt;-  humans_together[which(humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &lt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+upreg_human_kidney &lt;- humans_together[which(humans_together[,3] &gt; 0 &amp; humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &lt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+downreg_human_kidney &lt;- humans_together[which(humans_together[,3] &lt; 0 &amp; humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &lt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+human_liver_together &lt;-  humans_together[which(humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &lt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+upreg_human_liver &lt;- humans_together[which(humans_together[,5] &gt; 0 &amp; humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &lt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+downreg_human_liver &lt;- humans_together[which(humans_together[,5] &lt; 0 &amp; humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &lt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+human_lung_together &lt;-  humans_together[which(humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &lt; FDR_level),]
+
+upreg_human_lung &lt;- humans_together[which(humans_together[,7] &gt; 0 &amp; humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &lt; FDR_level),]
+
+downreg_human_lung &lt;- humans_together[which(humans_together[,7] &lt; 0 &amp; humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &lt; FDR_level),]
+
+
+chimp_heart_together &lt;-  chimps_together[which(chimps_together[,2] &lt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+upreg_chimp_heart &lt;-  chimps_together[which(chimps_together[,1] &gt; 0  &amp; chimps_together[,2] &lt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+downreg_chimp_heart &lt;-  chimps_together[which(chimps_together[,1] &lt; 0  &amp; chimps_together[,2] &lt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+
+dim(chimp_heart_together)</code></pre>
+<pre><code>## [1] 1624    8</code></pre>
+<pre class="r"><code>chimp_kidney_together &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &lt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+upreg_chimp_kidney &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,3] &gt; 0 &amp; chimps_together[,4] &lt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+downreg_chimp_kidney &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,3] &lt; 0 &amp; chimps_together[,4] &lt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+chimp_liver_together &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &lt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+upreg_chimp_liver &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,5] &gt; 0 &amp; chimps_together[,6] &lt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+downreg_chimp_liver &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,5] &lt; 0 &amp; chimps_together[,6] &lt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+chimp_lung_together &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &lt; FDR_level),]
+
+upreg_chimp_lung &lt;- chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,7] &gt; 0 &amp; chimps_together[,8] &lt; FDR_level),]
+
+downreg_chimp_lung &lt;- chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,7] &lt; 0 &amp; chimps_together[,8] &lt; FDR_level),]
+
+
+rhesus_heart_together &lt;-  rhesus_together[which(rhesus_together[,2] &lt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+upreg_rhesus_heart &lt;- rhesus_together[which(rhesus_together[,1] &gt; 0 &amp; rhesus_together[,2] &lt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+downreg_rhesus_heart &lt;- rhesus_together[which(rhesus_together[,1] &lt; 0 &amp; rhesus_together[,2] &lt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+
+
+rhesus_kidney_together &lt;-  rhesus_together[which(rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &lt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+upreg_rhesus_kidney &lt;- rhesus_together[which(rhesus_together[,3] &gt; 0 &amp; rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &lt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+downreg_rhesus_kidney &lt;- rhesus_together[which(rhesus_together[,3] &lt; 0 &amp; rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &lt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+rhesus_liver_together &lt;-  rhesus_together[which(rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &lt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+upreg_rhesus_liver &lt;- rhesus_together[which(rhesus_together[,5] &gt; 0 &amp; rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &lt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+downreg_rhesus_liver &lt;- rhesus_together[which(rhesus_together[,5] &lt; 0 &amp; rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &lt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+
+rhesus_lung_together &lt;-  rhesus_together[which(rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &lt; FDR_level),]
+
+upreg_rhesus_lung &lt;-  rhesus_together[which(rhesus_together[,7] &gt; 0 &amp; rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &lt; FDR_level),]
+
+downreg_rhesus_lung &lt;-  rhesus_together[which(rhesus_together[,7] &lt; 0 &amp; rhesus_together[,2] &gt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &lt; FDR_level),]
+
+
+dim(rhesus_heart_together)</code></pre>
+<pre><code>## [1] 1762    8</code></pre>
+<pre class="r"><code>human_heart_only &lt;- setdiff(rownames(human_heart_together), union(union(rownames(human_kidney_together), rownames(human_liver_together)), rownames(human_lung_together)))
+
+
+
+
+#make_venn_diagram &lt;- function(upreg_human_tissue, upreg_chimp_tissue, upreg_rhesus_tissue, downreg_human_tissue, downreg_chimp_tissue, downreg_rhesus_tissue, name_file){
+#mylist &lt;- list()
+#mylist[[&quot;Hu&quot;]] &lt;- rownames(upreg_human_tissue) + rownames(downreg_human_tissue)
+#mylist[[&quot;Ch&quot;]] &lt;- rownames(upreg_chimp_tissue) + rownames(downreg_chimp_tissue)
+#mylist[[&quot;Rh&quot;]] &lt;- rownames(upreg_rhesus_tissue) + rownames(downreg_rhesus_tissue)
+
+
+# Make Venn Diagram
+#dev.off()
+#Heart_specific_up &lt;- venn.diagram(mylist,  filename = NULL, fill = pal[1:3], main.cex = 3, cat.cex = 3, cex=3.5, lty=1, height=2000, width=2000, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05)
+#grid.draw(Heart_specific_up)
+
+#}
+
+
+
+#svg(&quot;Both_heart_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(upreg_human_heart, upreg_chimp_heart, upreg_rhesus_heart, &quot;Upregulated in heart only&quot;)
+#dev.off()
+
+#intersect(intersect(upreg_human_heart, upreg_chimp_heart), upreg_rhesus_heart)
+
+
+#dev.off()
+#draw.triple.venn(323+183+626+158, 521+183+626+618, 158+626+618+1182, 183+626, 618+626, 158+626, 626,  main= &quot;Heart #versus kidney (hypomethylated)&quot;,  category = c(&quot;Human&quot;, &quot;Chimp&quot;, &quot;Rhesus macaque&quot;), height=3000, width=3000, cex=2 , #fill = pal[1:3], lty=1, cat.cex = 2, main.cex = 2)
+
+
+
+#svg(&quot;Upregulated_kidney_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(upreg_human_kidney, upreg_chimp_kidney, upreg_rhesus_kidney, NULL)
+#dev.off()
+
+#svg(&quot;Upregulated_liver_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(upreg_human_liver, upreg_chimp_liver, upreg_rhesus_liver, NULL)
+#dev.off()
+
+#svg(&quot;Upregulated_lung_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(upreg_human_lung, upreg_chimp_lung, upreg_rhesus_lung, NULL)
+#dev.off()
+
+#svg(&quot;Downregulated_heart_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(downreg_human_heart, downreg_chimp_heart, downreg_rhesus_heart, NULL)
+#dev.off()
+
+#svg(&quot;Downregulated_kidney_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(downreg_human_kidney, downreg_chimp_kidney, downreg_rhesus_kidney, NULL)
+#dev.off()
+
+#svg(&quot;Downregulated_liver_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(downreg_human_liver, downreg_chimp_liver, downreg_rhesus_liver, NULL)
+#dev.off()
+
+#svg(&quot;Downregulated_lung_specific.svg&quot;, width = 7.2, height = 7.2)
+#make_venn_diagram(downreg_human_lung, downreg_chimp_lung, downreg_rhesus_lung, NULL)
+#dev.off()
+
+#title &lt;- ggdraw() + draw_label(&quot;Genes regulated in a tissue specific direction (FSR 1%)&quot;, fontface=&#39;bold&#39;)
+#p1 &lt;- ggdraw()+draw_image(&quot;Upregulated_heart_specific.svg&quot;) 
+#p2 &lt;- ggdraw()+draw_image(&quot;Downregulated_heart_specific.svg&quot;) 
+#p3 &lt;- ggdraw()+draw_image(&quot;Upregulated_liver_specific.svg&quot;)  
+#p4 &lt;- ggdraw()+draw_image(&quot;Downregulated_liver_specific.svg&quot;) 
+
+#p5 &lt;- ggdraw()+draw_image(&quot;Upregulated_lung_specific.svg&quot;)  
+#p6 &lt;- ggdraw()+draw_image(&quot;Downregulated_lung_specific.svg&quot;)  
+#p7 &lt;- ggdraw()+draw_image(&quot;Upregulated_kidney_specific.svg&quot;)  
+#p8 &lt;- ggdraw()+draw_image(&quot;Downregulated_kidney_specific.svg&quot;)  
+
+#eight_plots &lt;- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, labels = c(&quot;6A.&quot;, &quot;6B.&quot;, &quot;6C.&quot;, &quot;6D.&quot;, &quot;6E.&quot;, &quot;6F.&quot;, &quot;6G.&quot;, &quot;6H.&quot;), ncol = 2)
+#plot_fig2 &lt;- plot_grid(eight_plots, ncol = 1, rel_heights=c(0.1, 1))
+
+#save_plot(&quot;../data/lenient_ts.png&quot;, plot_fig2,
+#           ncol = 2, # we&#39;re saving a grid plot of 2 columns
+#           nrow = 4, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+#           base_aspect_ratio = 0.75
+#           )
+
+
+# Find all conserved up/downregulated tissue specific
+
+conserved_tissue_specific &lt;- function(human_tissue_name, chimp_tissue_name, rhesus_tissue_name){
+
+  upreg_human_tissue &lt;- rownames(human_tissue_name)
+  upreg_chimp_tissue &lt;- rownames(chimp_tissue_name)
+  upreg_rhesus_tissue &lt;- rownames(rhesus_tissue_name)
+  
+all_three &lt;- intersect(intersect(upreg_human_tissue, upreg_chimp_tissue), upreg_rhesus_tissue)
+
+return(all_three)
+}
+
+heart_upregulated &lt;- conserved_tissue_specific(upreg_human_heart, upreg_chimp_heart, upreg_rhesus_heart)
+write.csv(heart_upregulated, &quot;../data/specific_upreg_heart_genes.csv&quot;, row.names = FALSE)
+heart_downregulated &lt;- conserved_tissue_specific(downreg_human_heart, downreg_chimp_heart, downreg_rhesus_heart)
+write.csv(heart_downregulated, &quot;../data/specific_downreg_heart_genes.csv&quot;, row.names = FALSE)
+
+liver_upregulated &lt;- conserved_tissue_specific(upreg_human_liver, upreg_chimp_liver, upreg_rhesus_liver)
+write.csv(liver_upregulated, &quot;../data/specific_upreg_liver_genes.csv&quot;, row.names = FALSE)
+liver_downregulated &lt;- conserved_tissue_specific(downreg_human_liver, downreg_chimp_liver, downreg_rhesus_liver)
+write.csv(liver_downregulated, &quot;../data/specific_downreg_liver_genes.csv&quot;, row.names = FALSE)
+
+lung_upregulated &lt;- conserved_tissue_specific(upreg_human_lung, upreg_chimp_lung, upreg_rhesus_lung)
+write.csv(lung_upregulated, &quot;../data/specific_upreg_lung_genes.csv&quot;, row.names = FALSE)
+lung_downregulated &lt;- conserved_tissue_specific(downreg_human_lung, downreg_chimp_lung, downreg_rhesus_lung)
+write.csv(lung_downregulated, &quot;../data/specific_downreg_lung_genes.csv&quot;, row.names = FALSE)
+
+kidney_upregulated &lt;- conserved_tissue_specific(upreg_human_kidney, upreg_chimp_kidney, upreg_rhesus_kidney)
+write.csv(kidney_upregulated, &quot;../data/specific_upreg_kidney_genes.csv&quot;, row.names = FALSE)
+kidney_downregulated &lt;- conserved_tissue_specific(downreg_human_kidney, downreg_chimp_kidney, downreg_rhesus_kidney)
+write.csv(kidney_downregulated, &quot;../data/specific_downreg_kidney_genes.csv&quot;, row.names = FALSE)
+
+
+# Find all conserved up/downregulated tissue specific
+
+not_conserved_tissue_specific &lt;- function(human_tissue_name, chimp_tissue_name, rhesus_tissue_name){
+
+  upreg_human_tissue &lt;- rownames(human_tissue_name)
+  upreg_chimp_tissue &lt;- rownames(chimp_tissue_name)
+  upreg_rhesus_tissue &lt;- rownames(rhesus_tissue_name)
+  
+all_three &lt;- setdiff(upreg_human_tissue, union(upreg_chimp_tissue, upreg_rhesus_tissue))
+
+return(all_three)
+}
+
+heart_upregulated &lt;- not_conserved_tissue_specific(upreg_human_heart, upreg_chimp_heart, upreg_rhesus_heart)
+write.csv(heart_upregulated, &quot;../data/human_specific_upreg_heart_genes.csv&quot;, row.names = FALSE)
+heart_downregulated &lt;- not_conserved_tissue_specific(downreg_human_heart, downreg_chimp_heart, downreg_rhesus_heart)
+write.csv(heart_downregulated, &quot;../data/human_specific_downreg_heart_genes.csv&quot;, row.names = FALSE)
+
+liver_upregulated &lt;- not_conserved_tissue_specific(upreg_human_liver, upreg_chimp_liver, upreg_rhesus_liver)
+write.csv(liver_upregulated, &quot;../data/human_specific_upreg_liver_genes.csv&quot;, row.names = FALSE)
+liver_downregulated &lt;- not_conserved_tissue_specific(downreg_human_liver, downreg_chimp_liver, downreg_rhesus_liver)
+write.csv(liver_downregulated, &quot;../data/human_specific_downreg_liver_genes.csv&quot;, row.names = FALSE)
+
+lung_upregulated &lt;- not_conserved_tissue_specific(upreg_human_lung, upreg_chimp_lung, upreg_rhesus_lung)
+write.csv(lung_upregulated, &quot;../data/human_specific_upreg_lung_genes.csv&quot;, row.names = FALSE)
+lung_downregulated &lt;- not_conserved_tissue_specific(downreg_human_lung, downreg_chimp_lung, downreg_rhesus_lung)
+write.csv(lung_downregulated, &quot;../data/human_specific_downreg_lung_genes.csv&quot;, row.names = FALSE)
+
+kidney_upregulated &lt;- not_conserved_tissue_specific(upreg_human_kidney, upreg_chimp_kidney, upreg_rhesus_kidney)
+write.csv(kidney_upregulated, &quot;../data/human_specific_upreg_kidney_genes.csv&quot;, row.names = FALSE)
+kidney_downregulated &lt;- not_conserved_tissue_specific(downreg_human_kidney, downreg_chimp_kidney, downreg_rhesus_kidney)
+write.csv(kidney_downregulated, &quot;../data/human_specific_downreg_kidney_genes.csv&quot;, row.names = FALSE)
+
+
+
+FDR_level &lt;- 0.01
+
+
+spec_human_heart_01 &lt;-  humans_together[which(humans_together[,2] &lt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+spec_chimp_heart_01 &lt;-  chimps_together[which(chimps_together[,2] &lt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+spec_rhesus_heart_01 &lt;-  rhesus_together[which(rhesus_together[,2] &lt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+
+
+FDR_level &lt;- 0.05
+
+
+spec_human_heart_05 &lt;-  humans_together[which(humans_together[,2] &lt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+spec_chimp_heart_05 &lt;-  chimps_together[which(chimps_together[,2] &lt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+spec_rhesus_heart_05 &lt;-  rhesus_together[which(rhesus_together[,2] &lt; FDR_level &amp; rhesus_together[,4] &gt; FDR_level &amp; rhesus_together[,6] &gt; FDR_level &amp; rhesus_together[,8] &gt; FDR_level),]
+
+
+# Center: overlap with 3 species
+
+show_overlap &lt;- function(human_tissue, chimp_tissue, rhesus_tissue){
+  get_intersect &lt;- intersect(intersect(rownames(human_tissue), rownames(chimp_tissue)), rownames(rhesus_tissue))
+  return(get_intersect)
+}
+
+with_human &lt;- show_overlap(spec_human_heart_01, spec_chimp_heart_05, spec_rhesus_heart_05)
+length(with_human)</code></pre>
+<pre><code>## [1] 350</code></pre>
+<pre class="r"><code>with_chimp &lt;- show_overlap(spec_human_heart_05, spec_chimp_heart_01, spec_rhesus_heart_05)
+length(with_chimp)</code></pre>
+<pre><code>## [1] 427</code></pre>
+<pre class="r"><code>with_rhesus &lt;- show_overlap(spec_human_heart_05, spec_chimp_heart_05, spec_rhesus_heart_01)
+length(with_rhesus)</code></pre>
+<pre><code>## [1] 547</code></pre>
+<pre class="r"><code>length(union(union(with_human, with_chimp), with_rhesus))</code></pre>
+<pre><code>## [1] 622</code></pre>
+<pre class="r"><code>three_species &lt;- union(union(with_human, with_chimp), with_rhesus)
+
+
+
+# Overlap with 2 species- human and chimp
+
+with_human &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_chimp_heart_05))
+length(with_human)</code></pre>
+<pre><code>## [1] 594</code></pre>
+<pre class="r"><code>with_chimp &lt;- intersect(rownames(spec_human_heart_05), rownames(spec_chimp_heart_01))
+length(with_chimp)</code></pre>
+<pre><code>## [1] 787</code></pre>
+<pre class="r"><code>intermed &lt;- union(with_human, with_chimp)
+
+length(setdiff(intermed, three_species))</code></pre>
+<pre><code>## [1] 250</code></pre>
+<pre class="r"><code>hc_only &lt;- setdiff(intermed, three_species)
+length(hc_only)</code></pre>
+<pre><code>## [1] 250</code></pre>
+<pre class="r"><code># Overlap with 2 species- human and rhesus
+
+with_human &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_rhesus_heart_05))
+length(with_human)</code></pre>
+<pre><code>## [1] 457</code></pre>
+<pre class="r"><code>with_rhesus &lt;- intersect(rownames(spec_human_heart_05), rownames(spec_rhesus_heart_01))
+length(with_rhesus)</code></pre>
+<pre><code>## [1] 716</code></pre>
+<pre class="r"><code>intermed &lt;- union(with_human, with_rhesus)
+
+length(setdiff(intermed, three_species))</code></pre>
+<pre><code>## [1] 165</code></pre>
+<pre class="r"><code>hr_only &lt;- setdiff(intermed, three_species)
+
+# Overlap with 2 species- chimp and rhesus
+
+with_chimp &lt;- intersect(rownames(spec_chimp_heart_01), rownames(spec_rhesus_heart_05))
+length(with_chimp)</code></pre>
+<pre><code>## [1] 654</code></pre>
+<pre class="r"><code>with_rhesus &lt;- intersect(rownames(spec_chimp_heart_05), rownames(spec_rhesus_heart_01))
+length(with_rhesus)</code></pre>
+<pre><code>## [1] 910</code></pre>
+<pre class="r"><code>intermed &lt;- union(with_chimp, with_rhesus)
+
+length(setdiff(intermed, three_species))</code></pre>
+<pre><code>## [1] 432</code></pre>
+<pre class="r"><code>cr_only &lt;- setdiff(intermed, three_species)
+
+# Human only
+
+#setdiff(rownames(spec_human_heart_01), (union(union(hr_only, hc_only), three_species)))
+length(setdiff(rownames(spec_human_heart_01), (union(union(hr_only, hc_only), three_species))))</code></pre>
+<pre><code>## [1] 202</code></pre>
+<pre class="r"><code># Chimp only
+
+#setdiff(rownames(spec_chimp_heart_01), (union(union(cr_only, hc_only), three_species)))
+length(setdiff(rownames(spec_chimp_heart_01), (union(union(cr_only, hc_only), three_species))))</code></pre>
+<pre><code>## [1] 486</code></pre>
+<pre class="r"><code># Rhesus only
+
+#setdiff(rownames(spec_rhesus_heart_01), (union(union(cr_only, hr_only), three_species)))
+length(setdiff(rownames(spec_rhesus_heart_01), (union(union(cr_only, hr_only), three_species))))</code></pre>
+<pre><code>## [1] 629</code></pre>
+<pre class="r"><code>only_human_heart &lt;- setdiff(rownames(spec_human_heart_01), (union(union(hr_only, hc_only), three_species))) 
+
+(13-2)/133</code></pre>
+<pre><code>## [1] 0.08270677</code></pre>
+<pre class="r"><code>with_human &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_chimp_heart_05))
+length(with_human)</code></pre>
+<pre><code>## [1] 594</code></pre>
+<pre class="r"><code>with_chimp &lt;- intersect(rownames(spec_human_heart_05), rownames(spec_chimp_heart_01))
+length(with_chimp)</code></pre>
+<pre><code>## [1] 787</code></pre>
+<pre class="r"><code>union(with_human, with_chimp)</code></pre>
+<pre><code>##   [1] &quot;ENSG00000002330&quot; &quot;ENSG00000004776&quot; &quot;ENSG00000005020&quot;
+##   [4] &quot;ENSG00000006007&quot; &quot;ENSG00000006695&quot; &quot;ENSG00000009307&quot;
+##   [7] &quot;ENSG00000012061&quot; &quot;ENSG00000012232&quot; &quot;ENSG00000015153&quot;
+##  [10] &quot;ENSG00000015676&quot; &quot;ENSG00000018625&quot; &quot;ENSG00000019485&quot;
+##  [13] &quot;ENSG00000022840&quot; &quot;ENSG00000023572&quot; &quot;ENSG00000025156&quot;
+##  [16] &quot;ENSG00000029534&quot; &quot;ENSG00000033050&quot; &quot;ENSG00000035687&quot;
+##  [19] &quot;ENSG00000036448&quot; &quot;ENSG00000039068&quot; &quot;ENSG00000039560&quot;
+##  [22] &quot;ENSG00000048028&quot; &quot;ENSG00000050327&quot; &quot;ENSG00000050426&quot;
+##  [25] &quot;ENSG00000050555&quot; &quot;ENSG00000052749&quot; &quot;ENSG00000054523&quot;
+##  [28] &quot;ENSG00000055118&quot; &quot;ENSG00000057294&quot; &quot;ENSG00000058056&quot;
+##  [31] &quot;ENSG00000058404&quot; &quot;ENSG00000065135&quot; &quot;ENSG00000065361&quot;
+##  [34] &quot;ENSG00000065518&quot; &quot;ENSG00000065534&quot; &quot;ENSG00000065802&quot;
+##  [37] &quot;ENSG00000065809&quot; &quot;ENSG00000067221&quot; &quot;ENSG00000068383&quot;
+##  [40] &quot;ENSG00000068615&quot; &quot;ENSG00000068903&quot; &quot;ENSG00000068976&quot;
+##  [43] &quot;ENSG00000069943&quot; &quot;ENSG00000070018&quot; &quot;ENSG00000070182&quot;
+##  [46] &quot;ENSG00000070214&quot; &quot;ENSG00000070756&quot; &quot;ENSG00000070761&quot;
+##  [49] &quot;ENSG00000071205&quot; &quot;ENSG00000071991&quot; &quot;ENSG00000072062&quot;
+##  [52] &quot;ENSG00000072163&quot; &quot;ENSG00000072195&quot; &quot;ENSG00000072401&quot;
+##  [55] &quot;ENSG00000075415&quot; &quot;ENSG00000075702&quot; &quot;ENSG00000076604&quot;
+##  [58] &quot;ENSG00000076826&quot; &quot;ENSG00000076944&quot; &quot;ENSG00000077522&quot;
+##  [61] &quot;ENSG00000078114&quot; &quot;ENSG00000078668&quot; &quot;ENSG00000078804&quot;
+##  [64] &quot;ENSG00000078814&quot; &quot;ENSG00000079215&quot; &quot;ENSG00000079435&quot;
+##  [67] &quot;ENSG00000082438&quot; &quot;ENSG00000082996&quot; &quot;ENSG00000086015&quot;
+##  [70] &quot;ENSG00000087302&quot; &quot;ENSG00000087303&quot; &quot;ENSG00000087460&quot;
+##  [73] &quot;ENSG00000087884&quot; &quot;ENSG00000088543&quot; &quot;ENSG00000088992&quot;
+##  [76] &quot;ENSG00000090432&quot; &quot;ENSG00000091542&quot; &quot;ENSG00000091640&quot;
+##  [79] &quot;ENSG00000092054&quot; &quot;ENSG00000095637&quot; &quot;ENSG00000099204&quot;
+##  [82] &quot;ENSG00000099785&quot; &quot;ENSG00000099849&quot; &quot;ENSG00000100170&quot;
+##  [85] &quot;ENSG00000100316&quot; &quot;ENSG00000100387&quot; &quot;ENSG00000100422&quot;
+##  [88] &quot;ENSG00000100626&quot; &quot;ENSG00000100628&quot; &quot;ENSG00000101132&quot;
+##  [91] &quot;ENSG00000101247&quot; &quot;ENSG00000101310&quot; &quot;ENSG00000101365&quot;
+##  [94] &quot;ENSG00000101400&quot; &quot;ENSG00000101463&quot; &quot;ENSG00000101605&quot;
+##  [97] &quot;ENSG00000101888&quot; &quot;ENSG00000102178&quot; &quot;ENSG00000102898&quot;
+## [100] &quot;ENSG00000103034&quot; &quot;ENSG00000103343&quot; &quot;ENSG00000103479&quot;
+## [103] &quot;ENSG00000103932&quot; &quot;ENSG00000103994&quot; &quot;ENSG00000104812&quot;
+## [106] &quot;ENSG00000104863&quot; &quot;ENSG00000104879&quot; &quot;ENSG00000104881&quot;
+## [109] &quot;ENSG00000104964&quot; &quot;ENSG00000104969&quot; &quot;ENSG00000105289&quot;
+## [112] &quot;ENSG00000105341&quot; &quot;ENSG00000105649&quot; &quot;ENSG00000105711&quot;
+## [115] &quot;ENSG00000105968&quot; &quot;ENSG00000106344&quot; &quot;ENSG00000106635&quot;
+## [118] &quot;ENSG00000106688&quot; &quot;ENSG00000106992&quot; &quot;ENSG00000107317&quot;
+## [121] &quot;ENSG00000107821&quot; &quot;ENSG00000107874&quot; &quot;ENSG00000108582&quot;
+## [124] &quot;ENSG00000108823&quot; &quot;ENSG00000108825&quot; &quot;ENSG00000109107&quot;
+## [127] &quot;ENSG00000109445&quot; &quot;ENSG00000109670&quot; &quot;ENSG00000109861&quot;
+## [130] &quot;ENSG00000110011&quot; &quot;ENSG00000110811&quot; &quot;ENSG00000111245&quot;
+## [133] &quot;ENSG00000111269&quot; &quot;ENSG00000111530&quot; &quot;ENSG00000111615&quot;
+## [136] &quot;ENSG00000111664&quot; &quot;ENSG00000111786&quot; &quot;ENSG00000111877&quot;
+## [139] &quot;ENSG00000112183&quot; &quot;ENSG00000112186&quot; &quot;ENSG00000112297&quot;
+## [142] &quot;ENSG00000112320&quot; &quot;ENSG00000112664&quot; &quot;ENSG00000112697&quot;
+## [145] &quot;ENSG00000112851&quot; &quot;ENSG00000113161&quot; &quot;ENSG00000113296&quot;
+## [148] &quot;ENSG00000113312&quot; &quot;ENSG00000113369&quot; &quot;ENSG00000113645&quot;
+## [151] &quot;ENSG00000113811&quot; &quot;ENSG00000114125&quot; &quot;ENSG00000114279&quot;
+## [154] &quot;ENSG00000114423&quot; &quot;ENSG00000114738&quot; &quot;ENSG00000114784&quot;
+## [157] &quot;ENSG00000114854&quot; &quot;ENSG00000114923&quot; &quot;ENSG00000115109&quot;
+## [160] &quot;ENSG00000115415&quot; &quot;ENSG00000115641&quot; &quot;ENSG00000116132&quot;
+## [163] &quot;ENSG00000116649&quot; &quot;ENSG00000116688&quot; &quot;ENSG00000116754&quot;
+## [166] &quot;ENSG00000116783&quot; &quot;ENSG00000116991&quot; &quot;ENSG00000117266&quot;
+## [169] &quot;ENSG00000117281&quot; &quot;ENSG00000117335&quot; &quot;ENSG00000117691&quot;
+## [172] &quot;ENSG00000118194&quot; &quot;ENSG00000118407&quot; &quot;ENSG00000118496&quot;
+## [175] &quot;ENSG00000118640&quot; &quot;ENSG00000118705&quot; &quot;ENSG00000118729&quot;
+## [178] &quot;ENSG00000118971&quot; &quot;ENSG00000119242&quot; &quot;ENSG00000119421&quot;
+## [181] &quot;ENSG00000119446&quot; &quot;ENSG00000119630&quot; &quot;ENSG00000119729&quot;
+## [184] &quot;ENSG00000120008&quot; &quot;ENSG00000120049&quot; &quot;ENSG00000120756&quot;
+## [187] &quot;ENSG00000120913&quot; &quot;ENSG00000121577&quot; &quot;ENSG00000121769&quot;
+## [190] &quot;ENSG00000121848&quot; &quot;ENSG00000122034&quot; &quot;ENSG00000122042&quot;
+## [193] &quot;ENSG00000122367&quot; &quot;ENSG00000122435&quot; &quot;ENSG00000122477&quot;
+## [196] &quot;ENSG00000122550&quot; &quot;ENSG00000123989&quot; &quot;ENSG00000124155&quot;
+## [199] &quot;ENSG00000125812&quot; &quot;ENSG00000125954&quot; &quot;ENSG00000125967&quot;
+## [202] &quot;ENSG00000126091&quot; &quot;ENSG00000126821&quot; &quot;ENSG00000126882&quot;
+## [205] &quot;ENSG00000127445&quot; &quot;ENSG00000127540&quot; &quot;ENSG00000128591&quot;
+## [208] &quot;ENSG00000128604&quot; &quot;ENSG00000129083&quot; &quot;ENSG00000129103&quot;
+## [211] &quot;ENSG00000129170&quot; &quot;ENSG00000129245&quot; &quot;ENSG00000129250&quot;
+## [214] &quot;ENSG00000129521&quot; &quot;ENSG00000129991&quot; &quot;ENSG00000130066&quot;
+## [217] &quot;ENSG00000130304&quot; &quot;ENSG00000130545&quot; &quot;ENSG00000130560&quot;
+## [220] &quot;ENSG00000130695&quot; &quot;ENSG00000130939&quot; &quot;ENSG00000131730&quot;
+## [223] &quot;ENSG00000132182&quot; &quot;ENSG00000132329&quot; &quot;ENSG00000133030&quot;
+## [226] &quot;ENSG00000133083&quot; &quot;ENSG00000133321&quot; &quot;ENSG00000133424&quot;
+## [229] &quot;ENSG00000133961&quot; &quot;ENSG00000134247&quot; &quot;ENSG00000134255&quot;
+## [232] &quot;ENSG00000134343&quot; &quot;ENSG00000134369&quot; &quot;ENSG00000134571&quot;
+## [235] &quot;ENSG00000134769&quot; &quot;ENSG00000134775&quot; &quot;ENSG00000135317&quot;
+## [238] &quot;ENSG00000135373&quot; &quot;ENSG00000135390&quot; &quot;ENSG00000135414&quot;
+## [241] &quot;ENSG00000135424&quot; &quot;ENSG00000135439&quot; &quot;ENSG00000135469&quot;
+## [244] &quot;ENSG00000135502&quot; &quot;ENSG00000135535&quot; &quot;ENSG00000135547&quot;
+## [247] &quot;ENSG00000135842&quot; &quot;ENSG00000135956&quot; &quot;ENSG00000135972&quot;
+## [250] &quot;ENSG00000136205&quot; &quot;ENSG00000136261&quot; &quot;ENSG00000136732&quot;
+## [253] &quot;ENSG00000136842&quot; &quot;ENSG00000136925&quot; &quot;ENSG00000137094&quot;
+## [256] &quot;ENSG00000137100&quot; &quot;ENSG00000137198&quot; &quot;ENSG00000138495&quot;
+## [259] &quot;ENSG00000138615&quot; &quot;ENSG00000138629&quot; &quot;ENSG00000138771&quot;
+## [262] &quot;ENSG00000139626&quot; &quot;ENSG00000140416&quot; &quot;ENSG00000140455&quot;
+## [265] &quot;ENSG00000140545&quot; &quot;ENSG00000141030&quot; &quot;ENSG00000141034&quot;
+## [268] &quot;ENSG00000141052&quot; &quot;ENSG00000141150&quot; &quot;ENSG00000141380&quot;
+## [271] &quot;ENSG00000141456&quot; &quot;ENSG00000141540&quot; &quot;ENSG00000142661&quot;
+## [274] &quot;ENSG00000142949&quot; &quot;ENSG00000143198&quot; &quot;ENSG00000143375&quot;
+## [277] &quot;ENSG00000143420&quot; &quot;ENSG00000143479&quot; &quot;ENSG00000143499&quot;
+## [280] &quot;ENSG00000143553&quot; &quot;ENSG00000143575&quot; &quot;ENSG00000143632&quot;
+## [283] &quot;ENSG00000143924&quot; &quot;ENSG00000144230&quot; &quot;ENSG00000144331&quot;
+## [286] &quot;ENSG00000144712&quot; &quot;ENSG00000145244&quot; &quot;ENSG00000145349&quot;
+## [289] &quot;ENSG00000145919&quot; &quot;ENSG00000146054&quot; &quot;ENSG00000146950&quot;
+## [292] &quot;ENSG00000147140&quot; &quot;ENSG00000147485&quot; &quot;ENSG00000147573&quot;
+## [295] &quot;ENSG00000147650&quot; &quot;ENSG00000147676&quot; &quot;ENSG00000148019&quot;
+## [298] &quot;ENSG00000148120&quot; &quot;ENSG00000148308&quot; &quot;ENSG00000148356&quot;
+## [301] &quot;ENSG00000148677&quot; &quot;ENSG00000148835&quot; &quot;ENSG00000149177&quot;
+## [304] &quot;ENSG00000149294&quot; &quot;ENSG00000149418&quot; &quot;ENSG00000149451&quot;
+## [307] &quot;ENSG00000149596&quot; &quot;ENSG00000149633&quot; &quot;ENSG00000150401&quot;
+## [310] &quot;ENSG00000151320&quot; &quot;ENSG00000151718&quot; &quot;ENSG00000151729&quot;
+## [313] &quot;ENSG00000151967&quot; &quot;ENSG00000152061&quot; &quot;ENSG00000152137&quot;
+## [316] &quot;ENSG00000152242&quot; &quot;ENSG00000152433&quot; &quot;ENSG00000152689&quot;
+## [319] &quot;ENSG00000152767&quot; &quot;ENSG00000153132&quot; &quot;ENSG00000154122&quot;
+## [322] &quot;ENSG00000154258&quot; &quot;ENSG00000154263&quot; &quot;ENSG00000154473&quot;
+## [325] &quot;ENSG00000154582&quot; &quot;ENSG00000154678&quot; &quot;ENSG00000154767&quot;
+## [328] &quot;ENSG00000154914&quot; &quot;ENSG00000155158&quot; &quot;ENSG00000155657&quot;
+## [331] &quot;ENSG00000156427&quot; &quot;ENSG00000156463&quot; &quot;ENSG00000156467&quot;
+## [334] &quot;ENSG00000156469&quot; &quot;ENSG00000156471&quot; &quot;ENSG00000156508&quot;
+## [337] &quot;ENSG00000156804&quot; &quot;ENSG00000157036&quot; &quot;ENSG00000158022&quot;
+## [340] &quot;ENSG00000158158&quot; &quot;ENSG00000158321&quot; &quot;ENSG00000158417&quot;
+## [343] &quot;ENSG00000158560&quot; &quot;ENSG00000158769&quot; &quot;ENSG00000158887&quot;
+## [346] &quot;ENSG00000158985&quot; &quot;ENSG00000159251&quot; &quot;ENSG00000159348&quot;
+## [349] &quot;ENSG00000159579&quot; &quot;ENSG00000160097&quot; &quot;ENSG00000160194&quot;
+## [352] &quot;ENSG00000160293&quot; &quot;ENSG00000160392&quot; &quot;ENSG00000160445&quot;
+## [355] &quot;ENSG00000160606&quot; &quot;ENSG00000160678&quot; &quot;ENSG00000160703&quot;
+## [358] &quot;ENSG00000160808&quot; &quot;ENSG00000160867&quot; &quot;ENSG00000161381&quot;
+## [361] &quot;ENSG00000162105&quot; &quot;ENSG00000162413&quot; &quot;ENSG00000162614&quot;
+## [364] &quot;ENSG00000162630&quot; &quot;ENSG00000162777&quot; &quot;ENSG00000163093&quot;
+## [367] &quot;ENSG00000163110&quot; &quot;ENSG00000163435&quot; &quot;ENSG00000163492&quot;
+## [370] &quot;ENSG00000163520&quot; &quot;ENSG00000163611&quot; &quot;ENSG00000163634&quot;
+## [373] &quot;ENSG00000163681&quot; &quot;ENSG00000163694&quot; &quot;ENSG00000163719&quot;
+## [376] &quot;ENSG00000163754&quot; &quot;ENSG00000163820&quot; &quot;ENSG00000163827&quot;
+## [379] &quot;ENSG00000164107&quot; &quot;ENSG00000164124&quot; &quot;ENSG00000164125&quot;
+## [382] &quot;ENSG00000164144&quot; &quot;ENSG00000164199&quot; &quot;ENSG00000164309&quot;
+## [385] &quot;ENSG00000164603&quot; &quot;ENSG00000164610&quot; &quot;ENSG00000165028&quot;
+## [388] &quot;ENSG00000165215&quot; &quot;ENSG00000165238&quot; &quot;ENSG00000165410&quot;
+## [391] &quot;ENSG00000165548&quot; &quot;ENSG00000165632&quot; &quot;ENSG00000165637&quot;
+## [394] &quot;ENSG00000165775&quot; &quot;ENSG00000165912&quot; &quot;ENSG00000165916&quot;
+## [397] &quot;ENSG00000165995&quot; &quot;ENSG00000165996&quot; &quot;ENSG00000166135&quot;
+## [400] &quot;ENSG00000166167&quot; &quot;ENSG00000166343&quot; &quot;ENSG00000166411&quot;
+## [403] &quot;ENSG00000166592&quot; &quot;ENSG00000166747&quot; &quot;ENSG00000166831&quot;
+## [406] &quot;ENSG00000167118&quot; &quot;ENSG00000167306&quot; &quot;ENSG00000167461&quot;
+## [409] &quot;ENSG00000167549&quot; &quot;ENSG00000167705&quot; &quot;ENSG00000168256&quot;
+## [412] &quot;ENSG00000168286&quot; &quot;ENSG00000169016&quot; &quot;ENSG00000169122&quot;
+## [415] &quot;ENSG00000169155&quot; &quot;ENSG00000169740&quot; &quot;ENSG00000170017&quot;
+## [418] &quot;ENSG00000170322&quot; &quot;ENSG00000170323&quot; &quot;ENSG00000170417&quot;
+## [421] &quot;ENSG00000170634&quot; &quot;ENSG00000170801&quot; &quot;ENSG00000170871&quot;
+## [424] &quot;ENSG00000171033&quot; &quot;ENSG00000171574&quot; &quot;ENSG00000172115&quot;
+## [427] &quot;ENSG00000172403&quot; &quot;ENSG00000172428&quot; &quot;ENSG00000172572&quot;
+## [430] &quot;ENSG00000172725&quot; &quot;ENSG00000172731&quot; &quot;ENSG00000173175&quot;
+## [433] &quot;ENSG00000173366&quot; &quot;ENSG00000173436&quot; &quot;ENSG00000173545&quot;
+## [436] &quot;ENSG00000173641&quot; &quot;ENSG00000173848&quot; &quot;ENSG00000173926&quot;
+## [439] &quot;ENSG00000173960&quot; &quot;ENSG00000173991&quot; &quot;ENSG00000174021&quot;
+## [442] &quot;ENSG00000174227&quot; &quot;ENSG00000174437&quot; &quot;ENSG00000175084&quot;
+## [445] &quot;ENSG00000175220&quot; &quot;ENSG00000175416&quot; &quot;ENSG00000175550&quot;
+## [448] &quot;ENSG00000175573&quot; &quot;ENSG00000175701&quot; &quot;ENSG00000175745&quot;
+## [451] &quot;ENSG00000175931&quot; &quot;ENSG00000176101&quot; &quot;ENSG00000176658&quot;
+## [454] &quot;ENSG00000176871&quot; &quot;ENSG00000177106&quot; &quot;ENSG00000177479&quot;
+## [457] &quot;ENSG00000178053&quot; &quot;ENSG00000178307&quot; &quot;ENSG00000179262&quot;
+## [460] &quot;ENSG00000179564&quot; &quot;ENSG00000180155&quot; &quot;ENSG00000180190&quot;
+## [463] &quot;ENSG00000181027&quot; &quot;ENSG00000181523&quot; &quot;ENSG00000181856&quot;
+## [466] &quot;ENSG00000182175&quot; &quot;ENSG00000182253&quot; &quot;ENSG00000182712&quot;
+## [469] &quot;ENSG00000182732&quot; &quot;ENSG00000182768&quot; &quot;ENSG00000182836&quot;
+## [472] &quot;ENSG00000182957&quot; &quot;ENSG00000183023&quot; &quot;ENSG00000183060&quot;
+## [475] &quot;ENSG00000183291&quot; &quot;ENSG00000183421&quot; &quot;ENSG00000183597&quot;
+## [478] &quot;ENSG00000183785&quot; &quot;ENSG00000183814&quot; &quot;ENSG00000183963&quot;
+## [481] &quot;ENSG00000184012&quot; &quot;ENSG00000184162&quot; &quot;ENSG00000184220&quot;
+## [484] &quot;ENSG00000184343&quot; &quot;ENSG00000184489&quot; &quot;ENSG00000184678&quot;
+## [487] &quot;ENSG00000184792&quot; &quot;ENSG00000185122&quot; &quot;ENSG00000185418&quot;
+## [490] &quot;ENSG00000185437&quot; &quot;ENSG00000185739&quot; &quot;ENSG00000185909&quot;
+## [493] &quot;ENSG00000185928&quot; &quot;ENSG00000186073&quot; &quot;ENSG00000186340&quot;
+## [496] &quot;ENSG00000187164&quot; &quot;ENSG00000187186&quot; &quot;ENSG00000187486&quot;
+## [499] &quot;ENSG00000187715&quot; &quot;ENSG00000187942&quot; &quot;ENSG00000188026&quot;
+## [502] &quot;ENSG00000189227&quot; &quot;ENSG00000196236&quot; &quot;ENSG00000196262&quot;
+## [505] &quot;ENSG00000196569&quot; &quot;ENSG00000196576&quot; &quot;ENSG00000196704&quot;
+## [508] &quot;ENSG00000196730&quot; &quot;ENSG00000197299&quot; &quot;ENSG00000197321&quot;
+## [511] &quot;ENSG00000197555&quot; &quot;ENSG00000197586&quot; &quot;ENSG00000197616&quot;
+## [514] &quot;ENSG00000197798&quot; &quot;ENSG00000197822&quot; &quot;ENSG00000197893&quot;
+## [517] &quot;ENSG00000198001&quot; &quot;ENSG00000198125&quot; &quot;ENSG00000198523&quot;
+## [520] &quot;ENSG00000198612&quot; &quot;ENSG00000198626&quot; &quot;ENSG00000198715&quot;
+## [523] &quot;ENSG00000198860&quot; &quot;ENSG00000198892&quot; &quot;ENSG00000203602&quot;
+## [526] &quot;ENSG00000203867&quot; &quot;ENSG00000205302&quot; &quot;ENSG00000205309&quot;
+## [529] &quot;ENSG00000205323&quot; &quot;ENSG00000205363&quot; &quot;ENSG00000205560&quot;
+## [532] &quot;ENSG00000205744&quot; &quot;ENSG00000206418&quot; &quot;ENSG00000211448&quot;
+## [535] &quot;ENSG00000211456&quot; &quot;ENSG00000212443&quot; &quot;ENSG00000213199&quot;
+## [538] &quot;ENSG00000213221&quot; &quot;ENSG00000213281&quot; &quot;ENSG00000214827&quot;
+## [541] &quot;ENSG00000214899&quot; &quot;ENSG00000214934&quot; &quot;ENSG00000215193&quot;
+## [544] &quot;ENSG00000217930&quot; &quot;ENSG00000221890&quot; &quot;ENSG00000223343&quot;
+## [547] &quot;ENSG00000224468&quot; &quot;ENSG00000224597&quot; &quot;ENSG00000226245&quot;
+## [550] &quot;ENSG00000227495&quot; &quot;ENSG00000231871&quot; &quot;ENSG00000234531&quot;
+## [553] &quot;ENSG00000235236&quot; &quot;ENSG00000235837&quot; &quot;ENSG00000236540&quot;
+## [556] &quot;ENSG00000236883&quot; &quot;ENSG00000237125&quot; &quot;ENSG00000237187&quot;
+## [559] &quot;ENSG00000237298&quot; &quot;ENSG00000238775&quot; &quot;ENSG00000239388&quot;
+## [562] &quot;ENSG00000240857&quot; &quot;ENSG00000241782&quot; &quot;ENSG00000243147&quot;
+## [565] &quot;ENSG00000246343&quot; &quot;ENSG00000247596&quot; &quot;ENSG00000250588&quot;
+## [568] &quot;ENSG00000250741&quot; &quot;ENSG00000251569&quot; &quot;ENSG00000253144&quot;
+## [571] &quot;ENSG00000253972&quot; &quot;ENSG00000254413&quot; &quot;ENSG00000254459&quot;
+## [574] &quot;ENSG00000254690&quot; &quot;ENSG00000254691&quot; &quot;ENSG00000254806&quot;
+## [577] &quot;ENSG00000254873&quot; &quot;ENSG00000255248&quot; &quot;ENSG00000255449&quot;
+## [580] &quot;ENSG00000256053&quot; &quot;ENSG00000256500&quot; &quot;ENSG00000256609&quot;
+## [583] &quot;ENSG00000257524&quot; &quot;ENSG00000257594&quot; &quot;ENSG00000257653&quot;
+## [586] &quot;ENSG00000258056&quot; &quot;ENSG00000258260&quot; &quot;ENSG00000258289&quot;
+## [589] &quot;ENSG00000258409&quot; &quot;ENSG00000258444&quot; &quot;ENSG00000258761&quot;
+## [592] &quot;ENSG00000258959&quot; &quot;ENSG00000259030&quot; &quot;ENSG00000259075&quot;
+## [595] &quot;ENSG00000005189&quot; &quot;ENSG00000006432&quot; &quot;ENSG00000007237&quot;
+## [598] &quot;ENSG00000011304&quot; &quot;ENSG00000011485&quot; &quot;ENSG00000020577&quot;
+## [601] &quot;ENSG00000034713&quot; &quot;ENSG00000038002&quot; &quot;ENSG00000044090&quot;
+## [604] &quot;ENSG00000047597&quot; &quot;ENSG00000048052&quot; &quot;ENSG00000057252&quot;
+## [607] &quot;ENSG00000062716&quot; &quot;ENSG00000063660&quot; &quot;ENSG00000064726&quot;
+## [610] &quot;ENSG00000066468&quot; &quot;ENSG00000067177&quot; &quot;ENSG00000067225&quot;
+## [613] &quot;ENSG00000070785&quot; &quot;ENSG00000070808&quot; &quot;ENSG00000072803&quot;
+## [616] &quot;ENSG00000072954&quot; &quot;ENSG00000073350&quot; &quot;ENSG00000075975&quot;
+## [619] &quot;ENSG00000076043&quot; &quot;ENSG00000076344&quot; &quot;ENSG00000077713&quot;
+## [622] &quot;ENSG00000078269&quot; &quot;ENSG00000080189&quot; &quot;ENSG00000080815&quot;
+## [625] &quot;ENSG00000082641&quot; &quot;ENSG00000085998&quot; &quot;ENSG00000088538&quot;
+## [628] &quot;ENSG00000090621&quot; &quot;ENSG00000091490&quot; &quot;ENSG00000093167&quot;
+## [631] &quot;ENSG00000095397&quot; &quot;ENSG00000100225&quot; &quot;ENSG00000100292&quot;
+## [634] &quot;ENSG00000100321&quot; &quot;ENSG00000100412&quot; &quot;ENSG00000101019&quot;
+## [637] &quot;ENSG00000101189&quot; &quot;ENSG00000101298&quot; &quot;ENSG00000102241&quot;
+## [640] &quot;ENSG00000103067&quot; &quot;ENSG00000103187&quot; &quot;ENSG00000103507&quot;
+## [643] &quot;ENSG00000103510&quot; &quot;ENSG00000103811&quot; &quot;ENSG00000104213&quot;
+## [646] &quot;ENSG00000104369&quot; &quot;ENSG00000104413&quot; &quot;ENSG00000104611&quot;
+## [649] &quot;ENSG00000104880&quot; &quot;ENSG00000105486&quot; &quot;ENSG00000105953&quot;
+## [652] &quot;ENSG00000106617&quot; &quot;ENSG00000107829&quot; &quot;ENSG00000107854&quot;
+## [655] &quot;ENSG00000108384&quot; &quot;ENSG00000108515&quot; &quot;ENSG00000108774&quot;
+## [658] &quot;ENSG00000110435&quot; &quot;ENSG00000111229&quot; &quot;ENSG00000111860&quot;
+## [661] &quot;ENSG00000112312&quot; &quot;ENSG00000112658&quot; &quot;ENSG00000114520&quot;
+## [664] &quot;ENSG00000114853&quot; &quot;ENSG00000115339&quot; &quot;ENSG00000115361&quot;
+## [667] &quot;ENSG00000115808&quot; &quot;ENSG00000115840&quot; &quot;ENSG00000115884&quot;
+## [670] &quot;ENSG00000115993&quot; &quot;ENSG00000116786&quot; &quot;ENSG00000116906&quot;
+## [673] &quot;ENSG00000117408&quot; &quot;ENSG00000117411&quot; &quot;ENSG00000117480&quot;
+## [676] &quot;ENSG00000118242&quot; &quot;ENSG00000120899&quot; &quot;ENSG00000121022&quot;
+## [679] &quot;ENSG00000121440&quot; &quot;ENSG00000121892&quot; &quot;ENSG00000122574&quot;
+## [682] &quot;ENSG00000124172&quot; &quot;ENSG00000124380&quot; &quot;ENSG00000125089&quot;
+## [685] &quot;ENSG00000125779&quot; &quot;ENSG00000125945&quot; &quot;ENSG00000125991&quot;
+## [688] &quot;ENSG00000126214&quot; &quot;ENSG00000126457&quot; &quot;ENSG00000127527&quot;
+## [691] &quot;ENSG00000129197&quot; &quot;ENSG00000130037&quot; &quot;ENSG00000130669&quot;
+## [694] &quot;ENSG00000131459&quot; &quot;ENSG00000131504&quot; &quot;ENSG00000131711&quot;
+## [697] &quot;ENSG00000132388&quot; &quot;ENSG00000133065&quot; &quot;ENSG00000133313&quot;
+## [700] &quot;ENSG00000133884&quot; &quot;ENSG00000134020&quot; &quot;ENSG00000134138&quot;
+## [703] &quot;ENSG00000134508&quot; &quot;ENSG00000134602&quot; &quot;ENSG00000136051&quot;
+## [706] &quot;ENSG00000136068&quot; &quot;ENSG00000136383&quot; &quot;ENSG00000137764&quot;
+## [709] &quot;ENSG00000137845&quot; &quot;ENSG00000137878&quot; &quot;ENSG00000138162&quot;
+## [712] &quot;ENSG00000138621&quot; &quot;ENSG00000139921&quot; &quot;ENSG00000141469&quot;
+## [715] &quot;ENSG00000141639&quot; &quot;ENSG00000141738&quot; &quot;ENSG00000142686&quot;
+## [718] &quot;ENSG00000144535&quot; &quot;ENSG00000144635&quot; &quot;ENSG00000144741&quot;
+## [721] &quot;ENSG00000144815&quot; &quot;ENSG00000145723&quot; &quot;ENSG00000147044&quot;
+## [724] &quot;ENSG00000147113&quot; &quot;ENSG00000147124&quot; &quot;ENSG00000147231&quot;
+## [727] &quot;ENSG00000147457&quot; &quot;ENSG00000147533&quot; &quot;ENSG00000149196&quot;
+## [730] &quot;ENSG00000149657&quot; &quot;ENSG00000151067&quot; &quot;ENSG00000151148&quot;
+## [733] &quot;ENSG00000151414&quot; &quot;ENSG00000151500&quot; &quot;ENSG00000151835&quot;
+## [736] &quot;ENSG00000152291&quot; &quot;ENSG00000152413&quot; &quot;ENSG00000152454&quot;
+## [739] &quot;ENSG00000152556&quot; &quot;ENSG00000152939&quot; &quot;ENSG00000153029&quot;
+## [742] &quot;ENSG00000154330&quot; &quot;ENSG00000154358&quot; &quot;ENSG00000154553&quot;
+## [745] &quot;ENSG00000154655&quot; &quot;ENSG00000155380&quot; &quot;ENSG00000157429&quot;
+## [748] &quot;ENSG00000157796&quot; &quot;ENSG00000157881&quot; &quot;ENSG00000158023&quot;
+## [751] &quot;ENSG00000158428&quot; &quot;ENSG00000159086&quot; &quot;ENSG00000159322&quot;
+## [754] &quot;ENSG00000160050&quot; &quot;ENSG00000161281&quot; &quot;ENSG00000162458&quot;
+## [757] &quot;ENSG00000162545&quot; &quot;ENSG00000162695&quot; &quot;ENSG00000162889&quot;
+## [760] &quot;ENSG00000162896&quot; &quot;ENSG00000163170&quot; &quot;ENSG00000163931&quot;
+## [763] &quot;ENSG00000163950&quot; &quot;ENSG00000164091&quot; &quot;ENSG00000164983&quot;
+## [766] &quot;ENSG00000165105&quot; &quot;ENSG00000165280&quot; &quot;ENSG00000165527&quot;
+## [769] &quot;ENSG00000166046&quot; &quot;ENSG00000166295&quot; &quot;ENSG00000166352&quot;
+## [772] &quot;ENSG00000166813&quot; &quot;ENSG00000166963&quot; &quot;ENSG00000166974&quot;
+## [775] &quot;ENSG00000167904&quot; &quot;ENSG00000168079&quot; &quot;ENSG00000168411&quot;
+## [778] &quot;ENSG00000168528&quot; &quot;ENSG00000168824&quot; &quot;ENSG00000169045&quot;
+## [781] &quot;ENSG00000169241&quot; &quot;ENSG00000169599&quot; &quot;ENSG00000169857&quot;
+## [784] &quot;ENSG00000169891&quot; &quot;ENSG00000169946&quot; &quot;ENSG00000170390&quot;
+## [787] &quot;ENSG00000170903&quot; &quot;ENSG00000171202&quot; &quot;ENSG00000171735&quot;
+## [790] &quot;ENSG00000172348&quot; &quot;ENSG00000172478&quot; &quot;ENSG00000172803&quot;
+## [793] &quot;ENSG00000173264&quot; &quot;ENSG00000173320&quot; &quot;ENSG00000173660&quot;
+## [796] &quot;ENSG00000173821&quot; &quot;ENSG00000173918&quot; &quot;ENSG00000174292&quot;
+## [799] &quot;ENSG00000174456&quot; &quot;ENSG00000175455&quot; &quot;ENSG00000175707&quot;
+## [802] &quot;ENSG00000176407&quot; &quot;ENSG00000176454&quot; &quot;ENSG00000177889&quot;
+## [805] &quot;ENSG00000177981&quot; &quot;ENSG00000178904&quot; &quot;ENSG00000180921&quot;
+## [808] &quot;ENSG00000181264&quot; &quot;ENSG00000181284&quot; &quot;ENSG00000181885&quot;
+## [811] &quot;ENSG00000181929&quot; &quot;ENSG00000181938&quot; &quot;ENSG00000182173&quot;
+## [814] &quot;ENSG00000183520&quot; &quot;ENSG00000183580&quot; &quot;ENSG00000184014&quot;
+## [817] &quot;ENSG00000185100&quot; &quot;ENSG00000185104&quot; &quot;ENSG00000186376&quot;
+## [820] &quot;ENSG00000186432&quot; &quot;ENSG00000187720&quot; &quot;ENSG00000187778&quot;
+## [823] &quot;ENSG00000188677&quot; &quot;ENSG00000189067&quot; &quot;ENSG00000196683&quot;
+## [826] &quot;ENSG00000196975&quot; &quot;ENSG00000197614&quot; &quot;ENSG00000198208&quot;
+## [829] &quot;ENSG00000198682&quot; &quot;ENSG00000203618&quot; &quot;ENSG00000203778&quot;
+## [832] &quot;ENSG00000204291&quot; &quot;ENSG00000205531&quot; &quot;ENSG00000211455&quot;
+## [835] &quot;ENSG00000213190&quot; &quot;ENSG00000214194&quot; &quot;ENSG00000214265&quot;
+## [838] &quot;ENSG00000214397&quot; &quot;ENSG00000216490&quot; &quot;ENSG00000226314&quot;
+## [841] &quot;ENSG00000226479&quot; &quot;ENSG00000228474&quot; &quot;ENSG00000229111&quot;
+## [844] &quot;ENSG00000230565&quot; &quot;ENSG00000231194&quot; &quot;ENSG00000232892&quot;
+## [847] &quot;ENSG00000233110&quot; &quot;ENSG00000233429&quot; &quot;ENSG00000237190&quot;
+## [850] &quot;ENSG00000241837&quot; &quot;ENSG00000244274&quot; &quot;ENSG00000247595&quot;
+## [853] &quot;ENSG00000249141&quot; &quot;ENSG00000249209&quot; &quot;ENSG00000249758&quot;
+## [856] &quot;ENSG00000249915&quot; &quot;ENSG00000255529&quot; &quot;ENSG00000255863&quot;</code></pre>
+<pre class="r"><code>cons_human_chimp_heart &lt;- intersect(rownames(spec_human_heart_01), rownames(spec_chimp_heart_01))
+
+(37-7)/418</code></pre>
+<pre><code>## [1] 0.07177033</code></pre>
+<pre class="r"><code>FDR_level &lt;- 0.01
+
+human_heart_together &lt;-  humans_together[which(humans_together[,2] &lt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+human_kidney_together &lt;-  humans_together[which(humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &lt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+human_liver_together &lt;-  humans_together[which(humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &lt; FDR_level &amp; humans_together[,8] &gt; FDR_level),]
+
+human_lung_together &lt;-  humans_together[which(humans_together[,2] &gt; FDR_level &amp; humans_together[,4] &gt; FDR_level &amp; humans_together[,6] &gt; FDR_level &amp; humans_together[,8] &lt; FDR_level),]
+
+
+chimp_heart_together &lt;-  chimps_together[which(chimps_together[,2] &lt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+chimp_kidney_together &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &lt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+chimp_liver_together &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &lt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+chimp_lung_together &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &lt; FDR_level),]
+
+
+hs_chimp_heart &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+hs_chimp_kidney &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+hs_chimp_liver &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+hs_chimp_lung &lt;-  chimps_together[which(chimps_together[,2] &gt; FDR_level &amp; chimps_together[,4] &gt; FDR_level &amp; chimps_together[,6] &gt; FDR_level &amp; chimps_together[,8] &gt; FDR_level),]
+
+only_human_heart &lt;- intersect(rownames(human_heart_together), rownames(hs_chimp_heart))
+length(only_human_heart)</code></pre>
+<pre><code>## [1] 250</code></pre>
+<pre class="r"><code>cons_human_chimp_heart &lt;- intersect(rownames(human_heart_together), rownames(chimp_heart_together))
+length(cons_human_chimp_heart)</code></pre>
+<pre><code>## [1] 664</code></pre>
+<pre class="r"><code>only_human_heart &lt;- intersect(rownames(human_kidney_together), rownames(hs_chimp_kidney))
+length(only_human_heart)</code></pre>
+<pre><code>## [1] 133</code></pre>
+<pre class="r"><code>cons_human_chimp_heart &lt;- intersect(rownames(human_kidney_together), rownames(chimp_kidney_together))
+length(cons_human_chimp_heart)</code></pre>
+<pre><code>## [1] 258</code></pre>
+<pre class="r"><code>only_human_heart &lt;- intersect(rownames(human_liver_together), rownames(hs_chimp_liver))
+length(only_human_heart)</code></pre>
+<pre><code>## [1] 250</code></pre>
+<pre class="r"><code>cons_human_chimp_heart &lt;- intersect(rownames(human_liver_together), rownames(chimp_liver_together))
+length(cons_human_chimp_heart)</code></pre>
+<pre><code>## [1] 1036</code></pre>
+<pre class="r"><code>only_human_heart &lt;- intersect(rownames(human_lung_together), rownames(hs_chimp_lung))
+length(only_human_heart)</code></pre>
+<pre><code>## [1] 119</code></pre>
+<pre class="r"><code>cons_human_chimp_heart &lt;- intersect(rownames(human_lung_together), rownames(chimp_lung_together))
+length(cons_human_chimp_heart)</code></pre>
+<pre><code>## [1] 534</code></pre>
+</div>
+<div id="p-value-figure-1" class="section level1">
+<h1>2 P value figure</h1>
+<pre class="r"><code>draw_venn_methylation &lt;- function(hs, cs, rs, hc, hr, cr, hcr){
+draw.triple.venn(hs+hc+hr+hcr, cs+hc+cr+hcr, rs+hr+cr+hcr, hc+hcr, cr+hcr, hr+hcr, hcr, filename = NULL, category = c(&quot;Hu&quot;, &quot;Ch&quot;, &quot;Rh&quot;), fill = pal[1:3], main.cex = 3, cat.cex = 3, cex=3.5, lty=1, height=2000, width=2000, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05)
+}
+
+# Heart specific
+svg(&quot;../data/heart_specific_2pval.svg&quot;, width = 7.2, height = 7.2)
+draw_venn_methylation(202, 486, 629, 250, 165, 432, 622)</code></pre>
+<pre><code>## (polygon[GRID.polygon.316], polygon[GRID.polygon.317], polygon[GRID.polygon.318], polygon[GRID.polygon.319], polygon[GRID.polygon.320], polygon[GRID.polygon.321], text[GRID.text.322], text[GRID.text.323], text[GRID.text.324], text[GRID.text.325], text[GRID.text.326], text[GRID.text.327], text[GRID.text.328], text[GRID.text.329], text[GRID.text.330], text[GRID.text.331])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000091542&quot;, rownames(cpm_12184)), ]))
+make_exp_df &lt;- as.data.frame(cbind(exp, all_species, all_tissues), stringsAsFactors = F)
+make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
+make_exp_df[,2] &lt;- as.factor(make_exp_df[,2])
+levels(make_exp_df$all_species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rh. macaque&quot;)
+colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
+
+
+sample_var &lt;- ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~make_exp_df[,2])  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;))  + theme(legend.position=&quot;none&quot;)
+
+plot_grid(sample_var)</code></pre>
+<p><img src="More_lenient_tissue_specific_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>prop.test(c(13.5, 54.5), c(152,418)) #0.22</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(13.5, 54.5) out of c(152, 418)
+## X-squared = 1.4588, df = 1, p-value = 0.2271
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.10161578  0.01848181
+## sample estimates:
+##     prop 1     prop 2 
+## 0.08881579 0.13038278</code></pre>
+<pre class="r"><code>prop.test(c(9.5, 42), c(80,138)) #0.00324</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(9.5, 42) out of c(80, 138)
+## X-squared = 8.667, df = 1, p-value = 0.00324
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.29996320 -0.07123245
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1187500 0.3043478</code></pre>
+<pre class="r"><code>prop.test(c(16.5, 42), c(155,166)) #0.001137</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(16.5, 42) out of c(155, 166)
+## X-squared = 10.59, df = 1, p-value = 0.001137
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.23484125 -0.05827962
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1064516 0.2530120</code></pre>
+<pre class="r"><code>prop.test(c(3.5, 32.5), c(76, 331)) # 0.2227</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(3.5, 32.5) out of c(76, 331)
+## X-squared = 1.4872, df = 1, p-value = 0.2227
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.11721711  0.01294775
+## sample estimates:
+##     prop 1     prop 2 
+## 0.04605263 0.09818731</code></pre>
+<pre class="r"><code>13.5+9.5+16.5+3.5</code></pre>
+<pre><code>## [1] 43</code></pre>
+<pre class="r"><code>54.5+42+42+32.5</code></pre>
+<pre><code>## [1] 171</code></pre>
+<pre class="r"><code>152+80+155+76</code></pre>
+<pre><code>## [1] 463</code></pre>
+<pre class="r"><code>418+138+166+331</code></pre>
+<pre><code>## [1] 1053</code></pre>
+<pre class="r"><code>prop.test(c(43, 171), c(463,1053))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity
+##  correction
+## 
+## data:  c(43, 171) out of c(463, 1053)
+## X-squared = 12.254, df = 1, p-value = 0.0004644
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.10564717 -0.03339401
+## sample estimates:
+##     prop 1     prop 2 
+## 0.09287257 0.16239316</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

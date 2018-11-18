@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-```{r}
+```{r, include = FALSE}
 # Import libraries
 
 library("ggplot2")
@@ -22,6 +22,7 @@ library("VennDiagram")
 library("RColorBrewer")
 library(plyr)
 library("bedr")
+library("cowplot")
 getwd()
 
 # Load colors 
@@ -70,7 +71,7 @@ count(rhesus_lung_kidney_DMRs[,1])
 # Get human, chimp, and rhesus autosomal tDMRs 
 
 
-```{r}
+```{r, include = FALSE}
 # Human heart-liver
 
 # columns to pull
@@ -446,8 +447,8 @@ summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2
 sort_chimps_lung_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
 ```
 
-```{r}
-# Chimp heart-liver
+```{r, include = FALSE}
+# Rhesus heart-liver
 
 # columns to pull
 pull_col <- c(1:3, 16)
@@ -633,9 +634,66 @@ summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2
 sort_rhesus_lung_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
 ```
 
-# Function (e.g. human specific versus conserved in 1 pair of tissues)
+# Number of autosomal tDMRs
 
 ```{r}
+# Humans
+nrow(sort_humans_heart_liver_DMRs_bed)
+nrow(sort_humans_heart_lung_DMRs_bed)
+nrow(sort_humans_heart_kidney_DMRs_bed)
+nrow(sort_humans_liver_lung_DMRs_bed)
+nrow(sort_humans_liver_kidney_DMRs_bed)
+nrow(sort_humans_lung_kidney_DMRs_bed)
+
+summary(sort_humans_heart_liver_DMRs_bed$direction == "hyper")
+summary(sort_humans_heart_lung_DMRs_bed$direction == "hyper")
+summary(sort_humans_heart_kidney_DMRs_bed$direction == "hyper")
+summary(sort_humans_liver_lung_DMRs_bed$direction == "hyper")
+summary(sort_humans_liver_kidney_DMRs_bed$direction == "hyper")
+summary(sort_humans_lung_kidney_DMRs_bed$direction == "hyper")
+
+
+# Chimps
+nrow(sort_chimps_heart_liver_DMRs_bed)
+nrow(sort_chimps_heart_lung_DMRs_bed)
+nrow(sort_chimps_heart_kidney_DMRs_bed)
+nrow(sort_chimps_liver_lung_DMRs_bed)
+nrow(sort_chimps_liver_kidney_DMRs_bed)
+nrow(sort_chimps_lung_kidney_DMRs_bed)
+
+
+summary(sort_chimps_heart_liver_DMRs_bed$direction == "hyper")
+summary(sort_chimps_heart_lung_DMRs_bed$direction == "hyper")
+summary(sort_chimps_heart_kidney_DMRs_bed$direction == "hyper")
+summary(sort_chimps_liver_lung_DMRs_bed$direction == "hyper")
+summary(sort_chimps_liver_kidney_DMRs_bed$direction == "hyper")
+summary(sort_chimps_lung_kidney_DMRs_bed$direction == "hyper")
+
+# Rhesus
+nrow(sort_rhesus_heart_liver_DMRs_bed)
+nrow(sort_rhesus_heart_lung_DMRs_bed)
+nrow(sort_rhesus_heart_kidney_DMRs_bed)
+nrow(sort_rhesus_liver_lung_DMRs_bed)
+nrow(sort_rhesus_liver_kidney_DMRs_bed)
+nrow(sort_rhesus_lung_kidney_DMRs_bed)
+
+summary(sort_rhesus_heart_liver_DMRs_bed$direction == "hyper")
+summary(sort_rhesus_heart_lung_DMRs_bed$direction == "hyper")
+summary(sort_rhesus_heart_kidney_DMRs_bed$direction == "hyper")
+summary(sort_rhesus_liver_lung_DMRs_bed$direction == "hyper")
+summary(sort_rhesus_liver_kidney_DMRs_bed$direction == "hyper")
+summary(sort_rhesus_lung_kidney_DMRs_bed$direction == "hyper")
+
+```
+
+
+
+
+# Identify human-specific versus conserved DMRs
+
+The goal of this is to look for human specific versus conserved in 1 pair of tissues when you define conservation as overlap at a variety of bp overlaps. 
+
+```{r, include = FALSE}
 # 1 bp fit 
 tissue_conserved_1_overlap <- function(DMR1_human, DMR1_chimp, DMR1_rhesus){
 
@@ -788,6 +846,161 @@ colnames(combine) <- c("human_specific", "chimp_specific", "rhesus_specific", "h
 
 return(combine)
 }
+
+
+# 50% overlap
+
+tissue_conserved_50_overlap <- function(DMR1_human, DMR1_chimp, DMR1_rhesus){
+
+# Human-chimp/human-rhesus
+
+human_chimp_DMR <- bedr(input = list(a = DMR1_human, b = DMR1_chimp), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_chimp_DMR <- human_chimp_DMR[which(human_chimp_DMR[,6] != -1), ]
+
+human_rhesus_DMR <- bedr(input = list(a = DMR1_human, b = DMR1_rhesus), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_rhesus_DMR <- human_rhesus_DMR[which(human_rhesus_DMR[,6] != -1), ]
+
+chimp_rhesus_DMR <- bedr(input = list(a = DMR1_chimp, b = DMR1_rhesus), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+chimp_rhesus_DMR <- chimp_rhesus_DMR[which(chimp_rhesus_DMR[,6] != -1), ]
+
+colnames(human_chimp_DMR) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(human_rhesus_DMR) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(chimp_rhesus_DMR) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+human_chimp_DMR <- bedr.merge.region(human_chimp_DMR)
+human_rhesus_DMR <- bedr.merge.region(human_rhesus_DMR)
+chimp_rhesus_DMR <- bedr.merge.region(chimp_rhesus_DMR)
+
+# Human-chimp-rhesus
+
+human_chimp_rhesus1_DMR <- bedr(input = list(a = human_chimp_DMR, b = human_rhesus_DMR), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_chimp_rhesus1a_DMR <- human_chimp_rhesus1_DMR[which(human_chimp_rhesus1_DMR[,6] != -1), ]
+
+human_chimp_rhesus2_DMR <- bedr(input = list(a = human_chimp_rhesus1a_DMR[,1:4], b = chimp_rhesus_DMR), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_chimp_rhesus2a_DMR <- human_chimp_rhesus2_DMR[which(human_chimp_rhesus2_DMR[,6] != -1), ]
+
+nrow(human_chimp_rhesus2a_DMR)
+
+# human_chimp_rhesus2a_DMR gives the number of H/C/R conserved tDMRs
+
+# Conserved in only 2 species
+
+human_chimp_only <- bedr(input = list(a = human_chimp_DMR, b = human_chimp_rhesus2a_DMR[,1:4]), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_chimp_only <- human_chimp_only[which(human_chimp_only[,6] == -1), ]
+
+nrow(human_chimp_only)
+
+human_rhesus_only <- bedr(input = list(a = human_rhesus_DMR, b = human_chimp_rhesus2a_DMR[,1:4]), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_rhesus_only <- human_rhesus_only[which(human_rhesus_only[,6] == -1), ]
+
+nrow(human_rhesus_only)
+
+chimp_rhesus_only <- bedr(input = list(a = chimp_rhesus_DMR, b = human_chimp_rhesus2a_DMR[,1:4]), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+chimp_rhesus_only <- chimp_rhesus_only[which(chimp_rhesus_only[,6] == -1), ]
+
+nrow(chimp_rhesus_only)
+
+# Species-specific
+
+human_specific <- nrow(DMR1_human) - nrow(human_chimp_only) - nrow(human_rhesus_only) - nrow(human_chimp_rhesus2a_DMR)
+
+chimp_specific <- nrow(DMR1_chimp) - nrow(human_chimp_only) - nrow(chimp_rhesus_only) - nrow(human_chimp_rhesus2a_DMR)
+
+rhesus_specific <- nrow(DMR1_rhesus) - nrow(human_rhesus_only) - nrow(chimp_rhesus_only) - nrow(human_chimp_rhesus2a_DMR)
+
+combine <- cbind(human_specific, chimp_specific, rhesus_specific, nrow(human_chimp_only), nrow(human_rhesus_only), nrow(chimp_rhesus_only), nrow(human_chimp_rhesus2a_DMR))
+
+colnames(combine) <- c("human_specific", "chimp_specific", "rhesus_specific", "hc", "hr", "cr", "hcr_conserved")
+
+return(combine)
+}
+
+# 75% overlap
+
+tissue_conserved_75_overlap <- function(DMR1_human, DMR1_chimp, DMR1_rhesus){
+
+# Human-chimp/human-rhesus
+
+human_chimp_DMR <- bedr(input = list(a = DMR1_human, b = DMR1_chimp), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_chimp_DMR <- human_chimp_DMR[which(human_chimp_DMR[,6] != -1), ]
+
+human_rhesus_DMR <- bedr(input = list(a = DMR1_human, b = DMR1_rhesus), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_rhesus_DMR <- human_rhesus_DMR[which(human_rhesus_DMR[,6] != -1), ]
+
+chimp_rhesus_DMR <- bedr(input = list(a = DMR1_chimp, b = DMR1_rhesus), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+chimp_rhesus_DMR <- chimp_rhesus_DMR[which(chimp_rhesus_DMR[,6] != -1), ]
+
+colnames(human_chimp_DMR) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(human_rhesus_DMR) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(chimp_rhesus_DMR) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+human_chimp_DMR <- bedr.merge.region(human_chimp_DMR)
+human_rhesus_DMR <- bedr.merge.region(human_rhesus_DMR)
+chimp_rhesus_DMR <- bedr.merge.region(chimp_rhesus_DMR)
+
+# Human-chimp-rhesus
+
+human_chimp_rhesus1_DMR <- bedr(input = list(a = human_chimp_DMR, b = human_rhesus_DMR), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_chimp_rhesus1a_DMR <- human_chimp_rhesus1_DMR[which(human_chimp_rhesus1_DMR[,6] != -1), ]
+
+human_chimp_rhesus2_DMR <- bedr(input = list(a = human_chimp_rhesus1a_DMR[,1:4], b = chimp_rhesus_DMR), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_chimp_rhesus2a_DMR <- human_chimp_rhesus2_DMR[which(human_chimp_rhesus2_DMR[,6] != -1), ]
+
+nrow(human_chimp_rhesus2a_DMR)
+
+# human_chimp_rhesus2a_DMR gives the number of H/C/R conserved tDMRs
+
+# Conserved in only 2 species
+
+human_chimp_only <- bedr(input = list(a = human_chimp_DMR, b = human_chimp_rhesus2a_DMR[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_chimp_only <- human_chimp_only[which(human_chimp_only[,6] == -1), ]
+
+nrow(human_chimp_only)
+
+human_rhesus_only <- bedr(input = list(a = human_rhesus_DMR, b = human_chimp_rhesus2a_DMR[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_rhesus_only <- human_rhesus_only[which(human_rhesus_only[,6] == -1), ]
+
+nrow(human_rhesus_only)
+
+chimp_rhesus_only <- bedr(input = list(a = chimp_rhesus_DMR, b = human_chimp_rhesus2a_DMR[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+chimp_rhesus_only <- chimp_rhesus_only[which(chimp_rhesus_only[,6] == -1), ]
+
+nrow(chimp_rhesus_only)
+
+# Species-specific
+
+human_specific <- nrow(DMR1_human) - nrow(human_chimp_only) - nrow(human_rhesus_only) - nrow(human_chimp_rhesus2a_DMR)
+
+chimp_specific <- nrow(DMR1_chimp) - nrow(human_chimp_only) - nrow(chimp_rhesus_only) - nrow(human_chimp_rhesus2a_DMR)
+
+rhesus_specific <- nrow(DMR1_rhesus) - nrow(human_rhesus_only) - nrow(chimp_rhesus_only) - nrow(human_chimp_rhesus2a_DMR)
+
+combine <- cbind(human_specific, chimp_specific, rhesus_specific, nrow(human_chimp_only), nrow(human_rhesus_only), nrow(chimp_rhesus_only), nrow(human_chimp_rhesus2a_DMR))
+
+colnames(combine) <- c("human_specific", "chimp_specific", "rhesus_specific", "hc", "hr", "cr", "hcr_conserved")
+
+return(combine)
+}
 ```
 
 
@@ -815,7 +1028,7 @@ tissue_conserved_1_overlap(sort_humans_heart_liver_DMRs_bed, sort_chimps_heart_l
 #[1,]          5723
      
      
-# Heat lung
+# Heart lung
 tissue_conserved_1_overlap(sort_humans_heart_lung_DMRs_bed, sort_chimps_heart_lung_DMRs_bed, sort_rhesus_heart_lung_DMRs_bed)
 
 #     human_specific chimp_specific rhesus_specific   hc  hr  cr
@@ -1280,6 +1493,426 @@ tissue_conserved_25_overlap(sort_humans_lung_kidney_DMRs_bed_hypo, sort_chimps_l
 #[1,]           889
 ```
 
+
+### 50% overlap
+```{r, include = FALSE}
+# Heart-kidney
+
+tissue_conserved_50_overlap(sort_humans_heart_kidney_DMRs_bed, sort_chimps_heart_kidney_DMRs_bed, sort_rhesus_heart_kidney_DMRs_bed)
+
+# human_specific chimp_specific rhesus_specific   hc   hr   cr hcr_conserved
+#          23347          11490           18947 4004 1871 1136          1069
+
+# Heart liver
+tissue_conserved_50_overlap(sort_humans_heart_liver_DMRs_bed, sort_chimps_heart_liver_DMRs_bed, sort_rhesus_heart_liver_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc   hr   cr hcr_conserved
+#          13985          19127           34581 4887 1946 3010          1743
+     
+     
+# Heat lung
+tissue_conserved_50_overlap(sort_humans_heart_lung_DMRs_bed, sort_chimps_heart_lung_DMRs_bed, sort_rhesus_heart_lung_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          12146           6541            6033 1422 432 353           208
+
+# Liver lung
+tissue_conserved_50_overlap(sort_humans_liver_lung_DMRs_bed, sort_chimps_liver_lung_DMRs_bed, sort_rhesus_liver_lung_DMRs_bed)
+
+# human_specific chimp_specific rhesus_specific   hc   hr   cr hcr_conserved
+#           7903          16113           28393 2877 1126 2181           936
+
+# Liver-Kidney
+tissue_conserved_50_overlap(sort_humans_liver_kidney_DMRs_bed, sort_chimps_liver_kidney_DMRs_bed, sort_rhesus_liver_kidney_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc   hr   cr hcr_conserved
+#          11494          16854           31118 3695 1494 2071          1227
+
+# Lung-kidney
+tissue_conserved_50_overlap(sort_humans_lung_kidney_DMRs_bed, sort_chimps_lung_kidney_DMRs_bed, sort_rhesus_lung_kidney_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          12857           8668           13692 2176 965 709           523
+```
+
+
+
+### 50% overlap in hypo methylated
+```{r}
+sort_humans_heart_kidney_DMRs_bed_hypo <- sort_humans_heart_kidney_DMRs_bed[which(sort_humans_heart_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_heart_kidney_DMRs_bed_hypo <- sort_chimps_heart_kidney_DMRs_bed[which(sort_chimps_heart_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_heart_kidney_DMRs_bed_hypo <- sort_rhesus_heart_kidney_DMRs_bed[which(sort_rhesus_heart_kidney_DMRs_bed[,4] == "hypo"),]
+
+# Heart-kidney
+
+tissue_conserved_50_overlap(sort_humans_heart_kidney_DMRs_bed_hypo, sort_chimps_heart_kidney_DMRs_bed_hypo, sort_rhesus_heart_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          10210           5531            8220 1567 684 489           391
+
+# Heart liver
+
+sort_humans_heart_liver_DMRs_bed_hypo <- sort_humans_heart_liver_DMRs_bed[which(sort_humans_heart_liver_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_heart_liver_DMRs_bed_hypo <- sort_chimps_heart_liver_DMRs_bed[which(sort_chimps_heart_liver_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_heart_liver_DMRs_bed_hypo <- sort_rhesus_heart_liver_DMRs_bed[which(sort_rhesus_heart_liver_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_50_overlap(sort_humans_heart_liver_DMRs_bed_hypo, sort_chimps_heart_liver_DMRs_bed_hypo, sort_rhesus_heart_liver_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#           7751           9006           15407 2128 959 1573           857
+     
+     
+# Heat lung
+
+sort_humans_heart_lung_DMRs_bed_hypo <- sort_humans_heart_lung_DMRs_bed[which(sort_humans_heart_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_heart_lung_DMRs_bed_hypo <- sort_chimps_heart_lung_DMRs_bed[which(sort_chimps_heart_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_heart_lung_DMRs_bed_hypo <- sort_rhesus_heart_lung_DMRs_bed[which(sort_rhesus_heart_lung_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_50_overlap(sort_humans_heart_lung_DMRs_bed_hypo, sort_chimps_heart_lung_DMRs_bed_hypo, sort_rhesus_heart_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#           8060           4013            3428 1003 269 215           156
+
+
+
+# Liver lung
+sort_humans_liver_lung_DMRs_bed_hypo <- sort_humans_liver_lung_DMRs_bed[which(sort_humans_liver_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_liver_lung_DMRs_bed_hypo <- sort_chimps_liver_lung_DMRs_bed[which(sort_chimps_liver_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_liver_lung_DMRs_bed_hypo <- sort_rhesus_liver_lung_DMRs_bed[which(sort_rhesus_liver_lung_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_50_overlap(sort_humans_liver_lung_DMRs_bed_hypo, sort_chimps_liver_lung_DMRs_bed_hypo, sort_rhesus_liver_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#           4606          10236           16810 2120 704 1301           660
+
+
+# Liver-Kidney
+sort_humans_liver_kidney_DMRs_bed_hypo <- sort_humans_liver_kidney_DMRs_bed[which(sort_humans_liver_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_liver_kidney_DMRs_bed_hypo <- sort_chimps_liver_kidney_DMRs_bed[which(sort_chimps_liver_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_liver_kidney_DMRs_bed_hypo <- sort_rhesus_liver_kidney_DMRs_bed[which(sort_rhesus_liver_kidney_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_50_overlap(sort_humans_liver_kidney_DMRs_bed_hypo, sort_chimps_liver_kidney_DMRs_bed_hypo, sort_rhesus_liver_kidney_DMRs_bed_hypo)
+
+#    human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#           3953           8779           16541 1484 507 1021           424
+
+# Lung-kidney
+
+sort_humans_lung_kidney_DMRs_bed_hypo <- sort_humans_lung_kidney_DMRs_bed[which(sort_humans_lung_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_lung_kidney_DMRs_bed_hypo <- sort_chimps_lung_kidney_DMRs_bed[which(sort_chimps_lung_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_lung_kidney_DMRs_bed_hypo <- sort_rhesus_lung_kidney_DMRs_bed[which(sort_rhesus_lung_kidney_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_50_overlap(sort_humans_lung_kidney_DMRs_bed_hypo, sort_chimps_lung_kidney_DMRs_bed_hypo, sort_rhesus_lung_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#           3625           3115            5058 458 226 215           112
+```
+
+
+### 50% overlap in hyper methylated
+```{r}
+sort_humans_heart_kidney_DMRs_bed_hypo <- sort_humans_heart_kidney_DMRs_bed[which(sort_humans_heart_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_heart_kidney_DMRs_bed_hypo <- sort_chimps_heart_kidney_DMRs_bed[which(sort_chimps_heart_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_heart_kidney_DMRs_bed_hypo <- sort_rhesus_heart_kidney_DMRs_bed[which(sort_rhesus_heart_kidney_DMRs_bed[,4] == "hyper"),]
+
+# Heart-kidney
+
+tissue_conserved_50_overlap(sort_humans_heart_kidney_DMRs_bed_hypo, sort_chimps_heart_kidney_DMRs_bed_hypo, sort_rhesus_heart_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc   hr  cr hcr_conserved
+#          13154           5974           10760     2439 1171 633           675
+
+# Heart liver
+
+sort_humans_heart_liver_DMRs_bed_hypo <- sort_humans_heart_liver_DMRs_bed[which(sort_humans_heart_liver_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_heart_liver_DMRs_bed_hypo <- sort_chimps_heart_liver_DMRs_bed[which(sort_chimps_heart_liver_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_heart_liver_DMRs_bed_hypo <- sort_rhesus_heart_liver_DMRs_bed[which(sort_rhesus_heart_liver_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_50_overlap(sort_humans_heart_liver_DMRs_bed_hypo, sort_chimps_heart_liver_DMRs_bed_hypo, sort_rhesus_heart_liver_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#           6271          10161           19254     2766 954 1401           875
+     
+     
+# Heart lung
+
+sort_humans_heart_lung_DMRs_bed_hypo <- sort_humans_heart_lung_DMRs_bed[which(sort_humans_heart_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_heart_lung_DMRs_bed_hypo <- sort_chimps_heart_lung_DMRs_bed[which(sort_chimps_heart_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_heart_lung_DMRs_bed_hypo <- sort_rhesus_heart_lung_DMRs_bed[which(sort_rhesus_heart_lung_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_50_overlap(sort_humans_heart_lung_DMRs_bed_hypo, sort_chimps_heart_lung_DMRs_bed_hypo, sort_rhesus_heart_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#          4099           2533            2619      417 152 135            52
+
+# Liver lung
+sort_humans_liver_lung_DMRs_bed_hypo <- sort_humans_liver_lung_DMRs_bed[which(sort_humans_liver_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_liver_lung_DMRs_bed_hypo <- sort_chimps_liver_lung_DMRs_bed[which(sort_chimps_liver_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_liver_lung_DMRs_bed_hypo <- sort_rhesus_liver_lung_DMRs_bed[which(sort_rhesus_liver_lung_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_50_overlap(sort_humans_liver_lung_DMRs_bed_hypo, sort_chimps_liver_lung_DMRs_bed_hypo, sort_rhesus_liver_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#           3318           5910           11633     757 405 851           272
+
+
+# Liver-Kidney
+sort_humans_liver_kidney_DMRs_bed_hypo <- sort_humans_liver_kidney_DMRs_bed[which(sort_humans_liver_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_liver_kidney_DMRs_bed_hypo <- sort_chimps_liver_kidney_DMRs_bed[which(sort_chimps_liver_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_liver_kidney_DMRs_bed_hypo <- sort_rhesus_liver_kidney_DMRs_bed[which(sort_rhesus_liver_kidney_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_50_overlap(sort_humans_liver_kidney_DMRs_bed_hypo, sort_chimps_liver_kidney_DMRs_bed_hypo, sort_rhesus_liver_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#           7564           8104           14626     2210 966 1023           802
+
+# Lung-kidney
+
+sort_humans_lung_kidney_DMRs_bed_hypo <- sort_humans_lung_kidney_DMRs_bed[which(sort_humans_lung_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_lung_kidney_DMRs_bed_hypo <- sort_chimps_lung_kidney_DMRs_bed[which(sort_chimps_lung_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_lung_kidney_DMRs_bed_hypo <- sort_rhesus_lung_kidney_DMRs_bed[which(sort_rhesus_lung_kidney_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_50_overlap(sort_humans_lung_kidney_DMRs_bed_hypo, sort_chimps_lung_kidney_DMRs_bed_hypo, sort_rhesus_lung_kidney_DMRs_bed_hypo)
+
+#    human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#           9239           5561            8648     1718 733 487           410
+```
+
+
+
+### 75% overlap
+```{r, include = FALSE}
+# Heart-kidney
+
+tissue_conserved_75_overlap(sort_humans_heart_kidney_DMRs_bed, sort_chimps_heart_kidney_DMRs_bed, sort_rhesus_heart_kidney_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          27052          14759           21413     2171 841 542           227
+
+# Heart liver
+tissue_conserved_75_overlap(sort_humans_heart_liver_DMRs_bed, sort_chimps_heart_liver_DMRs_bed, sort_rhesus_heart_liver_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#          18396          24190           38680     2893 916 1328           356
+     
+     
+# Heat lung
+tissue_conserved_75_overlap(sort_humans_heart_lung_DMRs_bed, sort_chimps_heart_lung_DMRs_bed, sort_rhesus_heart_lung_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#          13329           7657            6653     666 172 160            41
+
+# Liver lung
+tissue_conserved_75_overlap(sort_humans_liver_lung_DMRs_bed, sort_chimps_liver_lung_DMRs_bed, sort_rhesus_liver_lung_DMRs_bed)
+
+ #    human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          10506          19337           31060     1674 480 914           182
+
+# Liver-Kidney
+tissue_conserved_75_overlap(sort_humans_liver_kidney_DMRs_bed, sort_chimps_liver_kidney_DMRs_bed, sort_rhesus_liver_kidney_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          14859          20569           34034     2090 688 915           273
+
+# Lung-kidney
+tissue_conserved_75_overlap(sort_humans_lung_kidney_DMRs_bed, sort_chimps_lung_kidney_DMRs_bed, sort_rhesus_lung_kidney_DMRs_bed)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          14857          10491           15016     1136 424 345           104
+```
+
+
+
+### 75% overlap in hypo methylated
+```{r}
+sort_humans_heart_kidney_DMRs_bed_hypo <- sort_humans_heart_kidney_DMRs_bed[which(sort_humans_heart_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_heart_kidney_DMRs_bed_hypo <- sort_chimps_heart_kidney_DMRs_bed[which(sort_chimps_heart_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_heart_kidney_DMRs_bed_hypo <- sort_rhesus_heart_kidney_DMRs_bed[which(sort_rhesus_heart_kidney_DMRs_bed[,4] == "hypo"),]
+
+# Heart-kidney
+
+tissue_conserved_75_overlap(sort_humans_heart_kidney_DMRs_bed_hypo, sort_chimps_heart_kidney_DMRs_bed_hypo, sort_rhesus_heart_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#          11629           6861            9165     824 326 220            73
+
+# Heart liver
+
+sort_humans_heart_liver_DMRs_bed_hypo <- sort_humans_heart_liver_DMRs_bed[which(sort_humans_heart_liver_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_heart_liver_DMRs_bed_hypo <- sort_chimps_heart_liver_DMRs_bed[which(sort_chimps_heart_liver_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_heart_liver_DMRs_bed_hypo <- sort_rhesus_heart_liver_DMRs_bed[which(sort_rhesus_heart_liver_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_75_overlap(sort_humans_heart_liver_DMRs_bed_hypo, sort_chimps_heart_liver_DMRs_bed_hypo, sort_rhesus_heart_liver_DMRs_bed_hypo)
+
+#    human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#           9826          11434           17440     1232 458 719           179
+     
+# Heart lung
+
+sort_humans_heart_lung_DMRs_bed_hypo <- sort_humans_heart_lung_DMRs_bed[which(sort_humans_heart_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_heart_lung_DMRs_bed_hypo <- sort_chimps_heart_lung_DMRs_bed[which(sort_chimps_heart_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_heart_lung_DMRs_bed_hypo <- sort_rhesus_heart_lung_DMRs_bed[which(sort_rhesus_heart_lung_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_75_overlap(sort_humans_heart_lung_DMRs_bed_hypo, sort_chimps_heart_lung_DMRs_bed_hypo, sort_rhesus_heart_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#           8858           4758            3809     484 114 113            32
+
+
+
+# Liver lung
+sort_humans_liver_lung_DMRs_bed_hypo <- sort_humans_liver_lung_DMRs_bed[which(sort_humans_liver_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_liver_lung_DMRs_bed_hypo <- sort_chimps_liver_lung_DMRs_bed[which(sort_chimps_liver_lung_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_liver_lung_DMRs_bed_hypo <- sort_rhesus_liver_lung_DMRs_bed[which(sort_rhesus_liver_lung_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_75_overlap(sort_humans_liver_lung_DMRs_bed_hypo, sort_chimps_liver_lung_DMRs_bed_hypo, sort_rhesus_liver_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#           6407          12383           18470     1241 312 563           130
+
+
+# Liver-Kidney
+sort_humans_liver_kidney_DMRs_bed_hypo <- sort_humans_liver_kidney_DMRs_bed[which(sort_humans_liver_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_liver_kidney_DMRs_bed_hypo <- sort_chimps_liver_kidney_DMRs_bed[which(sort_chimps_liver_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_liver_kidney_DMRs_bed_hypo <- sort_rhesus_liver_kidney_DMRs_bed[which(sort_rhesus_liver_kidney_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_75_overlap(sort_humans_liver_kidney_DMRs_bed_hypo, sort_chimps_liver_kidney_DMRs_bed_hypo, sort_rhesus_liver_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#           5224          10401           17791     834 229 392            81
+
+# Lung-kidney
+
+sort_humans_lung_kidney_DMRs_bed_hypo <- sort_humans_lung_kidney_DMRs_bed[which(sort_humans_lung_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_chimps_lung_kidney_DMRs_bed_hypo <- sort_chimps_lung_kidney_DMRs_bed[which(sort_chimps_lung_kidney_DMRs_bed[,4] == "hypo"),]
+
+sort_rhesus_lung_kidney_DMRs_bed_hypo <- sort_rhesus_lung_kidney_DMRs_bed[which(sort_rhesus_lung_kidney_DMRs_bed[,4] == "hypo"),]
+
+tissue_conserved_75_overlap(sort_humans_lung_kidney_DMRs_bed_hypo, sort_chimps_lung_kidney_DMRs_bed_hypo, sort_rhesus_lung_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr cr hcr_conserved
+#           4075           3561            5391 224 105 98            17
+```
+
+
+### 75% overlap in hyper methylated
+```{r}
+sort_humans_heart_kidney_DMRs_bed_hypo <- sort_humans_heart_kidney_DMRs_bed[which(sort_humans_heart_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_heart_kidney_DMRs_bed_hypo <- sort_chimps_heart_kidney_DMRs_bed[which(sort_chimps_heart_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_heart_kidney_DMRs_bed_hypo <- sort_rhesus_heart_kidney_DMRs_bed[which(sort_rhesus_heart_kidney_DMRs_bed[,4] == "hyper"),]
+
+# Heart-kidney
+
+tissue_conserved_75_overlap(sort_humans_heart_kidney_DMRs_bed_hypo, sort_chimps_heart_kidney_DMRs_bed_hypo, sort_rhesus_heart_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc   hr  cr hcr_conserved
+#                15427           7903           12258 1348 511 317           153
+
+# Heart liver
+
+sort_humans_heart_liver_DMRs_bed_hypo <- sort_humans_heart_liver_DMRs_bed[which(sort_humans_heart_liver_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_heart_liver_DMRs_bed_hypo <- sort_chimps_heart_liver_DMRs_bed[which(sort_chimps_heart_liver_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_heart_liver_DMRs_bed_hypo <- sort_rhesus_heart_liver_DMRs_bed[which(sort_rhesus_heart_liver_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_75_overlap(sort_humans_heart_liver_DMRs_bed_hypo, sort_chimps_heart_liver_DMRs_bed_hypo, sort_rhesus_heart_liver_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#                8581          12772           21264 1660 449 595           176
+     
+     
+# Heart lung
+
+sort_humans_heart_lung_DMRs_bed_hypo <- sort_humans_heart_lung_DMRs_bed[which(sort_humans_heart_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_heart_lung_DMRs_bed_hypo <- sort_chimps_heart_lung_DMRs_bed[which(sort_chimps_heart_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_heart_lung_DMRs_bed_hypo <- sort_rhesus_heart_lung_DMRs_bed[which(sort_rhesus_heart_lung_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_75_overlap(sort_humans_heart_lung_DMRs_bed_hypo, sort_chimps_heart_lung_DMRs_bed_hypo, sort_rhesus_heart_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#           4475           2901            2846       180 56 47             9
+
+# Liver lung
+sort_humans_liver_lung_DMRs_bed_hypo <- sort_humans_liver_lung_DMRs_bed[which(sort_humans_liver_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_liver_lung_DMRs_bed_hypo <- sort_chimps_liver_lung_DMRs_bed[which(sort_chimps_liver_lung_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_liver_lung_DMRs_bed_hypo <- sort_rhesus_liver_lung_DMRs_bed[which(sort_rhesus_liver_lung_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_75_overlap(sort_humans_liver_lung_DMRs_bed_hypo, sort_chimps_liver_lung_DMRs_bed_hypo, sort_rhesus_liver_lung_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific  hc  hr  cr hcr_conserved
+#           4107           6960           12600     431 162 347            52
+
+
+# Liver-Kidney
+sort_humans_liver_kidney_DMRs_bed_hypo <- sort_humans_liver_kidney_DMRs_bed[which(sort_humans_liver_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_liver_kidney_DMRs_bed_hypo <- sort_chimps_liver_kidney_DMRs_bed[which(sort_chimps_liver_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_liver_kidney_DMRs_bed_hypo <- sort_rhesus_liver_kidney_DMRs_bed[which(sort_rhesus_liver_kidney_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_75_overlap(sort_humans_liver_kidney_DMRs_bed_hypo, sort_chimps_liver_kidney_DMRs_bed_hypo, sort_rhesus_liver_kidney_DMRs_bed_hypo)
+
+#     human_specific chimp_specific rhesus_specific   hc  hr   cr hcr_conserved
+#          9641          10178           16257        1255 454 514           192
+
+# Lung-kidney
+
+sort_humans_lung_kidney_DMRs_bed_hypo <- sort_humans_lung_kidney_DMRs_bed[which(sort_humans_lung_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_chimps_lung_kidney_DMRs_bed_hypo <- sort_chimps_lung_kidney_DMRs_bed[which(sort_chimps_lung_kidney_DMRs_bed[,4] == "hyper"),]
+
+sort_rhesus_lung_kidney_DMRs_bed_hypo <- sort_rhesus_lung_kidney_DMRs_bed[which(sort_rhesus_lung_kidney_DMRs_bed[,4] == "hyper"),]
+
+tissue_conserved_75_overlap(sort_humans_lung_kidney_DMRs_bed_hypo, sort_chimps_lung_kidney_DMRs_bed_hypo, sort_rhesus_lung_kidney_DMRs_bed_hypo)
+
+#    human_specific chimp_specific rhesus_specific   hc  hr  cr hcr_conserved
+#          10783           6934            9630       912 318 243            87
+```
+
+
+
 ## Making plots
 
 ```{r}
@@ -1325,4 +1958,36 @@ draw.triple.venn(444+306+1083+200, 306+1083+577+457, 200+1083+577+947, 306+1083,
 
 ```
 
+```{r}
+p1 <- ggdraw()+draw_image("../data/Hyper_heart_liver.svg")+draw_figure_label("11A.", size = 16, fontface = "bold")
+p2 <- ggdraw()+draw_image("../data/Hypo_heart_liver.svg")+draw_figure_label("11B.", size = 16, fontface = "bold")
+
+p3 <- ggdraw()+draw_image("../data/Hyper_heart_lung.svg")+draw_figure_label("11C.", size = 16, fontface = "bold")
+p4 <- ggdraw()+draw_image("../data/Hypo_heart_lung.svg")+draw_figure_label("11D.", size = 16, fontface = "bold")
+
+p5 <- ggdraw()+draw_image("../data/Hyper_heart_kidney.svg")+draw_figure_label("11E.", size = 16, fontface = "bold")
+p6 <- ggdraw()+draw_image("../data/Hypo_heart_kidney.svg")+draw_figure_label("11F.", size = 16, fontface = "bold")
+
+p7 <- ggdraw()+draw_image("../data/Hyper_liver_lung.svg")+draw_figure_label("11G.", size = 16, fontface = "bold")
+p8 <- ggdraw()+draw_image("../data/Hypo_liver_lung.svg")+draw_figure_label("11H.", size = 16, fontface = "bold")
+
+p9 <- ggdraw()+draw_image("../data/Hyper_liver_kidney.svg")+draw_figure_label("11I.", size = 16, fontface = "bold")
+p10 <- ggdraw()+draw_image("../data/Hypo_liver_kidney.svg")+draw_figure_label("11J.", size = 16, fontface = "bold")
+
+p11 <- ggdraw()+draw_image("../data/Hyper_lung_kidney.svg")+draw_figure_label("11K.", size = 16, fontface = "bold")
+p12 <- ggdraw()+draw_image("../data/Hypo_lung_kidney.svg")+draw_figure_label("11L.", size = 16, fontface = "bold")
+
+
+eight_plots <- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, ncol = 4)
+plot_supp_fig <- plot_grid(eight_plots, ncol = 1, rel_heights=c(0.1, 1))
+
+
+#save_plot("/Users/laurenblake/Dropbox/Quick_ref/Methylation/Hyper_hypo_pairwise.png", plot_supp_fig,
+#          ncol = 4, # we're saving a grid plot of 2 columns
+#          nrow = 3, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+#          base_aspect_ratio = 0.75
+#          )
+
+```
 

@@ -223,3 +223,5 @@ INFO [2018-05-04 17:51:12]
 INFO [2018-05-04 17:51:12] $cat.dist
 INFO [2018-05-04 17:51:12] [1] 0.05
 INFO [2018-05-04 17:51:12] 
+ERROR [2018-05-14 15:02:10] Impossible: a4 <- n13 - n123 produces negative area
+ERROR [2018-05-14 15:02:19] Impossible: a4 <- n13 - n123 produces negative area

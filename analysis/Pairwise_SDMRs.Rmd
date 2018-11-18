@@ -1,0 +1,96 @@
+---
+title: "Pairwise_sDMRs"
+author: "Lauren Blake"
+date: "June 22, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Introduction
+
+```{r, include = FALSE}
+# Import libraries
+
+library("ggplot2")
+library("VennDiagram")
+library("RColorBrewer")
+library(plyr)
+library("bedr")
+getwd()
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Import the data
+
+# sDMRs
+chimp_rhesus_heart_DMRs <- read.delim("../data/Methylation_sDMRs/ChimpRhesus_heart_DMRs.txt")
+chimp_rhesus_kidney_DMRs <- read.delim("../data/Methylation_sDMRs/ChimpRhesus_kidney_DMRs.txt")
+chimp_rhesus_liver_DMRs <- read.delim("../data/Methylation_sDMRs/ChimpRhesus_liver_DMRs.txt")
+chimp_rhesus_lung_DMRs <- read.delim("../data/Methylation_sDMRs/ChimpRhesus_lung_DMRs.txt")
+
+
+human_rhesus_heart_DMRs <- read.delim("../data/Methylation_sDMRs/HumanRhesus_heart_DMRs.txt")
+human_rhesus_kidney_DMRs <- read.delim("../data/Methylation_sDMRs/HumanRhesus_kidney_DMRs.txt")
+human_rhesus_liver_DMRs <- read.delim("../data/Methylation_sDMRs/HumanRhesus_liver_DMRs.txt")
+human_rhesus_lung_DMRs <- read.delim("../data/Methylation_sDMRs/HumanRhesus_lung_DMRs.txt")
+
+
+human_chimp_heart_DMRs <- read.delim("../data/Methylation_sDMRs/HumanChimp_heart_DMRs.txt")
+human_chimp_kidney_DMRs <- read.delim("../data/Methylation_sDMRs/HumanChimp_kidney_DMRs.txt")
+human_chimp_liver_DMRs <- read.delim("../data/Methylation_sDMRs/HumanChimp_liver_DMRs.txt")
+human_chimp_lung_DMRs <- read.delim("../data/Methylation_sDMRs/HumanChimp_lung_DMRs.txt")
+
+
+```
+
+
+# Get human, chimp, and rhesus autosomal tDMRs 
+
+
+```{r, include = FALSE}
+# Function to get number
+
+sdmr_noX <- function(name_of_sDMR){
+  
+humans_heart_liver_DMRs <- name_of_sDMR
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+return(nrow(humans_heart_liver_DMRs_bed_noX))
+
+}
+
+sdmr_noX(chimp_rhesus_heart_DMRs)
+sdmr_noX(chimp_rhesus_kidney_DMRs)
+sdmr_noX(chimp_rhesus_liver_DMRs)
+sdmr_noX(chimp_rhesus_lung_DMRs)
+
+sdmr_noX(human_rhesus_heart_DMRs)
+sdmr_noX(human_rhesus_kidney_DMRs)
+sdmr_noX(human_rhesus_liver_DMRs)
+sdmr_noX(human_rhesus_lung_DMRs)
+
+sdmr_noX(human_chimp_heart_DMRs)
+sdmr_noX(human_chimp_kidney_DMRs)
+sdmr_noX(human_chimp_liver_DMRs)
+sdmr_noX(human_chimp_lung_DMRs)
+```
+
+

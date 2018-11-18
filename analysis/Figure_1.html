@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>figure_1</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">figure_1</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>November 8, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#figure-1b-and-1d">Figure 1B and 1D</a><ul>
+<li><a href="#make-pca-for-gene-expression-and-methylation-data">Make PCA for gene expression and methylation data</a></li>
+</ul></li>
+<li><a href="#figure-1c">Figure 1C</a><ul>
+<li><a href="#rna-seq-all-correlations">RNA-seq all correlations</a></li>
+<li><a href="#correlations-for-different-individuals-same-tissues">Correlations for different individuals, same tissues</a></li>
+<li><a href="#correlations-for-same-individuals-different-tissues">Correlations for same individuals, different tissues</a></li>
+<li><a href="#correlations-for-different-individuals-different-tissues">Correlations for different individuals, different tissues</a></li>
+<li><a href="#combine-and-plot-the-information">Combine and plot the information</a></li>
+</ul></li>
+<li><a href="#figure-1e">Figure 1E</a></li>
+<li><a href="#figure-1f">Figure 1F</a></li>
+<li><a href="#combine-figures">Combine figures</a></li>
+</ul>
+</div>
+
+<pre class="r"><code># Load libraries
+
+library(plyr)
+library(dplyr)</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:plyr&#39;:
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(&quot;tidyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
+<pre class="r"><code>colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Load data
+
+## Load counts
+
+cpm_12184 &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/PC_cpm_cyclic_loess_random_var_gene_exp&quot;)
+
+## RNA-seq
+
+sample_info_RNAseq &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv&quot;)
+sample_features &lt;- sample_info_RNAseq[-17,]
+
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt&quot;)
+
+# Eliminate H1H
+samples &lt;- samples[-17,]</code></pre>
+<div id="figure-1b-and-1d" class="section level1">
+<h1>Figure 1B and 1D</h1>
+<div id="make-pca-for-gene-expression-and-methylation-data" class="section level2">
+<h2>Make PCA for gene expression and methylation data</h2>
+<p>Gene expression data for all genes passing filtering and all orthologous CpGs</p>
+<pre class="r"><code>pca_genes &lt;- prcomp(t(cpm_12184) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.true &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Tissue), shape=as.factor(sample_features$Species), size=2)) + geom_point(alpha = 1) + xlab(&quot;PC1 (21.8% of variance)&quot;) + ylab(paste(&quot;PC2 (17.5% of variance)&quot;)) + theme(legend.position=&quot;none&quot;)
+
+plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)) 
+plot.pca.true &lt;- plot.pca.true + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+#plot_grid(plot.pca.true, p2, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)
+
+#svg(&quot;./plot.pca.svg&quot;)
+#plot.pca.true
+#dev.off()
+
+#pdf(&quot;./plot.pca.pdf&quot;)
+#plot.pca.true
+#dev.off()
+
+
+## Data for methylation
+
+# Code from cluster to get PCs and correlations from all 2 million orthologous CpGs
+#all_methyl &lt;- read.table(&quot;/mnt/gluster/home/leblake/Methylation/dfCovnoXposMeth.txt&quot;)
+#all_methyl_48 &lt;- all_methyl[,2:49]
+#pca_genes &lt;- prcomp(t(all_methyl_48) , scale = T, center = TRUE)
+#pca_genes_scores &lt;- pca_genes$x
+#write.table(pca_genes_scores, file = &quot;./Methylation/Methylation_figures/pca_all_methyl_samples.txt&quot;)
+#pca_genes_summary &lt;- summary(pca_genes)$importance
+#write.table(pca_genes_summary, file = &quot;./Methylation/Methylation_figures/pca_summary_all_methyl_samples.txt&quot;)
+
+
+
+
+check_methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/250_avg_methyl_hcr_4155_genes_unmerged.txt&quot;, sep=&quot;&quot;)
+methyl_4155 &lt;- check_methyl[,-1]
+pca_genes &lt;- prcomp(t(methyl_4155) , scale = T, center = TRUE)
+#pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Tissue), shape=as.factor(sample_info_RNAseq$Species), size=2)) + geom_point(alpha = 1) + xlab(&quot;PC1 (11.1% of variance)&quot;) + ylab(&quot;PC2 (6.8% of variance)&quot;) + theme(legend.position=&quot;none&quot;)
+
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)) 
+plot.pca.methyl &lt;- plot.pca.methyl + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
+
+plot.pca.methyl</code></pre>
+<p><img src="Figure_1_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>#plot_grid(plot.pca.true, p2, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)
+
+#svg(&quot;./plot.methyl.svg&quot;)
+#plot.pca.methyl
+#dev.off()
+
+
+#pdf(&quot;./plot.methyl.pdf&quot;)
+#plot.pca.methyl
+#dev.off()
+
+
+
+
+#svg(&quot;./plot.methyl.test.svg&quot;)
+#plot.pca.methyl
+#dev.off()</code></pre>
+</div>
+</div>
+<div id="figure-1c" class="section level1">
+<h1>Figure 1C</h1>
+<div id="rna-seq-all-correlations" class="section level2">
+<h2>RNA-seq all correlations</h2>
+<pre class="r"><code>pair_cor &lt;- cor(cpm_12184)
+pair_cor &lt;- as.data.frame(pair_cor)
+pair_cor$sample1 &lt;- rownames(pair_cor)
+
+pair_cor_long &lt;- gather(pair_cor, key = &quot;sample2&quot;, value = &quot;r&quot;, -sample1) %&gt;%
+  mutate(sample2 = as.character(sample2)) %&gt;%
+  filter(sample1 &lt; sample2) %&gt;% # ensures only one of the two entries is
+  arrange(sample1, sample2)     # maintained</code></pre>
+<pre><code>## Warning: package &#39;bindrcpp&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>stopifnot(pair_cor_long$r &lt; 1,
+          nrow(pair_cor_long) == (47*47 - 47) / 2)
+
+head(pair_cor_long)</code></pre>
+<pre><code>##   sample1 sample2         r
+## 1     C1H     C1K 0.7121519
+## 2     C1H    C1Li 0.6845819
+## 3     C1H    C1Lu 0.7875100
+## 4     C1H     C2H 0.9473379
+## 5     C1H     C2K 0.7110097
+## 6     C1H    C2Li 0.6114119</code></pre>
+<pre class="r"><code>rownames(sample_features) &lt;- colnames(cpm_12184)
+pair_cor_long$tissue1 &lt;- &quot;&quot;
+pair_cor_long$tissue2 &lt;- &quot;&quot;
+
+pair_cor_long$individual1 &lt;- &quot;&quot;
+pair_cor_long$individual2 &lt;- &quot;&quot;
+
+for (i in 1:nrow(pair_cor_long)) {
+  pair_cor_long$tissue1[i] &lt;- sample_features[pair_cor_long$sample1[i], &quot;Tissue&quot;]
+  pair_cor_long$tissue2[i] &lt;- sample_features[pair_cor_long$sample2[i], &quot;Tissue&quot;]
+  pair_cor_long$individual1[i] &lt;- sample_features[pair_cor_long$sample1[i], &quot;Individual&quot;]
+  pair_cor_long$individual2[i] &lt;- sample_features[pair_cor_long$sample2[i], &quot;Individual&quot;]
+}
+head(pair_cor_long)</code></pre>
+<pre><code>##   sample1 sample2         r tissue1 tissue2 individual1 individual2
+## 1     C1H     C1K 0.7121519       1       2           2           2
+## 2     C1H    C1Li 0.6845819       1       3           2           2
+## 3     C1H    C1Lu 0.7875100       1       4           2           2
+## 4     C1H     C2H 0.9473379       1       1           2           4
+## 5     C1H     C2K 0.7110097       1       2           2           4
+## 6     C1H    C2Li 0.6114119       1       3           2           4</code></pre>
+<pre class="r"><code>summary(pair_cor_long$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.4172  0.5831  0.6636  0.6750  0.7432  0.9846</code></pre>
+</div>
+<div id="correlations-for-different-individuals-same-tissues" class="section level2">
+<h2>Correlations for different individuals, same tissues</h2>
+<pre class="r"><code># Subset for different individuals
+
+subset_pair_cor_long_diff_ind_same_tissues &lt;- pair_cor_long[which(pair_cor_long$tissue1 == pair_cor_long$tissue2 &amp; pair_cor_long$individual1 != pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_diff_ind_same_tissues$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.7092  0.8176  0.8412  0.8572  0.9034  0.9846</code></pre>
+</div>
+<div id="correlations-for-same-individuals-different-tissues" class="section level2">
+<h2>Correlations for same individuals, different tissues</h2>
+<pre class="r"><code>subset_pair_cor_long_same_ind_diff_tissues &lt;- pair_cor_long[which(pair_cor_long$tissue1 != pair_cor_long$tissue2 &amp; pair_cor_long$individual1 == pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_same_ind_diff_tissues$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.5259  0.6570  0.6951  0.6781  0.7204  0.8205</code></pre>
+</div>
+<div id="correlations-for-different-individuals-different-tissues" class="section level2">
+<h2>Correlations for different individuals, different tissues</h2>
+<pre class="r"><code>subset_pair_cor_long_diff_ind_diff_tissues &lt;- pair_cor_long[which(pair_cor_long$tissue1 != pair_cor_long$tissue2 &amp; pair_cor_long$individual1 != pair_cor_long$individual2),]
+
+summary(subset_pair_cor_long_diff_ind_diff_tissues$r)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.4172  0.5638  0.6140  0.6140  0.6754  0.7792</code></pre>
+</div>
+<div id="combine-and-plot-the-information" class="section level2">
+<h2>Combine and plot the information</h2>
+<pre class="r"><code>values_all &lt;- as.data.frame(pair_cor_long$r)
+colnames(values_all) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_same_ind &lt;- as.data.frame(subset_pair_cor_long_same_ind_diff_tissues$r)
+colnames(values_same_ind) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_diff_both &lt;- as.data.frame(subset_pair_cor_long_diff_ind_diff_tissues$r)
+colnames(values_diff_both) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+values_diff_ind &lt;- as.data.frame(subset_pair_cor_long_diff_ind_same_tissues$r)
+colnames(values_diff_ind) &lt;- c(&quot;Pearson&#39;s Correlation&quot;)
+
+all_r_values &lt;- rbind(values_all, values_same_ind, values_diff_both, values_diff_ind)
+
+# Make labels
+
+labels_all &lt;- array(&quot;All&quot;, dim = c(nrow(pair_cor_long),1))
+
+labels_diff_tissues &lt;- array(&quot;Different tissue&quot;, dim = c(nrow(subset_pair_cor_long_same_ind_diff_tissues),1))
+
+labels_diff_both &lt;- array(&quot;Both different&quot;, dim = c(nrow(subset_pair_cor_long_diff_ind_diff_tissues),1))
+
+labels_diff_ind &lt;- array(&quot;Different individual&quot;, dim = c(nrow(subset_pair_cor_long_diff_ind_same_tissues),1))
+
+labels_all_r_values &lt;- rbind(labels_all, labels_diff_tissues, labels_diff_both, labels_diff_ind)
+
+rvalues_table &lt;- cbind(all_r_values, labels_all_r_values)
+
+rvalues_table$labels_all_r_values &lt;- ordered(rvalues_table$labels_all_r_values, levels=c(&quot;All&quot;, &quot;Different individual&quot;, &quot;Different tissue&quot;, &quot;Both different&quot;))
+
+plot.corr &lt;- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1])) +
+  geom_boxplot()  +
+  labs(x = &quot;Condition&quot;, y = &quot;Pearson&#39;s r&quot;) + scale_x_discrete( breaks = c(&quot;All&quot;, &quot;Different individual&quot;, &quot;Different tissue&quot;, &quot;Both different&quot;), labels = c(&quot;All&quot;, &quot;Different \n individual&quot;, &quot;Different \n tissue&quot;, &quot;Both \n different&quot;))
+
+#theme(axis.text.x = element_text(angle = 90, vjust = 1)) + scale_x_discrete( breaks = c(&quot;All&quot;, &quot;Different individual&quot;, &quot;Different tissue&quot;, &quot;Both different&quot;), labels = c(&quot;All&quot;, &quot;Same \n tissue&quot;, &quot;Same \n individual&quot;, &quot;Both \n different&quot;))
+
+plot.corr</code></pre>
+<p><img src="Figure_1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+</div>
+<div id="figure-1e" class="section level1">
+<h1>Figure 1E</h1>
+<pre class="r"><code># Read in data
+
+hc_cons_de &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_de.txt&quot;)
+
+non_cons_de_corr_human &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_human_only_de.txt&quot;)
+
+non_cons_de_corr_chimp &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_chimp_only_de.txt&quot;)
+
+hc_non_de_human &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_human_nonde.txt&quot;)
+
+hc_non_de_chimp &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_chimp_nonde.txt&quot;)
+
+
+# Combine data
+corr_cons_DE_HK &lt;- as.data.frame(hc_cons_de)
+cons_label &lt;- array(&quot;Conserved DE&quot;, dim=c(nrow(corr_cons_DE_HK),1))
+corr_cons_DE_HK_full &lt;- as.data.frame(cbind(corr_cons_DE_HK, cons_label))
+colnames(corr_cons_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+corr_non_cons_DE_HK &lt;- as.data.frame(non_cons_de_corr_human)
+non_cons_label &lt;- array(&quot;Human only DE&quot;, dim=c(nrow(corr_non_cons_DE_HK),1))
+corr_non_cons_DE_HK_full &lt;- as.data.frame(cbind(corr_non_cons_DE_HK, non_cons_label))
+colnames(corr_non_cons_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_cons_DE_CK &lt;- as.data.frame(non_cons_de_corr_chimp)
+non_cons_label &lt;- array(&quot;Chimpanzee only DE&quot;, dim=c(nrow(corr_non_cons_DE_CK),1))
+corr_non_cons_DE_CK_full &lt;- as.data.frame(cbind(corr_non_cons_DE_CK, non_cons_label))
+colnames(corr_non_cons_DE_CK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_DE_HK &lt;- as.data.frame(hc_non_de_human)
+non_de_label &lt;- array(&quot;Human non-DE&quot;, dim=c(nrow(corr_non_DE_HK),1))
+corr_non_DE_HK_full &lt;- as.data.frame(cbind(corr_non_DE_HK, non_de_label))
+colnames(corr_non_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_DE_CK &lt;- as.data.frame(hc_non_de_chimp)
+non_de_label &lt;- array(&quot;Chimpanzee non-DE&quot;, dim=c(nrow(corr_non_DE_CK),1))
+corr_non_DE_CK_full &lt;- as.data.frame(cbind(corr_non_DE_CK, non_de_label))
+colnames(corr_non_DE_CK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+# Make correlation
+human_HK &lt;- rbind(corr_cons_DE_HK_full, corr_non_cons_DE_HK_full, corr_non_cons_DE_CK_full, corr_non_DE_HK_full, corr_non_DE_CK_full)
+
+# Plot without mean
+hc_density &lt;- ggplot(human_HK, aes(x=`Pearson&#39;s correlation`, color=`DE status`)) +
+  geom_density() + ylab(&quot;Density&quot;) + theme(legend.position = c(0.3, 0.3))
+
+svg(&quot;./plot.hc.test.svg&quot;)
+hc_density
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+</div>
+<div id="figure-1f" class="section level1">
+<h1>Figure 1F</h1>
+<pre class="r"><code># Read in data
+
+hr_cons_de &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_rhesus_DE/corr_hr_de.txt&quot;)
+
+non_cons_de_corr_human_hr &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_rhesus_DE/corr_hc_human_only_de.txt&quot;)
+
+non_cons_de_corr_rhesus &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_rhesus_DE/corr_hc_rhesus_only_de.txt&quot;)
+
+hc_non_de_human_hr &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_rhesus_DE/corr_hc_human_nonde.txt&quot;)
+
+hc_non_de_rhesus &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_rhesus_DE/corr_hc_rhesus_nonde.txt&quot;)
+
+
+# Combine data
+corr_cons_DE_HR &lt;- as.data.frame(hr_cons_de)
+cons_label &lt;- array(&quot;Conserved DE&quot;, dim=c(nrow(corr_cons_DE_HR),1))
+corr_cons_DE_HR_full &lt;- as.data.frame(cbind(corr_cons_DE_HR, cons_label))
+colnames(corr_cons_DE_HR_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+corr_non_cons_DE_HR &lt;- as.data.frame(non_cons_de_corr_human_hr)
+non_cons_label &lt;- array(&quot;Human only DE&quot;, dim=c(nrow(corr_non_cons_DE_HR),1))
+corr_non_cons_DE_HR_full &lt;- as.data.frame(cbind(corr_non_cons_DE_HR, non_cons_label))
+colnames(corr_non_cons_DE_HR_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_cons_DE_HR_rhesus &lt;- as.data.frame(non_cons_de_corr_rhesus)
+non_cons_label &lt;- array(&quot;Rhesus only DE&quot;, dim=c(nrow(corr_non_cons_DE_HR_rhesus),1))
+corr_non_cons_DE_HR_rhesus_full &lt;- as.data.frame(cbind(corr_non_cons_DE_HR_rhesus, non_cons_label))
+colnames(corr_non_cons_DE_HR_rhesus_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_DE_HR &lt;- as.data.frame(hc_non_de_human_hr)
+non_de_label &lt;- array(&quot;Human non-DE&quot;, dim=c(nrow(corr_non_DE_HR),1))
+corr_non_DE_HR_full &lt;- as.data.frame(cbind(corr_non_DE_HR, non_de_label))
+colnames(corr_non_DE_HR_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_DE_HR_rhesus &lt;- as.data.frame(hc_non_de_rhesus)
+non_de_label &lt;- array(&quot;Rhesus non-DE&quot;, dim=c(nrow(corr_non_DE_HR_rhesus),1))
+corr_non_DE_HR_rhesus_full &lt;- as.data.frame(cbind(corr_non_DE_HR_rhesus, non_de_label))
+colnames(corr_non_DE_HR_rhesus_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+# Make correlation
+human_HR &lt;- rbind(corr_cons_DE_HR_full, corr_non_cons_DE_HR_full, corr_non_cons_DE_HR_rhesus_full, corr_non_DE_HR_full, corr_non_DE_HR_rhesus_full)
+
+# Plot without mean
+hr_density &lt;- ggplot(human_HR, aes(x=`Pearson&#39;s correlation`, color=`DE status`)) +
+  geom_density() + ylab(&quot;Density&quot;) + theme(legend.position = c(0.3, 0.3))
+
+svg(&quot;./plot.hr.test.svg&quot;)
+hr_density
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+</div>
+<div id="combine-figures" class="section level1">
+<h1>Combine figures</h1>
+<pre class="r"><code>p1 &lt;- ggdraw()+draw_image(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_5/Study_design3.svg&quot;)
+p2 &lt;- ggdraw()+draw_image(&quot;./plot.pca.svg&quot;)
+p4 &lt;- ggdraw()+draw_image(&quot;./plot.methyl.test.svg&quot;)
+p5 &lt;- hc_density
+p6 &lt;- hr_density
+
+make_fig1 &lt;- plot_grid(p1, p2, plot.corr, p4, p5, p6, labels = c(&quot;1A.&quot;, &quot;1B.&quot;, &quot;1C.&quot;, &quot;1D.&quot;, &quot;1E.&quot;, &quot;1F.&quot;), ncol = 2)
+
+make_fig1</code></pre>
+<p><img src="Figure_1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_5/fig1.pdf&quot;, make_fig1,
+          ncol = 2, # we&#39;re saving a grid plot of 2 columns
+          nrow = 3, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 1.3
+          )</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-07-22" />
+
+<title>Compare_initial_effect_sizes</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Compare_initial_effect_sizes</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>July 22, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#human-chimp-versus-human-rhesus-heart">Human-chimp versus human-rhesus heart</a></li>
+<li><a href="#kidney">Kidney</a></li>
+<li><a href="#liver">Liver</a></li>
+<li><a href="#lung">Lung</a></li>
+<li><a href="#human-chimp-conserved-versus-non-conserved-heart-kidney">Human-chimp conserved versus non conserved heart-kidney</a></li>
+<li><a href="#human-chimp-conserved-versus-non-conserved-heart-liver">Human-chimp conserved versus non conserved heart-liver</a></li>
+<li><a href="#human-chimp-conserved-versus-non-conserved-heart-lung">Human-chimp conserved versus non conserved heart-lung</a></li>
+<li><a href="#human-chimp-conserved-versus-non-conserved-kidney-liver">Human-chimp conserved versus non conserved kidney-liver</a></li>
+<li><a href="#human-chimp-conserved-versus-non-conserved-kidney-lung">Human-chimp conserved versus non conserved kidney-lung</a></li>
+<li><a href="#human-chimp-conserved-versus-non-conserved-liver-lung">Human-chimp conserved versus non conserved liver-lung</a></li>
+</ul>
+</div>
+
+<div id="human-chimp-versus-human-rhesus-heart" class="section level1">
+<h1>Human-chimp versus human-rhesus heart</h1>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;plyr&quot;)
+library(&quot;ashr&quot;)
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
+<pre class="r"><code>library(&quot;vashr&quot;)</code></pre>
+<pre><code>## Loading required package: SQUAREM</code></pre>
+<pre><code>## Loading required package: qvalue</code></pre>
+<pre class="r"><code>library(&quot;devtools&quot;)</code></pre>
+<pre><code>## Warning: package &#39;devtools&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>exprs &lt;- read.table(&quot;/Users/laurenblake/Desktop/Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt&quot;, sep=&quot;&quot;)
+hc_exprs &lt;- exprs[,2:48]
+
+# Normalized gene expression data
+cpm.voom.cyclic &lt;- readRDS(&quot;/Users/laurenblake/Desktop/Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)
+
+# import sample labels
+samples &lt;- read.delim(&quot;/Users/laurenblake/Desktop/Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt&quot;)
+RIN &lt;- samples$RIN
+
+FDR_level &lt;- 0.05
+
+human_chimp_heart &lt;- c(20, 24, 28, 1, 5, 9, 13)
+
+two_species &lt;- samples$Species[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+
+
+human_rhesus_heart &lt;- c(20, 24, 28, 32, 36, 40, 44)
+
+two_species &lt;- samples$Species[human_rhesus_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvR_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvR_Heart_fit_all_5perc$logFC)
+## t = -3.4952, df = 2581.9, p-value = 0.0004817
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.21618988 -0.06079482
+## sample estimates:
+## mean of x mean of y 
+##  1.844795  1.983287</code></pre>
+</div>
+<div id="kidney" class="section level1">
+<h1>Kidney</h1>
+<pre class="r"><code>human_chimp_heart &lt;- c(17, 21, 25, 29, 2, 6, 10, 14)
+
+two_species &lt;- samples$Species[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+
+
+human_rhesus_heart &lt;- c(17, 21, 25, 29, 33, 37, 41, 45)
+
+two_species &lt;- samples$Species[human_rhesus_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvR_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvR_Heart_fit_all_5perc$logFC)
+## t = -6.7256, df = 1062.8, p-value = 2.85e-11
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.7509016 -0.4117100
+## sample estimates:
+## mean of x mean of y 
+##  2.296333  2.877638</code></pre>
+</div>
+<div id="liver" class="section level1">
+<h1>Liver</h1>
+<pre class="r"><code>human_chimp_heart &lt;- c(18, 22, 26, 30, 3, 7, 11, 15)
+
+two_species &lt;- samples$Species[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+
+
+human_rhesus_heart &lt;- c(18, 22, 26, 30, 34, 38, 42, 46)
+
+two_species &lt;- samples$Species[human_rhesus_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvR_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvR_Heart_fit_all_5perc$logFC)
+## t = -2.988, df = 598.25, p-value = 0.002923
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.5382892 -0.1113201
+## sample estimates:
+## mean of x mean of y 
+##  3.030667  3.355472</code></pre>
+</div>
+<div id="lung" class="section level1">
+<h1>Lung</h1>
+<pre class="r"><code>human_chimp_heart &lt;- c(19, 23, 27, 31, 4, 8, 12, 16)
+
+two_species &lt;- samples$Species[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+
+
+human_rhesus_heart &lt;- c(19, 23, 27, 31, 35, 39, 43, 47)
+
+two_species &lt;- samples$Species[human_rhesus_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_rhesus_heart]
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvR_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvR_Heart_fit_all_5perc$logFC))  </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvR_Heart_fit_all_5perc$logFC)
+## t = 5.6799, df = 526.59, p-value = 2.232e-08
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  0.3019713 0.6213012
+## sample estimates:
+## mean of x mean of y 
+##  2.418297  1.956661</code></pre>
+</div>
+<div id="human-chimp-conserved-versus-non-conserved-heart-kidney" class="section level1">
+<h1>Human-chimp conserved versus non conserved heart-kidney</h1>
+<pre class="r"><code># Species no DE
+human_chimp_heart &lt;- c(17, 20, 21, 24, 25, 28, 29)
+species_no_DE &lt;- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+  
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvC_Heart_fit_no_all_5perc$logFC)
+## t = 46.007, df = 2360.9, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  2.045345 2.227466
+## sample estimates:
+## mean of x mean of y 
+## 2.6277904 0.4913846</code></pre>
+</div>
+<div id="human-chimp-conserved-versus-non-conserved-heart-liver" class="section level1">
+<h1>Human-chimp conserved versus non conserved heart-liver</h1>
+<pre class="r"><code># Species no DE
+human_chimp_heart &lt;- c(18, 20, 22, 24, 26, 28, 30)
+species_no_DE &lt;- c(1, 3, 5, 7, 9, 11, 13, 15)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+  
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvC_Heart_fit_no_all_5perc$logFC)
+## t = 47.793, df = 1898.8, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  2.442305 2.651327
+## sample estimates:
+## mean of x mean of y 
+## 3.2553536 0.7085375</code></pre>
+</div>
+<div id="human-chimp-conserved-versus-non-conserved-heart-lung" class="section level1">
+<h1>Human-chimp conserved versus non conserved heart-lung</h1>
+<pre class="r"><code># Species no DE
+human_chimp_heart &lt;- c(19, 20, 23, 24, 27, 28, 31)
+species_no_DE &lt;- c(1, 4, 5, 8, 9, 12, 13, 16)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+  
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvC_Heart_fit_no_all_5perc$logFC)
+## t = 44.184, df = 2185.5, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  1.854411 2.026668
+## sample estimates:
+## mean of x mean of y 
+## 2.5549361 0.6143969</code></pre>
+</div>
+<div id="human-chimp-conserved-versus-non-conserved-kidney-liver" class="section level1">
+<h1>Human-chimp conserved versus non conserved kidney-liver</h1>
+<pre class="r"><code># Species no DE
+human_chimp_heart &lt;- c(17, 18, 21, 22, 25, 26, 29, 30)
+species_no_DE &lt;- c(2, 3, 6, 7, 10, 11, 14, 15)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+  
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvC_Heart_fit_no_all_5perc$logFC)
+## t = 41.663, df = 2633.4, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  1.782371 1.958431
+## sample estimates:
+## mean of x mean of y 
+## 2.4924503 0.6220495</code></pre>
+</div>
+<div id="human-chimp-conserved-versus-non-conserved-kidney-lung" class="section level1">
+<h1>Human-chimp conserved versus non conserved kidney-lung</h1>
+<pre class="r"><code># Species no DE
+human_chimp_heart &lt;- c(17, 19, 21, 23, 25, 27, 29, 31)
+species_no_DE &lt;- c(2, 4, 6, 8, 10, 12, 14, 16)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+  
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvC_Heart_fit_no_all_5perc$logFC)
+## t = 29.89, df = 802.51, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  1.725775 1.968372
+## sample estimates:
+## mean of x mean of y 
+## 2.6191658 0.7720923</code></pre>
+</div>
+<div id="human-chimp-conserved-versus-non-conserved-liver-lung" class="section level1">
+<h1>Human-chimp conserved versus non conserved liver-lung</h1>
+<pre class="r"><code># Species no DE
+human_chimp_heart &lt;- c(18, 19, 22, 23, 26, 27, 30, 31)
+species_no_DE &lt;- c(3, 4, 7, 8, 11, 12, 15, 16)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+  
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+RIN_subset &lt;- RIN[human_chimp_heart]
+  
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+      
+            HvC_Heart_fit_no_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+            
+# Compare with t test
+  
+t.test(abs(HvC_Heart_fit_all_5perc$logFC), abs(HvC_Heart_fit_no_all_5perc$logFC)) </code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  abs(HvC_Heart_fit_all_5perc$logFC) and abs(HvC_Heart_fit_no_all_5perc$logFC)
+## t = 41.944, df = 1815.7, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  2.094803 2.300317
+## sample estimates:
+## mean of x mean of y 
+## 3.0035384 0.8059784</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

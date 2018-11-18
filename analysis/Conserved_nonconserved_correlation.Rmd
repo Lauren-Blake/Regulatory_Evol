@@ -1,0 +1,943 @@
+---
+title: "Conserved_nonconserved_DE"
+author: "Lauren Blake"
+date: "October 11, 2018"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+getwd()
+# import sample labels
+samples <- read.delim("../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt")
+RIN <- samples$RIN
+# expression
+exprs <- read.table("../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt", sep="")
+# methylation data
+methyl <- read.csv("../../../Reg_Evo_Primates/data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt", sep="")
+
+# Normalized gene expression data
+cpm.voom.cyclic <- readRDS("../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds")
+
+
+# Load libraries
+library("edgeR")
+library("limma")
+library("plyr")
+library("ashr")
+library("cowplot")
+library("vashr")
+library("devtools")
+#devtools::install_github("jhsiao999/mediation/pkg")
+library("medinome")
+```
+
+# Set FDR level/svalue
+
+```{r}
+FDR_level <- 0.05
+FDR_add <- 0.10
+```
+
+# Human heart-kidney
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+```
+
+
+
+## Human heart versus kidney- DE genes
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+
+
+
+```
+
+## Human heart versus kidney- conserved DE genes
+
+```{r}
+# Species no DE
+species_no_DE <- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+# Save
+
+cons_DE_heart_kidney_exp <- Y
+cons_DE_heart_kidney_meth <- M
+
+# Find the correlation
+
+corr_cons_DE_HK <- array("NA", dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_cons_DE_HK[i,] <- cor(t(cons_DE_heart_kidney_exp[i,]), t(cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_cons_DE_HK <- as.numeric(corr_cons_DE_HK)
+summary(corr_cons_DE_HK)
+```
+
+## Non conserved 
+
+```{r}
+# Species no DE
+species_no_DE <- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+
+non_cons_DE_heart_kidney_exp <- Y
+non_cons_DE_heart_kidney_meth <- M
+
+# Find the correlation
+
+corr_non_cons_DE_HK <- array("NA", dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_non_cons_DE_HK[i,] <- cor(t(non_cons_DE_heart_kidney_exp[i,]), t(non_cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_non_cons_DE_HK <- as.numeric(corr_non_cons_DE_HK)
+summary(corr_non_cons_DE_HK)
+
+```
+
+
+## Human heart versus kidney- non DE genes
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val > FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+non_DE_heart_kidney_exp <- Y
+non_DE_heart_kidney_meth <- M
+
+# Find the correlation
+
+corr_non_DE_HK <- array("NA", dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_non_DE_HK[i,] <- cor(t(non_DE_heart_kidney_exp[i,]), t(non_DE_heart_kidney_meth[i,]))
+}
+
+corr_non_DE_HK <- as.numeric(corr_non_DE_HK)
+summary(corr_non_DE_HK)
+```
+
+## Attempt to make this into a figure
+
+```{r}
+length(corr_cons_DE_HK)
+length(corr_non_cons_DE_HK)
+length(corr_non_DE_HK)
+
+
+corr_cons_DE_HK <- as.data.frame(corr_cons_DE_HK)
+cons_label <- array("Conserved DE", dim=c(nrow(corr_cons_DE_HK),1))
+corr_cons_DE_HK_full <- as.data.frame(cbind(corr_cons_DE_HK, cons_label))
+colnames(corr_cons_DE_HK_full) <- c("Pearson's correlation", "DE status")
+
+
+corr_non_cons_DE_HK <- as.data.frame(corr_non_cons_DE_HK)
+non_cons_label <- array("Human only DE", dim=c(nrow(corr_non_cons_DE_HK),1))
+corr_non_cons_DE_HK_full <- as.data.frame(cbind(corr_non_cons_DE_HK, non_cons_label))
+colnames(corr_non_cons_DE_HK_full) <- c("Pearson's correlation", "DE status")
+
+
+corr_non_DE_HK <- as.data.frame(corr_non_DE_HK)
+non_de_label <- array("Human non-DE", dim=c(nrow(corr_non_DE_HK),1))
+corr_non_DE_HK_full <- as.data.frame(cbind(corr_non_DE_HK, non_de_label))
+colnames(corr_non_DE_HK_full) <- c("Pearson's correlation", "DE status")
+
+# Make correlation
+human_HK <- rbind(corr_cons_DE_HK_full, corr_non_cons_DE_HK_full, corr_non_DE_HK_full)
+
+# Make mean
+
+mean_cons <- mean(t(corr_cons_DE_HK))
+mean_cons_label <- array("Conserved DE", dim=c(1,1))
+mean_cons_full <- cbind(mean_cons, mean_cons_label)
+colnames(mean_cons_full) <- c("Mean", "DE status")
+
+mean_non_cons <- mean(t(corr_non_cons_DE_HK))
+mean_non_cons_label <- array("Human only DE", dim=c(1,1))
+mean_non_cons_full <- cbind(mean_non_cons, mean_non_cons_label)
+colnames(mean_non_cons_full) <- c("Mean", "DE status")
+
+mean_non_de <- mean(t(corr_non_DE_HK))
+mean_non_de_label <- array("Human non-DE", dim=c(1,1))
+mean_non_de_full <- cbind(mean_non_de, mean_non_de_label)
+colnames(mean_non_de_full) <- c("Mean", "DE status")
+
+all_mean <- as.data.frame(rbind(mean_cons_full, mean_non_cons_full, mean_non_de_full), stringsAsFactors = FALSE)
+all_mean[,1] <- as.numeric(all_mean[,1])
+
+
+# Plot without mean
+ggplot(human_HK, aes(x=`Pearson's correlation`, color=`DE status`)) +
+  geom_density() + ylab("Density")
+
+# Plot with mean
+#ggplot(human_HK, aes(x=`Pearson's correlation`, color=`DE status`)) +
+#  geom_density() +  geom_vline(data=all_mean, aes(xintercept=Mean, # color=`DE status`), linetype="dashed")
+```
+
+# Generalize conserved DE to a function
+
+```{r}
+
+cons_de_corr <- function(human_chimp_heart, species_no_DE){
+
+human_chimp_heart <- human_chimp_heart
+  
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+## Human heart versus kidney- DE genes
+
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+
+## Human heart versus kidney- conserved DE genes
+
+
+# Species no DE
+species_no_DE <- species_no_DE
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+# Save
+
+cons_DE_heart_kidney_exp <- Y
+cons_DE_heart_kidney_meth <- M
+
+# Find the correlation
+
+corr_cons_DE_HK <- array("NA", dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_cons_DE_HK[i,] <- cor(t(cons_DE_heart_kidney_exp[i,]), t(cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_cons_DE_HK <- as.numeric(corr_cons_DE_HK)
+
+return(corr_cons_DE_HK)
+}
+
+# Heart kidney
+hc_heart_kidney <- as.data.frame(cons_de_corr(c(17, 20, 21, 24, 25, 28, 29),c(1, 2, 5, 6, 9, 10, 13, 14)))
+
+colnames(hc_heart_kidney) <- c("Pearson's correlation")
+
+summary(corr_cons_DE_HK)
+summary(hc_heart_kidney)
+
+# Heart liver
+hc_heart_liver <-  as.data.frame(cons_de_corr(c(18, 20, 22, 24, 26, 28, 30),c(1, 3, 5, 7, 9, 11, 13, 15)))
+colnames(hc_heart_liver) <- c("Pearson's correlation")
+
+summary(hc_heart_liver)
+
+# Heart lung
+hc_heart_lung <-  as.data.frame(cons_de_corr(c(19, 20, 23, 24, 27, 28, 31),c(1, 4, 5, 8, 9, 12, 13, 16)))
+colnames(hc_heart_lung) <- c("Pearson's correlation")
+
+summary(hc_heart_lung)
+
+# Kidney liver
+hc_kidney_liver <-  as.data.frame(cons_de_corr(c(17, 18, 21, 22, 25, 26, 29, 30),c(2, 3, 6, 7, 10, 11,  14,15)))
+colnames(hc_kidney_liver) <- c("Pearson's correlation")
+
+summary(hc_kidney_liver)
+
+# Kidney lung
+hc_kidney_lung <-  as.data.frame(cons_de_corr(c(17, 19, 21, 23, 25, 27, 29, 31),c(2, 4, 6, 8, 10, 12,  14,16)))
+colnames(hc_kidney_lung) <- c("Pearson's correlation")
+
+summary(hc_kidney_lung)
+
+# Liver lung
+hc_liver_lung <-  as.data.frame(cons_de_corr(c(18, 19, 22, 23, 26, 27, 30, 31),c(3, 4, 7, 8, 11, 12,  15,16)))
+colnames(hc_liver_lung) <- c("Pearson's correlation")
+
+summary(hc_liver_lung)
+
+hc_cons_de <- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+dim(hc_cons_de)
+
+#hist(hc_cons_de)
+
+write.table(hc_cons_de, "/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_de.txt")
+```
+
+# Generalize species only DE to a function
+
+
+```{r}
+
+non_cons_de_corr <- function(human_chimp_heart, species_no_DE){
+
+human_chimp_heart <- human_chimp_heart
+  
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+## Human heart versus kidney- DE genes
+
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+
+## Human heart versus kidney- conserved DE genes
+
+
+# Species no DE
+species_no_DE <- species_no_DE
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] >  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+# Save
+
+cons_DE_heart_kidney_exp <- Y
+cons_DE_heart_kidney_meth <- M
+
+# Find the correlation
+
+corr_cons_DE_HK <- array("NA", dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_cons_DE_HK[i,] <- cor(t(cons_DE_heart_kidney_exp[i,]), t(cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_cons_DE_HK <- as.numeric(corr_cons_DE_HK)
+
+return(corr_cons_DE_HK)
+}
+
+# Heart kidney
+hc_heart_kidney <- as.data.frame(non_cons_de_corr(c(17, 20, 21, 24, 25, 28, 29),c(1, 2, 5, 6, 9, 10, 13, 14)))
+
+colnames(hc_heart_kidney) <- c("Pearson's correlation")
+
+summary(corr_non_cons_DE_HK)
+summary(hc_heart_kidney)
+
+# Heart liver
+hc_heart_liver <-  as.data.frame(non_cons_de_corr(c(18, 20, 22, 24, 26, 28, 30),c(1, 3, 5, 7, 9, 11, 13, 15)))
+colnames(hc_heart_liver) <- c("Pearson's correlation")
+
+summary(hc_heart_liver)
+
+# Heart lung
+hc_heart_lung <-  as.data.frame(non_cons_de_corr(c(19, 20, 23, 24, 27, 28, 31),c(1, 4, 5, 8, 9, 12, 13, 16)))
+colnames(hc_heart_lung) <- c("Pearson's correlation")
+
+summary(hc_heart_lung)
+
+# Kidney liver
+hc_kidney_liver <-  as.data.frame(non_cons_de_corr(c(17, 18, 21, 22, 25, 26, 29, 30),c(2, 3, 6, 7, 10, 11,  14,15)))
+colnames(hc_kidney_liver) <- c("Pearson's correlation")
+
+summary(hc_kidney_liver)
+
+# Kidney lung
+hc_kidney_lung <-  as.data.frame(non_cons_de_corr(c(17, 19, 21, 23, 25, 27, 29, 31),c(2, 4, 6, 8, 10, 12,  14,16)))
+colnames(hc_kidney_lung) <- c("Pearson's correlation")
+
+summary(hc_kidney_lung)
+
+# Liver lung
+hc_liver_lung <-  as.data.frame(non_cons_de_corr(c(18, 19, 22, 23, 26, 27, 30, 31),c(3, 4, 7, 8, 11, 12,  15,16)))
+colnames(hc_liver_lung) <- c("Pearson's correlation")
+
+summary(hc_liver_lung)
+
+non_cons_de_corr_human <- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+#hist(non_cons_de_corr_human)
+
+dim(non_cons_de_corr_human)
+
+write.table(non_cons_de_corr_human, "/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_human_only_de.txt")
+```
+
+## Chimp DE only
+
+```{r}
+# Heart kidney
+hc_heart_kidney <- as.data.frame(non_cons_de_corr(c(1, 2, 5, 6, 9, 10, 13, 14),c(17, 20, 21, 24, 25, 28, 29)))
+
+colnames(hc_heart_kidney) <- c("Pearson's correlation")
+
+summary(corr_non_cons_DE_HK)
+summary(hc_heart_kidney)
+
+# Heart liver
+hc_heart_liver <-  as.data.frame(non_cons_de_corr(c(1, 3, 5, 7, 9, 11, 13, 15), c(18, 20, 22, 24, 26, 28, 30)))
+colnames(hc_heart_liver) <- c("Pearson's correlation")
+
+summary(hc_heart_liver)
+
+# Heart lung
+hc_heart_lung <-  as.data.frame(non_cons_de_corr(c(1, 4, 5, 8, 9, 12, 13, 16), c(19, 20, 23, 24, 27, 28, 31)))
+colnames(hc_heart_lung) <- c("Pearson's correlation")
+
+summary(hc_heart_lung)
+
+# Kidney liver
+hc_kidney_liver <-  as.data.frame(non_cons_de_corr(c(2, 3, 6, 7, 10, 11,  14,15), c(17, 18, 21, 22, 25, 26, 29, 30)))
+colnames(hc_kidney_liver) <- c("Pearson's correlation")
+
+summary(hc_kidney_liver)
+
+# Kidney lung
+hc_kidney_lung <-  as.data.frame(non_cons_de_corr(c(2, 4, 6, 8, 10, 12,  14,16), c(17, 19, 21, 23, 25, 27, 29, 31)))
+colnames(hc_kidney_lung) <- c("Pearson's correlation")
+
+summary(hc_kidney_lung)
+
+# Liver lung
+hc_liver_lung <-  as.data.frame(non_cons_de_corr(c(3, 4, 7, 8, 11, 12,  15,16), c(18, 19, 22, 23, 26, 27, 30, 31)))
+colnames(hc_liver_lung) <- c("Pearson's correlation")
+
+summary(hc_liver_lung)
+
+non_cons_de_corr_chimp <- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+#hist(non_cons_de_corr_chimp)
+
+dim(non_cons_de_corr_chimp)
+
+write.table(non_cons_de_corr_chimp, "/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_chimp_only_de.txt")
+```
+
+# Genearalize non DE to a function
+
+```{r}
+non_de_corr <- function(human_chimp_heart){
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val > FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+non_DE_heart_kidney_exp <- Y
+non_DE_heart_kidney_meth <- M
+
+# Find the correlation
+
+corr_non_DE_HK <- array("NA", dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_non_DE_HK[i,] <- cor(t(non_DE_heart_kidney_exp[i,]), t(non_DE_heart_kidney_meth[i,]))
+}
+
+corr_non_DE_HK <- as.numeric(corr_non_DE_HK)
+
+return(corr_non_DE_HK)
+}
+
+# Humans 
+
+# Heart kidney
+hc_heart_kidney <- as.data.frame(non_de_corr(c(17, 20, 21, 24, 25, 28, 29)))
+
+colnames(hc_heart_kidney) <- c("Pearson's correlation")
+
+summary(corr_non_DE_HK)
+summary(hc_heart_kidney)
+
+# Heart liver
+hc_heart_liver <-  as.data.frame(non_de_corr(c(18, 20, 22, 24, 26, 28, 30)))
+colnames(hc_heart_liver) <- c("Pearson's correlation")
+
+summary(hc_heart_liver)
+
+
+# Heart lung
+hc_heart_lung <-  as.data.frame(non_de_corr(c(19, 20, 23, 24, 27, 28, 31)))
+colnames(hc_heart_lung) <- c("Pearson's correlation")
+
+summary(hc_heart_lung)
+
+# Kidney liver
+hc_kidney_liver <-  as.data.frame(non_de_corr(c(17, 18, 21, 22, 25, 26, 29, 30)))
+colnames(hc_kidney_liver) <- c("Pearson's correlation")
+
+summary(hc_kidney_liver)
+
+# Kidney lung
+hc_kidney_lung <-  as.data.frame(non_de_corr(c(17, 19, 21, 23, 25, 27, 29, 31)))
+colnames(hc_kidney_lung) <- c("Pearson's correlation")
+
+summary(hc_kidney_lung)
+
+# Liver lung
+hc_liver_lung <-  as.data.frame(non_de_corr(c(18, 19, 22, 23, 26, 27, 30, 31)))
+colnames(hc_liver_lung) <- c("Pearson's correlation")
+
+summary(hc_liver_lung)
+
+hc_non_de_human <- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+dim(hc_non_de_human)
+
+write.table(hc_non_de_human, "/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_human_nonde.txt")
+
+
+# Chimps
+
+# Heart kidney
+hc_heart_kidney <- as.data.frame(non_de_corr(c(1, 2, 5, 6, 9, 10, 13, 14)))
+
+colnames(hc_heart_kidney) <- c("Pearson's correlation")
+
+summary(hc_heart_kidney)
+
+# Heart liver
+hc_heart_liver <-  as.data.frame(non_de_corr(c(1, 3, 5, 7, 9, 11, 13, 15)))
+colnames(hc_heart_liver) <- c("Pearson's correlation")
+
+summary(hc_heart_liver)
+
+
+# Heart lung
+hc_heart_lung <-  as.data.frame(non_de_corr(c(1, 4, 5, 8, 9, 12, 13, 16)))
+colnames(hc_heart_lung) <- c("Pearson's correlation")
+
+summary(hc_heart_lung)
+
+# Kidney liver
+hc_kidney_liver <-  as.data.frame(non_de_corr(c(2, 3, 6, 7, 10, 11,  14,15)))
+colnames(hc_kidney_liver) <- c("Pearson's correlation")
+
+summary(hc_kidney_liver)
+
+# Kidney lung
+hc_kidney_lung <-  as.data.frame(non_de_corr(c(2, 4, 6, 8, 10, 12,  14,16)))
+colnames(hc_kidney_lung) <- c("Pearson's correlation")
+
+summary(hc_kidney_lung)
+
+# Liver lung
+hc_liver_lung <-  as.data.frame(non_de_corr(c(3, 4, 7, 8, 11, 12,  15,16)))
+colnames(hc_liver_lung) <- c("Pearson's correlation")
+
+summary(hc_liver_lung)
+
+hc_non_de_chimp <- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+dim(hc_non_de_chimp)
+#hist(hc_non_de_chimp)
+write.table(hc_non_de_chimp, "/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_chimp_nonde.txt")
+```
+
+# Figure
+
+```{r}
+corr_cons_DE_HK <- as.data.frame(hc_cons_de)
+cons_label <- array("Conserved DE", dim=c(nrow(corr_cons_DE_HK),1))
+corr_cons_DE_HK_full <- as.data.frame(cbind(corr_cons_DE_HK, cons_label))
+colnames(corr_cons_DE_HK_full) <- c("Pearson's correlation", "DE status")
+
+
+corr_non_cons_DE_HK <- as.data.frame(non_cons_de_corr_human)
+non_cons_label <- array("Human only DE", dim=c(nrow(corr_non_cons_DE_HK),1))
+corr_non_cons_DE_HK_full <- as.data.frame(cbind(corr_non_cons_DE_HK, non_cons_label))
+colnames(corr_non_cons_DE_HK_full) <- c("Pearson's correlation", "DE status")
+
+corr_non_cons_DE_CK <- as.data.frame(non_cons_de_corr_chimp)
+non_cons_label <- array("Chimpanzee only DE", dim=c(nrow(corr_non_cons_DE_CK),1))
+corr_non_cons_DE_CK_full <- as.data.frame(cbind(corr_non_cons_DE_CK, non_cons_label))
+colnames(corr_non_cons_DE_CK_full) <- c("Pearson's correlation", "DE status")
+
+corr_non_DE_HK <- as.data.frame(hc_non_de_human)
+non_de_label <- array("Human non-DE", dim=c(nrow(corr_non_DE_HK),1))
+corr_non_DE_HK_full <- as.data.frame(cbind(corr_non_DE_HK, non_de_label))
+colnames(corr_non_DE_HK_full) <- c("Pearson's correlation", "DE status")
+
+corr_non_DE_CK <- as.data.frame(hc_non_de_chimp)
+non_de_label <- array("Chimpanzee non-DE", dim=c(nrow(corr_non_DE_CK),1))
+corr_non_DE_CK_full <- as.data.frame(cbind(corr_non_DE_CK, non_de_label))
+colnames(corr_non_DE_CK_full) <- c("Pearson's correlation", "DE status")
+
+
+# Make correlation
+human_HK <- rbind(corr_cons_DE_HK_full, corr_non_cons_DE_HK_full, corr_non_cons_DE_CK_full, corr_non_DE_HK_full, corr_non_DE_CK_full)
+
+# Plot without mean
+ggplot(human_HK, aes(x=`Pearson's correlation`, color=`DE status`)) +
+  geom_density() + ylab("Density")
+```
+

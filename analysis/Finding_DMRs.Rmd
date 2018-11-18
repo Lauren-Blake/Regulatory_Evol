@@ -24,7 +24,6 @@ library("ggplot2")
 library("VennDiagram")
 library(plyr)
 
-# Import the data
 
 # Human tDMRs
 humans_heart_kidney_DMRs <- read.delim("../data/humans_heart_kidney_DMRs.txt")
@@ -896,43 +895,6 @@ grid.newpage()
 draw.pairwise.venn(area1 = (39998+1288), area2 = (5739+1288), cross.area = 1288, category = c("Chimp Heart v. Liver", "Heart v. Lung"))
 
 ```
-
-
-## Heart versus liver and heart versus kidney
-
-
-## Heart versus liver and liver versus lung
-
-
-## Heart versus liver and liver versus kidney
-
-
-## Heart versus liver and kidney versus lung
-
-
-
-## Heart versus lung and Heart versus kidney
-
-## Heart versus lung and liver versus kidney
-
-## Heart versus lung and liver versus lung
-
-## Heart versus lung and kidney versus lung
-
-
-## Heart versus kidney and liver versus kidney
-
-## Heart versus kidney and liver versus lung
-
-## Heart versus kidney and kidney versus lung
-
-
-## Liver versus kidney and liver versus lung
-
-## Liver versus kidney and kidney versus lung
-
-
-## Liver versus lung and kidney versus lung
 
 
 # Which overlap promoters?

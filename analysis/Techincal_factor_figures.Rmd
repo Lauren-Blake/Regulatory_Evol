@@ -27,6 +27,22 @@ library("cowplot")
 colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
 pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
 
+bjp<-
+theme(
+  panel.border = element_rect(colour = "black", fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 14,face = "bold"),
+  axis.title.x = element_text(size = 14,face = "bold"),
+  legend.text = element_text(size = 14,face = "bold"),
+  legend.title = element_text(size = 14,face = "bold"),
+  strip.text.x = element_text(size = 14,face = "bold"),
+  strip.text.y = element_text(size = 14,face = "bold"),
+  strip.background = element_rect(colour = "black", size = 2))
+
+
+
 # Load data
 
 ## Load counts
@@ -59,23 +75,27 @@ plot.RIN2 <- ggplot(sample_features, aes(x = Species, y = RIN.score, fill = Tiss
   geom_boxplot()  +
   labs(x = "Species", y = "RIN Score")  + theme(legend.position = "right") + scale_fill_discrete(name = c("Tissue"), labels = c("Heart", "Kidney", "Liver", "Lung")) + scale_x_discrete(name = c("Species"), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus Macaque")) 
 
-
+ggplot(sample_features, aes(x = as.factor(Tissue), y = RIN.score, (fill = as.factor(Species)))) + geom_point()  + labs(x = "Tissue", y = "RIN Score") + ggtitle("RIN score of Samples")  + scale_x_discrete(name = c("Tissue"), labels = c("Heart", "Kidney", "Liver", "Lung"))
 ```
 
 # RNA extraction date
 
 ```{r}
 # Get extraction date
-sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
-sample_features <- sample_info_RNAseq[-17,]
+sample_features <- read.csv("../../../Reg_Evo_Primates/data/RNA_seq_info.csv")
+#sample_features <- sample_info_RNAseq[-17,]
 
-levels(RNA_seq_info$Species) <- c("Chimpanzee", "Human", "Rh. Macaque")
 
-plot.RNA.extract <- ggplot(RNA_seq_info, aes(x = Tissue, y = RNA.extraction.date, fill = Tissue)) +
+
+levels(sample_features$Species) <- c("Chimpanzee", "Human", "Rhesus Macaque")
+
+plot.RNA.extract <- ggplot(sample_features, aes(x = Tissue, y = RNA.extraction.date, fill = Tissue)) +
   geom_dotplot(binaxis = 'y', stackdir = 'center', dotsize = 0.8) + facet_grid(.~Species) +
-  labs(x = "Species", y = "RNA Extraction Date")  + scale_x_discrete(name = c("Tissue"), labels = c("H", "K", "Li", "Lu")) + guides(fill=FALSE)
+  labs(x = "Species", y = "RNA Extraction Date")  + scale_x_discrete(name = c("Tissue"), labels = c("Heart", "Kidney", "Liver", "Lung")) + guides(fill=FALSE) + theme_bw() + bjp 
 
+plot.RNA.extract
 
+c("H", "K", "Li", "Lu")
 ```
 
 # Human PCA
@@ -97,7 +117,13 @@ pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
 
 summary <- summary(pca_genes)
 
-plot.human.pca <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=human_features$Tissue, shape = as.factor(human_features$RNA.extraction.date))) + geom_point(size = 3) + xlab("PC1 (26.3% of variance)") + ylab("PC2 (18.0% \n of variance)") + scale_size(guide = 'none') + theme(legend.position = "right") + scale_color_discrete(name = c("Tissue"), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) + scale_shape_discrete(name = c("RNA Extraction Date"))
+plot.human.pca <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=human_features$Tissue, shape = as.factor(human_features$RNA.extraction.date))) + geom_point(size = 5) + xlab("PC1 (26.3% of variance)") + ylab("PC2 (18.0% of variance)") + scale_size(guide = 'none') + theme(legend.position = "right") + scale_color_discrete(name = c("Tissue"), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) + scale_shape_discrete(name = c("RNA Extraction Date")) + theme_bw() + bjp 
+
+cor(pc1, as.numeric(human_features$Individual))
+cor(pc2, as.numeric(human_features$Individual))
+cor(pc3, as.numeric(human_features$Individual))
+cor(pc4, as.numeric(human_features$Individual))
+cor(pc5, as.numeric(human_features$Individual))
 
 #pdf("./plot.human.pca.pdf")
 #plot.human.pca

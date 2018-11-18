@@ -1956,7 +1956,7 @@ return(combine)
 tissue_conserved_25_overlap(human_heart_specific_25[,1:4], chimp_heart_specific_25[,1:4], rhesus_heart_specific_25[,1:4])
 
 #  human_specific chimp_specific rhesus_specific  hc  hr cr hcr_conserved
-#[1,]           2413           1212            1354 389 101 76            66
+#[1,]           2413           1212            1354   389 101 76            66
 
 
 human_heart_specific_25_hypo <- human_heart_specific_25[which(human_heart_specific_25[,4] == "hypo"),]
@@ -1969,7 +1969,7 @@ rhesus_heart_specific_25_hypo <- rhesus_heart_specific_25[which(rhesus_heart_spe
 tissue_conserved_25_overlap(human_heart_specific_25_hypo[,1:4], chimp_heart_specific_25_hypo[,1:4], rhesus_heart_specific_25_hypo[,1:4])
 
 # human_specific chimp_specific rhesus_specific  hc hr cr hcr_conserved
-#[1,]           2094           1014            1175 351 92 66            62
+#[1,]           2094           1014            1175   351 92 66            62
 
 dev.off()
 draw.triple.venn(nrow(human_heart_specific_25_hypo), nrow(chimp_heart_specific_25_hypo), nrow(rhesus_heart_specific_25_hypo), 351+62, 66+62, 92+62, 62,  main= "Heart versus kidney (hypomethylated)",  category = c("Human", "Chimp", "Rhesus macaque"), height=3000, width=3000, cex=2 , fill = pal[1:3], lty=1, cat.cex = 2, main.cex = 2)
@@ -2018,6 +2018,250 @@ Left ventricle (E095), liver (E066), and lung (E096) from http://egg2.wustl.edu/
 Kidney from http://egg2.wustl.edu/roadmap/data/byFileType/peaks/unconsolidated/broadPeak/ucsc_compatible/ 
 
 ## Heart specific 
+
+bedtools intersect -a human_chimp_heart_specific_25_hs.bed -b E095-H3K27ac.broadPeak -wao -f 0.25 > human_chimp_heart_specific_25_hs_test.bed
+
+bedtools intersect -a human_chimp_heart_specific_25_conserved.bed -b E095-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_heart_specific_25_conserved_test.bed
+
+## Heart specific in hearts
+
+bedtools intersect -a human_chimp_rhesus_lung_specific_25_conserved.bed -b E095-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_heart_specific_25_conserved_H3K27_HEART.bed
+
+## Heart specific in kidneys
+
+bedtools intersect -a human_chimp_rhesus_lung_specific_25_conserved.bed -b BI.Adult_Kidney.H3K27ac.27.broadPeak -wao -f 0.25  > human_chimp_heart_specific_25_conserved_H3K27_KIDNEY.bed
+
+## Heart specific in livers
+
+bedtools intersect -a human_chimp_rhesus_lung_specific_25_conserved.bed -b E066-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_heart_specific_25_conserved_H3K27_LIVER.bed
+
+## Heart specific in lungs
+
+bedtools intersect -a human_chimp_rhesus_lung_specific_25_conserved.bed -b E096-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_heart_specific_25_conserved_H3K27_LUNGS.bed
+
+
+## Heart specific in hearts
+
+bedtools intersect -a human_chimp_rhesus_heart_specific_25_conserved.bed -b ENCSR501FWC_rep2_1_pe_bwa_biorep_filtered_hotspots.bed  -wao -f 0.25  > human_chimp_heart_specific_25_conserved_DHS_HEART.bed
+
+## Heart specific in kidneys
+
+bedtools intersect -a human_chimp_rhesus_heart_specific_25_conserved.bed -b ENCSR422PVL_rep1_2_se_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_heart_specific_25_conserved_DHS_KIDNEY.bed
+
+## Heart specific in livers
+
+bedtools intersect -a human_chimp_rhesus_heart_specific_25_conserved.bed -b ENCSR562FNN_rep1_1_pe_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_heart_specific_25_conserved_DHS_LIVER.bed
+
+## Heart specific in lungs
+
+bedtools intersect -a human_chimp_rhesus_heart_specific_25_conserved.bed -b ENCSR541AVF_rep1_3_se_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_heart_specific_25_conserved_DHS_LUNGS.bed
+
+
+```{r}
+# Read in data- human specific 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_DHS_HEART.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+#0.6388889
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_DHS_KIDNEY.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+
+# 0.115
+
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_DHS_LIVER.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+# 0.115 8/69
+
+ hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_DHS_LUNGS.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+#0.1014493 #7
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+```
+
+
+```{r}
+# Read in data- human specific 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_H3K27_HEART.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+#0.8550725 59/69
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_H3K27_KIDNEY.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+
+# 0.71  49
+
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_H3K27_LIVER.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+# 0.5652174 39
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/human_chimp_heart_specific_25_conserved_H3K27_LUNGS.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+dedup_overlap_human_chimp_heart_specific_25_hs_test <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)/nrow(human_chimp_heart_specific_25_hs_test)
+#0.7246377 #50
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)/nrow(hyper_only_conserved)
+nrow(hyper_only_conserved_overlap)
+
+prop.test(x = c(8,48), n = c(65,65))
+
+```
+
+
+
 
 ## 25% overlap
 bedtools intersect -a human_chimp_heart_specific_25_hs.bed -b E095-H3K27ac.broadPeak -wao -f 0.25 > human_chimp_heart_specific_25_hs_test.bed

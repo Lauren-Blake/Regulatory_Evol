@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-05-18" />
+
+<title>TDMR_overlap</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">TDMR_overlap</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>May 18, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#function-for-the-human-chimpanzee-tdmr-overlap">Function for the human-chimpanzee tDMR overlap</a></li>
+<li><a href="#human-chimpanzee-rhesus-macaque-tdmr-overlap">Human-chimpanzee-rhesus macaque tDMR overlap</a></li>
+<li><a href="#heart-specific">Heart specific</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Apply the hypergeometric distribution to evaluate the significance of conserved tDMRs.</p>
+<pre class="r"><code>library(&quot;gplots&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)</code></pre>
+<pre><code>## Warning: package &#39;scales&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
+<pre><code>## Warning: package &#39;R.utils&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Loading required package: R.oo</code></pre>
+<pre><code>## Warning: package &#39;R.oo&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Loading required package: R.methodsS3</code></pre>
+<pre><code>## R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
+<pre><code>## R.oo v1.22.0 (2018-04-21) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.oo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:methods&#39;:
+## 
+##     getClasses, getMethods</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     attach, detach, gc, load, save</code></pre>
+<pre><code>## R.utils v2.7.0 successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.utils&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     timestamp</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)
+library(&quot;limma&quot;)
+library(&quot;gridExtra&quot;)
+library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>## Warning: package &#39;VennDiagram&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre><code>## Loading required package: futile.logger</code></pre>
+<pre class="r"><code>source(&quot;functions.R&quot;)
+library(ashr)
+library(cowplot)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
+<pre class="r"><code>tdmr_pairwise_overlap &lt;- read.csv(&quot;../data/tDMR_overlap_data.csv&quot;)</code></pre>
+</div>
+<div id="function-for-the-human-chimpanzee-tdmr-overlap" class="section level1">
+<h1>Function for the human-chimpanzee tDMR overlap</h1>
+<ul>
+<li>m is the total chimpanzee tDMRs</li>
+<li>n is the Total chimpanzee methylated regions tested - chimpanzee specific tDMRs</li>
+<li>x/q is the overlap between human and chimpanzee tDMRs</li>
+<li>k is the total human tDMRs</li>
+</ul>
+<pre class="r"><code># Larger population- chimpanzees
+
+# Add columns for results
+tdmr_pairwise_overlap[,13] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,14] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m &lt;- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5] + tdmr_pairwise_overlap[i,6] + tdmr_pairwise_overlap[i,7]
+  n &lt;- tdmr_pairwise_overlap[i,11] - m
+  x &lt;- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5]
+  q = x
+  k = tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,4]+tdmr_pairwise_overlap[i,5]+tdmr_pairwise_overlap[i,9]
+
+# Expected
+
+  tdmr_pairwise_overlap[i,13] &lt;- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,14] &lt;- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+
+
+
+# When the larger population is the humans
+
+# Add columns for results
+tdmr_pairwise_overlap[,15] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,16] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m &lt;- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,4]+tdmr_pairwise_overlap[i,5]+tdmr_pairwise_overlap[i,9]
+  n &lt;- tdmr_pairwise_overlap[i,12] - m
+  x &lt;- tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5]
+  q = x
+  k = tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,5] + tdmr_pairwise_overlap[i,6] + tdmr_pairwise_overlap[i,7]
+  
+# Expected
+
+  tdmr_pairwise_overlap[i,15] &lt;- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,16] &lt;- phyper(q, m, n, k, lower.tail = FALSE)
+}</code></pre>
+</div>
+<div id="human-chimpanzee-rhesus-macaque-tdmr-overlap" class="section level1">
+<h1>Human-chimpanzee-rhesus macaque tDMR overlap</h1>
+<ul>
+<li>m is the overlap of human+chimpanzee tMDRs</li>
+<li>n is the Human (or Chimp) methylated regions tested - (overlap of human+chimpanzee tMDRs)</li>
+<li>x/q is the overlap between human, chimpanzee, rhesus macaque tDMRs</li>
+<li>k is the total rhesus tDMRs</li>
+</ul>
+<pre class="r"><code># Chimpanzees as larger
+
+# Add columns for results
+tdmr_pairwise_overlap[,17] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,18] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m &lt;- tdmr_pairwise_overlap[i,10]
+  n &lt;- tdmr_pairwise_overlap[i,11] - m
+  x &lt;- tdmr_pairwise_overlap[i,3] 
+  q = x
+  k =  tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,7] + tdmr_pairwise_overlap[i,8] + tdmr_pairwise_overlap[i,9]
+
+# Expected
+
+  tdmr_pairwise_overlap[i,17] &lt;- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,18] &lt;- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+
+# Humans as larger
+
+# Add columns for results
+tdmr_pairwise_overlap[,19] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+tdmr_pairwise_overlap[,20] &lt;- array(NA, dim = c(nrow(tdmr_pairwise_overlap),1))
+
+for (i in 1:nrow(tdmr_pairwise_overlap)){
+  m &lt;- tdmr_pairwise_overlap[i,10]
+  n &lt;- tdmr_pairwise_overlap[i,12] - m
+  x &lt;- tdmr_pairwise_overlap[i,3] 
+  q = x
+  k =  tdmr_pairwise_overlap[i,3] + tdmr_pairwise_overlap[i,7] + tdmr_pairwise_overlap[i,8] + tdmr_pairwise_overlap[i,9]
+
+# Expected
+
+  tdmr_pairwise_overlap[i,19] &lt;- which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))
+
+# P value of observed
+  tdmr_pairwise_overlap[i,20] &lt;- phyper(q, m, n, k, lower.tail = FALSE)
+}
+
+# Observed versus expected
+
+tdmr_pairwise_overlap[,21] &lt;- tdmr_pairwise_overlap[,3] - tdmr_pairwise_overlap[,19]
+
+summary(tdmr_pairwise_overlap[,21])</code></pre>
+<pre><code>##        V1        
+##  Min.   :   8.0  
+##  1st Qu.: 131.8  
+##  Median : 444.0  
+##  Mean   : 736.2  
+##  3rd Qu.:1141.8  
+##  Max.   :2976.0</code></pre>
+<pre class="r"><code>m &lt;- 51
+  n &lt;- 1750509 - m
+  x &lt;- 5 
+  q = x
+  k =  5+20+488+13
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 1.273586e-14</code></pre>
+<pre class="r"><code>m &lt;- 42
+  n &lt;- 942364 - m
+  x &lt;- 4 
+  q = x
+  k =  10+179+9+4
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 3.638879e-13</code></pre>
+<pre class="r"><code>m &lt;- 42
+  n &lt;- 942364 - m
+  x &lt;- 4 
+  q = x
+  k =  10+179+9+4
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 3.638879e-13</code></pre>
+<pre class="r"><code>m &lt;- 46+5
+  n &lt;- 10000 - m
+  x &lt;- 5
+  q = x
+  k =  526
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0.04994839</code></pre>
+</div>
+<div id="heart-specific" class="section level1">
+<h1>Heart specific</h1>
+<pre class="r"><code>library(RColorBrewer)
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+
+# RNA Seq hearts
+
+hs = 203+42+129+30
+ch = 233+75+192+59
+overlap = 73+57+44+39
+
+ m &lt;- ch+overlap
+  n &lt;- 12184 - m
+  x &lt;- overlap
+  q = x
+  k = hs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 39</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 1.724958e-107</code></pre>
+<pre class="r"><code>pdf(&quot;test.pdf&quot;, width = 7.2, height = 7.2)
+draw.pairwise.venn(hs+overlap, ch+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:2])</code></pre>
+<pre><code>## (polygon[GRID.polygon.11], polygon[GRID.polygon.12], polygon[GRID.polygon.13], polygon[GRID.polygon.14], text[GRID.text.15], text[GRID.text.16], text[GRID.text.17], text[GRID.text.18], text[GRID.text.19])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># First example
+# RNA Seq hearts
+
+hs = 866+495
+ch = 891+549
+overlap = 2304
+
+ m &lt;- ch+overlap
+  n &lt;- 12184 - m
+  x &lt;- overlap
+  q = x
+  k = hs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 1126</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>pdf(&quot;test.pdf&quot;, width = 7.2, height = 7.2)
+draw.pairwise.venn(hs+overlap, ch+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:2])</code></pre>
+<pre><code>## (polygon[GRID.polygon.20], polygon[GRID.polygon.21], polygon[GRID.polygon.22], polygon[GRID.polygon.23], text[GRID.text.24], text[GRID.text.25], text[GRID.text.26], text[GRID.text.27], text[GRID.text.28])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>## pairwise DE 
+
+hs = 866+495
+ch = 891+1227
+overlap = 2304+549
+
+ m &lt;- ch+overlap
+  n &lt;- 12184 - m
+  x &lt;- overlap
+  q = x
+  k = hs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 1719</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>pdf(&quot;test2.pdf&quot;, width = 7.2, height = 7.2)
+draw.pairwise.venn(hs+overlap, ch+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:2], scaled = FALSE)</code></pre>
+<pre><code>## (polygon[GRID.polygon.29], polygon[GRID.polygon.30], polygon[GRID.polygon.31], polygon[GRID.polygon.32], text[GRID.text.33], text[GRID.text.34], text[GRID.text.35], text[GRID.text.36], text[GRID.text.37])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># RNA Seq hearts
+
+hs = 203+129
+ch = 233+192
+hc_overlap &lt;- 73+44
+overlap = 57+39
+hr_overlap = 42+30
+cr_overlap = 75+59
+rs = 298+253
+
+ m &lt;- hc_overlap
+  n &lt;- 12184 - m
+  x &lt;- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 8</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 2.267179e-93</code></pre>
+<pre class="r"><code>pdf(&quot;test.pdf&quot;, width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:3])</code></pre>
+<pre><code>## (polygon[GRID.polygon.38], polygon[GRID.polygon.39], polygon[GRID.polygon.40], polygon[GRID.polygon.41], polygon[GRID.polygon.42], polygon[GRID.polygon.43], text[GRID.text.44], text[GRID.text.45], text[GRID.text.46], text[GRID.text.47], text[GRID.text.48], text[GRID.text.49], text[GRID.text.50], text[GRID.text.51], text[GRID.text.52], text[GRID.text.53])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># RNA seq hearts lenient
+
+hs = 211
+ch = 511
+hc_overlap &lt;- 181
+overlap = 281
+hr_overlap = 101
+cr_overlap = 449
+rs = 729
+
+ m &lt;- hc_overlap
+  n &lt;- 12184 - m
+  x &lt;- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+# Expected
+
+ which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 23</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>pdf(&quot;test.pdf&quot;, width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:3])</code></pre>
+<pre><code>## (polygon[GRID.polygon.54], polygon[GRID.polygon.55], polygon[GRID.polygon.56], polygon[GRID.polygon.57], polygon[GRID.polygon.58], polygon[GRID.polygon.59], text[GRID.text.60], text[GRID.text.61], text[GRID.text.62], text[GRID.text.63], text[GRID.text.64], text[GRID.text.65], text[GRID.text.66], text[GRID.text.67], text[GRID.text.68], text[GRID.text.69])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># Heart versus kidney
+
+hs = 20459
+ch = 9102
+hc_overlap &lt;- 4913+2288
+overlap = 2288
+hr_overlap = 2631
+cr_overlap = 1426
+rs = 16708
+
+ m &lt;- hc_overlap
+  n &lt;- 550861+ 1183536-m
+  x &lt;- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 95</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>pdf(&quot;test.pdf&quot;, width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:3])</code></pre>
+<pre><code>## (polygon[GRID.polygon.70], polygon[GRID.polygon.71], polygon[GRID.polygon.72], polygon[GRID.polygon.73], polygon[GRID.polygon.74], polygon[GRID.polygon.75], text[GRID.text.76], text[GRID.text.77], text[GRID.text.78], text[GRID.text.79], text[GRID.text.80], text[GRID.text.81], text[GRID.text.82], text[GRID.text.83], text[GRID.text.84], text[GRID.text.85])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>hs = 247
+ch = 345
+hc_overlap &lt;- 159
+overlap = 106
+hr_overlap = 105
+cr_overlap = 162
+rs = 480
+
+ m &lt;- hc_overlap
+  n &lt;- 12184-m
+  x &lt;- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 11</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 4.614702e-86</code></pre>
+<pre class="r"><code>pdf(&quot;test.pdf&quot;, width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:3])</code></pre>
+<pre><code>## (polygon[GRID.polygon.86], polygon[GRID.polygon.87], polygon[GRID.polygon.88], polygon[GRID.polygon.89], polygon[GRID.polygon.90], polygon[GRID.polygon.91], text[GRID.text.92], text[GRID.text.93], text[GRID.text.94], text[GRID.text.95], text[GRID.text.96], text[GRID.text.97], text[GRID.text.98], text[GRID.text.99], text[GRID.text.100], text[GRID.text.101])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># Heart versus kidney
+
+hs = 204
+ch = 9102
+hc_overlap &lt;- 4913+2288
+overlap = 2288
+hr_overlap = 2631
+cr_overlap = 1426
+rs = 16708
+
+ m &lt;- hc_overlap
+  n &lt;- 550861+ 1183536-m
+  x &lt;- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 95</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code># Heart versus kidney
+
+hs = 319+2094
+ch = 198+1014
+hc_overlap &lt;- 38+351
+overlap = 4+62
+hr_overlap = 9+92
+cr_overlap = 10+66
+rs = 179+1175
+
+ m &lt;- hc_overlap
+  n &lt;- 550861+ 1183536
+  x &lt;- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 1.596914e-128</code></pre>
+<pre class="r"><code>pdf(&quot;test.pdf&quot;, width = 7.2, height = 7.2)
+draw.triple.venn(hs+overlap+hc_overlap+hr_overlap, ch+overlap+hc_overlap+cr_overlap, hr_overlap+cr_overlap+rs+overlap, hc_overlap+overlap, cr_overlap+overlap, hr_overlap+overlap, overlap,  main= &quot;Heart specific DE genes&quot;, main.cex = 3, cat.cex = 3, cex=3.5, lty=1, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05, fill = pal[1:3])</code></pre>
+<pre><code>## (polygon[GRID.polygon.102], polygon[GRID.polygon.103], polygon[GRID.polygon.104], polygon[GRID.polygon.105], polygon[GRID.polygon.106], polygon[GRID.polygon.107], text[GRID.text.108], text[GRID.text.109], text[GRID.text.110], text[GRID.text.111], text[GRID.text.112], text[GRID.text.113], text[GRID.text.114], text[GRID.text.115], text[GRID.text.116], text[GRID.text.117])</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># Heart versus lung
+hs = 3752+7319
+ch = 2196+3287
+hc_overlap &lt;- 625+130+1446+322
+overlap = 130+322
+hr_overlap = 223+401
+cr_overlap = 196+332
+rs = 2409+3013
+
+ m &lt;- hc_overlap
+  n &lt;- 550861+ 1183536
+  x &lt;- overlap
+  q = x
+  k = hr_overlap+cr_overlap+rs+overlap
+
+   which(grepl(max(dhyper(1:x, m, n, k)), dhyper(1:x, m, n, k)))</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code># P value of observed
+phyper(q, m, n, k, lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

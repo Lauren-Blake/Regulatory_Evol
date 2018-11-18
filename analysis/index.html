@@ -125,6 +125,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -188,16 +191,17 @@ $(document).ready(function () {
 <li><a href="#univariate-analysis-on-gene-expression">Univariate analysis on gene expression</a></li>
 </ul></li>
 <li><a href="#methylation-data">Methylation Data</a></li>
-<li><a href="#differentiatlly-methylated-regions">Differentiatlly methylated regions</a></li>
-<li><a href="#integration-of-gene-expression-levels-and-methylatiom-levels-humans-and-chimpanzees">Integration of gene expression levels and methylatiom levels: humans and chimpanzees</a></li>
-<li><a href="#effect-size-estimation">Effect size estimation</a></li>
+<li><a href="#differentially-methylated-regions">Differentially methylated regions</a></li>
+<li><a href="#integration-of-gene-expression-levels-and-methylation-levels--interspecies-de-genes">Integration of gene expression levels and methylation levels- interspecies DE genes</a></li>
+<li><a href="#integration-of-gene-expression-levels-and-methylation-levels--intertissue-de-genes">Integration of gene expression levels and methylation levels- intertissue DE genes</a></li>
+<li><a href="#associated-analyses">Associated analyses</a></li>
 <li><a href="#additional-figuretable-generation">Additional figure/table generation</a></li>
 <li><a href="#notes">Notes</a></li>
 </ul>
 </div>
 
-<p><strong>Last updated:</strong> 2018-05-14</p>
-<p><strong>Code version:</strong> b07aea87ff6978f091a8ecdd6fe86016fb53e410</p>
+<p><strong>Last updated:</strong> 2018-11-18</p>
+<p><strong>Code version:</strong> 1d6bd64d9aaca11e1f978971b174aac8f6d9309c</p>
 <div id="project-introduction" class="section level2">
 <h2>Project Introduction</h2>
 </div>
@@ -228,6 +232,7 @@ $(document).ready(function () {
 <h3>Analysis with Technical Factors</h3>
 <ul>
 <li><a href="../analysis/Tech_factor_analysis1_gene_exp.html">Testing for confounders</a></li>
+<li><a href="../analysis/Technical_factor_figures.html">Technical factor figures</a></li>
 <li><a href="../analysis/Analysis_of_confounders2_gene_exp.html">Further analysis with potential confounders</a></li>
 <li><a href="../analysis/GLMnet_gene_exp.html">Best set of technical factors</a></li>
 <li><a href="../analysis/Follow_up_best_set_tech_factors.html">Correlation between technical factors in the best sets and expression</a></li>
@@ -243,8 +248,12 @@ $(document).ready(function () {
 <h3>Univariate analysis on gene expression</h3>
 <ul>
 <li><a href="../analysis/DE_RIN_Plus_ASH.html">Test for DE genes with ASH</a></li>
+<li><a href="../analysis/DE_RIN_Interactions_Plus_ASH.html">Test for signficant interactions</a></li>
+<li><a href="../analysis/Recapitulate_Pai_2011.html">Overlap analysis</a></li>
+<li><a href="../analysis/More_lenient_tissue_specific.html">More lenient tissue specific</a></li>
 <li><a href="../analysis/Tissue_specific_overlap.html">Significance of conservation in tissue specific gene expression</a></li>
 <li><a href="../analysis/Comparison_to_GTEx.html">Comparison of conserved tissue specific genes to other data</a></li>
+<li><a href="../analysis/Human_chimp_var.html">Variance of gene expression between tissues</a></li>
 </ul>
 </div>
 </div>
@@ -256,34 +265,54 @@ $(document).ready(function () {
 <li>Clustering after testing for technical variables</li>
 </ul>
 </div>
-<div id="differentiatlly-methylated-regions" class="section level2">
-<h2>Differentiatlly methylated regions</h2>
+<div id="differentially-methylated-regions" class="section level2">
+<h2>Differentially methylated regions</h2>
 <ul>
+<li><a href="../analysis/Compare_methylated_regions.html">Initial analysis- Size of DMRs</a></li>
 <li><a href="../analysis/Finding_DMRs.html">Pairwise tDMRs I</a></li>
 <li><a href="../analysis/Pairwise_tDMRs.html">Pairwise tDMRs II</a></li>
-<li><a href="../analysis/Finding_conserved_DMRs.html">Finding conserved tDMRs</a></li>
+<li><a href="../analysis/tissue_specific_tDMRs.html">Tissue specific tDMRs</a></li>
+<li><a href="../analysis/Finding_conserved_DMRs.html">Finding conserved tDMRs I</a></li>
+<li>Finding conserved tDMRs</li>
+<li><a href="../analysis/Pairwise_tDMR_overlap.html">Pairwise tDMR overlap</a></li>
 <li><a href="../analysis/Overlap_reg_features.html">Overlap of tDMRs with H3K27ac and DHS</a></li>
+<li><a href="../analysis/Pairwise_SDMRs.html">Pairwise sDMRs</a></li>
 </ul>
 </div>
-<div id="integration-of-gene-expression-levels-and-methylatiom-levels-humans-and-chimpanzees" class="section level2">
-<h2>Integration of gene expression levels and methylatiom levels: humans and chimpanzees</h2>
+<div id="integration-of-gene-expression-levels-and-methylation-levels--interspecies-de-genes" class="section level2">
+<h2>Integration of gene expression levels and methylation levels- interspecies DE genes</h2>
 <ul>
-<li><a href="../analysis/All_cpgs_for_orth_genes.html">Inter-species and inter-tissue example with FSR</a></li>
+<li><a href="../analysis/Final_effect_size_human_chimp.html">Human-chimpanzee with 7125 genes</a></li>
+<li><a href="../analysis/Final_effect_size_human_chimp_4155.html">Human-chimpanzee with 4155 genes</a></li>
+<li><a href="../analysis/Final_effect_size_human_rhesus_4155.html">Human-rhesus macaque with 4155 genes</a></li>
 </ul>
 </div>
-<div id="effect-size-estimation" class="section level2">
-<h2>Effect size estimation</h2>
+<div id="integration-of-gene-expression-levels-and-methylation-levels--intertissue-de-genes" class="section level2">
+<h2>Integration of gene expression levels and methylation levels- intertissue DE genes</h2>
 <ul>
-<li><p><a href="../analysis/Effect_size_2lms.html">Effect size of DE and non-DE genes: humans and chimpanzees</a></p></li>
-<li><p><a href="../analysis/Effect_size_2lms_human_rhesus.html">Effect size of DE and non-DE genes: humans and rhesus</a></p></li>
+<li><a href="../analysis/Final_effect_size_human_tissues.html">Intertissue humans</a></li>
+<li><a href="../analysis/Final_effect_size_chimp_tissues.html">Intertissue chimps</a></li>
+<li><a href="../analysis/Final_effect_size_rhesus_tissues_4155.html">Intertissue rhesus macaques</a></li>
+<li><a href="../analysis/Final_effect_size_tissue_specific.html">Tissue specific DE genes</a></li>
+</ul>
+</div>
+<div id="associated-analyses" class="section level2">
+<h2>Associated analyses</h2>
+<ul>
+<li><a href="../analysis/Compare_effect_sizes_DE_pairs.html">Compare effect sizes</a></li>
+<li><a href="../analysis/Conserved_nonconserved_correlation.html">Conserved versus nonconserved DE genes- humans and chimpanzees</a></li>
+<li><a href="../analysis/Conserved_nonconserved_correlation_rhesus.html">Conserved versus nonconserved DE genes- humans and rhesus macaques</a></li>
 </ul>
 </div>
 <div id="additional-figuretable-generation" class="section level2">
 <h2>Additional figure/table generation</h2>
 <ul>
 <li><a href="../analysis/gene_exp_corr.html">Global surveys of RNA-seq and BS-seq data</a></li>
-<li><a href="../analysis/Figures_samples_info.html">About samples</a></li>
-<li><a href="../analysis/Figures_integration_analysis.html">Final figure</a></li>
+<li><p><a href="../analysis/Figures_samples_info.html">About samples</a></p></li>
+<li><a href="../analysis/Figure_1.html">Figure 1</a></li>
+<li><a href="../analysis/Figures_methylation.html">Figure 3</a></li>
+<li><a href="../analysis/Final_effect_size_figure_4.html">Figure 4</a></li>
+<li><p><a href="../analysis/Final_effect_size_figure_5.html">Figure 5</a></p></li>
 </ul>
 </div>
 <div id="notes" class="section level2">

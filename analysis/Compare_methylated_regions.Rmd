@@ -1,0 +1,61 @@
+---
+title: "Size_methyl_regions"
+author: "Lauren Blake"
+date: "June 1, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+The goal of this script is to find the average bp length of the methylated regions. 
+
+```{r}
+# Import the data
+
+region_array <- read.delim("../data/region_array_subset.txt")
+cpg_array <- read.delim("../data/dfCovnoXposOnly.txt", sep = " ")
+humans_heart_kidney_DMRs <- read.delim("../data/humans_heart_kidney_DMRs.txt")
+human_chimp_heart <- read.delim("../data/Methylation_sDMRs/HumanChimp_heart_DMRs.txt")
+human_chimp_liver <- read.delim("../data/Methylation_sDMRs/HumanChimp_liver_DMRs.txt")
+
+```
+
+# Average bp length
+
+```{r}
+cpg_array[,2] <- rownames(cpg_array)
+
+starting_pos <- merge(x = region_array, y = cpg_array, by.x = c("starting"), by.y = c("V2"))
+ending_pos <- merge(x = region_array, y = cpg_array, by.x = c("ending"), by.y = c("V2"))
+
+length_bp <- data.frame(ending_pos$dfCovnoX - starting_pos$dfCovnoX)
+
+no_neg <- which(length_bp[,1] < 0 )
+length_bp_new <- length_bp[-(no_neg),]
+
+summary(length_bp_new)
+
+```
+
+## Compare to DMR data
+
+```{r}
+summary(humans_heart_kidney_DMRs$end - humans_heart_kidney_DMRs$start)
+
+summary(human_chimp_heart$end - human_chimp_heart$start)
+
+summary(human_chimp_liver$end - human_chimp_liver$start)
+```
+
+# Average number of orthologous CpGs
+
+```{r}
+summary((region_array$ending - region_array$starting)+1)
+
+summary(human_chimp_heart$n)
+```
+

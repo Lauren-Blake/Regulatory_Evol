@@ -28,6 +28,7 @@ title: "Home"
 ### Analysis with Technical Factors
 
 *  [Testing for confounders](../analysis/Tech_factor_analysis1_gene_exp.html)
+*  [Technical factor figures](../analysis/Technical_factor_figures.html)
 *  [Further analysis with potential confounders](../analysis/Analysis_of_confounders2_gene_exp.html)
 *  [Best set of technical factors](../analysis/GLMnet_gene_exp.html)
 *  [Correlation between technical factors in the best sets and expression](../analysis/Follow_up_best_set_tech_factors.html)
@@ -39,8 +40,12 @@ title: "Home"
 ### Univariate analysis on gene expression
 
 * [Test for DE genes with ASH](../analysis/DE_RIN_Plus_ASH.html)
+* [Test for signficant interactions](../analysis/DE_RIN_Interactions_Plus_ASH.html)
+* [Overlap analysis](../analysis/Recapitulate_Pai_2011.html)
+* [More lenient tissue specific](../analysis/More_lenient_tissue_specific.html)
 * [Significance of conservation in tissue specific gene expression](../analysis/Tissue_specific_overlap.html)
 * [Comparison of conserved tissue specific genes to other data](../analysis/Comparison_to_GTEx.html)
+* [Variance of gene expression between tissues](../analysis/Human_chimp_var.html)
 
 ## Methylation Data
 
@@ -48,29 +53,49 @@ title: "Home"
 *  [Human-chimpanzee-rhesus orthologous promoters](../analysis/hg19_to_rhesus_and_chimp_coor.html)
 *  Clustering after testing for technical variables 
 
-## Differentiatlly methylated regions
 
+## Differentially methylated regions
+
+*  [Initial analysis- Size of DMRs](../analysis/Compare_methylated_regions.html)
 *  [Pairwise tDMRs I](../analysis/Finding_DMRs.html)
 *  [Pairwise tDMRs II](../analysis/Pairwise_tDMRs.html)
-*  [Finding conserved tDMRs](../analysis/Finding_conserved_DMRs.html)
+*  [Tissue specific tDMRs](../analysis/tissue_specific_tDMRs.html)
+*  [Finding conserved tDMRs I](../analysis/Finding_conserved_DMRs.html)
+*  Finding conserved tDMRs
+*  [Pairwise tDMR overlap](../analysis/Pairwise_tDMR_overlap.html)
 *  [Overlap of tDMRs with H3K27ac and DHS](../analysis/Overlap_reg_features.html)
+*  [Pairwise sDMRs](../analysis/Pairwise_SDMRs.html)
 
 
-## Integration of gene expression levels and methylatiom levels: humans and chimpanzees
+## Integration of gene expression levels and methylation levels- interspecies DE genes
 
-* [Inter-species and inter-tissue example with FSR](../analysis/All_cpgs_for_orth_genes.html)
+* [Human-chimpanzee with 7125 genes](../analysis/Final_effect_size_human_chimp.html)
+* [Human-chimpanzee with 4155 genes](../analysis/Final_effect_size_human_chimp_4155.html)
+* [Human-rhesus macaque with 4155 genes](../analysis/Final_effect_size_human_rhesus_4155.html)
 
-## Effect size estimation
+## Integration of gene expression levels and methylation levels- intertissue DE genes
 
-* [Effect size of DE and non-DE genes: humans and chimpanzees](../analysis/Effect_size_2lms.html)
+* [Intertissue humans](../analysis/Final_effect_size_human_tissues.html)
+* [Intertissue chimps](../analysis/Final_effect_size_chimp_tissues.html)
+* [Intertissue rhesus macaques](../analysis/Final_effect_size_rhesus_tissues_4155.html)
+* [Tissue specific DE genes](../analysis/Final_effect_size_tissue_specific.html)
 
-* [Effect size of DE and non-DE genes: humans and rhesus](../analysis/Effect_size_2lms_human_rhesus.html)
+## Associated analyses
+
+* [Compare effect sizes](../analysis/Compare_effect_sizes_DE_pairs.html)
+* [Conserved versus nonconserved DE genes- humans and chimpanzees](../analysis/Conserved_nonconserved_correlation.html)
+* [Conserved versus nonconserved DE genes- humans and rhesus macaques](../analysis/Conserved_nonconserved_correlation_rhesus.html)
+
 
 ## Additional figure/table generation
 
 * [Global surveys of RNA-seq and BS-seq data](../analysis/gene_exp_corr.html)
 * [About samples](../analysis/Figures_samples_info.html)
-* [Final figure](../analysis/Figures_integration_analysis.html)
+
+* [Figure 1](../analysis/Figure_1.html)
+* [Figure 3](../analysis/Figures_methylation.html)
+* [Figure 4](../analysis/Final_effect_size_figure_4.html)
+* [Figure 5](../analysis/Final_effect_size_figure_5.html)
 
 
 

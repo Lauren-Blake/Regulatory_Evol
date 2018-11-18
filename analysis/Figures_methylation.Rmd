@@ -13,16 +13,121 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This file is to generate figures and tables for the DNA methylation sections of the paper. 
 
-```{r cars}
-summary(cars)
+# Conservation of hypo and hypermethylated tDMRs (25% bp overlap)
+
+```{r}
+library(VennDiagram)
+library(cowplot)
+library("RColorBrewer")
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+
+draw_venn_methylation <- function(hs, cs, rs, hc, hr, cr, hcr){
+draw.triple.venn(hs+hc+hr+hcr, cs+hc+cr+hcr, rs+hr+cr+hcr, hc+hcr, cr+hcr, hr+hcr, hcr, filename = NULL, category = c("Hu", "Ch", "Rh"), fill = pal[1:3], main.cex = 3, cat.cex = 3, cex=3.5, lty=1, height=2000, width=2000, fontfamily = "sans", cat.fontfamily = "sans", main.fontfamily = "sans", cat.fontface = "bold", main.fontface = "bold", cat.dist = 0.05)
+}
+
+# Hypermethylated
+
+# Heart kidney
+svg("../data/Hyper_heart_kidney.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(11434, 4582, 9456, 2949, 1593, 727, 1463)
+dev.off()
+
+# Heart liver
+svg("../data/Hyper_heart_liver.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(4545, 8063, 17283, 3112, 1173, 1992, 2036)
+dev.off()
+
+# Heart lung
+svg("../data/Hyper_heart_lung.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(3752, 2196, 2409, 625, 223, 196, 130)
+dev.off()
+
+# Liver lung
+svg("../data/Hyper_liver_lung.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(2621, 4927, 10707, 968, 559, 1291, 604)
+dev.off()
+
+# Liver kidney
+svg("../data/Hyper_liver_kidney.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(6073, 6548, 12114, 2576, 1288, 1410, 1605)
+dev.off()
+
+# Lung kidney
+svg("../data/Hyper_lung_kidney.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(7985, 4495, 7739, 2184, 1042, 608, 889)
+dev.off()
+
+
+# Hypomethylated
+
+# Heart kidney
+svg("../data/Hypo_heart_kidney.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(9025, 4520, 7252, 1964, 1038, 669, 825)
+dev.off()
+
+# Heart liver
+svg("../data/Hypo_heart_liver.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(6214, 7204, 13610, 2421, 1247, 2126, 1813)
+dev.off()
+
+# Heart lung
+svg("../data/Hypo_heart_lung.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(7319, 3287, 3013, 1446, 401, 332, 322)
+dev.off()
+
+# Liver lung
+svg("../data/Hypo_liver_lung.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(3188, 8367, 15115, 2460, 870, 1918, 1572)
+dev.off()
+
+# Liver kidney
+svg("../data/Hypo_liver_kidney.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(2841, 7349, 15184, 1772, 722, 1554, 1033)
+dev.off()
+
+# Lung kidney
+svg("../data/Hypo_lung_kidney.svg", width = 7.2, height = 7.2)
+draw_venn_methylation(3232, 2738, 4717, 612, 344, 317, 233)
+dev.off()
+
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+```{r}
+p1 <- ggdraw()+draw_image("../data/Hyper_heart_kidney.svg")+draw_figure_label("12A.", size = 16, fontface = "bold")
+p2 <- ggdraw()+draw_image("../data/Hypo_heart_kidney.svg")+draw_figure_label("12B.", size = 16, fontface = "bold")
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+p3 <- ggdraw()+draw_image("../data/Hyper_heart_liver.svg")+draw_figure_label("12C.", size = 16, fontface = "bold")
+p4 <- ggdraw()+draw_image("../data/Hypo_heart_liver.svg")+draw_figure_label("12D.", size = 16, fontface = "bold")
+
+p5 <- ggdraw()+draw_image("../data/Hyper_heart_lung.svg")+draw_figure_label("12E.", size = 16, fontface = "bold")
+p6 <- ggdraw()+draw_image("../data/Hypo_heart_lung.svg")+draw_figure_label("12F.", size = 16, fontface = "bold")
+
+p7 <- ggdraw()+draw_image("../data/Hyper_liver_kidney.svg")+draw_figure_label("12G.", size = 16, fontface = "bold")
+p8 <- ggdraw()+draw_image("../data/Hypo_liver_kidney.svg")+draw_figure_label("12H.", size = 16, fontface = "bold")
+
+p9 <- ggdraw()+draw_image("../data/Hyper_liver_lung.svg")+draw_figure_label("12I.", size = 16, fontface = "bold")
+p10 <- ggdraw()+draw_image("../data/Hypo_liver_lung.svg")+draw_figure_label("12J.", size = 16, fontface = "bold")
+
+p11 <- ggdraw()+draw_image("../data/Hyper_lung_kidney.svg")+draw_figure_label("12K.", size = 16, fontface = "bold")
+p12 <- ggdraw()+draw_image("../data/Hypo_lung_kidney.svg")+draw_figure_label("12L.", size = 16, fontface = "bold")
+
+
+eight_plots <- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, ncol = 4)
+plot_supp_fig <- plot_grid(eight_plots, ncol = 1, rel_heights=c(0.1, 1))
+plot_supp_fig
+
+save_plot("../data/test.png", plot_supp_fig,
+          ncol = 4, # we're saving a grid plot of 2 columns
+          nrow = 3, # and 2 rows
+          # each individual subplot should have an aspect ratio of 1.3
+          base_aspect_ratio = 0.75
+          )
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Expected overlap of tDMRs
+

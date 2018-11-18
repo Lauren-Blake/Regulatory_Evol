@@ -288,13 +288,13 @@ rvalues_table <- cbind(all_r_values, labels_all_r_values)
 
 rvalues_table$labels_all_r_values <- ordered(rvalues_table$labels_all_r_values, levels=c("ALL", "DIST", "SIDT", "DIDT"))
 
-plot.corr <- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1], fill = rvalues_table[,2])) +
-  geom_boxplot()  +
-  labs(x = "Condition", y = "Pearson's r")
+#plot.corr <- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1], fill = rvalues_table[,2])) +
+#  geom_boxplot()  +
+#  labs(x = "Condition", y = "Pearson's r")
 
 #+ theme(axis.text.x = element_text(angle = 70, vjust = 0.5))
 
-plot.corr <- plot.corr + theme(legend.position = "top") + scale_fill_discrete(name = c("Conditions"), breaks = c("ALL", "DIST", "SIDT", "DIDT"), labels = c("All", "Same tissue", "Same individual", "Different ind. & tissue")) 
+#plot.corr <- plot.corr + theme(legend.position = "top") + scale_fill_discrete(name = c("Conditions"), breaks = c("ALL", "DIST", "SIDT", "DIDT"), labels = c("All", "Same tissue", "Same individual", "Different ind. & tissue")) 
 
 #plot_grid(NULL, plot.corr, NULL, NULL, NULL, labels = c("A", "B", "C", "D", "E"), ncol = 2)
 
@@ -370,7 +370,7 @@ summary <- summary(pca_genes)
 
 plot.pca.true <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Tissue), shape=as.factor(sample_features$Species), size=2)) + geom_point(alpha = 1) + xlab("PC1 (21.8% of variance)") + ylab(paste("PC2 (17.5% of variance)")) + theme(legend.position="none")
 
-plot.pca.true <- plot.pca.true + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) 
+plot.pca.true <- plot.pca.true + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus")) 
 plot.pca.true <- plot.pca.true + scale_color_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung"))
 #plot_grid(plot.pca.true, p2, labels = c("A", "B"), ncol = 1)
 
@@ -393,6 +393,8 @@ dev.off()
 #write.table(pca_genes_scores, file = "./Methylation/Methylation_figures/pca_all_methyl_samples.txt")
 #pca_genes_summary <- summary(pca_genes)$importance
 #write.table(pca_genes_summary, file = "./Methylation/Methylation_figures/pca_summary_all_methyl_samples.txt")
+
+
 
 pca_all <- read.csv("../data/pca_all_methyl_samples.txt", sep="")
 pca_all_summary <- read.csv("../data/pca_summary_all_methyl_samples.txt", sep="")
@@ -442,11 +444,16 @@ summary <- summary(pca_genes)
 
 plot.pca.methyl <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Tissue), shape=as.factor(sample_info_RNAseq$Species), size=2)) + geom_point(alpha = 1) + xlab("PC1 (11.1% of variance)") + ylab("PC2 (6.8% of variance)") + theme(legend.position="none")
 
-plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rh. macaque")) 
+plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus")) 
 plot.pca.methyl <- plot.pca.methyl + scale_color_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung"))
 #plot_grid(plot.pca.true, p2, labels = c("A", "B"), ncol = 1)
 
 svg("./plot.methyl.svg")
+plot.pca.methyl
+dev.off()
+
+
+pdf("./plot.methyl.pdf")
 plot.pca.methyl
 dev.off()
 
@@ -471,13 +478,126 @@ p3 <- ggdraw()+draw_image("./plot.methyl.svg")
 
 make_fig1 <- plot_grid(p1, p2, plot.corr, p3, labels = c("1A.", "1B.", "1C.", "1D."), ncol = 2)
 
-save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/fig1.pdf", make_fig1,
-          ncol = 2, # we're saving a grid plot of 2 columns
-          nrow = 2, # and 2 rows
+#save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Draft_4/fig1.pdf", make_fig1,
+#          ncol = 2, # we're saving a grid plot of 2 columns
+#          nrow = 2, # and 2 rows
           # each individual subplot should have an aspect ratio of 1.3
-          base_aspect_ratio = 1.3
-          )
+#          base_aspect_ratio = 1.3
+#          )
 ```
+
+# PCA using 263K methylated regions with > 2 orthologous CpGs
+
+Note: Median 3 CpGs and Mean 6.295 CpGs (range 2 to 288 CpGs)
+
+```{r}
+# Regions 1-168955
+
+means_first <- read.table("/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/get_means_orth_MR1.txt")
+
+means_first[168954:168955,47:48]
+
+# Regions 168956-end
+
+means_last <- read.table("/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/get_means_mr_last.txt")
+
+means_last[5:6,47:48]
+
+means_second <- means_last[-(1:6),]
+
+dim(means_second)
+
+nrow(means_first) + nrow(means_second)
+
+get_methyl_means <- rbind(means_first, means_second)
+
+sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+
+# Distribution of C1H
+
+ggplot(data= get_methyl_means, aes(x = get_methyl_means[,1])) + geom_histogram(binwidth = 0.01) + xlab("Average DNA methylation level") + ylab("Number of methylated regions")
+
+
+# Run the PCA
+
+pca_genes <- prcomp(t(get_methyl_means) , scale = T, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+
+plot.pca.methyl <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Species), shape=as.factor(sample_info_RNAseq$Tissue), size=3)) + geom_point(alpha = 1) + xlab("PC1 (19.5% of variance)") + ylab("PC2 (12.2% of variance)") + theme(legend.position="none")
+
+plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "bottom") + scale_color_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) + scale_shape_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) + scale_size(guide = 'none')
+
+plot_grid(plot.pca.methyl, ncol = 1) 
+
+svg("./plot.methyl.reg.svg")
+plot.pca.methyl
+dev.off()
+
+
+# Run with only humans and chimpanzees
+
+
+pca_genes <- prcomp(t(get_methyl_means[,1:31]) , scale = T, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+
+plot.pca.methyl.hc <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Tissue[1:31]), shape=as.factor(sample_info_RNAseq$Species[1:31]), size=2)) + geom_point(alpha = 1) + xlab("PC1 (17.2% of variance)") + ylab("PC2 (15.3% of variance)") + theme(legend.position="none")
+
+plot.pca.methyl.hc <- plot.pca.methyl.hc + theme(legend.position = "bottom") + scale_shape_discrete(name = c(""), breaks = c("chimpanzee", "human", "rhesus macaque"), labels = c("Chimpanzee", "Human", "Rhesus macaque")) + scale_size(guide = 'none')
+plot.pca.methyl <- plot.pca.methyl + scale_color_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung"))
+plot_grid(plot.pca.methyl.hc, ncol = 1) 
+
+svg("./plot.methyl.reg.hc.svg")
+plot.pca.methyl.hc
+dev.off()
+
+# Bryan's code for clustering 
+library("viridis")
+library(dendextend)
+library(colorspace)
+library(tidyverse)
+library(gplots)
+
+#Function to make pearson correlation matrix and convert into distance matrix
+pearson <- function(x, ...) {
+    x <- as.matrix(x)
+    res <- as.dist(1 - cor(x, method = "pearson", use = "everything"))
+    res <- as.dist(res)
+    attr(res, "method") <- "pearson"
+    return(res)
+}
+
+cor(get_methyl_means[,1:31])-> all_data
+hc <- get_methyl_means[,1:31] %>% pearson %>% hclust(method = "average")
+dend <- hc %>% as.dendrogram
+
+dev.off()
+tiff(file = "Methyl_heatmap_reg_hc.tiff")
+heatmap.2(all_data, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white",ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species[1:31]))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue[1:31]))+9], Colv=dend,Rowv=dend)
+dev.off()
+```
+
 
 # Clustering
 
@@ -519,6 +639,19 @@ dend <- hc %>% as.dendrogram
 dev.off()
 tiff(file = "Methyl_heatmap.tiff")
 heatmap.2(all_data, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white",ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue))+9], Colv=dend,Rowv=dend)
+dev.off()
+
+
+
+cor(get_methyl_means)-> all_data
+hc <- get_methyl_means %>% pearson %>% hclust(method = "average")
+dend <- hc %>% as.dendrogram
+
+sample_info_RNAseq <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+
+#dev.off()
+tiff(file = "Methyl_reg_heatmap.tiff")
+heatmap.2(all_data, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white",ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue))+9], Colv=dend,Rowv=dend, labRow = sample_info_RNAseq$Sample.ID, labCol = sample_info_RNAseq$Sample.ID)
 dev.off()
 
 
@@ -644,7 +777,13 @@ plot.pca.methyl <- plot.pca.methyl + scale_shape_discrete(name = c(""), breaks =
 
 plot.pca.methyl
 
-pca_genes <- prcomp(t(express[,hkl]) , scale = T, center = TRUE)
+#plot.pca.methyl <- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Tissue[hkl]), shape=as.factor(sample_features$Species[hkl]))) + geom_point(alpha = 1) + xlab("PC1 (11.6% of variance)") + ylab("PC2 (10.4% of variance)") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+#plot.pca.methyl <- plot.pca.methyl + theme(legend.position = "right") + scale_shape_discrete(name = c("")) 
+plot.pca.methyl <- plot.pca.methyl + scale_color_discrete(name = c(""), breaks = c("heart", "kidney", "liver", "lung"), labels = c("Heart", "Kidney", "Liver", "Lung")) 
+
+
+#pca_genes <- prcomp(t(express[,hkl]) , scale = T, center = TRUE)
 
 matrixpca <- pca_genes$x
 pc1 <- matrixpca[,1]
@@ -1516,4 +1655,17 @@ axis(1, at = 1:2, labels = c("Matched", "Non-matched"))
 
 ```
 
+```{r}
+BS_seq_info_one <- read.csv("~/Dropbox/primate_BS-seq_project/Correlation with PCs - Lauren/BS_seq_info_one.csv")
+
+bs_info <- BS_seq_info_one[2:112,]
+
+bs_info_tissue <- bs_info[,4]
+bs_info_lib <- bs_info[,30]
+
+
+chisq.test(as.numeric(bs_info_tissue), as.numeric(bs_info_lib))
+
+cor(as.numeric(bs_info_tissue), as.numeric(bs_info_lib))
+```
 

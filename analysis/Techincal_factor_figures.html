@@ -127,6 +127,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -197,6 +200,7 @@ $(document).ready(function () {
 
 library(plyr)
 library(dplyr)</code></pre>
+<pre><code>Warning: package &#39;dplyr&#39; was built under R version 3.4.4</code></pre>
 <pre><code>
 Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:plyr&#39;:
@@ -209,10 +213,13 @@ Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:base&#39;:
 
     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(&quot;tidyr&quot;)
-library(&quot;RColorBrewer&quot;)
-library(&quot;ggplot2&quot;)
-library(&quot;cowplot&quot;)</code></pre>
+<pre class="r"><code>library(&quot;tidyr&quot;)</code></pre>
+<pre><code>Warning: package &#39;tidyr&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;cowplot&quot;)</code></pre>
+<pre><code>Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
 <pre><code>
 Attaching package: &#39;cowplot&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:ggplot2&#39;:
@@ -220,6 +227,22 @@ Attaching package: &#39;cowplot&#39;</code></pre>
     ggsave</code></pre>
 <pre class="r"><code>colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
 pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+bjp&lt;-
+theme(
+  panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;, hjust = 0.5),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x = element_text(size = 14,face = &quot;bold&quot;),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))
+
+
 
 # Load data
 
@@ -248,19 +271,30 @@ colnames(RIN) &lt;- c(&quot;RIN&quot;)</code></pre>
 
 plot.RIN2 &lt;- ggplot(sample_features, aes(x = Species, y = RIN.score, fill = Tissue)) +
   geom_boxplot()  +
-  labs(x = &quot;Species&quot;, y = &quot;RIN Score&quot;)  + theme(legend.position = &quot;right&quot;) + scale_fill_discrete(name = c(&quot;Tissue&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + scale_x_discrete(name = c(&quot;Species&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus Macaque&quot;)) </code></pre>
+  labs(x = &quot;Species&quot;, y = &quot;RIN Score&quot;)  + theme(legend.position = &quot;right&quot;) + scale_fill_discrete(name = c(&quot;Tissue&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + scale_x_discrete(name = c(&quot;Species&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus Macaque&quot;)) 
+
+ggplot(sample_features, aes(x = as.factor(Tissue), y = RIN.score, (fill = as.factor(Species)))) + geom_point()  + labs(x = &quot;Tissue&quot;, y = &quot;RIN Score&quot;) + ggtitle(&quot;RIN score of Samples&quot;)  + scale_x_discrete(name = c(&quot;Tissue&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))</code></pre>
+<p><img src="figure/Techincal_factor_figures.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="rna-extraction-date" class="section level1">
 <h1>RNA extraction date</h1>
 <pre class="r"><code># Get extraction date
-sample_info_RNAseq &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv&quot;)
-sample_features &lt;- sample_info_RNAseq[-17,]
+sample_features &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/RNA_seq_info.csv&quot;)
+#sample_features &lt;- sample_info_RNAseq[-17,]
 
-levels(RNA_seq_info$Species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rh. Macaque&quot;)
 
-plot.RNA.extract &lt;- ggplot(RNA_seq_info, aes(x = Tissue, y = RNA.extraction.date, fill = Tissue)) +
+
+levels(sample_features$Species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus Macaque&quot;)
+
+plot.RNA.extract &lt;- ggplot(sample_features, aes(x = Tissue, y = RNA.extraction.date, fill = Tissue)) +
   geom_dotplot(binaxis = &#39;y&#39;, stackdir = &#39;center&#39;, dotsize = 0.8) + facet_grid(.~Species) +
-  labs(x = &quot;Species&quot;, y = &quot;RNA Extraction Date&quot;)  + scale_x_discrete(name = c(&quot;Tissue&quot;), labels = c(&quot;H&quot;, &quot;K&quot;, &quot;Li&quot;, &quot;Lu&quot;)) + guides(fill=FALSE)</code></pre>
+  labs(x = &quot;Species&quot;, y = &quot;RNA Extraction Date&quot;)  + scale_x_discrete(name = c(&quot;Tissue&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + guides(fill=FALSE) + theme_bw() + bjp 
+
+plot.RNA.extract</code></pre>
+<pre><code>`stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/Techincal_factor_figures.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>c(&quot;H&quot;, &quot;K&quot;, &quot;Li&quot;, &quot;Lu&quot;)</code></pre>
+<pre><code>[1] &quot;H&quot;  &quot;K&quot;  &quot;Li&quot; &quot;Lu&quot;</code></pre>
 </div>
 <div id="human-pca" class="section level1">
 <h1>Human PCA</h1>
@@ -280,9 +314,19 @@ pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
 
 summary &lt;- summary(pca_genes)
 
-plot.human.pca &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=human_features$Tissue, shape = as.factor(human_features$RNA.extraction.date))) + geom_point(size = 3) + xlab(&quot;PC1 (26.3% of variance)&quot;) + ylab(&quot;PC2 (18.0% \n of variance)&quot;) + scale_size(guide = &#39;none&#39;) + theme(legend.position = &quot;right&quot;) + scale_color_discrete(name = c(&quot;Tissue&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + scale_shape_discrete(name = c(&quot;RNA Extraction Date&quot;))
+plot.human.pca &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=human_features$Tissue, shape = as.factor(human_features$RNA.extraction.date))) + geom_point(size = 5) + xlab(&quot;PC1 (26.3% of variance)&quot;) + ylab(&quot;PC2 (18.0% of variance)&quot;) + scale_size(guide = &#39;none&#39;) + theme(legend.position = &quot;right&quot;) + scale_color_discrete(name = c(&quot;Tissue&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + scale_shape_discrete(name = c(&quot;RNA Extraction Date&quot;)) + theme_bw() + bjp 
 
-#pdf(&quot;./plot.human.pca.pdf&quot;)
+cor(pc1, as.numeric(human_features$Individual))</code></pre>
+<pre><code>[1] 0.1622145</code></pre>
+<pre class="r"><code>cor(pc2, as.numeric(human_features$Individual))</code></pre>
+<pre><code>[1] -0.1317682</code></pre>
+<pre class="r"><code>cor(pc3, as.numeric(human_features$Individual))</code></pre>
+<pre><code>[1] -0.05736749</code></pre>
+<pre class="r"><code>cor(pc4, as.numeric(human_features$Individual))</code></pre>
+<pre><code>[1] -0.1486696</code></pre>
+<pre class="r"><code>cor(pc5, as.numeric(human_features$Individual))</code></pre>
+<pre><code>[1] 0.5725247</code></pre>
+<pre class="r"><code>#pdf(&quot;./plot.human.pca.pdf&quot;)
 #plot.human.pca
 #dev.off()</code></pre>
 </div>

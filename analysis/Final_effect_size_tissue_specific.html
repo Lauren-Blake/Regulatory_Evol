@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-06-21" />
+
+<title>Effect_size_tissue_specific</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Effect_size_tissue_specific</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>June 21, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#run-the-linear-model-fdr-level-0.01">Run the linear model (FDR level = 0.01)</a></li>
+<li><a href="#heart-specific">Heart specific</a></li>
+<li><a href="#kidney-specific">Kidney specific</a></li>
+<li><a href="#liver-specific">Liver specific</a></li>
+<li><a href="#lung-specific">Lung specific</a></li>
+<li><a href="#run-the-linear-model-fdr-level-0.05">Run the linear model (FDR level = 0.05)</a></li>
+<li><a href="#heart-specific-1">Heart specific</a></li>
+<li><a href="#kidney-specific-1">Kidney specific</a></li>
+<li><a href="#liver-specific-1">Liver specific</a></li>
+<li><a href="#lung-specific-1">Lung specific</a></li>
+<li><a href="#run-the-linear-model-fdr-level-0.01-1">Run the linear model (FDR level = 0.01)</a></li>
+<li><a href="#heart-specific-2">Heart specific</a></li>
+<li><a href="#kidney-specific-2">Kidney specific</a></li>
+<li><a href="#liver-specific-2">Liver specific</a></li>
+<li><a href="#lung-specific-2">Lung specific</a></li>
+</ul>
+</div>
+
+<pre class="r"><code># import sample labels
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt&quot;)
+RIN &lt;- samples$RIN
+# expression
+exprs &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/250_exp_avg_methyl_hcr_4155_genes.txt&quot;, sep=&quot;&quot;)
+
+# methylation data
+methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/250_avg_methyl_hcr_4155_genes_unmerged.txt&quot;, sep=&quot;&quot;)
+
+# Normalized gene expression data
+cpm.voom.cyclic &lt;- readRDS(&quot;../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)
+
+results &lt;- readRDS(&quot;../data/combined-limma.rds&quot;)
+
+# Load libraries
+library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;plyr&quot;)
+library(&quot;ashr&quot;)
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
+<pre class="r"><code>library(&quot;devtools&quot;)</code></pre>
+<pre><code>## Warning: package &#39;devtools&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;vashr&quot;)</code></pre>
+<pre><code>## Loading required package: SQUAREM</code></pre>
+<pre><code>## Loading required package: qvalue</code></pre>
+<pre class="r"><code>devtools::install_github(&quot;jhsiao999/mediation/pkg&quot;)</code></pre>
+<pre><code>## Skipping install of &#39;medinome&#39; from a github remote, the SHA1 (dfd53a1b) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
+<pre class="r"><code>library(&quot;medinome&quot;)</code></pre>
+<div id="run-the-linear-model-fdr-level-0.01" class="section level1">
+<h1>Run the linear model (FDR level = 0.01)</h1>
+<pre class="r"><code>human_rhesus_heart &lt;- c(17:31) 
+FDR_level &lt;- 0.01
+X &lt;- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+RIN_subset &lt;- RIN[human_rhesus_heart]
+
+# Run for hearts 
+
+# Run the linear model in limma
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+# Run for kidneys
+
+X &lt;- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Kidney_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Kidney_fit_all_5perc &lt;-
+HvC_Kidney_fit_all[which(HvC_Kidney_fit_all$adj.P.Val &lt; FDR_level), ]
+    
+  
+# Run for livers
+
+X &lt;- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Liver_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Liver_fit_all_5perc &lt;-
+HvC_Liver_fit_all[which(HvC_Liver_fit_all$adj.P.Val &lt; FDR_level), ]
+ 
+  # Run for lungs
+  
+X &lt;- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Lung_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Lung_fit_all_5perc &lt;- HvC_Lung_fit_all[which(HvC_Lung_fit_all$adj.P.Val &lt; FDR_level), ]
+
+dim(HvC_Heart_fit_all_5perc)</code></pre>
+<pre><code>## [1] 628   7</code></pre>
+<pre class="r"><code>dim(HvC_Kidney_fit_all_5perc)</code></pre>
+<pre><code>## [1] 317   7</code></pre>
+<pre class="r"><code>dim(HvC_Liver_fit_all_5perc)</code></pre>
+<pre><code>## [1] 906   7</code></pre>
+<pre class="r"><code>dim(HvC_Lung_fit_all_5perc)</code></pre>
+<pre><code>## [1] 141   7</code></pre>
+</div>
+<div id="heart-specific" class="section level1">
+<h1>Heart specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Kidney_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Heart_fit_all_5perc$genes, heart_spec) 
+
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 205  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 205  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+ 
+X &lt;- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     205</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     205</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     202       3</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<pre class="r"><code>#which(fit_ash_normal$result$svalue &lt; 0.1 = TRUE)</code></pre>
+</div>
+<div id="kidney-specific" class="section level1">
+<h1>Kidney specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Kidney_fit_all_5perc$genes, heart_spec) 
+
+X &lt;- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 92 31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 92 31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      88       4</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      87       5</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      86       6</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+</div>
+<div id="liver-specific" class="section level1">
+<h1>Liver specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Kidney_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Liver_fit_all_5perc$genes, heart_spec) 
+
+X &lt;- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 261  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 261  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     257       4</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     253       8</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     250      11</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+</div>
+<div id="lung-specific" class="section level1">
+<h1>Lung specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Liver_fit_all_5perc), rownames(HvC_Heart_fit_all_5perc)), rownames(HvC_Kidney_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Lung_fit_all_5perc$genes, heart_spec_only) 
+X &lt;- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 48 31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 48 31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical      48</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical      48</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical      48</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+</div>
+<div id="run-the-linear-model-fdr-level-0.05" class="section level1">
+<h1>Run the linear model (FDR level = 0.05)</h1>
+<pre class="r"><code>human_rhesus_heart &lt;- c(17:31) 
+FDR_level &lt;- 0.05
+X &lt;- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+RIN_subset &lt;- RIN[human_rhesus_heart]
+
+# Run for hearts 
+
+# Run the linear model in limma
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+# Run for kidneys
+
+X &lt;- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Kidney_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Kidney_fit_all_5perc &lt;-
+HvC_Kidney_fit_all[which(HvC_Kidney_fit_all$adj.P.Val &lt; FDR_level), ]
+    
+  
+# Run for livers
+
+X &lt;- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Liver_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Liver_fit_all_5perc &lt;-
+HvC_Liver_fit_all[which(HvC_Liver_fit_all$adj.P.Val &lt; FDR_level), ]
+ 
+  # Run for lungs
+  
+X &lt;- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Lung_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Lung_fit_all_5perc &lt;- HvC_Lung_fit_all[which(HvC_Lung_fit_all$adj.P.Val &lt; FDR_level), ]
+
+dim(HvC_Heart_fit_all_5perc)</code></pre>
+<pre><code>## [1] 1281    7</code></pre>
+<pre class="r"><code>dim(HvC_Kidney_fit_all_5perc)</code></pre>
+<pre><code>## [1] 848   7</code></pre>
+<pre class="r"><code>dim(HvC_Liver_fit_all_5perc)</code></pre>
+<pre><code>## [1] 1953    7</code></pre>
+<pre class="r"><code>dim(HvC_Lung_fit_all_5perc)</code></pre>
+<pre><code>## [1] 838   7</code></pre>
+</div>
+<div id="heart-specific-1" class="section level1">
+<h1>Heart specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Kidney_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Heart_fit_all_5perc$genes, heart_spec) 
+
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 362  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 362  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+ 
+X &lt;- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     362</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     362</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     362</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>#which(fit_ash_normal$result$svalue &lt; 0.1 = TRUE)</code></pre>
+</div>
+<div id="kidney-specific-1" class="section level1">
+<h1>Kidney specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Kidney_fit_all_5perc$genes, heart_spec) 
+
+X &lt;- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 176  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 176  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     173       3</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     172       4</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     171       5</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+</div>
+<div id="liver-specific-1" class="section level1">
+<h1>Liver specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Kidney_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Liver_fit_all_5perc$genes, heart_spec) 
+
+X &lt;- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 514  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 514  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     512       2</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     509       5</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     507       7</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+</div>
+<div id="lung-specific-1" class="section level1">
+<h1>Lung specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Liver_fit_all_5perc), rownames(HvC_Heart_fit_all_5perc)), rownames(HvC_Kidney_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Lung_fit_all_5perc$genes, heart_spec_only) 
+X &lt;- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 282  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 282  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     282</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     282</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical     282</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<pre class="r"><code># import sample labels
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt&quot;)
+RIN &lt;- samples$RIN
+
+# expression
+exprs &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt&quot;, sep=&quot;&quot;)
+# methylation data
+methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt&quot;, sep=&quot;&quot;)
+
+# Normalized gene expression data
+cpm.voom.cyclic &lt;- readRDS(&quot;../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)</code></pre>
+</div>
+<div id="run-the-linear-model-fdr-level-0.01-1" class="section level1">
+<h1>Run the linear model (FDR level = 0.01)</h1>
+<pre class="r"><code>human_rhesus_heart &lt;- c(17:31) 
+FDR_level &lt;- 0.01
+X &lt;- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+RIN_subset &lt;- RIN[human_rhesus_heart]
+
+# Run for hearts 
+
+# Run the linear model in limma
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+# Run for kidneys
+
+X &lt;- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Kidney_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Kidney_fit_all_5perc &lt;-
+HvC_Kidney_fit_all[which(HvC_Kidney_fit_all$adj.P.Val &lt; FDR_level), ]
+    
+  
+# Run for livers
+
+X &lt;- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Liver_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Liver_fit_all_5perc &lt;-
+HvC_Liver_fit_all[which(HvC_Liver_fit_all$adj.P.Val &lt; FDR_level), ]
+ 
+  # Run for lungs
+  
+X &lt;- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+  
+  design &lt;- model.matrix(~ as.factor(X)+RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_rhesus_heart], design)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Lung_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Lung_fit_all_5perc &lt;- HvC_Lung_fit_all[which(HvC_Lung_fit_all$adj.P.Val &lt; FDR_level), ]
+
+dim(HvC_Heart_fit_all_5perc)</code></pre>
+<pre><code>## [1] 628   7</code></pre>
+<pre class="r"><code>dim(HvC_Kidney_fit_all_5perc)</code></pre>
+<pre><code>## [1] 317   7</code></pre>
+<pre class="r"><code>dim(HvC_Liver_fit_all_5perc)</code></pre>
+<pre><code>## [1] 906   7</code></pre>
+<pre class="r"><code>dim(HvC_Lung_fit_all_5perc)</code></pre>
+<pre><code>## [1] 141   7</code></pre>
+</div>
+<div id="heart-specific-2" class="section level1">
+<h1>Heart specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Kidney_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Heart_fit_all_5perc$genes, heart_spec) 
+
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 391  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 391  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+ 
+X &lt;- c(0,0,0,1,0,0,0,1,0,0,0,1,0,0,0)
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     389       2</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     382       9</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     376      15</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<pre class="r"><code>#which(fit_ash_normal$result$svalue &lt; 0.1 = TRUE)</code></pre>
+</div>
+<div id="kidney-specific-2" class="section level1">
+<h1>Kidney specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Liver_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Kidney_fit_all_5perc$genes, heart_spec) 
+
+X &lt;- c(1,0,0,0,1,0,0,0,1,0,0,0,1,0,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 175  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 175  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     167       8</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     163      12</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     160      15</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+</div>
+<div id="liver-specific-2" class="section level1">
+<h1>Liver specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Heart_fit_all_5perc), rownames(HvC_Kidney_fit_all_5perc)), rownames(HvC_Lung_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Liver_fit_all_5perc$genes, heart_spec) 
+
+X &lt;- c(0,1,0,0,0,1,0,0,0,1,0,0,0,1,0)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 565  31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 565  31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     542      23</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     521      44</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     509      56</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+</div>
+<div id="lung-specific-2" class="section level1">
+<h1>Lung specific</h1>
+<pre class="r"><code>heart_spec &lt;- union(union(rownames(HvC_Liver_fit_all_5perc), rownames(HvC_Heart_fit_all_5perc)), rownames(HvC_Kidney_fit_all_5perc))
+
+heart_spec_only &lt;- setdiff(HvC_Lung_fit_all_5perc$genes, heart_spec_only) 
+X &lt;- c(0,0,1,0,0,0,1,0,0,0,1,0,0,0,1)
+
+  # Find which DE genes have methylation values associated with it
+    human_chimp_heart &lt;- exprs[,1] %in% heart_spec_only
+  human_chimp_heart &lt;- as.data.frame(human_chimp_heart)
+  counts_genes_in &lt;- cbind(exprs, human_chimp_heart)
+  counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart ==
+&quot;TRUE&quot;)
+ # counts_genes_in_cutoff &lt;- counts_genes_in_cutoff[,1:79]
+  expression_values_only &lt;- counts_genes_in_cutoff[,2:32]
+  methylation_values_only &lt;- counts_genes_in_cutoff[,49:79]
+  dim(expression_values_only)</code></pre>
+<pre><code>## [1] 96 31</code></pre>
+<pre class="r"><code>  dim(methylation_values_only)</code></pre>
+<pre><code>## [1] 96 31</code></pre>
+<pre class="r"><code>Y &lt;- expression_values_only[,17:31]
+M &lt;- methylation_values_only[,17:31]
+ 
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+  
+fit &lt;- vash(check_values$d_se,df=13, singlecomp = T, unimodal = &quot;auto&quot;) 
+plot(check_values$d_se, fit$sd.post)
+abline(0,1,col=&quot;blue&quot;)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
+<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.01)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical      96</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical      96</code></pre>
+<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.1)</code></pre>
+<pre><code>##    Mode   FALSE 
+## logical      96</code></pre>
+<pre class="r"><code>hist(fit_ash_normal$result$svalue, breaks = 50)</code></pre>
+<p><img src="Final_effect_size_tissue_specific_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -126,6 +126,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -234,16 +237,20 @@ Attaching package: &#39;gplots&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:stats&#39;:
 
     lowess</code></pre>
-<pre class="r"><code>library(&quot;ggplot2&quot;)
-library(&quot;RColorBrewer&quot;)
-library(&quot;scales&quot;)
-library(&quot;edgeR&quot;)</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)</code></pre>
+<pre><code>Warning: package &#39;scales&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
 <pre><code>Loading required package: limma</code></pre>
 <pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
+<pre><code>Warning: package &#39;R.utils&#39; was built under R version 3.4.4</code></pre>
 <pre><code>Loading required package: R.oo</code></pre>
+<pre><code>Warning: package &#39;R.oo&#39; was built under R version 3.4.4</code></pre>
 <pre><code>Loading required package: R.methodsS3</code></pre>
 <pre><code>R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
-<pre><code>R.oo v1.21.0 (2016-10-30) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>R.oo v1.22.0 (2018-04-21) successfully loaded. See ?R.oo for help.</code></pre>
 <pre><code>
 Attaching package: &#39;R.oo&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:methods&#39;:
@@ -252,7 +259,7 @@ Attaching package: &#39;R.oo&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:base&#39;:
 
     attach, detach, gc, load, save</code></pre>
-<pre><code>R.utils v2.6.0 (2017-11-04) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>R.utils v2.7.0 successfully loaded. See ?R.utils for help.</code></pre>
 <pre><code>
 Attaching package: &#39;R.utils&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:utils&#39;:
@@ -265,11 +272,13 @@ Attaching package: &#39;R.utils&#39;</code></pre>
 library(&quot;limma&quot;)
 library(&quot;gridExtra&quot;)
 library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>Warning: package &#39;VennDiagram&#39; was built under R version 3.4.4</code></pre>
 <pre><code>Loading required package: grid</code></pre>
 <pre><code>Loading required package: futile.logger</code></pre>
 <pre class="r"><code>source(&quot;functions.R&quot;)
 library(ashr)
 library(cowplot)</code></pre>
+<pre><code>Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
 <pre><code>
 Attaching package: &#39;cowplot&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:ggplot2&#39;:
@@ -425,15 +434,97 @@ kidneyRhesus  liverRhesus   lungRhesus
          4.0          4.0          4.0 </code></pre>
 <pre class="r"><code># Voom with individual as a random variable
 
-#cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=T)
-
-#corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=T)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
 corfit.consensus &lt;- 0.2197275
 
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit.consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Save
+
+update_gene_pcs &lt;- prcomp(t(cpm.voom.cyclic$E), scale = T)
+
+pc_values &lt;- update_gene_pcs$x
+
+summary(lm(pc_values[,1]~as.factor(RNA_seq_info$Tissue)))</code></pre>
+<pre><code>
+Call:
+lm(formula = pc_values[, 1] ~ as.factor(RNA_seq_info$Tissue))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-57.834 -12.655  -2.726  16.612  39.530 
+
+Coefficients:
+                                     Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                           -29.426      7.000  -4.204  0.00013
+as.factor(RNA_seq_info$Tissue)kidney   37.050      9.691   3.823  0.00042
+as.factor(RNA_seq_info$Tissue)liver    99.239      9.691  10.241 4.17e-13
+as.factor(RNA_seq_info$Tissue)lung    -21.037      9.691  -2.171  0.03551
+                                        
+(Intercept)                          ***
+as.factor(RNA_seq_info$Tissue)kidney ***
+as.factor(RNA_seq_info$Tissue)liver  ***
+as.factor(RNA_seq_info$Tissue)lung   *  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 23.22 on 43 degrees of freedom
+Multiple R-squared:  0.8107,    Adjusted R-squared:  0.7975 
+F-statistic:  61.4 on 3 and 43 DF,  p-value: 1.381e-15</code></pre>
+<pre class="r"><code>summary(lm(pc_values[,2]~as.factor(RNA_seq_info$Species)))</code></pre>
+<pre><code>
+Call:
+lm(formula = pc_values[, 2] ~ as.factor(RNA_seq_info$Species))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-82.003 -11.884   8.865  26.961  48.082 
+
+Coefficients:
+                                              Estimate Std. Error t value
+(Intercept)                                      8.829     10.090   0.875
+as.factor(RNA_seq_info$Species)human            15.606     14.505   1.076
+as.factor(RNA_seq_info$Species)rhesus macaque  -40.565     14.269  -2.843
+                                              Pr(&gt;|t|)   
+(Intercept)                                    0.38633   
+as.factor(RNA_seq_info$Species)human           0.28783   
+as.factor(RNA_seq_info$Species)rhesus macaque  0.00676 **
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 40.36 on 44 degrees of freedom
+Multiple R-squared:  0.2686,    Adjusted R-squared:  0.2353 
+F-statistic: 8.078 on 2 and 44 DF,  p-value: 0.001027</code></pre>
+<pre class="r"><code>summary(lm(pc_values[,2]~as.factor(RNA_seq_info$Tissue)))</code></pre>
+<pre><code>
+Call:
+lm(formula = pc_values[, 2] ~ as.factor(RNA_seq_info$Tissue))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-47.685 -22.275   6.966  14.536  52.703 
+
+Coefficients:
+                                     Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                           -66.054      7.831  -8.435 1.16e-10
+as.factor(RNA_seq_info$Tissue)kidney   68.289     10.841   6.299 1.34e-07
+as.factor(RNA_seq_info$Tissue)liver    90.522     10.841   8.350 1.52e-10
+as.factor(RNA_seq_info$Tissue)lung     99.901     10.841   9.215 9.72e-12
+                                        
+(Intercept)                          ***
+as.factor(RNA_seq_info$Tissue)kidney ***
+as.factor(RNA_seq_info$Tissue)liver  ***
+as.factor(RNA_seq_info$Tissue)lung   ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 25.97 on 43 degrees of freedom
+Multiple R-squared:  0.704, Adjusted R-squared:  0.6834 
+F-statistic: 34.09 on 3 and 43 DF,  p-value: 1.934e-11</code></pre>
 <div id="fit-the-linear-model" class="section level3">
 <h3>Fit the linear model</h3>
 <pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit.consensus)
@@ -447,18 +538,18 @@ fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 ## - Potential caveat: variances could be different between human, chimp and rhesus (see Gordon Smyth email, 7 June 2013).                                                               
 ##  We look at the standard error for each condition                                                    
 hist(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma, breaks=100)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>hist(log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma), breaks=100)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>boxplot(log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma))</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>## This seems to be pretty comparable between conditions. The human heart is higher, probably because of H1H missing and H3H with a bit strange behavior                                     
 stderror &lt;- log2(fit.cyclic.norm$stdev.unscaled * fit.cyclic.norm$sigma)
 boxplot(list(stderror[,1:4], stderror[,5:8], stderror[,9:12]))</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>## A bit higher for human, and a bit lower for rhesus                                                                                                                                    
 boxplot(list(stderror[,2:4], stderror[,6:8], stderror[,8:12])) ## excluding heart samples  </code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-3-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-4-5.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># In the contrast matrix, we have many comparisons for species and tissues individually
 # Note: baseline is chimp heart
 
@@ -491,7 +582,16 @@ cm1 &lt;- makeContrasts(HvC_Liver = human + liverHuman,
                      R_HeartvK = (rhesus) - (rhesus + kidney + kidneyRhesus), 
                      R_LivLu = (rhesus + liver + liverRhesus) - (rhesus + lung + lungRhesus), 
                      R_LivK = (rhesus + liver + liverRhesus) - (rhesus + kidney + kidneyRhesus),  
-                     R_LuvK = (rhesus + lung + lungRhesus) - (rhesus + kidney + kidneyRhesus), 
+                     R_LuvK = (rhesus + lung + lungRhesus) - (rhesus + kidney + kidneyRhesus),
+                     HK_inter = kidneyHuman,
+                     HLi_inter = liverHuman, 
+                     HLu_inter = lungHuman,
+                     RK_inter = kidneyRhesus,
+                     RLi_inter = liverRhesus, 
+                     RLu_inter = lungRhesus,
+                     HRK_inter = kidneyHuman - kidneyRhesus,
+                     HRLi_inter = liverHuman -liverRhesus, 
+                     HRLu_inter = lungHuman - lungRhesus,
                      levels = design)
 
 # Implement contrasts
@@ -533,7 +633,16 @@ top3 &lt;- list(HvC_Liver =topTable(fit1, coef=1, adjust=&quot;BH&quot;, number=
              R_HeartvK =topTable(fit1, coef=27, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  
              R_LivLu =topTable(fit1, coef=28, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
              R_LivK =topTable(fit1, coef=29, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
-             R_LuvK =topTable(fit1, coef=30, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) )
+             R_LuvK =topTable(fit1, coef=30, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+            HK_inter =topTable(fit1, coef=31, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+            HLi_inter =topTable(fit1, coef=32, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+            HLu_inter =topTable(fit1, coef=33, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+            RK_inter =topTable(fit1, coef=34, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), 
+            RLi_inter =topTable(fit1, coef=35, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+            RLu_inter =topTable(fit1, coef=36, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+            HRK_inter =topTable(fit1, coef=37, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+            HRLi_inter =topTable(fit1, coef=38, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),
+            HRLu_inter =topTable(fit1, coef=39, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
 
 
 # Set FDR level at 1% 
@@ -768,6 +877,52 @@ dev.off()</code></pre>
           1 </code></pre>
 <pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between Lung and Kidney (FDR 1%)&quot;, cex=1.5, fill = pal[1:3], lty=1, height=2000, width=3000)
 grid.draw(Four_comp)</code></pre>
+<pre class="r"><code>  # Within humans
+#H_HeartvLi =topTable(fit1, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;) 
+#dim(H_HeartvLi[which(H_HeartvLi$adj.P.Val &lt; FDR_level), ]) 
+
+human_h_li &lt;- H_HeartvLi[which(H_HeartvLi$adj.P.Val &lt; FDR_level), ]
+human_h_lu &lt;- H_HeartvLu[which(H_HeartvLu$adj.P.Val &lt; FDR_level), ]
+human_h_k &lt;- H_HeartvK[which(H_HeartvK$adj.P.Val &lt; FDR_level), ]
+
+human_li_lu &lt;- H_LivLu[which(H_LivLu$adj.P.Val &lt; FDR_level), ]
+human_li_k &lt;- H_LivK[which(H_LivK$adj.P.Val &lt; FDR_level), ]
+human_lu_k &lt;- H_LuvK[which(H_LuvK$adj.P.Val &lt; FDR_level), ]
+
+heart_only &lt;- intersect(intersect(rownames(human_h_li), rownames(human_h_lu)), rownames(human_h_k))
+not_heart &lt;- union(union(rownames(human_li_lu), rownames(human_li_k)), rownames(human_lu_k))
+
+human_heart_only &lt;- setdiff(heart_only, not_heart)
+
+
+
+
+chimp_h_li &lt;- C_HeartvLi[which(C_HeartvLi$adj.P.Val &lt; FDR_level), ]
+chimp_h_lu &lt;- C_HeartvLu[which(C_HeartvLu$adj.P.Val &lt; FDR_level), ]
+chimp_h_k &lt;- C_HeartvK[which(C_HeartvK$adj.P.Val &lt; FDR_level), ]
+
+chimp_li_lu &lt;- C_LivLu[which(C_LivLu$adj.P.Val &lt; FDR_level), ]
+chimp_li_k &lt;- C_LivK[which(C_LivK$adj.P.Val &lt; FDR_level), ]
+chimp_lu_k &lt;- C_LuvK[which(C_LuvK$adj.P.Val &lt; FDR_level), ]
+
+heart_only &lt;- intersect(intersect(rownames(chimp_h_li), rownames(chimp_h_lu)), rownames(chimp_h_k))
+not_heart &lt;- union(union(rownames(chimp_li_lu), rownames(chimp_li_k)), rownames(chimp_lu_k))
+
+chimp_heart_only &lt;- setdiff(heart_only, not_heart)
+
+
+rhesus_h_li &lt;- R_HeartvLi[which(R_HeartvLi$adj.P.Val &lt; FDR_level), ]
+rhesus_h_lu &lt;- R_HeartvLu[which(R_HeartvLu$adj.P.Val &lt; FDR_level), ]
+rhesus_h_k &lt;- R_HeartvK[which(R_HeartvK$adj.P.Val &lt; FDR_level), ]
+
+rhesus_li_lu &lt;- R_LivLu[which(R_LivLu$adj.P.Val &lt; FDR_level), ]
+rhesus_li_k &lt;- R_LivK[which(R_LivK$adj.P.Val &lt; FDR_level), ]
+rhesus_lu_k &lt;- R_LuvK[which(R_LuvK$adj.P.Val &lt; FDR_level), ]
+
+heart_only &lt;- intersect(intersect(rownames(rhesus_h_li), rownames(rhesus_h_lu)), rownames(rhesus_h_k))
+not_heart &lt;- union(union(rownames(rhesus_li_lu), rownames(rhesus_li_k)), rownames(rhesus_lu_k))
+
+rhesus_heart_only &lt;- setdiff(heart_only, not_heart)</code></pre>
 </div>
 </div>
 <div id="make-venn-diagrams-for-directionality-using-ash" class="section level2">
@@ -841,9 +996,18 @@ Due to absence of package REBayes, switching to EM algorithm
 Due to absence of package REBayes, switching to EM algorithm
 Due to absence of package REBayes, switching to EM algorithm
 Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
+Due to absence of package REBayes, switching to EM algorithm
 Due to absence of package REBayes, switching to EM algorithm</code></pre>
 <pre class="r"><code># Save results from analysis with limma and ash.
-saveRDS(results, file.path(data_dir, &quot;combined-limma.rds&quot;))
+#saveRDS(results, file.path(data_dir, &quot;combined-limma.rds&quot;))
 
 # Get the FSR for all genes in all comparisons
 
@@ -2443,7 +2607,7 @@ make_exp_df &lt;- make_exp_df[keep,]
 levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
 colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
 ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;TNNT2 (ENSG00000104951)&quot;) </code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="find-where-the-genes-are-upregulated-between-species" class="section level3">
 <h3>Find where the genes are upregulated between species</h3>
@@ -2915,10 +3079,10 @@ upreg_human_lung &lt;- as.data.frame(combined_human[which(combined_human[,3] &lt
 
 # Upregulated in only one human tissue
 
-upreg_human_heart_only &lt;- setdiff(upreg_human_heart, (union(union(upreg_human_kidney, upreg_human_liver), upreg_human_lung)))
-upreg_human_kidney_only &lt;- setdiff(upreg_human_kidney, (union(union(upreg_human_heart, upreg_human_liver), upreg_human_lung)))
-upreg_human_liver_only &lt;- setdiff(upreg_human_liver, (union(union(upreg_human_kidney, upreg_human_heart), upreg_human_lung)))
-upreg_human_lung_only &lt;- setdiff(upreg_human_lung, (union(union(upreg_human_kidney, upreg_human_liver), upreg_human_heart)))
+#upreg_human_heart_only &lt;- setdiff(upreg_human_heart, (union(union(upreg_human_kidney, upreg_human_liver), upreg_human_lung)))
+#upreg_human_kidney_only &lt;- setdiff(upreg_human_kidney, (union(union(upreg_human_heart, upreg_human_liver), upreg_human_lung)))
+#upreg_human_liver_only &lt;- setdiff(upreg_human_liver, (union(union(upreg_human_kidney, upreg_human_heart), upreg_human_lung)))
+#upreg_human_lung_only &lt;- setdiff(upreg_human_lung, (union(union(upreg_human_kidney, upreg_human_liver), upreg_human_heart)))
 
 nrow(upreg_human_heart)</code></pre>
 <pre><code>[1] 375</code></pre>
@@ -2929,13 +3093,13 @@ nrow(upreg_human_heart)</code></pre>
 <pre class="r"><code>nrow(upreg_human_lung)</code></pre>
 <pre><code>[1] 211</code></pre>
 <pre class="r"><code>nrow(upreg_human_heart_only)</code></pre>
-<pre><code>[1] 375</code></pre>
+<pre><code>[1] 390</code></pre>
 <pre class="r"><code>nrow(upreg_human_kidney_only)</code></pre>
-<pre><code>[1] 226</code></pre>
+<pre><code>[1] 266</code></pre>
 <pre class="r"><code>nrow(upreg_human_liver_only)</code></pre>
-<pre><code>[1] 501</code></pre>
+<pre><code>[1] 541</code></pre>
 <pre class="r"><code>nrow(upreg_human_lung_only)</code></pre>
-<pre><code>[1] 211</code></pre>
+<pre><code>[1] 305</code></pre>
 <pre class="r"><code># Upregulated consistently in one chimp tissue
 
 upreg_chimp_heart &lt;- as.data.frame(combined_chimp[which(combined_chimp[,1] &lt; FSR_level &amp; combined_chimp[,2] &gt; 0 &amp; combined_chimp[,3] &lt; FSR_level &amp; combined_chimp[,4] &gt; 0 &amp; combined_chimp[,5] &lt; FSR_level &amp; combined_chimp[,6] &gt; 0 &amp; combined_chimp[,7] &gt; FSR_level &amp; combined_chimp[,9] &gt; FSR_level &amp;  combined_chimp[,11] &gt; FSR_level),])
@@ -3042,6 +3206,7 @@ mylist[[&quot;Rh&quot;]] &lt;- rownames(upreg_rhesus_tissue)
 Heart_specific_up &lt;- venn.diagram(mylist,  filename = NULL, fill = pal[1:3], main.cex = 3, cat.cex = 3, cex=3.5, lty=1, height=2000, width=2000, fontfamily = &quot;sans&quot;, cat.fontfamily = &quot;sans&quot;, main.fontfamily = &quot;sans&quot;, cat.fontface = &quot;bold&quot;, main.fontface = &quot;bold&quot;, cat.dist = 0.05)
 grid.draw(Heart_specific_up)
 }
+
 
 svg(&quot;Upregulated_heart_specific.svg&quot;, width = 7.2, height = 7.2)
 make_venn_diagram(upreg_human_heart, upreg_chimp_heart, upreg_rhesus_heart, &quot;Upregulated in heart only&quot;)
@@ -3265,7 +3430,7 @@ corfit$consensus &lt;- -0.1009512
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
 fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 
@@ -3376,7 +3541,7 @@ corfit$consensus &lt;- -0.0912331
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
 fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 
@@ -3483,7 +3648,7 @@ corfit$consensus &lt;-  -0.09711687
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
 fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 
@@ -3598,7 +3763,7 @@ corfit$consensus &lt;-  -0.128052
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
 fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 
@@ -3886,7 +4051,7 @@ make_exp_df$species &lt;- as.factor(make_exp_df$species)
 levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
 colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
 ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species) + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-27-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Interactions between 3 species livers and other tissues
 
 nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &lt; FSR_level &amp; three_species_all_tissue_interactions[,5] &lt; FSR_level &amp; three_species_all_tissue_interactions[,6] &lt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
@@ -3897,7 +4062,7 @@ make_exp_df$species &lt;- as.factor(make_exp_df$species)
 levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
 colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
 ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species) + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-27-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-29-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Interactions between 3 species lungs and other tissues
 
 
@@ -3918,7 +4083,7 @@ make_exp_df$species &lt;- as.factor(make_exp_df$species)
 levels(make_exp_df$species) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)
 colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
 ggplot(make_exp_df, aes(x=as.factor(Tissue), y=CPM, fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species) + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-27-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-29-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Interactions between 3 species livers and other tissues (Human/Chimp versus Rhesus)
 
 nrow(three_species_all_tissue_interactions[which(three_species_all_tissue_interactions[,1] &gt; FSR_level &amp; three_species_all_tissue_interactions[,2] &gt; FSR_level &amp; three_species_all_tissue_interactions[,3] &gt; FSR_level &amp; three_species_all_tissue_interactions[,4] &gt; FSR_level &amp; three_species_all_tissue_interactions[,5] &lt; FSR_level &amp; three_species_all_tissue_interactions[,6] &lt; FSR_level &amp; three_species_all_tissue_interactions[,7] &gt; FSR_level &amp; three_species_all_tissue_interactions[,8] &gt; FSR_level &amp; three_species_all_tissue_interactions[,9] &gt; FSR_level &amp; three_species_all_tissue_interactions[,10] &gt; FSR_level &amp; three_species_all_tissue_interactions[,11] &gt; FSR_level &amp; three_species_all_tissue_interactions[,12] &gt; FSR_level), ])</code></pre>
@@ -3973,7 +4138,7 @@ corfit$consensus &lt;-  -0.02032154
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run linear model with new design matrix
 
 fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
@@ -3997,7 +4162,7 @@ make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
 colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
 
 ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~make_exp_df[,2])  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) </code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-28-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-30-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>  # Extract limma results
   results[[&quot;GA_Heart&quot;]] &lt;- get_results(fit.cyclic.norm, coef = 5)
   # Add mutliple testing correction with ASH
@@ -4057,7 +4222,7 @@ corfit$consensus &lt;-  -0.008945556
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run linear model with new design matrix
 
 fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
@@ -4134,7 +4299,7 @@ corfit$consensus &lt;-  -0.01548285
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-32-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run linear model with new design matrix
 
 fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
@@ -4210,7 +4375,7 @@ corfit$consensus &lt;-  -0.05037098
 # Final voom on filtered data
 
 cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-34-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run linear model with new design matrix
 
 fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
@@ -4275,7 +4440,7 @@ make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
 colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
 
 ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~make_exp_df[,2])  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) </code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-36-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="great-ape-tissue-specific-using-fdr" class="section level3">
 <h3>Great Ape Tissue Specific (using FDR)</h3>
@@ -4337,16 +4502,16 @@ colSums(design)</code></pre>
 <pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
 
 #corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
-corfit$consensus &lt;-  -0.01741244
+corfit.consensus &lt;-  -0.01741244
 #corfit$consensus &lt;- 0.2177817
 
 # Final voom on filtered data
 
-cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit.consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run linear model with new design matrix
 
-fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit.consensus)
 fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 
 # Determine the number of statistically signficant interactions
@@ -4414,16 +4579,16 @@ colSums(design)</code></pre>
 <pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
 
 #corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
-corfit$consensus &lt;-  -0.01239498
+corfit.consensus &lt;-  -0.01239498
 #corfit$consensus &lt;- 0.2177817
 
 # Final voom on filtered data
 
-cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit.consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run linear model with new design matrix
 
-fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit.consensus)
 fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 
 
@@ -4566,16 +4731,16 @@ colSums(design)</code></pre>
 <pre class="r"><code>cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
 
 #corfit &lt;- duplicateCorrelation(cpm.voom.cyclic, design, block=samples$Individual)
-corfit$consensus &lt;- -0.05638723
+corfit.consensus &lt;- -0.05638723
 #corfit$consensus &lt;- 0.2177817
 
 # Final voom on filtered data
 
-cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit$consensus)</code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-44-1.png" width="672" style="display: block; margin: auto;" /></p>
+cpm.voom.cyclic &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;, plot=TRUE, block=samples$Individual, correlation=corfit.consensus)</code></pre>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-46-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run linear model with new design matrix
 
-fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit$consensus)
+fit.cyclic.norm &lt;- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=samples$Individual, correlation=corfit.consensus)
 fit.cyclic.norm &lt;- eBayes(fit.cyclic.norm)
 
 # Determine the number of statistically signficant interactions
@@ -4616,33 +4781,33 @@ levels(make_exp_df$GA_species) &lt;- c(&quot;Human&quot;, &quot;Non-Human&quot;)
 colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Species&quot;, &quot;Tissue&quot;)
 
 ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;Heart&quot;,&quot;Kidney&quot;,&quot;Liver&quot;, &quot;Lung&quot;)) + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;COX19 (ENSG00000240230)&quot;) </code></pre>
-<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-45-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_RIN_Plus_ASH.Rmd/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="humannon-human-tissue-specific-using-fdr" class="section level3">
 <h3>Human/Non-Human Tissue Specific (using FDR)</h3>
 <pre class="r"><code># Set FDR level
 
-FDR_level &lt;- 0.05
-FSR_level &lt;- 0.05
+FDR_level &lt;- 0.01
+FSR_level &lt;- 0.01
 
 GA_BHpvalue &lt;- cbind(NH_HG[,6], NH_LiG[,6], NH_LuG[,6], NH_KG[,6])
 
 # Interactions between GA hearts and other tissues
 
 nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &lt; FSR_level &amp; GA_BHpvalue[,2] &gt; FSR_level &amp; GA_BHpvalue[,3] &gt; FSR_level &amp; GA_BHpvalue[,4] &gt; FSR_level), ])</code></pre>
-<pre><code>[1] 211</code></pre>
+<pre><code>[1] 57</code></pre>
 <pre class="r"><code># Interactions between GA livers and other tissues
 
 nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FSR_level &amp; GA_BHpvalue[,2] &lt; FSR_level &amp; GA_BHpvalue[,3] &gt; FSR_level &amp; GA_BHpvalue[,4] &gt; FSR_level), ])</code></pre>
-<pre><code>[1] 61</code></pre>
+<pre><code>[1] 19</code></pre>
 <pre class="r"><code># Interactions between GA lungs and other tissues
 
 nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FSR_level &amp; GA_BHpvalue[,2] &gt; FSR_level &amp; GA_BHpvalue[,3] &lt; FSR_level &amp; GA_BHpvalue[,4] &gt; FSR_level), ])</code></pre>
-<pre><code>[1] 20</code></pre>
+<pre><code>[1] 2</code></pre>
 <pre class="r"><code># Interactions between GA kidneys and other tissues
 
 nrow(GA_BHpvalue[which(GA_BHpvalue[,1] &gt; FSR_level &amp; GA_BHpvalue[,2] &gt; FSR_level &amp; GA_BHpvalue[,3] &gt; FSR_level &amp; GA_BHpvalue[,4] &lt; FSR_level), ])</code></pre>
-<pre><code>[1] 11</code></pre>
+<pre><code>[1] 8</code></pre>
 <pre class="r"><code># 57, 19, 2, 8</code></pre>
 <pre class="r"><code># Find tissue specific
 
@@ -4784,7 +4949,7 @@ nrow(NH_svalue[which(NH_svalue[,1] &gt; FSR_level &amp; NH_svalue[,2] &gt; FSR_l
 <pre><code>[1] 4</code></pre>
 <pre class="r"><code># 199, 28, 5, 5</code></pre>
 <pre class="r"><code># Great ape by tissue
-exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000008282&quot;, rownames(cpm_12184)), ]))
+exp &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000196943&quot;, rownames(cpm_12184)), ]))
 make_exp_df &lt;- as.data.frame(cbind(exp, species, tissue), stringsAsFactors = F)
 #make_exp_df &lt;- make_exp_df[which(make_exp_df$tissue == 1 | make_exp_df$tissue == 2),]
 make_exp_df[,1] &lt;- as.numeric(make_exp_df[,1])
@@ -4802,10 +4967,13 @@ colnames(make_exp_df) &lt;- c(&quot;Normalized Gene Expression&quot;, &quot;Spec
 
 p2 &lt;- ggplot(make_exp_df, aes(x=as.factor(Tissue), y=make_exp_df[,1], fill=as.factor(Tissue))) + geom_boxplot() + facet_wrap(~Species)  + xlab(&quot;Tissue&quot;) + ylab(&quot;Normalized \n Gene Expression&quot;) + scale_x_discrete(labels=c(&quot;H&quot;,&quot;K&quot;,&quot;Li&quot;, &quot;Lu&quot;)) +  theme_bw() + bjp + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;SYPL (ENSG00000008282)&quot;) 
 
+#ENSG00000009307
 
+
+#ENSG00000147416
 
 # Great ape by tissue
-exp1 &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000004897&quot;, rownames(cpm_12184)), ]))
+exp1 &lt;- t(as.data.frame(cpm_12184[grepl(&quot;ENSG00000147416&quot;, rownames(cpm_12184)), ]))
 make_exp_df1 &lt;- as.data.frame(cbind(exp1, species, tissue), stringsAsFactors = F)
 #make_exp_df &lt;- make_exp_df[which(make_exp_df$tissue == 1 | make_exp_df$tissue == 2),]
 make_exp_df1[,1] &lt;- as.numeric(make_exp_df1[,1])
@@ -4826,7 +4994,7 @@ p1 &lt;- ggplot(make_exp_df1, aes(x=as.factor(Tissue), y=make_exp_df1[,1], fill=
 
 make_fig3 &lt;- plot_grid(p2, p1, labels = c(&quot;3A.&quot;, &quot;3B.&quot;), ncol = 1)
 
-save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/fig3.pdf&quot;, make_fig3,
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/heart_figures.pdf&quot;, make_fig3,
           ncol = 1, # we&#39;re saving a grid plot of 2 columns
           nrow = 2, # and 2 rows
           # each individual subplot should have an aspect ratio of 1.3

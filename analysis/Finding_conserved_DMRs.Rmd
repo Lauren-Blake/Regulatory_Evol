@@ -1,0 +1,1537 @@
+---
+title: "Finding_conserved_DMRs"
+author: "Lauren Blake"
+date: "January 8, 2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+How often is a tDMR in one species, a tDMR in another species?
+
+```{r chunk-options, include=FALSE}
+source("chunk-options.R")
+```
+
+
+```{r}
+# Import libraries
+
+library("ggplot2")
+library("VennDiagram")
+library(plyr)
+library("bedr")
+getwd()
+
+# Import the data
+
+# Human tDMRs
+humans_heart_kidney_DMRs <- read.delim("../data/humans_heart_kidney_DMRs.txt")
+humans_heart_liver_DMRs <- read.delim("../data/humans_heart_liver_DMRs.txt")
+humans_heart_lung_DMRs <- read.delim("../data/humans_heart_lung_DMRs.txt")
+humans_liver_lung_DMRs <- read.delim("../data/humans_liver_lung_DMRs.txt")
+humans_liver_kidney_DMRs <- read.delim("../data/humans_liver_kidney_DMRs.txt")
+humans_lung_kidney_DMRs <- read.delim("../data/humans_lung_kidney_DMRs.txt")
+
+levels(factor(humans_lung_kidney_DMRs[,1]))
+
+
+# Chimp tDMRs
+chimps_heart_kidney_DMRs <- read.delim("../data/chimps_heart_kidney_DMRs.txt")
+chimps_heart_liver_DMRs <- read.delim("../data/chimps_heart_liver_DMRs.txt")
+chimps_heart_lung_DMRs <- read.delim("../data/chimps_heart_lung_DMRs.txt")
+chimps_liver_lung_DMRs <- read.delim("../data/chimps_liver_lung_DMRs.txt")
+chimps_liver_kidney_DMRs <- read.delim("../data/chimps_liver_kidney_DMRs.txt")
+chimps_lung_kidney_DMRs <- read.delim("../data/chimps_lung_kidney_DMRs.txt")
+
+levels(factor(chimps_lung_kidney_DMRs[,1]))
+
+
+# Rhesus tDMRs
+
+rhesus_heart_kidney_DMRs <- read.delim("../data/rhesus_heart_kidney_DMRs.txt")
+rhesus_heart_liver_DMRs <- read.delim("../data/rhesus_heart_liver_DMRs.txt")
+rhesus_heart_lung_DMRs <- read.delim("../data/rhesus_heart_lung_DMRs.txt")
+rhesus_liver_lung_DMRs <- read.delim("../data/rhesus_liver_lung_DMRs.txt")
+rhesus_liver_kidney_DMRs <- read.delim("../data/rhesus_liver_kidney_DMRs.txt")
+rhesus_lung_kidney_DMRs <- read.delim("../data/rhesus_lung_kidney_DMRs.txt")
+
+levels(factor(rhesus_heart_kidney_DMRs[,1]))
+
+```
+
+
+
+
+# How much do tDMRs overlap between species?
+
+Use the tDMRs on the autosomal chromosomes only
+
+## Comparing human heart versus liver tDMRs with chimp heart versus liver tDMRs
+```{r}
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# make bed style format
+humans_heart_lung_DMRs_bed <- chimps_heart_liver_DMRs[,pull_col]
+humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed[which(humans_heart_lung_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_lung_DMRs_bed_noX[,1] <- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] <- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] <- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+sort_humans_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_lung_DMRs_bed_noX, check.chr=FALSE)
+
+summary(humans_heart_lung_DMRs_bed_noX[,3] - humans_heart_lung_DMRs_bed_noX[,2])
+
+heart_lung <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+summary(heart_lung[,3] - heart_lung[,2])
+summary(as.integer(heart_lung[,9]))
+summary(as.integer(heart_lung[,9]) > 0)
+
+lung_heart <- bedr(input = list(a = sort_humans_heart_lung_DMRs_bed, b = sort_humans_heart_liver_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+summary(as.integer(lung_heart[,9]))
+summary(as.integer(lung_heart[,9]) > 0)
+
+# Make a Venn diagram based on the results
+
+summary(as.integer(heart_lung[,9]) > 0)
+summary(as.integer(lung_heart[,9]) > 0)
+
+grid.newpage()
+draw.pairwise.venn(area1 = 22561, area2 = 28769, cross.area = 6630, category = c("Heart v. Liver", "Heart v. Liver"))
+
+# Find out how many are in the same direction
+
+heart_lung_subset <- heart_lung[which(heart_lung[,9] > 0) , ]
+summary(heart_lung_subset[,4] == heart_lung_subset[,8])
+
+```
+
+All but 4 heart-liver tDMRs are in the same direction.
+
+
+
+```{r}
+# 1 bp overlap
+heart_liver_1 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.00000001 -F 0.00000001", check.chr = FALSE)
+
+summary(as.integer(heart_liver_1[,9]) > 0)
+
+grid.newpage()
+draw.pairwise.venn(area1 = 22561, area2 = 14208, cross.area = 3858, category = c("Heart v. Liver", "Heart v. Lung"))
+
+# 10% overlap
+heart_liver_10 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.10 -F 0.10", check.chr = FALSE)
+
+summary(as.integer(heart_liver_10[,9]) > 0)
+
+# 20% overlap
+heart_liver_20 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.20 -F 0.20", check.chr = FALSE)
+
+summary(as.integer(heart_liver_20[,9]) > 0)
+
+# 25% overlap
+heart_liver_25 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+summary(as.integer(heart_liver_25[,9]) > 0)
+
+# 30% overlap
+heart_liver_30 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.30 -F 0.30", check.chr = FALSE)
+
+summary(as.integer(heart_liver_30[,9]) > 0)
+
+#40% overlap
+heart_liver_40 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+summary(as.integer(heart_liver_40[,9]) > 0)
+
+# 50% overlap
+heart_liver_50 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.50 -F 0.50", check.chr = FALSE)
+
+summary(as.integer(heart_liver_50[,9]) > 0)
+
+#60% overlap
+heart_liver_60 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+summary(as.integer(heart_liver_60[,9]) > 0)
+
+# 70% overlap
+heart_liver_70 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.70 -F 0.70", check.chr = FALSE)
+
+summary(as.integer(heart_liver_70[,9]) > 0)
+
+#75% overlap
+heart_liver_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+summary(as.integer(heart_liver_75[,9]) > 0)
+
+# 80% overlap
+heart_liver_80 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.80 -F 0.80", check.chr = FALSE)
+
+summary(as.integer(heart_liver_80[,9]) > 0)
+
+#90% overlap
+heart_liver_90 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+summary(as.integer(heart_liver_90[,9]) > 0)
+
+#100% overlap
+heart_liver_100 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+summary(as.integer(heart_liver_100[,9]) > 0)
+
+# Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_liver_1[,9]) > 0)
+summary(as.integer(heart_liver_10[,9]) > 0)
+summary(as.integer(heart_liver_20[,9]) > 0)
+summary(as.integer(heart_liver_25[,9]) > 0)
+summary(as.integer(heart_liver_30[,9]) > 0)
+summary(as.integer(heart_liver_40[,9]) > 0)
+summary(as.integer(heart_liver_50[,9]) > 0)
+summary(as.integer(heart_liver_60[,9]) > 0)
+summary(as.integer(heart_liver_70[,9]) > 0)
+summary(as.integer(heart_liver_75[,9]) > 0)
+summary(as.integer(heart_liver_80[,9]) > 0)
+summary(as.integer(heart_liver_90[,9]) > 0)
+summary(as.integer(heart_liver_100[,9]) > 0)
+
+# Plot the number of tDMRs
+conserved_tdmr_heart_liver_heart_lung <- c(3654, 10691, 9887, 9434, 8917, 7814, 6630, 5355, 3953, 3249,2578,1432, 655)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of overlapping human and chimp tDMRs",  pch = 19, main = "Overlapping heart versus liver tDMRs in humans and chimps")
+
+# Investigate the size of the tDMRs depending on the percentage overlap
+check_1 <- heart_liver_1[which((as.integer(heart_liver_1[,9]) > 0) == TRUE),]
+check_10 <- heart_liver_10[which((as.integer(heart_liver_10[,9]) > 0) == TRUE),]
+check_20 <- heart_liver_20[which((as.integer(heart_liver_20[,9]) > 0) == TRUE),]
+check_25 <- heart_liver_25[which((as.integer(heart_liver_25[,9]) > 0) == TRUE),]
+check_30 <- heart_liver_30[which((as.integer(heart_liver_30[,9]) > 0) == TRUE),]
+check_40 <- heart_liver_40[which((as.integer(heart_liver_40[,9]) > 0) == TRUE),]
+check_50 <- heart_liver_50[which((as.integer(heart_liver_50[,9]) > 0) == TRUE),]
+check_60 <- heart_liver_60[which((as.integer(heart_liver_60[,9]) > 0) == TRUE),]
+check_70 <- heart_liver_70[which((as.integer(heart_liver_70[,9]) > 0) == TRUE),]
+check_75 <- heart_liver_75[which((as.integer(heart_liver_75[,9]) > 0) == TRUE),]
+check_80 <- heart_liver_80[which((as.integer(heart_liver_80[,9]) > 0) == TRUE),]
+check_90 <- heart_liver_90[which((as.integer(heart_liver_90[,9]) > 0) == TRUE),]
+check_100 <- heart_liver_100[which((as.integer(heart_liver_100[,9]) > 0) == TRUE),]
+
+summary(as.integer(check_1[,9]))
+summary(as.integer(check_10[,9]))
+summary(as.integer(check_20[,9]))
+summary(as.integer(check_25[,9]))
+summary(as.integer(check_30[,9]))
+summary(as.integer(check_40[,9]))
+summary(as.integer(check_50[,9]))
+summary(as.integer(check_60[,9]))
+summary(as.integer(check_70[,9]))
+summary(as.integer(check_75[,9]))
+summary(as.integer(check_80[,9]))
+summary(as.integer(check_90[,9]))
+summary(as.integer(check_100[,9]))
+
+# Plot the median tDMR length
+conserved_tdmr_heart_liver_heart_lung_bp <- c(404, 418, 451, 477.5, 491, 533.5, 560, 597, 608, 612, 589, 537.5, 428)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between human and chimp tDMRs (heart versus liver)")
+
+```
+
+## Comparing human heart versus liver tDMRs with rhesus heart versus liver tDMRs
+```{r}
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# make bed style format
+humans_heart_lung_DMRs_bed <- rhesus_heart_liver_DMRs[,pull_col]
+
+humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed[which(humans_heart_lung_DMRs_bed[,1] != "chr17_gl000204_random"),]
+
+humans_heart_lung_DMRs_bed_noX[,1] <- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] <- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] <- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+
+humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed_noX[which(humans_heart_lung_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_lung_DMRs_bed_noX[,1] <- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] <- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] <- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+
+
+
+humans_heart_lung_DMRs_bed_noX <- humans_heart_lung_DMRs_bed_noX[which(humans_heart_lung_DMRs_bed_noX[,1] != "chrX"),]
+
+humans_heart_lung_DMRs_bed_noX[,1] <- as.character(humans_heart_lung_DMRs_bed_noX[,1])
+humans_heart_lung_DMRs_bed_noX[,2] <- as.integer(humans_heart_lung_DMRs_bed_noX[,2])
+humans_heart_lung_DMRs_bed_noX[,3] <- as.integer(humans_heart_lung_DMRs_bed_noX[,3])
+
+sort_humans_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_lung_DMRs_bed_noX)
+
+heart_lung <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+summary(heart_lung[,3] - heart_lung[,2])
+summary(as.integer(heart_lung[,9]))
+summary(as.integer(heart_lung[,9]) > 0)
+
+lung_heart <- bedr(input = list(a = sort_humans_heart_lung_DMRs_bed, b = sort_humans_heart_liver_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+summary(as.integer(lung_heart[,9]))
+summary(as.integer(lung_heart[,9]) > 0)
+
+# Make a Venn diagram based on the results
+
+summary(as.integer(heart_lung[,9]) > 0)
+summary(as.integer(lung_heart[,9]) > 0)
+
+grid.newpage()
+draw.pairwise.venn(area1 = 22561, area2 = 41286, cross.area = 3689, category = c("Heart v. Liver", "Heart v. Liver"))
+
+# Find out how many are in the same direction
+
+heart_lung_subset <- heart_lung[which(heart_lung[,9] > 0) , ]
+summary(heart_lung_subset[,4] == heart_lung_subset[,8])
+
+```
+
+All but 44 heart-liver tDMRs are in the same direction.
+
+
+
+```{r}
+# 1 bp overlap
+heart_liver_1 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.00000001 -F 0.00000001")
+
+# 10% overlap
+heart_liver_10 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.10 -F 0.10", check.chr = FALSE)
+
+summary(as.integer(heart_liver_10[,9]) > 0)
+
+# 20% overlap
+heart_liver_20 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.20 -F 0.20", check.chr = FALSE)
+
+summary(as.integer(heart_liver_20[,9]) > 0)
+
+# 25% overlap
+heart_liver_25 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+summary(as.integer(heart_liver_25[,9]) > 0)
+
+# 30% overlap
+heart_liver_30 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.30 -F 0.30", check.chr = FALSE)
+
+summary(as.integer(heart_liver_30[,9]) > 0)
+
+#40% overlap
+heart_liver_40 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+summary(as.integer(heart_liver_40[,9]) > 0)
+
+# 50% overlap
+heart_liver_50 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.50 -F 0.50", check.chr = FALSE)
+
+summary(as.integer(heart_liver_50[,9]) > 0)
+
+#60% overlap
+heart_liver_60 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+summary(as.integer(heart_liver_60[,9]) > 0)
+
+# 70% overlap
+heart_liver_70 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.70 -F 0.70", check.chr = FALSE)
+
+summary(as.integer(heart_liver_70[,9]) > 0)
+
+#75% overlap
+heart_liver_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+summary(as.integer(heart_liver_75[,9]) > 0)
+
+# 80% overlap
+heart_liver_80 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.80 -F 0.80", check.chr = FALSE)
+
+summary(as.integer(heart_liver_80[,9]) > 0)
+
+#90% overlap
+heart_liver_90 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+summary(as.integer(heart_liver_90[,9]) > 0)
+
+#100% overlap
+heart_liver_100 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+summary(as.integer(heart_liver_100[,9]) > 0)
+
+# Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_liver_1[,9]) > 0)
+summary(as.integer(heart_liver_10[,9]) > 0)
+summary(as.integer(heart_liver_20[,9]) > 0)
+summary(as.integer(heart_liver_25[,9]) > 0)
+summary(as.integer(heart_liver_30[,9]) > 0)
+summary(as.integer(heart_liver_40[,9]) > 0)
+summary(as.integer(heart_liver_50[,9]) > 0)
+summary(as.integer(heart_liver_60[,9]) > 0)
+summary(as.integer(heart_liver_70[,9]) > 0)
+summary(as.integer(heart_liver_75[,9]) > 0)
+summary(as.integer(heart_liver_80[,9]) > 0)
+summary(as.integer(heart_liver_90[,9]) > 0)
+summary(as.integer(heart_liver_100[,9]) > 0)
+
+# Plot the number of tDMRs
+conserved_tdmr_heart_liver_heart_lung <- c(8914, 8030, 6940, 6402, 5876, 4791, 3689, 2663, 1696, 1272,913,331, 37)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of overlapping human and rhesus tDMRs",  pch = 19, main = "Overlapping heart versus liver tDMRs in humans and rhesus")
+
+# Investigate the size of the tDMRs depending on the percentage overlap
+check_1 <- heart_liver_1[which((as.integer(heart_liver_1[,9]) > 0) == TRUE),]
+check_10 <- heart_liver_10[which((as.integer(heart_liver_10[,9]) > 0) == TRUE),]
+check_20 <- heart_liver_20[which((as.integer(heart_liver_20[,9]) > 0) == TRUE),]
+check_25 <- heart_liver_25[which((as.integer(heart_liver_25[,9]) > 0) == TRUE),]
+check_30 <- heart_liver_30[which((as.integer(heart_liver_30[,9]) > 0) == TRUE),]
+check_40 <- heart_liver_40[which((as.integer(heart_liver_40[,9]) > 0) == TRUE),]
+check_50 <- heart_liver_50[which((as.integer(heart_liver_50[,9]) > 0) == TRUE),]
+check_60 <- heart_liver_60[which((as.integer(heart_liver_60[,9]) > 0) == TRUE),]
+check_70 <- heart_liver_70[which((as.integer(heart_liver_70[,9]) > 0) == TRUE),]
+check_75 <- heart_liver_75[which((as.integer(heart_liver_75[,9]) > 0) == TRUE),]
+check_80 <- heart_liver_80[which((as.integer(heart_liver_80[,9]) > 0) == TRUE),]
+check_90 <- heart_liver_90[which((as.integer(heart_liver_90[,9]) > 0) == TRUE),]
+check_100 <- heart_liver_100[which((as.integer(heart_liver_100[,9]) > 0) == TRUE),]
+
+summary(as.integer(check_1[,9]))
+summary(as.integer(check_10[,9]))
+summary(as.integer(check_20[,9]))
+summary(as.integer(check_25[,9]))
+summary(as.integer(check_30[,9]))
+summary(as.integer(check_40[,9]))
+summary(as.integer(check_50[,9]))
+summary(as.integer(check_60[,9]))
+summary(as.integer(check_70[,9]))
+summary(as.integer(check_75[,9]))
+summary(as.integer(check_80[,9]))
+summary(as.integer(check_90[,9]))
+summary(as.integer(check_100[,9]))
+
+# Plot the median tDMR length
+conserved_tdmr_heart_liver_heart_lung_bp <- c(368, 416.5, 478.5, 512, 542, 599, 652, 705, 750.5, 784, 791, 739, 273)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between human and rhesus tDMRs (heart versus liver)")
+
+```
+
+## Finding tissue specific heart tDMRs
+
+```{r}
+# Human heart-liver
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# Human heart-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# Human heart-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_heart_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+# Human liver-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_liver_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_liver_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+# Human liver-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_liver_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_liver_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# Human lung-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_lung_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_lung_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific)
+
+length(which(human_heart_liver_DMR_heart_specific[,4] == human_heart_liver_DMR_heart_specific[,8]))
+length(which(human_heart_liver_DMR_heart_specific[,4] == human_heart_liver_DMR_heart_specific[,13]))  
+length(which(human_heart_liver_DMR_heart_specific[,8] == human_heart_liver_DMR_heart_specific[,13]))                                               
+```
+
+## What if we look at multiple overlap numbers?
+
+```{r}
+# 1 bp
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR
+
+human_heart_liver_DMR_heart_specific_1 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_1)
+
+# 10
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+# 20
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+# 30
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+# 40
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+
+# 50
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_50 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_50)
+
+
+# 60
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_60 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_60)
+
+
+# 70
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_70 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_70)
+
+# 80
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_80 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_80)
+
+# 90
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_90 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_90)
+
+
+# 100
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_100 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_100)
+
+dim(human_heart_liver_DMR_heart_specific_50)
+dim(human_heart_liver_DMR_heart_specific_60)
+dim(human_heart_liver_DMR_heart_specific_70)
+dim(human_heart_liver_DMR_heart_specific)
+dim(human_heart_liver_DMR_heart_specific_80)
+dim(human_heart_liver_DMR_heart_specific_90)
+dim(human_heart_liver_DMR_heart_specific_100)
+
+# Plot the number of tDMRs
+conserved_tdmr_heart_liver_heart_lung <- c(2136, 1693, 1223, 1004, 786, 488, 360)
+perc_overlap <- c(0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of human heart specific tDMRs",  pch = 19, main = "Heart specific tDMRs in humans")
+
+mean((as.integer(human_heart_liver_DMR_heart_specific_50[,9])+as.integer(human_heart_liver_DMR_heart_specific_50[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_60[,9])+as.integer(human_heart_liver_DMR_heart_specific_60[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_70[,9])+as.integer(human_heart_liver_DMR_heart_specific_70[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific[,9])+as.integer(human_heart_liver_DMR_heart_specific[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_80[,9])+as.integer(human_heart_liver_DMR_heart_specific_80[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_90[,9])+as.integer(human_heart_liver_DMR_heart_specific_90[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_100[,9])+as.integer(human_heart_liver_DMR_heart_specific_100[,18]))/2)
+
+# Plot the median tDMR length
+conserved_tdmr_heart_liver_heart_lung_bp <- c(671.3, 702.6, 726.2, 724, 704, 604, 477.7)
+perc_overlap <- c(0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between human heart specific tDMRs")
+
+```
+
+## Heart specific in rhesus
+
+```{r}
+# Chimp heart-liver
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# Chimp heart-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_heart_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# chimp heart-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_heart_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_heart_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX, check.chr = FALSE)
+
+
+# Chimp liver-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_liver_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_liver_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+# chimp liver-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_liver_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_liver_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# chimp lung-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_lung_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_lung_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+rhesus_heart_liver_DMR_heart_specific <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(rhesus_heart_liver_DMR_heart_specific)
+
+length(which(rhesus_heart_liver_DMR_heart_specific[,4] == rhesus_heart_liver_DMR_heart_specific[,8]))
+length(which(rhesus_heart_liver_DMR_heart_specific[,4] == rhesus_heart_liver_DMR_heart_specific[,13]))  
+length(which(rhesus_heart_liver_DMR_heart_specific[,8] == rhesus_heart_liver_DMR_heart_specific[,13]))  
+```
+
+## What if we look at multiple overlap numbers?
+
+```{r}
+# 50
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_50 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_50)
+
+
+# 60
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_60 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_60)
+
+
+# 70
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_70 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_70)
+
+# 75
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_75 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_75)
+
+# 80
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_80 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_80)
+
+# 90
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_90 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_90)
+
+
+# 100
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR_heart_specific_100 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_heart_liver_DMR_heart_specific_100)
+
+dim(human_heart_liver_DMR_heart_specific_50)
+dim(human_heart_liver_DMR_heart_specific_60)
+dim(human_heart_liver_DMR_heart_specific_70)
+dim(human_heart_liver_DMR_heart_specific_75)
+dim(human_heart_liver_DMR_heart_specific_80)
+dim(human_heart_liver_DMR_heart_specific_90)
+dim(human_heart_liver_DMR_heart_specific_100)
+
+# Plot the number of tDMRs
+conserved_tdmr_heart_liver_heart_lung <- c(1121, 893, 655, 553, 452, 264, 196)
+perc_overlap <- c(0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of rhesus heart specific tDMRs",  pch = 19, main = "Heart specific tDMRs in rhesus")
+
+mean((as.integer(human_heart_liver_DMR_heart_specific_50[,9])+as.integer(human_heart_liver_DMR_heart_specific_50[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_60[,9])+as.integer(human_heart_liver_DMR_heart_specific_60[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_70[,9])+as.integer(human_heart_liver_DMR_heart_specific_70[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_75[,9])+as.integer(human_heart_liver_DMR_heart_specific_75[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_80[,9])+as.integer(human_heart_liver_DMR_heart_specific_80[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_90[,9])+as.integer(human_heart_liver_DMR_heart_specific_90[,18]))/2)
+mean((as.integer(human_heart_liver_DMR_heart_specific_100[,9])+as.integer(human_heart_liver_DMR_heart_specific_100[,18]))/2)
+
+# Plot the median tDMR length
+conserved_tdmr_heart_liver_heart_lung_bp <- c(744, 767, 771, 769, 755, 603, 456)
+perc_overlap <- c(0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between rhesus heart specific tDMRs")
+
+```
+
+
+## Heart specific and conserved versus heart specific and human-specific
+
+### Humans and chimps only
+```{r}
+dim(human_heart_liver_DMR_heart_specific)
+dim(chimp_heart_liver_DMR_heart_specific)
+dim(rhesus_heart_liver_DMR_heart_specific)
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+dim(human_chimp_heart)
+length(which(human_chimp_heart[,9] > 0))
+length(which(human_chimp_heart[,9] == 0))
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+dim(human_rhesus_heart)
+length(which(human_rhesus_heart[,9] > 0))
+length(which(human_rhesus_heart[,9] == 0))
+
+```
+
+## What if we look across multiple overlaps to be defined as conserved?
+
+```{r}
+# 1bp
+
+heart_human_chimp_1 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+# 10 bp
+
+heart_human_chimp_10 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+# 20 bp
+
+heart_human_chimp_20 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+# 25 bp
+
+heart_human_chimp_25 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+# 30 bp
+
+heart_human_chimp_30 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+# 40 bp
+
+heart_human_chimp_40 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+# 50 bp
+
+heart_human_chimp_50 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+# 60 bp
+
+heart_human_chimp_60 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+# 70 bp 
+
+heart_human_chimp_70 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+# 75 bp 
+
+heart_human_chimp_75 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+# 80 bp 
+
+heart_human_chimp_80 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.80 -F 0.80", check.chr = FALSE)
+
+# 90 bp 
+
+heart_human_chimp_90 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+# 100 bp 
+
+heart_human_chimp_100 <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+# Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_human_chimp_1[,9]) > 0)
+summary(as.integer(heart_human_chimp_10[,9]) > 0)
+summary(as.integer(heart_human_chimp_20[,9]) > 0)
+summary(as.integer(heart_human_chimp_25[,9]) > 0)
+summary(as.integer(heart_human_chimp_30[,9]) > 0)
+summary(as.integer(heart_human_chimp_40[,9]) > 0)
+summary(as.integer(heart_human_chimp_50[,9]) > 0)
+summary(as.integer(heart_human_chimp_60[,9]) > 0)
+summary(as.integer(heart_human_chimp_70[,9]) > 0)
+summary(as.integer(heart_human_chimp_75[,9]) > 0)
+summary(as.integer(heart_human_chimp_80[,9]) > 0)
+summary(as.integer(heart_human_chimp_90[,9]) > 0)
+summary(as.integer(heart_human_chimp_100[,9]) > 0)
+
+
+
+# Plot the number of tDMRs
+conserved_tdmr_heart_liver_heart_lung <- c(86, 85, 84, 80, 78, 73, 70, 63, 53, 48, 38, 24, 7)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of conserved heart specific tDMRs",  pch = 19, main = "Conserved heart specific tDMRs (humans and chimps")
+
+# Investigate the size of the tDMRs depending on the percentage overlap
+check_1 <- heart_human_chimp_1[which((as.integer(heart_human_chimp_1[,9]) > 0) == TRUE),]
+check_10 <- heart_human_chimp_10[which((as.integer(heart_human_chimp_10[,9]) > 0) == TRUE),]
+check_20 <- heart_human_chimp_20[which((as.integer(heart_human_chimp_20[,9]) > 0) == TRUE),]
+check_25 <- heart_human_chimp_25[which((as.integer(heart_human_chimp_25[,9]) > 0) == TRUE),]
+check_30 <- heart_human_chimp_30[which((as.integer(heart_human_chimp_30[,9]) > 0) == TRUE),]
+check_40 <- heart_human_chimp_40[which((as.integer(heart_human_chimp_40[,9]) > 0) == TRUE),]
+check_50 <- heart_human_chimp_50[which((as.integer(heart_human_chimp_50[,9]) > 0) == TRUE),]
+check_60 <- heart_human_chimp_60[which((as.integer(heart_human_chimp_60[,9]) > 0) == TRUE),]
+check_70 <- heart_human_chimp_70[which((as.integer(heart_human_chimp_70[,9]) > 0) == TRUE),]
+check_75 <- heart_human_chimp_75[which((as.integer(heart_human_chimp_75[,9]) > 0) == TRUE),]
+check_80 <- heart_human_chimp_80[which((as.integer(heart_human_chimp_80[,9]) > 0) == TRUE),]
+check_90 <- heart_human_chimp_90[which((as.integer(heart_human_chimp_90[,9]) > 0) == TRUE),]
+check_100 <- heart_human_chimp_100[which((as.integer(heart_human_chimp_100[,9]) > 0) == TRUE),]
+
+summary(as.integer(check_1[,9]))
+summary(as.integer(check_10[,9]))
+summary(as.integer(check_20[,9]))
+summary(as.integer(check_25[,9]))
+summary(as.integer(check_30[,9]))
+summary(as.integer(check_40[,9]))
+summary(as.integer(check_50[,9]))
+summary(as.integer(check_60[,9]))
+summary(as.integer(check_70[,9]))
+summary(as.integer(check_75[,9]))
+summary(as.integer(check_80[,9]))
+summary(as.integer(check_90[,9]))
+summary(as.integer(check_100[,9]))
+
+
+# Plot the median tDMR length
+conserved_tdmr_heart_liver_heart_lung_bp <- c(695.5, 710, 710.5, 719, 731, 768, 818, 871, 974, 979.5, 1003, 835, 320)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between conserved (human and chimp) heart specific tDMRs")
+
+```
+
+## Heart specific and conserved versus human-specific
+
+### Conserved is with humans, chimps, and rhesus macaques
+```{r}
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_chimp_rhesus_heart <- cbind(human_chimp_heart, human_rhesus_heart)
+
+human_chimp_rhesus_heart_only <- human_chimp_rhesus_heart[which(human_chimp_rhesus_heart[,9] > 0 & human_chimp_rhesus_heart[,18] > 0), ]
+
+```
+
+## What if we look across multiple overlaps to be defined as conserved?
+
+```{r}
+# 1bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.000000001 -F 0.000000001", check.chr = FALSE)
+
+heart_human_chimp_1 <- cbind(human_chimp_heart[-685,], human_rhesus_heart)
+heart_human_chimp_1 <- heart_human_chimp_1[which(heart_human_chimp_1[,9] > 0 & heart_human_chimp_1[,18] > 0),]
+
+# 10 bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.1 -F 0.1", check.chr = FALSE)
+
+heart_human_chimp_10 <- cbind(human_chimp_heart, human_rhesus_heart)
+heart_human_chimp_10 <- heart_human_chimp_10[which(heart_human_chimp_10[,9] > 0 & heart_human_chimp_10[,18] > 0),]
+
+# 20 bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.2 -F 0.2", check.chr = FALSE)
+
+human_chimp_heart <- human_chimp_heart[-969,]
+human_chimp_heart <- human_chimp_heart[-685,]
+
+heart_human_chimp_20 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_20 <- heart_human_chimp_20[which(heart_human_chimp_20[,9] > 0 & heart_human_chimp_20[,18] > 0),]
+
+# 25 bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_human_chimp_25 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_25 <- heart_human_chimp_25[which(heart_human_chimp_25[,9] > 0 & heart_human_chimp_25[,18] > 0),]
+
+# 30 bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.3 -F 0.3", check.chr = FALSE)
+
+heart_human_chimp_30 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_30 <- heart_human_chimp_30[which(heart_human_chimp_30[,9] > 0 & heart_human_chimp_30[,18] > 0),]
+
+# 40 bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.4 -F 0.4", check.chr = FALSE)
+
+heart_human_chimp_40 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_40 <- heart_human_chimp_40[which(heart_human_chimp_40[,9] > 0 & heart_human_chimp_40[,18] > 0),]
+
+# 50 bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_human_chimp_50 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_50 <- heart_human_chimp_50[which(heart_human_chimp_50[,9] > 0 & heart_human_chimp_50[,18] > 0),]
+
+# 60 bp
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.6 -F 0.6", check.chr = FALSE)
+
+heart_human_chimp_60 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_60 <- heart_human_chimp_60[which(heart_human_chimp_60[,9] > 0 & heart_human_chimp_60[,18] > 0),]
+
+# 70 bp 
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.7 -F 0.7", check.chr = FALSE)
+
+heart_human_chimp_70 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_70 <- heart_human_chimp_70[which(heart_human_chimp_70[,9] > 0 & heart_human_chimp_70[,18] > 0),]
+
+# 75 bp 
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_human_chimp_75 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_75 <- heart_human_chimp_75[which(heart_human_chimp_75[,9] > 0 & heart_human_chimp_75[,18] > 0),]
+
+# 80 bp 
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.8 -F 0.8", check.chr = FALSE)
+
+heart_human_chimp_80 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_80 <- heart_human_chimp_80[which(heart_human_chimp_80[,9] > 0 & heart_human_chimp_80[,18] > 0),]
+
+# 90 bp 
+
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 0.9 -F 0.9", check.chr = FALSE)
+
+heart_human_chimp_90 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_90 <- heart_human_chimp_90[which(heart_human_chimp_90[,9] > 0 & heart_human_chimp_90[,18] > 0),]
+
+# 100 bp 
+human_chimp_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = chimp_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+human_rhesus_heart <- bedr(input = list(a = human_heart_liver_DMR_heart_specific[,1:4], b = rhesus_heart_liver_DMR_heart_specific[,1:4]), method = "intersect",  params = "-wao -f 1 -F 1", check.chr = FALSE)
+
+heart_human_chimp_100 <- cbind(human_chimp_heart, human_rhesus_heart)
+
+heart_human_chimp_100 <- heart_human_chimp_100[which(heart_human_chimp_100[,9] > 0 & heart_human_chimp_100[,18] > 0),]
+
+# Find the number of tDMRs depending on the bp overlap
+summary(as.integer(heart_human_chimp_1[,9]) > 0)
+summary(as.integer(heart_human_chimp_10[,9]) > 0)
+summary(as.integer(heart_human_chimp_20[,9]) > 0)
+summary(as.integer(heart_human_chimp_25[,9]) > 0)
+summary(as.integer(heart_human_chimp_30[,9]) > 0)
+summary(as.integer(heart_human_chimp_40[,9]) > 0)
+summary(as.integer(heart_human_chimp_50[,9]) > 0)
+summary(as.integer(heart_human_chimp_60[,9]) > 0)
+summary(as.integer(heart_human_chimp_70[,9]) > 0)
+summary(as.integer(heart_human_chimp_75[,9]) > 0)
+summary(as.integer(heart_human_chimp_80[,9]) > 0)
+summary(as.integer(heart_human_chimp_90[,9]) > 0)
+summary(as.integer(heart_human_chimp_100[,9]) > 0)
+
+
+
+# Plot the number of tDMRs
+conserved_tdmr_heart_liver_heart_lung <- c(7, 7, 8, 7, 7, 7, 7, 6, 4, 3, 2, 1, 0)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung, xlab = "Percentage of overlap (bp)", ylab = "Number of conserved heart specific tDMRs",  pch = 19, main = "Conserved heart specific tDMRs (all 3 species")
+
+# Investigate the size of the tDMRs depending on the percentage overlap
+check_1 <- heart_human_chimp_1[which((as.integer(heart_human_chimp_1[,9]) > 0) == TRUE),]
+check_10 <- heart_human_chimp_10[which((as.integer(heart_human_chimp_10[,9]) > 0) == TRUE),]
+check_20 <- heart_human_chimp_20[which((as.integer(heart_human_chimp_20[,9]) > 0) == TRUE),]
+check_25 <- heart_human_chimp_25[which((as.integer(heart_human_chimp_25[,9]) > 0) == TRUE),]
+check_30 <- heart_human_chimp_30[which((as.integer(heart_human_chimp_30[,9]) > 0) == TRUE),]
+check_40 <- heart_human_chimp_40[which((as.integer(heart_human_chimp_40[,9]) > 0) == TRUE),]
+check_50 <- heart_human_chimp_50[which((as.integer(heart_human_chimp_50[,9]) > 0) == TRUE),]
+check_60 <- heart_human_chimp_60[which((as.integer(heart_human_chimp_60[,9]) > 0) == TRUE),]
+check_70 <- heart_human_chimp_70[which((as.integer(heart_human_chimp_70[,9]) > 0) == TRUE),]
+check_75 <- heart_human_chimp_75[which((as.integer(heart_human_chimp_75[,9]) > 0) == TRUE),]
+check_80 <- heart_human_chimp_80[which((as.integer(heart_human_chimp_80[,9]) > 0) == TRUE),]
+check_90 <- heart_human_chimp_90[which((as.integer(heart_human_chimp_90[,9]) > 0) == TRUE),]
+check_100 <- heart_human_chimp_100[which((as.integer(heart_human_chimp_100[,9]) > 0) == TRUE),]
+
+summary(as.integer(check_1[,9]))
+summary(as.integer(check_10[,9]))
+summary(as.integer(check_20[,9]))
+summary(as.integer(check_25[,9]))
+summary(as.integer(check_30[,9]))
+summary(as.integer(check_40[,9]))
+summary(as.integer(check_50[,9]))
+summary(as.integer(check_60[,9]))
+summary(as.integer(check_70[,9]))
+summary(as.integer(check_75[,9]))
+summary(as.integer(check_80[,9]))
+summary(as.integer(check_90[,9]))
+summary(as.integer(check_100[,9]))
+
+
+# Plot the median tDMR length
+conserved_tdmr_heart_liver_heart_lung_bp <- c(1261, 1261, 1204, 1261, 1261, 1261, 1261, 1222, 1229, 1148, 2001, 2017, 0)
+perc_overlap <- c(0.000000001, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.80, 0.90, 1)
+
+plot(perc_overlap, conserved_tdmr_heart_liver_heart_lung_bp, xlab = "Percentage of overlap (bp)", ylab = "Median length of overlap (bp)", pch = 19, main = "Median length of overlap between conserved (3 species) heart specific tDMRs")
+
+```
+
+

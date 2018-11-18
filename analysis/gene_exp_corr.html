@@ -127,6 +127,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -195,6 +198,7 @@ $(document).ready(function () {
 <li><a href="#create-main-figure-1">Create main figure 1</a><ul>
 <li><a href="#make-pca-for-gene-expression-and-methylation-data">Make PCA for gene expression and methylation data</a></li>
 </ul></li>
+<li><a href="#pca-using-263k-methylated-regions-with-2-orthologous-cpgs">PCA using 263K methylated regions with &gt; 2 orthologous CpGs</a></li>
 <li><a href="#clustering">Clustering</a></li>
 <li><a href="#figure-clustering-with-gene-expression-and-methylation-levels-on-the-orthologous-genespromoters-only">Figure: Clustering with gene expression and methylation levels on the orthologous genes/promoters only</a></li>
 <li><a href="#correlations">Correlations</a></li>
@@ -213,6 +217,7 @@ $(document).ready(function () {
 
 library(plyr)
 library(dplyr)</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:plyr&#39;:
@@ -225,10 +230,13 @@ library(dplyr)</code></pre>
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(&quot;tidyr&quot;)
-library(&quot;RColorBrewer&quot;)
-library(&quot;ggplot2&quot;)
-library(&quot;cowplot&quot;)</code></pre>
+<pre class="r"><code>library(&quot;tidyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;cowplot&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
@@ -261,8 +269,9 @@ pair_cor$sample1 &lt;- rownames(pair_cor)
 pair_cor_long &lt;- gather(pair_cor, key = &quot;sample2&quot;, value = &quot;r&quot;, -sample1) %&gt;%
   mutate(sample2 = as.character(sample2)) %&gt;%
   filter(sample1 &lt; sample2) %&gt;% # ensures only one of the two entries is
-  arrange(sample1, sample2)     # maintained
-stopifnot(pair_cor_long$r &lt; 1,
+  arrange(sample1, sample2)     # maintained</code></pre>
+<pre><code>## Warning: package &#39;bindrcpp&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>stopifnot(pair_cor_long$r &lt; 1,
           nrow(pair_cor_long) == (47*47 - 47) / 2)
 
 head(pair_cor_long)</code></pre>
@@ -523,13 +532,13 @@ rvalues_table &lt;- cbind(all_r_values, labels_all_r_values)
 
 rvalues_table$labels_all_r_values &lt;- ordered(rvalues_table$labels_all_r_values, levels=c(&quot;ALL&quot;, &quot;DIST&quot;, &quot;SIDT&quot;, &quot;DIDT&quot;))
 
-plot.corr &lt;- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1], fill = rvalues_table[,2])) +
-  geom_boxplot()  +
-  labs(x = &quot;Condition&quot;, y = &quot;Pearson&#39;s r&quot;)
+#plot.corr &lt;- ggplot(rvalues_table, aes(x = rvalues_table[,2], y = rvalues_table[,1], fill = rvalues_table[,2])) +
+#  geom_boxplot()  +
+#  labs(x = &quot;Condition&quot;, y = &quot;Pearson&#39;s r&quot;)
 
 #+ theme(axis.text.x = element_text(angle = 70, vjust = 0.5))
 
-plot.corr &lt;- plot.corr + theme(legend.position = &quot;top&quot;) + scale_fill_discrete(name = c(&quot;Conditions&quot;), breaks = c(&quot;ALL&quot;, &quot;DIST&quot;, &quot;SIDT&quot;, &quot;DIDT&quot;), labels = c(&quot;All&quot;, &quot;Same tissue&quot;, &quot;Same individual&quot;, &quot;Different ind. &amp; tissue&quot;)) 
+#plot.corr &lt;- plot.corr + theme(legend.position = &quot;top&quot;) + scale_fill_discrete(name = c(&quot;Conditions&quot;), breaks = c(&quot;ALL&quot;, &quot;DIST&quot;, &quot;SIDT&quot;, &quot;DIDT&quot;), labels = c(&quot;All&quot;, &quot;Same tissue&quot;, &quot;Same individual&quot;, &quot;Different ind. &amp; tissue&quot;)) 
 
 #plot_grid(NULL, plot.corr, NULL, NULL, NULL, labels = c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;, &quot;E&quot;), ncol = 2)
 
@@ -601,7 +610,7 @@ summary &lt;- summary(pca_genes)
 
 plot.pca.true &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Tissue), shape=as.factor(sample_features$Species), size=2)) + geom_point(alpha = 1) + xlab(&quot;PC1 (21.8% of variance)&quot;) + ylab(paste(&quot;PC2 (17.5% of variance)&quot;)) + theme(legend.position=&quot;none&quot;)
 
-plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) 
+plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)) 
 plot.pca.true &lt;- plot.pca.true + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
 #plot_grid(plot.pca.true, p2, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)
 
@@ -625,6 +634,8 @@ dev.off()</code></pre>
 #write.table(pca_genes_scores, file = &quot;./Methylation/Methylation_figures/pca_all_methyl_samples.txt&quot;)
 #pca_genes_summary &lt;- summary(pca_genes)$importance
 #write.table(pca_genes_summary, file = &quot;./Methylation/Methylation_figures/pca_summary_all_methyl_samples.txt&quot;)
+
+
 
 pca_all &lt;- read.csv(&quot;../data/pca_all_methyl_samples.txt&quot;, sep=&quot;&quot;)
 pca_all_summary &lt;- read.csv(&quot;../data/pca_summary_all_methyl_samples.txt&quot;, sep=&quot;&quot;)
@@ -671,11 +682,16 @@ summary &lt;- summary(pca_genes)
 
 plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Tissue), shape=as.factor(sample_info_RNAseq$Species), size=2)) + geom_point(alpha = 1) + xlab(&quot;PC1 (11.1% of variance)&quot;) + ylab(&quot;PC2 (6.8% of variance)&quot;) + theme(legend.position=&quot;none&quot;)
 
-plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rh. macaque&quot;)) 
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus&quot;)) 
 plot.pca.methyl &lt;- plot.pca.methyl + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))
 #plot_grid(plot.pca.true, p2, labels = c(&quot;A&quot;, &quot;B&quot;), ncol = 1)
 
 svg(&quot;./plot.methyl.svg&quot;)
+plot.pca.methyl
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code>pdf(&quot;./plot.methyl.pdf&quot;)
 plot.pca.methyl
 dev.off()</code></pre>
 <pre><code>## quartz_off_screen 
@@ -701,23 +717,113 @@ p3 &lt;- ggdraw()+draw_image(&quot;./plot.methyl.svg&quot;)
 
 make_fig1 &lt;- plot_grid(p1, p2, plot.corr, p3, labels = c(&quot;1A.&quot;, &quot;1B.&quot;, &quot;1C.&quot;, &quot;1D.&quot;), ncol = 2)
 
-save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Figures/fig1.pdf&quot;, make_fig1,
-          ncol = 2, # we&#39;re saving a grid plot of 2 columns
-          nrow = 2, # and 2 rows
+#save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_4/fig1.pdf&quot;, make_fig1,
+#          ncol = 2, # we&#39;re saving a grid plot of 2 columns
+#          nrow = 2, # and 2 rows
           # each individual subplot should have an aspect ratio of 1.3
-          base_aspect_ratio = 1.3
-          )</code></pre>
+#          base_aspect_ratio = 1.3
+#          )</code></pre>
 </div>
 </div>
-<div id="clustering" class="section level1">
-<h1>Clustering</h1>
+<div id="pca-using-263k-methylated-regions-with-2-orthologous-cpgs" class="section level1">
+<h1>PCA using 263K methylated regions with &gt; 2 orthologous CpGs</h1>
+<p>Note: Median 3 CpGs and Mean 6.295 CpGs (range 2 to 288 CpGs)</p>
+<pre class="r"><code># Regions 1-168955
+
+means_first &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/get_means_orth_MR1.txt&quot;)
+
+means_first[168954:168955,47:48]</code></pre>
+<pre><code>##             V47      V48
+## 168954 0.653736 0.643166
+## 168955 0.589287 0.588048</code></pre>
+<pre class="r"><code># Regions 168956-end
+
+means_last &lt;- read.table(&quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/get_means_mr_last.txt&quot;)
+
+means_last[5:6,47:48]</code></pre>
+<pre><code>##        V47      V48
+## 5 0.653736 0.643166
+## 6 0.589287 0.588048</code></pre>
+<pre class="r"><code>means_second &lt;- means_last[-(1:6),]
+
+dim(means_second)</code></pre>
+<pre><code>## [1] 94829    48</code></pre>
+<pre class="r"><code>nrow(means_first) + nrow(means_second)</code></pre>
+<pre><code>## [1] 263784</code></pre>
+<pre class="r"><code>get_methyl_means &lt;- rbind(means_first, means_second)
+
+sample_info_RNAseq &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv&quot;)
+
+# Distribution of C1H
+
+ggplot(data= get_methyl_means, aes(x = get_methyl_means[,1])) + geom_histogram(binwidth = 0.01) + xlab(&quot;Average DNA methylation level&quot;) + ylab(&quot;Number of methylated regions&quot;)</code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code># Run the PCA
+
+pca_genes &lt;- prcomp(t(get_methyl_means) , scale = T, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+
+plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Species), shape=as.factor(sample_info_RNAseq$Tissue), size=3)) + geom_point(alpha = 1) + xlab(&quot;PC1 (19.5% of variance)&quot;) + ylab(&quot;PC2 (12.2% of variance)&quot;) + theme(legend.position=&quot;none&quot;)
+
+plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;bottom&quot;) + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + scale_size(guide = &#39;none&#39;)
+
+plot_grid(plot.pca.methyl, ncol = 1) </code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<pre class="r"><code>svg(&quot;./plot.methyl.reg.svg&quot;)
+plot.pca.methyl
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<pre class="r"><code># Run with only humans and chimpanzees
+
+
+pca_genes &lt;- prcomp(t(get_methyl_means[,1:31]) , scale = T, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+
+plot.pca.methyl.hc &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_info_RNAseq$Tissue[1:31]), shape=as.factor(sample_info_RNAseq$Species[1:31]), size=2)) + geom_point(alpha = 1) + xlab(&quot;PC1 (17.2% of variance)&quot;) + ylab(&quot;PC2 (15.3% of variance)&quot;) + theme(legend.position=&quot;none&quot;)
+
+plot.pca.methyl.hc &lt;- plot.pca.methyl.hc + theme(legend.position = &quot;bottom&quot;) + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;chimpanzee&quot;, &quot;human&quot;, &quot;rhesus macaque&quot;), labels = c(&quot;Chimpanzee&quot;, &quot;Human&quot;, &quot;Rhesus macaque&quot;)) + scale_size(guide = &#39;none&#39;)
+plot.pca.methyl &lt;- plot.pca.methyl + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;))</code></pre>
+<pre><code>## Scale for &#39;colour&#39; is already present. Adding another scale for
+## &#39;colour&#39;, which will replace the existing scale.</code></pre>
+<pre class="r"><code>plot_grid(plot.pca.methyl.hc, ncol = 1) </code></pre>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-13-3.png" width="672" /></p>
+<pre class="r"><code>svg(&quot;./plot.methyl.reg.hc.svg&quot;)
+plot.pca.methyl.hc
+dev.off()</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
 <pre class="r"><code># Bryan&#39;s code for clustering 
 library(&quot;viridis&quot;)</code></pre>
+<pre><code>## Warning: package &#39;viridis&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## Loading required package: viridisLite</code></pre>
 <pre class="r"><code>library(dendextend)</code></pre>
+<pre><code>## Warning: package &#39;dendextend&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## 
 ## ---------------------
-## Welcome to dendextend version 1.7.0
+## Welcome to dendextend version 1.8.0
 ## Type citation(&#39;dendextend&#39;) for how to cite the package.
 ## 
 ## Type browseVignettes(package = &#39;dendextend&#39;) for the package vignette.
@@ -735,11 +841,13 @@ library(&quot;viridis&quot;)</code></pre>
 ##     cutree</code></pre>
 <pre class="r"><code>library(colorspace)
 library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.4
-## ✔ readr   1.1.1     ✔ stringr 1.3.0
-## ✔ tibble  1.4.2     ✔ forcats 0.2.0</code></pre>
-<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ tibble  1.4.2     ✔ purrr   0.2.5
+## ✔ readr   1.1.1     ✔ stringr 1.3.1
+## ✔ tibble  1.4.2     ✔ forcats 0.3.0</code></pre>
+<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::arrange()   masks plyr::arrange()
 ## ✖ purrr::compact()   masks plyr::compact()
 ## ✖ dplyr::count()     masks plyr::count()
@@ -759,6 +867,37 @@ library(tidyverse)</code></pre>
 ## 
 ##     lowess</code></pre>
 <pre class="r"><code>#Function to make pearson correlation matrix and convert into distance matrix
+pearson &lt;- function(x, ...) {
+    x &lt;- as.matrix(x)
+    res &lt;- as.dist(1 - cor(x, method = &quot;pearson&quot;, use = &quot;everything&quot;))
+    res &lt;- as.dist(res)
+    attr(res, &quot;method&quot;) &lt;- &quot;pearson&quot;
+    return(res)
+}
+
+cor(get_methyl_means[,1:31])-&gt; all_data
+hc &lt;- get_methyl_means[,1:31] %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram
+
+dev.off()</code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+<pre class="r"><code>tiff(file = &quot;Methyl_heatmap_reg_hc.tiff&quot;)
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species[1:31]))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue[1:31]))+9], Colv=dend,Rowv=dend)
+dev.off()</code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+</div>
+<div id="clustering" class="section level1">
+<h1>Clustering</h1>
+<pre class="r"><code># Bryan&#39;s code for clustering 
+library(&quot;viridis&quot;)
+library(dendextend)
+library(colorspace)
+library(tidyverse)
+library(gplots)
+
+#Function to make pearson correlation matrix and convert into distance matrix
 pearson &lt;- function(x, ...) {
     x &lt;- as.matrix(x)
     res &lt;- as.dist(1 - cor(x, method = &quot;pearson&quot;, use = &quot;everything&quot;))
@@ -788,6 +927,18 @@ dev.off()</code></pre>
 ##           1</code></pre>
 <pre class="r"><code>tiff(file = &quot;Methyl_heatmap.tiff&quot;)
 heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue))+9], Colv=dend,Rowv=dend)
+dev.off()</code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+<pre class="r"><code>cor(get_methyl_means)-&gt; all_data
+hc &lt;- get_methyl_means %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
+dend &lt;- hc %&gt;% as.dendrogram
+
+sample_info_RNAseq &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv&quot;)
+
+#dev.off()
+tiff(file = &quot;Methyl_reg_heatmap.tiff&quot;)
+heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Species))], RowSideColors=pal[as.integer(as.factor(sample_info_RNAseq$Tissue))+9], Colv=dend,Rowv=dend, labRow = sample_info_RNAseq$Sample.ID, labCol = sample_info_RNAseq$Sample.ID)
 dev.off()</code></pre>
 <pre><code>## null device 
 ##           1</code></pre>
@@ -822,13 +973,13 @@ hc &lt;- express %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
 dend &lt;- hc %&gt;% as.dendrogram
 
 heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend)</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <pre class="r"><code>cor(methyl)-&gt; all_data
 hc &lt;- methyl %&gt;% pearson %&gt;% hclust(method = &quot;average&quot;)
 dend &lt;- hc %&gt;% as.dendrogram 
 
 heatmap.2(all_data, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;,ColSideColors=pal[as.integer(as.factor(sample_features$Species))], RowSideColors=pal[as.integer(as.factor(sample_features$Tissue))+9], Colv=dend,Rowv=dend, labRow = labels, labCol = labels)</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-14-2.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
 <pre class="r"><code># Check PCA
 
 pca_genes &lt;- prcomp(t(express) , scale = T, center = TRUE)
@@ -853,7 +1004,7 @@ plot.pca.true &lt;- plot.pca.true + theme(legend.position = &quot;bottom&quot;) 
 plot.pca.true &lt;- plot.pca.true + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) + ggtitle(&quot;PCA of normalized gene expression data&quot;)
 
 plot.pca.true</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-14-3.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-15-3.png" width="672" /></p>
 <pre class="r"><code>pca_genes &lt;- prcomp(t(methyl) , scale = T, center = TRUE)
 #pca_genes &lt;- prcomp(t(cpm_12184) , scale = F, center = TRUE)
 
@@ -877,7 +1028,7 @@ plot.pca.true &lt;- plot.pca.true + scale_shape_discrete(name = c(&quot;&quot;),
 <pre><code>## Scale for &#39;shape&#39; is already present. Adding another scale for &#39;shape&#39;,
 ## which will replace the existing scale.</code></pre>
 <pre class="r"><code>plot.pca.methyl</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-14-4.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-15-4.png" width="672" /></p>
 <pre class="r"><code># Look in humans and chimps only
 
 hkl &lt;- c(1:3, 5:7, 9:11, 13:15, 17:18, 20:22, 24:26, 28:30)
@@ -905,8 +1056,14 @@ plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;right&quot
 plot.pca.methyl &lt;- plot.pca.methyl + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) 
 
 plot.pca.methyl</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-14-5.png" width="672" /></p>
-<pre class="r"><code>pca_genes &lt;- prcomp(t(express[,hkl]) , scale = T, center = TRUE)
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-15-5.png" width="672" /></p>
+<pre class="r"><code>#plot.pca.methyl &lt;- ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(sample_features$Tissue[hkl]), shape=as.factor(sample_features$Species[hkl]))) + geom_point(alpha = 1) + xlab(&quot;PC1 (11.6% of variance)&quot;) + ylab(&quot;PC2 (10.4% of variance)&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) 
+
+#plot.pca.methyl &lt;- plot.pca.methyl + theme(legend.position = &quot;right&quot;) + scale_shape_discrete(name = c(&quot;&quot;)) 
+plot.pca.methyl &lt;- plot.pca.methyl + scale_color_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) </code></pre>
+<pre><code>## Scale for &#39;colour&#39; is already present. Adding another scale for
+## &#39;colour&#39;, which will replace the existing scale.</code></pre>
+<pre class="r"><code>#pca_genes &lt;- prcomp(t(express[,hkl]) , scale = T, center = TRUE)
 
 matrixpca &lt;- pca_genes$x
 pc1 &lt;- matrixpca[,1]
@@ -927,7 +1084,7 @@ plot.pca.exp &lt;- plot.pca.exp + theme(legend.position = &quot;right&quot;) + s
 plot.pca.exp &lt;- plot.pca.exp + scale_shape_discrete(name = c(&quot;&quot;), breaks = c(&quot;heart&quot;, &quot;kidney&quot;, &quot;liver&quot;, &quot;lung&quot;), labels = c(&quot;Heart&quot;, &quot;Kidney&quot;, &quot;Liver&quot;, &quot;Lung&quot;)) 
 
 plot.pca.exp</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-14-6.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-15-6.png" width="672" /></p>
 <pre class="r"><code>make_fig_s9 &lt;- plot_grid(plot.pca.methyl, plot.pca.exp, labels = c(&quot;9A.&quot;, &quot;9B.&quot;), ncol = 1)
 
 save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Supplement/Supp_figures/fig9.pdf&quot;, make_fig_s9,
@@ -1887,7 +2044,7 @@ max(hcr_cor)</code></pre>
 ## -0.20930 -0.17378 -0.14984 -0.14996 -0.13040 -0.06813</code></pre>
 <pre class="r"><code>boxplot(cor_real, hcr_cor, xaxt = &quot;n&quot;, xlab = &quot;RNA-seq and BS-seq from same individuals&quot;, ylab = &quot;Pearson&#39;s Correlation&quot;, main = &quot;Correlation of RNAseq and BSseq in all 3 species&quot;)
 axis(1, at = 1:2, labels = c(&quot;Matched&quot;, &quot;Non-matched&quot;))</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <div id="spearman-correlation" class="section level2">
 <h2>Spearman correlation</h2>
 <pre class="r"><code>cor_real &lt;- c()
@@ -1997,7 +2154,7 @@ max(hcr_cor)</code></pre>
 ## -0.2248 -0.1697 -0.1382 -0.1433 -0.1135 -0.0771</code></pre>
 <pre class="r"><code>boxplot(cor_real, hcr_cor, xaxt = &quot;n&quot;, xlab = &quot;RNA-seq and BS-seq from same individuals&quot;, ylab = &quot;Spearman&#39;s correlation&quot;, main = &quot;Correlation of RNAseq and BSseq in all 3 species&quot;)
 axis(1, at = 1:2, labels = c(&quot;Matched&quot;, &quot;Non-matched&quot;))</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 </div>
 <div id="subset-to-most-variable-genes-gene-expression" class="section level1">
@@ -2140,7 +2297,7 @@ max(hcr_cor)</code></pre>
 ## -0.20854 -0.15636 -0.13638 -0.13514 -0.11588 -0.02584</code></pre>
 <pre class="r"><code>boxplot(cor_real, hcr_cor, xaxt = &quot;n&quot;, xlab = &quot;RNA-seq and BS-seq from same individuals&quot;, ylab = &quot;Correlation&quot;, main = &quot;Correlation of RNAseq and BSseq in all 3 species&quot;)
 axis(1, at = 1:2, labels = c(&quot;Matched&quot;, &quot;Non-matched&quot;))</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="subset-to-most-variable-genes-dna-methylation" class="section level1">
 <h1>Subset to most variable genes (DNA methylation)</h1>
@@ -2282,7 +2439,7 @@ max(hcr_cor)</code></pre>
 ## -0.4415 -0.2930 -0.1884 -0.2059 -0.1407  0.1107</code></pre>
 <pre class="r"><code>boxplot(cor_real, hcr_cor, xaxt = &quot;n&quot;, xlab = &quot;RNA-seq and BS-seq from same individuals&quot;, ylab = &quot;Pearson Correlation&quot;, main = &quot;Correlation of RNAseq and BSseq in all 3 species&quot;)
 axis(1, at = 1:2, labels = c(&quot;Matched&quot;, &quot;Non-matched&quot;))</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="look-at-humanchimpanzee-data-only-full-data-set" class="section level1">
 <h1>Look at human/chimpanzee data only (full data set)</h1>
@@ -2375,7 +2532,7 @@ max(hc_cor)</code></pre>
 ## -0.2037 -0.1557 -0.1368 -0.1360 -0.1143 -0.0415</code></pre>
 <pre class="r"><code>boxplot(cor_real, hc_cor, xaxt = &quot;n&quot;, xlab = &quot;RNA-seq and BS-seq from same individuals&quot;, ylab = &quot;Correlation&quot;, main = &quot;Correlation of RNAseq and BSseq in human and chimpanzee samples&quot;)
 axis(1, at = 1:2, labels = c(&quot;Matched&quot;, &quot;Non-matched&quot;))</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <pre class="r"><code>t.test(cor_real, hc_cor)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
@@ -2511,7 +2668,25 @@ max(hc_cor)</code></pre>
 ## -0.21655 -0.16155 -0.12146 -0.12117 -0.08046  0.01609</code></pre>
 <pre class="r"><code>boxplot(cor_real, hc_cor, xaxt = &quot;n&quot;, xlab = &quot;RNA-seq and BS-seq from same individuals&quot;, ylab = &quot;Correlation&quot;, main = &quot;Correlation of RNAseq and BSseq in human and chimpanzee samples&quot;)
 axis(1, at = 1:2, labels = c(&quot;Matched&quot;, &quot;Non-matched&quot;))</code></pre>
-<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="gene_exp_corr_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre class="r"><code>BS_seq_info_one &lt;- read.csv(&quot;~/Dropbox/primate_BS-seq_project/Correlation with PCs - Lauren/BS_seq_info_one.csv&quot;)
+
+bs_info &lt;- BS_seq_info_one[2:112,]
+
+bs_info_tissue &lt;- bs_info[,4]
+bs_info_lib &lt;- bs_info[,30]
+
+
+chisq.test(as.numeric(bs_info_tissue), as.numeric(bs_info_lib))</code></pre>
+<pre><code>## Warning in chisq.test(as.numeric(bs_info_tissue), as.numeric(bs_info_lib)):
+## Chi-squared approximation may be incorrect</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  as.numeric(bs_info_tissue) and as.numeric(bs_info_lib)
+## X-squared = 63.142, df = 30, p-value = 0.0003773</code></pre>
+<pre class="r"><code>cor(as.numeric(bs_info_tissue), as.numeric(bs_info_lib))</code></pre>
+<pre><code>## [1] -0.2274293</code></pre>
 </div>
 
 

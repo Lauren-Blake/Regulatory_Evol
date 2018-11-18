@@ -5,7 +5,24 @@ date: "July 20, 2016"
 output: html_document
 ---
 
-### PART ONE: See if any of the variables for RNA-Seq correlate with the expression PCs for genes
+# PART ONE: See if any of the variables for RNA-Seq correlate with the expression PCs for genes
+
+## Find gene PCs
+
+```{r}
+# Load gene expression levels
+
+cpm_12184 <- read.delim("../../../Reg_Evo_Primates/data/cpm_12184.txt")
+
+dim(cpm_12184)
+
+# Take gene PCs
+
+pca_genes <- prcomp(t(cpm_12184), scale = T)
+scores <- pca_genes$x
+gene_pcs <- scores 
+```
+
 
 #### Load libraries and data
 
@@ -15,19 +32,15 @@ output: html_document
 # install.packages("polycor")
 library("polycor")
 
-# Load PCs from data that is GC content normalized, cyclic loess normalized with voom and a random variable for individual
-
-gene_pcs <- read.delim("~/Reg_Evo_Primates/ashlar-trial/data/PC_gc_cyclic_loess_random_var_gene_exp")
-
 # Load list of technical factors
-RNA_seq_info <- read.csv("~/Reg_Evo_Primates/ashlar-trial/data/RNA_seq_info.csv")
+RNA_seq_info <- read.csv("../../../Reg_Evo_Primates/data/RNA_seq_info.csv")
 RNA_seq_info <- as.data.frame(RNA_seq_info)
 
 dim(RNA_seq_info)
 
 #Create plots for each of the possible confounders versus PCs 1-5
 
-pdf('~/Reg_Evo_Primates/ashlar-trial/data/VarVsGenePCs.pdf')
+pdf('../data/VarVsGenePCs.pdf')
 
 for (i in 3:length(RNA_seq_info)) { 
   par(mfrow=c(1,5))
@@ -43,6 +56,23 @@ for (i in 3:length(RNA_seq_info)) {
 dev.off()
 
 ```
+
+### Relationship between PC1
+
+```{r}
+checkPC1 <- lm(gene_pcs[,1] ~ as.factor(RNA_seq_info$Tissue))
+
+summary(checkPC1)
+
+checkPC1 <- lm(gene_pcs[,2] ~ as.factor(RNA_seq_info$Tissue))
+
+summary(checkPC1)
+
+checkPC2 <- lm(gene_pcs[,2] ~ as.factor(RNA_seq_info$Species))
+
+summary(checkPC2)
+```
+
 
 #### Testing association between a particular variable and PCs with a linear model
 
@@ -118,7 +148,7 @@ for (j in 1:5){
 ```{r}
 #Plot the residuals to look for violations of the assumptions of lm
 
-pdf('~/Reg_Evo_Primates/ashlar-trial/data/Residuals_vs_var_GenePCs.pdf')
+pdf('../data/Residuals_vs_var_GenePCs.pdf')
 
 i = 3
   for (i in 3:9){
@@ -277,7 +307,7 @@ var_numb = unique(coor_to_check_col) + 4
 #Making the variable versus species and tissue graphs into a file called VarVsSpeciesTissue.pdf
 var.numb <- as.data.frame(var_numb)
 
-pdf('~/Reg_Evo_Primates/ashlar-trial/data/Var_GenePCsVsSpeciesTissue.pdf.pdf')
+pdf('../data/Var_GenePCsVsSpeciesTissue.pdf')
 
 for (i in var.numb[1:nrow(var.numb),]) { 
 par(mfrow=c(1,2))

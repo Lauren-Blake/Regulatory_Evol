@@ -126,6 +126,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -192,20 +195,6 @@ $(document).ready(function () {
 </ul></li>
 <li><a href="#pairwise-tdmrs">Pairwise tDMRs</a><ul>
 <li><a href="#heart-versus-liver-and-heart-versus-lung">Heart versus liver and heart versus lung</a></li>
-<li><a href="#heart-versus-liver-and-heart-versus-kidney">Heart versus liver and heart versus kidney</a></li>
-<li><a href="#heart-versus-liver-and-liver-versus-lung">Heart versus liver and liver versus lung</a></li>
-<li><a href="#heart-versus-liver-and-liver-versus-kidney">Heart versus liver and liver versus kidney</a></li>
-<li><a href="#heart-versus-liver-and-kidney-versus-lung">Heart versus liver and kidney versus lung</a></li>
-<li><a href="#heart-versus-lung-and-heart-versus-kidney">Heart versus lung and Heart versus kidney</a></li>
-<li><a href="#heart-versus-lung-and-liver-versus-kidney">Heart versus lung and liver versus kidney</a></li>
-<li><a href="#heart-versus-lung-and-liver-versus-lung">Heart versus lung and liver versus lung</a></li>
-<li><a href="#heart-versus-lung-and-kidney-versus-lung">Heart versus lung and kidney versus lung</a></li>
-<li><a href="#heart-versus-kidney-and-liver-versus-kidney">Heart versus kidney and liver versus kidney</a></li>
-<li><a href="#heart-versus-kidney-and-liver-versus-lung">Heart versus kidney and liver versus lung</a></li>
-<li><a href="#heart-versus-kidney-and-kidney-versus-lung">Heart versus kidney and kidney versus lung</a></li>
-<li><a href="#liver-versus-kidney-and-liver-versus-lung">Liver versus kidney and liver versus lung</a></li>
-<li><a href="#liver-versus-kidney-and-kidney-versus-lung">Liver versus kidney and kidney versus lung</a></li>
-<li><a href="#liver-versus-lung-and-kidney-versus-lung">Liver versus lung and kidney versus lung</a></li>
 </ul></li>
 <li><a href="#which-overlap-promoters">Which overlap promoters?</a></li>
 </ul>
@@ -215,13 +204,14 @@ $(document).ready(function () {
 <p>First, we will examine the results of the tissue DMRs</p>
 <pre class="r"><code># Import libraries
 
-library(&quot;ggplot2&quot;)
-library(&quot;VennDiagram&quot;)</code></pre>
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>Warning: package &#39;VennDiagram&#39; was built under R version 3.4.4</code></pre>
 <pre><code>Loading required package: grid</code></pre>
 <pre><code>Loading required package: futile.logger</code></pre>
 <pre class="r"><code>library(plyr)
 
-# Import the data
 
 # Human tDMRs
 humans_heart_kidney_DMRs &lt;- read.delim(&quot;../data/humans_heart_kidney_DMRs.txt&quot;)
@@ -444,7 +434,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f28238996.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1f1ea859.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e33c087d10.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e32b054590.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     5.0   255.0   473.0   584.5   795.0  4797.0 </code></pre>
@@ -479,7 +469,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f493b258e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f2035aefc.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35ca666dd.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e34266d7f.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     0.0     0.0     0.0   162.5   162.0  3167.0 </code></pre>
@@ -527,7 +517,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2bf4679b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f48cb56de.bed -wao -f 1E-9 -F 1E-9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e32e22332f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e36ed5d06b.bed -wao -f 1E-9 -F 1E-9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   16965    5607 </code></pre>
@@ -557,7 +547,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f626cc057.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f67f94a64.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3b81f65f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3594ca6a6.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   17096    5472 </code></pre>
@@ -587,7 +577,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1c57695f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f49375fcc.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e356146bdf.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e32d3d1a5e.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   17374    5189 </code></pre>
@@ -617,7 +607,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7673dbce.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f79a69811.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e321e33fe7.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3504c6f64.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   17554    5007 </code></pre>
@@ -647,7 +637,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7c74d4e9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6eae3c48.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e348ca2905.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3707f3352.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   17737    4824 </code></pre>
@@ -677,7 +667,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4d4af8ce.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f396072c8.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e316ec6cc5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e379a1c588.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   18161    4400 </code></pre>
@@ -707,7 +697,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f283256fd.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f125827f3.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35af7adf6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3646a08f0.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   18703    3858 </code></pre>
@@ -737,7 +727,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f42291c0.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6e9a6811.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3b527156.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e34a0fee0e.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   19286    3275 </code></pre>
@@ -767,7 +757,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f16872692.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f49dd7a54.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e31f6a6b32.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e319b55a59.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   19925    2636 </code></pre>
@@ -797,7 +787,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f14c93b57.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6d578104.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e32c794932.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e364556bbc.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   20256    2305 </code></pre>
@@ -827,7 +817,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f65593e9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7e433256.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e33ffeacc6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e34cda51f0.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   20597    1964 </code></pre>
@@ -857,7 +847,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f47a90739.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4ff060529.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e320beb9cd.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e330ca4304.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   21223    1338 </code></pre>
@@ -887,7 +877,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f633afe84.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7b59111e.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e34d3333b5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e367dc9ea8.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   21587     974 </code></pre>
@@ -1075,7 +1065,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4fa089d3f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5a917a33.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e31051e7b6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e34c8a8a31.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     6.0   261.0   486.0   594.7   831.0  4630.0 </code></pre>
@@ -1110,7 +1100,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f424eeb2b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f28bd9232.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35924cc9b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e36fd217d4.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
    0.00    0.00    0.00   47.99    0.00 2071.00 </code></pre>
@@ -1155,7 +1145,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f55fdda62.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4ffefbde9.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e345c3354a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e356e266fc.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
 <pre class="r"><code># 10% overlap
 heart_liver_10 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.10 -F 0.10&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1182,7 +1172,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f436a3336.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4fdf8140d.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e322e515dc.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e339813a85.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   28021    2275 </code></pre>
@@ -1212,7 +1202,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f449ad598.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f123fc00c.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e372626709.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e37080530d.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   28295    1998 </code></pre>
@@ -1242,7 +1232,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f236fd9fe.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5f9f2d90.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e327dfcfb1.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e321ea0ca1.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   28422    1870 </code></pre>
@@ -1272,7 +1262,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5abaf7ef.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f2778295e.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e398145c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e33ccdfb7b.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   28552    1739 </code></pre>
@@ -1302,7 +1292,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f20aafacc.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f71f2c394.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e326f8c79.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e34f4586b0.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   28840    1451 </code></pre>
@@ -1332,7 +1322,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5714ce16.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1ea0088d.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e36c2350a6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e31c7e8db7.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   29136    1155 </code></pre>
@@ -1362,7 +1352,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4ff54f416.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5a5165df.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e331d5e1d1.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e36413c29a.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   29425     866 </code></pre>
@@ -1392,7 +1382,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7618d4c4.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f3b5820b1.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e34333d9e2.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3acdadd.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   29659     632 </code></pre>
@@ -1422,7 +1412,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f6f08e2af.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f15d4b8ff.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3a0f9d85.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e36bf07ca.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   29784     507 </code></pre>
@@ -1452,7 +1442,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5c640281.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f727b60f8.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e367a8464a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e33a164000.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   29865     426 </code></pre>
@@ -1482,7 +1472,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1784a1ef.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7fd8106b.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e31bc04a40.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e36099fa53.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   29997     294 </code></pre>
@@ -1512,7 +1502,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f46444e8e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f11480dd4.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e331080eb0.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e31e8f19ef.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   30057     234 </code></pre>
@@ -1700,7 +1690,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f62d20590.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f245ec8f2.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e322cb955.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e341d5deed.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     5.0   266.0   498.0   617.6   849.0  4950.0 </code></pre>
@@ -1735,7 +1725,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3d43478.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f56cdbfa0.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e36d3b12c2.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e342e44a79.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     0.0     0.0     0.0   192.2   278.8  4186.0 </code></pre>
@@ -1780,7 +1770,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f46acf245.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f6019d8e3.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35d2cf2c5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e35f708f26.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
 <pre class="r"><code># 10% overlap
 heart_liver_10 &lt;- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = &quot;intersect&quot;,  params = &quot;-wao -f 0.10 -F 0.10&quot;, check.chr = FALSE)</code></pre>
 <pre><code> * Processing input (1): a
@@ -1807,7 +1797,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4683a5cf.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f153f8c42.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e362de3e60.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e319fed68.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   24943    3837 </code></pre>
@@ -1837,7 +1827,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f485662af.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f3d48d18a.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3aa4640d.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e365e71b74.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   25160    3614 </code></pre>
@@ -1867,7 +1857,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1776e3ff.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f71fa6dcf.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e31443c3f0.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e354f63da3.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   25301    3472 </code></pre>
@@ -1897,7 +1887,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f542688c5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1cf6f24b.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e365db5c2c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e369495f96.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   25439    3332 </code></pre>
@@ -1927,7 +1917,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f619d8b76.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f535abaad.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e36f32eaea.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3794a197e.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   25795    2974 </code></pre>
@@ -1957,7 +1947,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2dfb20ed.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f402778b7.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e36da7e2a6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3571beacc.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   26162    2607 </code></pre>
@@ -1987,7 +1977,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f1daf0b9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f21f836e1.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e332110690.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3379becef.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   26589    2180 </code></pre>
@@ -2017,7 +2007,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f44c7989f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f555c977b.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3f3a284f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3775bb6e7.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   27029    1740 </code></pre>
@@ -2047,7 +2037,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3aaffa85.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1ce7e979.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e34f24d4a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3f40eca.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   27267    1502 </code></pre>
@@ -2077,7 +2067,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2cc89d44.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f4d29b7e1.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e31beeaa88.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3435021e.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   27515    1254 </code></pre>
@@ -2107,7 +2097,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f7c0d0d79.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f4b5883d9.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e374fabe7b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e342d70593.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   27915     854 </code></pre>
@@ -2137,7 +2127,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2fab101f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f2103314e.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e36e98ab75.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e316d02663.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   28148     621 </code></pre>
@@ -2357,7 +2347,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3989684c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f515a16ca.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3529f0c7d.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e370fe6a48.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(heart_lung[,3] - heart_lung[,2])</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     4.0   277.0   524.0   658.6   906.0  6805.0 </code></pre>
@@ -2392,7 +2382,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f448b56f9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7855e211.bed -wao -f 0.5 -F 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35e96b10.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e363b20c8e.bed -wao -f 0.5 -F 0.5</code></pre>
 <pre class="r"><code>summary(as.integer(lung_heart[,9]))</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     0.0     0.0     0.0   207.1   302.8  3679.0 </code></pre>
@@ -2437,7 +2427,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2be6021b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1da6c96.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e36dec683b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e378a8089c.bed -wao -f 0.00000001 -F 0.00000001</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_1[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   37645    3654 </code></pre>
@@ -2467,7 +2457,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f33bb4d5e.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f67087258.bed -wao -f 0.10 -F 0.10</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e32ee745dc.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e338aec9dd.bed -wao -f 0.10 -F 0.10</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_10[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   37776    3520 </code></pre>
@@ -2497,7 +2487,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4fdbe3b90.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1497a244.bed -wao -f 0.20 -F 0.20</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35399062a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3140b2be4.bed -wao -f 0.20 -F 0.20</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_20[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   38046    3245 </code></pre>
@@ -2527,7 +2517,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f63b981ef.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f78bef2ec.bed -wao -f 0.25 -F 0.25</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e36e168838.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e327d5f682.bed -wao -f 0.25 -F 0.25</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_25[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   38205    3084 </code></pre>
@@ -2557,7 +2547,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2702f44a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4fc02fcd9.bed -wao -f 0.30 -F 0.30</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e31b04eec5.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e35ad8399a.bed -wao -f 0.30 -F 0.30</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_30[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   38353    2931 </code></pre>
@@ -2587,7 +2577,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f589c9a11.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f195d9f83.bed -wao -f 0.4 -F 0.4</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e379b6d28c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e35f7a4e52.bed -wao -f 0.4 -F 0.4</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_40[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   38703    2577 </code></pre>
@@ -2617,7 +2607,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2157d7c8.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f219a02fb.bed -wao -f 0.50 -F 0.50</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3200e380a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e32112e21f.bed -wao -f 0.50 -F 0.50</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_50[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   39051    2229 </code></pre>
@@ -2647,7 +2637,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f505de48f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f74198f65.bed -wao -f 0.6 -F 0.6</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e316151f87.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e32346f519.bed -wao -f 0.6 -F 0.6</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_60[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   39421    1859 </code></pre>
@@ -2677,7 +2667,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4eef2d7b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f79ddd7e9.bed -wao -f 0.70 -F 0.70</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e343596519.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e37e762ec4.bed -wao -f 0.70 -F 0.70</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_70[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   39802    1478 </code></pre>
@@ -2707,7 +2697,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f6dc0d22b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f455225f5.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e367436ef3.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e31470110c.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_75[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   39992    1288 </code></pre>
@@ -2737,7 +2727,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2aa6de33.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5b6bf80b.bed -wao -f 0.80 -F 0.80</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35d77e3c6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e320d3254a.bed -wao -f 0.80 -F 0.80</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_80[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   40179    1101 </code></pre>
@@ -2767,7 +2757,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3e1dcf2c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f75d9aa2c.bed -wao -f 0.9 -F 0.9</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e330bbc9e4.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e371a217f8.bed -wao -f 0.9 -F 0.9</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_90[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   40542     738 </code></pre>
@@ -2797,7 +2787,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f22572b43.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f53cc573c.bed -wao -f 1 -F 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e332a59263.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e317bd74d1.bed -wao -f 1 -F 1</code></pre>
 <pre class="r"><code>summary(as.integer(heart_liver_100[,9]) &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical   40753     527 </code></pre>
@@ -3016,7 +3006,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f2cea1a36.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7a9686c6.bed -wao -f 0.75 -F 0.75
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e34dd967b6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e32ce3f501.bed -wao -f 0.75 -F 0.75
  * Processing input (1): a
 CONVERT TO BED
  * Checking input type... PASS
@@ -3041,7 +3031,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f5013aa.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f5fd964c1.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35b79bc20.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3149487ca.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre><code>         V1   V2   V3    V4   V5   V6
 FALSE 20256 2305 &lt;NA&gt; 11903 2305 &lt;NA&gt;</code></pre>
 <pre class="r"><code>grid.newpage()
@@ -3093,7 +3083,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f536cd92b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f75f35299.bed -wao -f 0.75 -F 0.75
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3511f4114.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e35cf72fe.bed -wao -f 0.75 -F 0.75
  * Processing input (1): a
 CONVERT TO BED
  * Checking input type... PASS
@@ -3118,7 +3108,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3b3e8ecb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f1fd85c9c.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e346110dfb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e32d37d33f.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre><code>         V1   V2   V3   V4   V5   V6
 FALSE 27267 1502 &lt;NA&gt; 7024 1502 &lt;NA&gt;</code></pre>
 <pre class="r"><code>grid.newpage()
@@ -3170,7 +3160,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f10e5dae6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f917b893.bed -wao -f 0.75 -F 0.75
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e32181876a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e313de3ad8.bed -wao -f 0.75 -F 0.75
  * Processing input (1): a
 CONVERT TO BED
  * Checking input type... PASS
@@ -3195,55 +3185,13 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3d120f3a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f37250ddf.bed -wao -f 0.75 -F 0.75</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e346542fc6.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e3492395ff.bed -wao -f 0.75 -F 0.75</code></pre>
 <pre><code>         V1   V2   V3   V4   V5   V6
 FALSE 39998 1288 &lt;NA&gt; 5739 1288 &lt;NA&gt;</code></pre>
 <pre class="r"><code>grid.newpage()
 draw.pairwise.venn(area1 = (39998+1288), area2 = (5739+1288), cross.area = 1288, category = c(&quot;Chimp Heart v. Liver&quot;, &quot;Heart v. Lung&quot;))</code></pre>
 <p><img src="figure/Finding_DMRs.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>(polygon[GRID.polygon.56], polygon[GRID.polygon.57], polygon[GRID.polygon.58], polygon[GRID.polygon.59], text[GRID.text.60], text[GRID.text.61], text[GRID.text.62], lines[GRID.lines.63], text[GRID.text.64], text[GRID.text.65]) </code></pre>
-</div>
-<div id="heart-versus-liver-and-heart-versus-kidney" class="section level2">
-<h2>Heart versus liver and heart versus kidney</h2>
-</div>
-<div id="heart-versus-liver-and-liver-versus-lung" class="section level2">
-<h2>Heart versus liver and liver versus lung</h2>
-</div>
-<div id="heart-versus-liver-and-liver-versus-kidney" class="section level2">
-<h2>Heart versus liver and liver versus kidney</h2>
-</div>
-<div id="heart-versus-liver-and-kidney-versus-lung" class="section level2">
-<h2>Heart versus liver and kidney versus lung</h2>
-</div>
-<div id="heart-versus-lung-and-heart-versus-kidney" class="section level2">
-<h2>Heart versus lung and Heart versus kidney</h2>
-</div>
-<div id="heart-versus-lung-and-liver-versus-kidney" class="section level2">
-<h2>Heart versus lung and liver versus kidney</h2>
-</div>
-<div id="heart-versus-lung-and-liver-versus-lung" class="section level2">
-<h2>Heart versus lung and liver versus lung</h2>
-</div>
-<div id="heart-versus-lung-and-kidney-versus-lung" class="section level2">
-<h2>Heart versus lung and kidney versus lung</h2>
-</div>
-<div id="heart-versus-kidney-and-liver-versus-kidney" class="section level2">
-<h2>Heart versus kidney and liver versus kidney</h2>
-</div>
-<div id="heart-versus-kidney-and-liver-versus-lung" class="section level2">
-<h2>Heart versus kidney and liver versus lung</h2>
-</div>
-<div id="heart-versus-kidney-and-kidney-versus-lung" class="section level2">
-<h2>Heart versus kidney and kidney versus lung</h2>
-</div>
-<div id="liver-versus-kidney-and-liver-versus-lung" class="section level2">
-<h2>Liver versus kidney and liver versus lung</h2>
-</div>
-<div id="liver-versus-kidney-and-kidney-versus-lung" class="section level2">
-<h2>Liver versus kidney and kidney versus lung</h2>
-</div>
-<div id="liver-versus-lung-and-kidney-versus-lung" class="section level2">
-<h2>Liver versus lung and kidney versus lung</h2>
 </div>
 </div>
 <div id="which-overlap-promoters" class="section level1">
@@ -3277,7 +3225,7 @@ VALIDATE REGIONS
 CONVERT TO BED
  * Checking input type... PASS
    Input seems to be in bed format but chr/start/end column names are missing
-   bedtools merge -i /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/i_2d4f36b08482.bed -d 0 -c 4 -o collapse
+   bedtools merge -i /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/i_c3e31fb52313.bed -d 0 -c 4 -o collapse
  * Collapsing 4149 --&gt; 3939 regions... NOTE</code></pre>
 <pre class="r"><code># Various percentages 
 
@@ -3309,7 +3257,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f16e887cb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f69c3c44c.bed -wao -f 0.1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e35ea5d932.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e372c4e733.bed -wao -f 0.1</code></pre>
 <pre class="r"><code>summary(heart_liver_promoter_10[,11] &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical    3979     171 </code></pre>
@@ -3341,7 +3289,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f51130c5a.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f570a9044.bed -wao -f 0.5</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3506b9c1f.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e36f0945d0.bed -wao -f 0.5</code></pre>
 <pre class="r"><code>summary(heart_liver_promoter_50[,11] &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical    4030     119 </code></pre>
@@ -3373,7 +3321,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f4342cc7b.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f63c195f3.bed -wao -f 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3155a36df.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e31fe1a3fe.bed -wao -f 1</code></pre>
 <pre class="r"><code>summary(heart_liver_promoter_100[,11] &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical    4083      66 </code></pre>
@@ -3407,7 +3355,7 @@ VALIDATE REGIONS
  * Check if zero based... PASS
  * Checking sort order... PASS
  * Checking for overlapping &#39;contiguous&#39; regions... PASS
-   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/a_2d4f3becb4eb.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpltCqAX/b_2d4f7677c439.bed -wao -f 1</code></pre>
+   bedtools intersect -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/a_c3e3331ba4f2.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//Rtmph6wW6Y/b_c3e334dd7b61.bed -wao -f 1</code></pre>
 <pre class="r"><code>summary(heart_lung_promoter_100[,11] &gt; 0)</code></pre>
 <pre><code>   Mode   FALSE    TRUE 
 logical    4144       5 </code></pre>

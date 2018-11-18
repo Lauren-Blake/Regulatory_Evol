@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-10-11" />
+
+<title>Conserved_nonconserved_DE</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Conserved_nonconserved_DE</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>October 11, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#set-fdr-levelsvalue">Set FDR level/svalue</a></li>
+<li><a href="#human-heart-kidney">Human heart-kidney</a><ul>
+<li><a href="#human-heart-versus-kidney--de-genes">Human heart versus kidney- DE genes</a></li>
+<li><a href="#human-heart-versus-kidney--conserved-de-genes">Human heart versus kidney- conserved DE genes</a></li>
+<li><a href="#non-conserved">Non conserved</a></li>
+<li><a href="#human-heart-versus-kidney--non-de-genes">Human heart versus kidney- non DE genes</a></li>
+<li><a href="#attempt-to-make-this-into-a-figure">Attempt to make this into a figure</a></li>
+</ul></li>
+<li><a href="#generalize-conserved-de-to-a-function">Generalize conserved DE to a function</a></li>
+<li><a href="#generalize-species-only-de-to-a-function">Generalize species only DE to a function</a><ul>
+<li><a href="#chimp-de-only">Chimp DE only</a></li>
+</ul></li>
+<li><a href="#genearalize-non-de-to-a-function">Genearalize non DE to a function</a></li>
+<li><a href="#figure">Figure</a></li>
+</ul>
+</div>
+
+<pre class="r"><code>getwd()</code></pre>
+<pre><code>## [1] &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/analysis&quot;</code></pre>
+<pre class="r"><code># import sample labels
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_RIN.txt&quot;)
+RIN &lt;- samples$RIN
+# expression
+exprs &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/human_chimp_orth_exp_methyl_7725_hum.txt&quot;, sep=&quot;&quot;)
+# methylation data
+methyl &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/chimp_human_orth_7725_avg_methyl_per_ts_gene.txt&quot;, sep=&quot;&quot;)
+
+# Normalized gene expression data
+cpm.voom.cyclic &lt;- readRDS(&quot;../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds&quot;)
+
+
+# Load libraries
+library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;plyr&quot;)
+library(&quot;ashr&quot;)
+library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;cowplot&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     ggsave</code></pre>
+<pre class="r"><code>library(&quot;vashr&quot;)</code></pre>
+<pre><code>## Loading required package: SQUAREM</code></pre>
+<pre><code>## Loading required package: qvalue</code></pre>
+<pre class="r"><code>library(&quot;devtools&quot;)</code></pre>
+<pre><code>## Warning: package &#39;devtools&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>#devtools::install_github(&quot;jhsiao999/mediation/pkg&quot;)
+library(&quot;medinome&quot;)</code></pre>
+<div id="set-fdr-levelsvalue" class="section level1">
+<h1>Set FDR level/svalue</h1>
+<pre class="r"><code>FDR_level &lt;- 0.05
+FDR_add &lt;- 0.10</code></pre>
+</div>
+<div id="human-heart-kidney" class="section level1">
+<h1>Human heart-kidney</h1>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]</code></pre>
+<div id="human-heart-versus-kidney--de-genes" class="section level2">
+<h2>Human heart versus kidney- DE genes</h2>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset</code></pre>
+</div>
+<div id="human-heart-versus-kidney--conserved-de-genes" class="section level2">
+<h2>Human heart versus kidney- conserved DE genes</h2>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+# Save
+
+cons_DE_heart_kidney_exp &lt;- Y
+cons_DE_heart_kidney_meth &lt;- M
+
+# Find the correlation
+
+corr_cons_DE_HK &lt;- array(&quot;NA&quot;, dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_cons_DE_HK[i,] &lt;- cor(t(cons_DE_heart_kidney_exp[i,]), t(cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_cons_DE_HK &lt;- as.numeric(corr_cons_DE_HK)
+summary(corr_cons_DE_HK)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -0.9927 -0.5724 -0.1875 -0.1631  0.2275  0.9702</code></pre>
+</div>
+<div id="non-conserved" class="section level2">
+<h2>Non conserved</h2>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+
+non_cons_DE_heart_kidney_exp &lt;- Y
+non_cons_DE_heart_kidney_meth &lt;- M
+
+# Find the correlation
+
+corr_non_cons_DE_HK &lt;- array(&quot;NA&quot;, dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_non_cons_DE_HK[i,] &lt;- cor(t(non_cons_DE_heart_kidney_exp[i,]), t(non_cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_non_cons_DE_HK &lt;- as.numeric(corr_non_cons_DE_HK)
+summary(corr_non_cons_DE_HK)</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.96377 -0.42337 -0.06886 -0.04466  0.38677  0.93749</code></pre>
+</div>
+<div id="human-heart-versus-kidney--non-de-genes" class="section level2">
+<h2>Human heart versus kidney- non DE genes</h2>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &gt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+non_DE_heart_kidney_exp &lt;- Y
+non_DE_heart_kidney_meth &lt;- M
+
+# Find the correlation
+
+corr_non_DE_HK &lt;- array(&quot;NA&quot;, dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_non_DE_HK[i,] &lt;- cor(t(non_DE_heart_kidney_exp[i,]), t(non_DE_heart_kidney_meth[i,]))
+}
+
+corr_non_DE_HK &lt;- as.numeric(corr_non_DE_HK)
+summary(corr_non_DE_HK)</code></pre>
+<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -0.96869 -0.34937 -0.02627 -0.02398  0.30455  0.96692</code></pre>
+</div>
+<div id="attempt-to-make-this-into-a-figure" class="section level2">
+<h2>Attempt to make this into a figure</h2>
+<pre class="r"><code>length(corr_cons_DE_HK)</code></pre>
+<pre><code>## [1] 1163</code></pre>
+<pre class="r"><code>length(corr_non_cons_DE_HK)</code></pre>
+<pre><code>## [1] 302</code></pre>
+<pre class="r"><code>length(corr_non_DE_HK)</code></pre>
+<pre><code>## [1] 6260</code></pre>
+<pre class="r"><code>corr_cons_DE_HK &lt;- as.data.frame(corr_cons_DE_HK)
+cons_label &lt;- array(&quot;Conserved DE&quot;, dim=c(nrow(corr_cons_DE_HK),1))
+corr_cons_DE_HK_full &lt;- as.data.frame(cbind(corr_cons_DE_HK, cons_label))
+colnames(corr_cons_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+corr_non_cons_DE_HK &lt;- as.data.frame(corr_non_cons_DE_HK)
+non_cons_label &lt;- array(&quot;Human only DE&quot;, dim=c(nrow(corr_non_cons_DE_HK),1))
+corr_non_cons_DE_HK_full &lt;- as.data.frame(cbind(corr_non_cons_DE_HK, non_cons_label))
+colnames(corr_non_cons_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+corr_non_DE_HK &lt;- as.data.frame(corr_non_DE_HK)
+non_de_label &lt;- array(&quot;Human non-DE&quot;, dim=c(nrow(corr_non_DE_HK),1))
+corr_non_DE_HK_full &lt;- as.data.frame(cbind(corr_non_DE_HK, non_de_label))
+colnames(corr_non_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+# Make correlation
+human_HK &lt;- rbind(corr_cons_DE_HK_full, corr_non_cons_DE_HK_full, corr_non_DE_HK_full)
+
+# Make mean
+
+mean_cons &lt;- mean(t(corr_cons_DE_HK))
+mean_cons_label &lt;- array(&quot;Conserved DE&quot;, dim=c(1,1))
+mean_cons_full &lt;- cbind(mean_cons, mean_cons_label)
+colnames(mean_cons_full) &lt;- c(&quot;Mean&quot;, &quot;DE status&quot;)
+
+mean_non_cons &lt;- mean(t(corr_non_cons_DE_HK))
+mean_non_cons_label &lt;- array(&quot;Human only DE&quot;, dim=c(1,1))
+mean_non_cons_full &lt;- cbind(mean_non_cons, mean_non_cons_label)
+colnames(mean_non_cons_full) &lt;- c(&quot;Mean&quot;, &quot;DE status&quot;)
+
+mean_non_de &lt;- mean(t(corr_non_DE_HK))
+mean_non_de_label &lt;- array(&quot;Human non-DE&quot;, dim=c(1,1))
+mean_non_de_full &lt;- cbind(mean_non_de, mean_non_de_label)
+colnames(mean_non_de_full) &lt;- c(&quot;Mean&quot;, &quot;DE status&quot;)
+
+all_mean &lt;- as.data.frame(rbind(mean_cons_full, mean_non_cons_full, mean_non_de_full), stringsAsFactors = FALSE)
+all_mean[,1] &lt;- as.numeric(all_mean[,1])
+
+
+# Plot without mean
+ggplot(human_HK, aes(x=`Pearson&#39;s correlation`, color=`DE status`)) +
+  geom_density() + ylab(&quot;Density&quot;)</code></pre>
+<p><img src="Conserved_nonconserved_correlation_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># Plot with mean
+#ggplot(human_HK, aes(x=`Pearson&#39;s correlation`, color=`DE status`)) +
+#  geom_density() +  geom_vline(data=all_mean, aes(xintercept=Mean, # color=`DE status`), linetype=&quot;dashed&quot;)</code></pre>
+</div>
+</div>
+<div id="generalize-conserved-de-to-a-function" class="section level1">
+<h1>Generalize conserved DE to a function</h1>
+<pre class="r"><code>cons_de_corr &lt;- function(human_chimp_heart, species_no_DE){
+
+human_chimp_heart &lt;- human_chimp_heart
+  
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+## Human heart versus kidney- DE genes
+
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+
+## Human heart versus kidney- conserved DE genes
+
+
+# Species no DE
+species_no_DE &lt;- species_no_DE
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+# Save
+
+cons_DE_heart_kidney_exp &lt;- Y
+cons_DE_heart_kidney_meth &lt;- M
+
+# Find the correlation
+
+corr_cons_DE_HK &lt;- array(&quot;NA&quot;, dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_cons_DE_HK[i,] &lt;- cor(t(cons_DE_heart_kidney_exp[i,]), t(cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_cons_DE_HK &lt;- as.numeric(corr_cons_DE_HK)
+
+return(corr_cons_DE_HK)
+}
+
+# Heart kidney
+hc_heart_kidney &lt;- as.data.frame(cons_de_corr(c(17, 20, 21, 24, 25, 28, 29),c(1, 2, 5, 6, 9, 10, 13, 14)))
+
+colnames(hc_heart_kidney) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(corr_cons_DE_HK)</code></pre>
+<pre><code>##  corr_cons_DE_HK  
+##  Min.   :-0.9927  
+##  1st Qu.:-0.5724  
+##  Median :-0.1875  
+##  Mean   :-0.1631  
+##  3rd Qu.: 0.2275  
+##  Max.   : 0.9702</code></pre>
+<pre class="r"><code>summary(hc_heart_kidney)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9927      
+##  1st Qu.:-0.5724      
+##  Median :-0.1875      
+##  Mean   :-0.1631      
+##  3rd Qu.: 0.2275      
+##  Max.   : 0.9702</code></pre>
+<pre class="r"><code># Heart liver
+hc_heart_liver &lt;-  as.data.frame(cons_de_corr(c(18, 20, 22, 24, 26, 28, 30),c(1, 3, 5, 7, 9, 11, 13, 15)))
+colnames(hc_heart_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9860      
+##  1st Qu.:-0.6968      
+##  Median :-0.3432      
+##  Mean   :-0.2464      
+##  3rd Qu.: 0.1677      
+##  Max.   : 0.9871</code></pre>
+<pre class="r"><code># Heart lung
+hc_heart_lung &lt;-  as.data.frame(cons_de_corr(c(19, 20, 23, 24, 27, 28, 31),c(1, 4, 5, 8, 9, 12, 13, 16)))
+colnames(hc_heart_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9894      
+##  1st Qu.:-0.5537      
+##  Median :-0.1492      
+##  Mean   :-0.1388      
+##  3rd Qu.: 0.2393      
+##  Max.   : 0.9484</code></pre>
+<pre class="r"><code># Kidney liver
+hc_kidney_liver &lt;-  as.data.frame(cons_de_corr(c(17, 18, 21, 22, 25, 26, 29, 30),c(2, 3, 6, 7, 10, 11,  14,15)))
+colnames(hc_kidney_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9907      
+##  1st Qu.:-0.6082      
+##  Median :-0.2840      
+##  Mean   :-0.2066      
+##  3rd Qu.: 0.1882      
+##  Max.   : 0.9711</code></pre>
+<pre class="r"><code># Kidney lung
+hc_kidney_lung &lt;-  as.data.frame(cons_de_corr(c(17, 19, 21, 23, 25, 27, 29, 31),c(2, 4, 6, 8, 10, 12,  14,16)))
+colnames(hc_kidney_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9938      
+##  1st Qu.:-0.6353      
+##  Median :-0.2690      
+##  Mean   :-0.2256      
+##  3rd Qu.: 0.1354      
+##  Max.   : 0.9574</code></pre>
+<pre class="r"><code># Liver lung
+hc_liver_lung &lt;-  as.data.frame(cons_de_corr(c(18, 19, 22, 23, 26, 27, 30, 31),c(3, 4, 7, 8, 11, 12,  15,16)))
+colnames(hc_liver_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_liver_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9890      
+##  1st Qu.:-0.6679      
+##  Median :-0.3251      
+##  Mean   :-0.2415      
+##  3rd Qu.: 0.1578      
+##  Max.   : 0.9461</code></pre>
+<pre class="r"><code>hc_cons_de &lt;- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+dim(hc_cons_de)</code></pre>
+<pre><code>## [1] 6836    1</code></pre>
+<pre class="r"><code>#hist(hc_cons_de)
+
+write.table(hc_cons_de, &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_de.txt&quot;)</code></pre>
+</div>
+<div id="generalize-species-only-de-to-a-function" class="section level1">
+<h1>Generalize species only DE to a function</h1>
+<pre class="r"><code>non_cons_de_corr &lt;- function(human_chimp_heart, species_no_DE){
+
+human_chimp_heart &lt;- human_chimp_heart
+  
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+## Human heart versus kidney- DE genes
+
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+
+## Human heart versus kidney- conserved DE genes
+
+
+# Species no DE
+species_no_DE &lt;- species_no_DE
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &gt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+# Save
+
+cons_DE_heart_kidney_exp &lt;- Y
+cons_DE_heart_kidney_meth &lt;- M
+
+# Find the correlation
+
+corr_cons_DE_HK &lt;- array(&quot;NA&quot;, dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_cons_DE_HK[i,] &lt;- cor(t(cons_DE_heart_kidney_exp[i,]), t(cons_DE_heart_kidney_meth[i,]))
+}
+
+corr_cons_DE_HK &lt;- as.numeric(corr_cons_DE_HK)
+
+return(corr_cons_DE_HK)
+}
+
+# Heart kidney
+hc_heart_kidney &lt;- as.data.frame(non_cons_de_corr(c(17, 20, 21, 24, 25, 28, 29),c(1, 2, 5, 6, 9, 10, 13, 14)))
+
+colnames(hc_heart_kidney) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(corr_non_cons_DE_HK)</code></pre>
+<pre><code>##  corr_non_cons_DE_HK
+##  Min.   :-0.96377   
+##  1st Qu.:-0.42337   
+##  Median :-0.06886   
+##  Mean   :-0.04466   
+##  3rd Qu.: 0.38677   
+##  Max.   : 0.93749</code></pre>
+<pre class="r"><code>summary(hc_heart_kidney)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.96377     
+##  1st Qu.:-0.42337     
+##  Median :-0.06886     
+##  Mean   :-0.04466     
+##  3rd Qu.: 0.38677     
+##  Max.   : 0.93749</code></pre>
+<pre class="r"><code># Heart liver
+hc_heart_liver &lt;-  as.data.frame(non_cons_de_corr(c(18, 20, 22, 24, 26, 28, 30),c(1, 3, 5, 7, 9, 11, 13, 15)))
+colnames(hc_heart_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9222      
+##  1st Qu.:-0.5463      
+##  Median :-0.1491      
+##  Mean   :-0.1290      
+##  3rd Qu.: 0.3049      
+##  Max.   : 0.8959</code></pre>
+<pre class="r"><code># Heart lung
+hc_heart_lung &lt;-  as.data.frame(non_cons_de_corr(c(19, 20, 23, 24, 27, 28, 31),c(1, 4, 5, 8, 9, 12, 13, 16)))
+colnames(hc_heart_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.96738     
+##  1st Qu.:-0.39398     
+##  Median :-0.06681     
+##  Mean   :-0.04157     
+##  3rd Qu.: 0.32511     
+##  Max.   : 0.89573</code></pre>
+<pre class="r"><code># Kidney liver
+hc_kidney_liver &lt;-  as.data.frame(non_cons_de_corr(c(17, 18, 21, 22, 25, 26, 29, 30),c(2, 3, 6, 7, 10, 11,  14,15)))
+colnames(hc_kidney_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.97932     
+##  1st Qu.:-0.42528     
+##  Median :-0.10351     
+##  Mean   :-0.06574     
+##  3rd Qu.: 0.29806     
+##  Max.   : 0.87763</code></pre>
+<pre class="r"><code># Kidney lung
+hc_kidney_lung &lt;-  as.data.frame(non_cons_de_corr(c(17, 19, 21, 23, 25, 27, 29, 31),c(2, 4, 6, 8, 10, 12,  14,16)))
+colnames(hc_kidney_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9039      
+##  1st Qu.:-0.5772      
+##  Median :-0.2471      
+##  Mean   :-0.1882      
+##  3rd Qu.: 0.1030      
+##  Max.   : 0.9341</code></pre>
+<pre class="r"><code># Liver lung
+hc_liver_lung &lt;-  as.data.frame(non_cons_de_corr(c(18, 19, 22, 23, 26, 27, 30, 31),c(3, 4, 7, 8, 11, 12,  15,16)))
+colnames(hc_liver_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_liver_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9473      
+##  1st Qu.:-0.4992      
+##  Median :-0.1780      
+##  Mean   :-0.1168      
+##  3rd Qu.: 0.2871      
+##  Max.   : 0.9296</code></pre>
+<pre class="r"><code>non_cons_de_corr_human &lt;- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+#hist(non_cons_de_corr_human)
+
+dim(non_cons_de_corr_human)</code></pre>
+<pre><code>## [1] 1441    1</code></pre>
+<pre class="r"><code>write.table(non_cons_de_corr_human, &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_human_only_de.txt&quot;)</code></pre>
+<div id="chimp-de-only" class="section level2">
+<h2>Chimp DE only</h2>
+<pre class="r"><code># Heart kidney
+hc_heart_kidney &lt;- as.data.frame(non_cons_de_corr(c(1, 2, 5, 6, 9, 10, 13, 14),c(17, 20, 21, 24, 25, 28, 29)))
+
+colnames(hc_heart_kidney) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(corr_non_cons_DE_HK)</code></pre>
+<pre><code>##  corr_non_cons_DE_HK
+##  Min.   :-0.96377   
+##  1st Qu.:-0.42337   
+##  Median :-0.06886   
+##  Mean   :-0.04466   
+##  3rd Qu.: 0.38677   
+##  Max.   : 0.93749</code></pre>
+<pre class="r"><code>summary(hc_heart_kidney)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.98671     
+##  1st Qu.:-0.41596     
+##  Median :-0.06873     
+##  Mean   :-0.05857     
+##  3rd Qu.: 0.28471     
+##  Max.   : 0.95825</code></pre>
+<pre class="r"><code># Heart liver
+hc_heart_liver &lt;-  as.data.frame(non_cons_de_corr(c(1, 3, 5, 7, 9, 11, 13, 15), c(18, 20, 22, 24, 26, 28, 30)))
+colnames(hc_heart_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9910      
+##  1st Qu.:-0.5143      
+##  Median :-0.1248      
+##  Mean   :-0.1005      
+##  3rd Qu.: 0.2996      
+##  Max.   : 0.9708</code></pre>
+<pre class="r"><code># Heart lung
+hc_heart_lung &lt;-  as.data.frame(non_cons_de_corr(c(1, 4, 5, 8, 9, 12, 13, 16), c(19, 20, 23, 24, 27, 28, 31)))
+colnames(hc_heart_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.975948    
+##  1st Qu.:-0.386299    
+##  Median : 0.001263    
+##  Mean   :-0.009077    
+##  3rd Qu.: 0.366385    
+##  Max.   : 0.952925</code></pre>
+<pre class="r"><code># Kidney liver
+hc_kidney_liver &lt;-  as.data.frame(non_cons_de_corr(c(2, 3, 6, 7, 10, 11,  14,15), c(17, 18, 21, 22, 25, 26, 29, 30)))
+colnames(hc_kidney_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9853      
+##  1st Qu.:-0.4956      
+##  Median :-0.1370      
+##  Mean   :-0.1075      
+##  3rd Qu.: 0.2726      
+##  Max.   : 0.9871</code></pre>
+<pre class="r"><code># Kidney lung
+hc_kidney_lung &lt;-  as.data.frame(non_cons_de_corr(c(2, 4, 6, 8, 10, 12,  14,16), c(17, 19, 21, 23, 25, 27, 29, 31)))
+colnames(hc_kidney_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.98564     
+##  1st Qu.:-0.45374     
+##  Median :-0.09009     
+##  Mean   :-0.08740     
+##  3rd Qu.: 0.26654     
+##  Max.   : 0.98709</code></pre>
+<pre class="r"><code># Liver lung
+hc_liver_lung &lt;-  as.data.frame(non_cons_de_corr(c(3, 4, 7, 8, 11, 12,  15,16), c(18, 19, 22, 23, 26, 27, 30, 31)))
+colnames(hc_liver_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_liver_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.9804      
+##  1st Qu.:-0.5198      
+##  Median :-0.1549      
+##  Mean   :-0.1168      
+##  3rd Qu.: 0.2706      
+##  Max.   : 0.9615</code></pre>
+<pre class="r"><code>non_cons_de_corr_chimp &lt;- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+#hist(non_cons_de_corr_chimp)
+
+dim(non_cons_de_corr_chimp)</code></pre>
+<pre><code>## [1] 12221     1</code></pre>
+<pre class="r"><code>write.table(non_cons_de_corr_chimp, &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_chimp_only_de.txt&quot;)</code></pre>
+</div>
+</div>
+<div id="genearalize-non-de-to-a-function" class="section level1">
+<h1>Genearalize non DE to a function</h1>
+<pre class="r"><code>non_de_corr &lt;- function(human_chimp_heart){
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+
+# Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &gt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+non_DE_heart_kidney_exp &lt;- Y
+non_DE_heart_kidney_meth &lt;- M
+
+# Find the correlation
+
+corr_non_DE_HK &lt;- array(&quot;NA&quot;, dim=c(nrow(Y),1))
+
+for (i in 1:nrow(Y)){
+  corr_non_DE_HK[i,] &lt;- cor(t(non_DE_heart_kidney_exp[i,]), t(non_DE_heart_kidney_meth[i,]))
+}
+
+corr_non_DE_HK &lt;- as.numeric(corr_non_DE_HK)
+
+return(corr_non_DE_HK)
+}
+
+# Humans 
+
+# Heart kidney
+hc_heart_kidney &lt;- as.data.frame(non_de_corr(c(17, 20, 21, 24, 25, 28, 29)))
+
+colnames(hc_heart_kidney) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(corr_non_DE_HK)</code></pre>
+<pre><code>##  corr_non_DE_HK    
+##  Min.   :-0.96869  
+##  1st Qu.:-0.34937  
+##  Median :-0.02627  
+##  Mean   :-0.02398  
+##  3rd Qu.: 0.30455  
+##  Max.   : 0.96692</code></pre>
+<pre class="r"><code>summary(hc_heart_kidney)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.96869     
+##  1st Qu.:-0.34937     
+##  Median :-0.02627     
+##  Mean   :-0.02398     
+##  3rd Qu.: 0.30455     
+##  Max.   : 0.96692</code></pre>
+<pre class="r"><code># Heart liver
+hc_heart_liver &lt;-  as.data.frame(non_de_corr(c(18, 20, 22, 24, 26, 28, 30)))
+colnames(hc_heart_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.97038     
+##  1st Qu.:-0.37083     
+##  Median :-0.04651     
+##  Mean   :-0.03843     
+##  3rd Qu.: 0.28561     
+##  Max.   : 0.94511</code></pre>
+<pre class="r"><code># Heart lung
+hc_heart_lung &lt;-  as.data.frame(non_de_corr(c(19, 20, 23, 24, 27, 28, 31)))
+colnames(hc_heart_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.98626     
+##  1st Qu.:-0.35191     
+##  Median :-0.03240     
+##  Mean   :-0.03205     
+##  3rd Qu.: 0.28266     
+##  Max.   : 0.97450</code></pre>
+<pre class="r"><code># Kidney liver
+hc_kidney_liver &lt;-  as.data.frame(non_de_corr(c(17, 18, 21, 22, 25, 26, 29, 30)))
+colnames(hc_kidney_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.98306     
+##  1st Qu.:-0.34659     
+##  Median :-0.04081     
+##  Mean   :-0.03140     
+##  3rd Qu.: 0.27483     
+##  Max.   : 0.98990</code></pre>
+<pre class="r"><code># Kidney lung
+hc_kidney_lung &lt;-  as.data.frame(non_de_corr(c(17, 19, 21, 23, 25, 27, 29, 31)))
+colnames(hc_kidney_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.98775     
+##  1st Qu.:-0.36469     
+##  Median :-0.04378     
+##  Mean   :-0.03460     
+##  3rd Qu.: 0.29392     
+##  Max.   : 0.97953</code></pre>
+<pre class="r"><code># Liver lung
+hc_liver_lung &lt;-  as.data.frame(non_de_corr(c(18, 19, 22, 23, 26, 27, 30, 31)))
+colnames(hc_liver_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_liver_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.96791     
+##  1st Qu.:-0.37620     
+##  Median :-0.05377     
+##  Mean   :-0.04541     
+##  3rd Qu.: 0.28522     
+##  Max.   : 0.99868</code></pre>
+<pre class="r"><code>hc_non_de_human &lt;- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+dim(hc_non_de_human)</code></pre>
+<pre><code>## [1] 38073     1</code></pre>
+<pre class="r"><code>write.table(hc_non_de_human, &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_human_nonde.txt&quot;)
+
+
+# Chimps
+
+# Heart kidney
+hc_heart_kidney &lt;- as.data.frame(non_de_corr(c(1, 2, 5, 6, 9, 10, 13, 14)))
+
+colnames(hc_heart_kidney) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_kidney)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.99201     
+##  1st Qu.:-0.34433     
+##  Median :-0.02937     
+##  Mean   :-0.02600     
+##  3rd Qu.: 0.28308     
+##  Max.   : 0.96438</code></pre>
+<pre class="r"><code># Heart liver
+hc_heart_liver &lt;-  as.data.frame(non_de_corr(c(1, 3, 5, 7, 9, 11, 13, 15)))
+colnames(hc_heart_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.96898     
+##  1st Qu.:-0.33686     
+##  Median :-0.02711     
+##  Mean   :-0.02041     
+##  3rd Qu.: 0.29929     
+##  Max.   : 0.97543</code></pre>
+<pre class="r"><code># Heart lung
+hc_heart_lung &lt;-  as.data.frame(non_de_corr(c(1, 4, 5, 8, 9, 12, 13, 16)))
+colnames(hc_heart_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_heart_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.986008    
+##  1st Qu.:-0.328012    
+##  Median :-0.001017    
+##  Mean   :-0.007878    
+##  3rd Qu.: 0.314737    
+##  Max.   : 0.935075</code></pre>
+<pre class="r"><code># Kidney liver
+hc_kidney_liver &lt;-  as.data.frame(non_de_corr(c(2, 3, 6, 7, 10, 11,  14,15)))
+colnames(hc_kidney_liver) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_liver)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.96627     
+##  1st Qu.:-0.35291     
+##  Median :-0.04287     
+##  Mean   :-0.03615     
+##  3rd Qu.: 0.27727     
+##  Max.   : 0.95441</code></pre>
+<pre class="r"><code># Kidney lung
+hc_kidney_lung &lt;-  as.data.frame(non_de_corr(c(2, 4, 6, 8, 10, 12,  14,16)))
+colnames(hc_kidney_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_kidney_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.97337     
+##  1st Qu.:-0.32720     
+##  Median :-0.01949     
+##  Mean   :-0.01895     
+##  3rd Qu.: 0.28235     
+##  Max.   : 0.96105</code></pre>
+<pre class="r"><code># Liver lung
+hc_liver_lung &lt;-  as.data.frame(non_de_corr(c(3, 4, 7, 8, 11, 12,  15,16)))
+colnames(hc_liver_lung) &lt;- c(&quot;Pearson&#39;s correlation&quot;)
+
+summary(hc_liver_lung)</code></pre>
+<pre><code>##  Pearson&#39;s correlation
+##  Min.   :-0.952821    
+##  1st Qu.:-0.328273    
+##  Median :-0.007886    
+##  Mean   :-0.009477    
+##  3rd Qu.: 0.295086    
+##  Max.   : 0.974110</code></pre>
+<pre class="r"><code>hc_non_de_chimp &lt;- rbind(hc_heart_kidney, hc_heart_liver, hc_heart_lung, hc_kidney_liver, hc_kidney_lung, hc_liver_lung)
+
+dim(hc_non_de_chimp)</code></pre>
+<pre><code>## [1] 27293     1</code></pre>
+<pre class="r"><code>#hist(hc_non_de_chimp)
+write.table(hc_non_de_chimp, &quot;/Users/laurenblake/Desktop/Regulatory_Evol/ashlar-trial/data/Corr_human_chimp_DE/corr_hc_chimp_nonde.txt&quot;)</code></pre>
+</div>
+<div id="figure" class="section level1">
+<h1>Figure</h1>
+<pre class="r"><code>corr_cons_DE_HK &lt;- as.data.frame(hc_cons_de)
+cons_label &lt;- array(&quot;Conserved DE&quot;, dim=c(nrow(corr_cons_DE_HK),1))
+corr_cons_DE_HK_full &lt;- as.data.frame(cbind(corr_cons_DE_HK, cons_label))
+colnames(corr_cons_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+corr_non_cons_DE_HK &lt;- as.data.frame(non_cons_de_corr_human)
+non_cons_label &lt;- array(&quot;Human only DE&quot;, dim=c(nrow(corr_non_cons_DE_HK),1))
+corr_non_cons_DE_HK_full &lt;- as.data.frame(cbind(corr_non_cons_DE_HK, non_cons_label))
+colnames(corr_non_cons_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_cons_DE_CK &lt;- as.data.frame(non_cons_de_corr_chimp)
+non_cons_label &lt;- array(&quot;Chimpanzee only DE&quot;, dim=c(nrow(corr_non_cons_DE_CK),1))
+corr_non_cons_DE_CK_full &lt;- as.data.frame(cbind(corr_non_cons_DE_CK, non_cons_label))
+colnames(corr_non_cons_DE_CK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_DE_HK &lt;- as.data.frame(hc_non_de_human)
+non_de_label &lt;- array(&quot;Human non-DE&quot;, dim=c(nrow(corr_non_DE_HK),1))
+corr_non_DE_HK_full &lt;- as.data.frame(cbind(corr_non_DE_HK, non_de_label))
+colnames(corr_non_DE_HK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+corr_non_DE_CK &lt;- as.data.frame(hc_non_de_chimp)
+non_de_label &lt;- array(&quot;Chimpanzee non-DE&quot;, dim=c(nrow(corr_non_DE_CK),1))
+corr_non_DE_CK_full &lt;- as.data.frame(cbind(corr_non_DE_CK, non_de_label))
+colnames(corr_non_DE_CK_full) &lt;- c(&quot;Pearson&#39;s correlation&quot;, &quot;DE status&quot;)
+
+
+# Make correlation
+human_HK &lt;- rbind(corr_cons_DE_HK_full, corr_non_cons_DE_HK_full, corr_non_cons_DE_CK_full, corr_non_DE_HK_full, corr_non_DE_CK_full)
+
+# Plot without mean
+ggplot(human_HK, aes(x=`Pearson&#39;s correlation`, color=`DE status`)) +
+  geom_density() + ylab(&quot;Density&quot;)</code></pre>
+<p><img src="Conserved_nonconserved_correlation_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
