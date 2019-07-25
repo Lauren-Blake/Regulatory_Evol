@@ -1,0 +1,1553 @@
+---
+title: "Overlap_H3K27ac"
+author: "Lauren Blake"
+date: "March 8, 2018"
+output: html_document
+
+---
+
+The goal of this analysis is to identify conserved versus human-specific tDMRs 
+
+# Introduction
+
+```{r}
+# Import libraries
+
+library("ggplot2")
+library("VennDiagram")
+library("plyr")
+library("dplyr")
+library("bedr")
+library("RColorBrewer")
+getwd()
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+
+# Import the data
+
+# Human tDMRs
+humans_heart_kidney_DMRs <- read.delim("../data/humans_heart_kidney_DMRs.txt")
+humans_heart_liver_DMRs <- read.delim("../data/humans_heart_liver_DMRs.txt")
+humans_heart_lung_DMRs <- read.delim("../data/humans_heart_lung_DMRs.txt")
+humans_liver_lung_DMRs <- read.delim("../data/humans_liver_lung_DMRs.txt")
+humans_liver_kidney_DMRs <- read.delim("../data/humans_liver_kidney_DMRs.txt")
+humans_lung_kidney_DMRs <- read.delim("../data/humans_lung_kidney_DMRs.txt")
+
+levels(humans_lung_kidney_DMRs[,1])
+#count(humans_lung_kidney_DMRs[,1])
+
+# Chimp tDMRs
+chimps_heart_kidney_DMRs <- read.delim("../data/chimps_heart_kidney_DMRs.txt")
+chimps_heart_liver_DMRs <- read.delim("../data/chimps_heart_liver_DMRs.txt")
+chimps_heart_lung_DMRs <- read.delim("../data/chimps_heart_lung_DMRs.txt")
+chimps_liver_lung_DMRs <- read.delim("../data/chimps_liver_lung_DMRs.txt")
+chimps_liver_kidney_DMRs <- read.delim("../data/chimps_liver_kidney_DMRs.txt")
+chimps_lung_kidney_DMRs <- read.delim("../data/chimps_lung_kidney_DMRs.txt")
+
+levels(chimps_lung_kidney_DMRs[,1])
+#count(chimps_lung_kidney_DMRs[,1])
+
+# Rhesus tDMRs
+
+rhesus_heart_kidney_DMRs <- read.delim("../data/rhesus_heart_kidney_DMRs.txt")
+rhesus_heart_liver_DMRs <- read.delim("../data/rhesus_heart_liver_DMRs.txt")
+rhesus_heart_lung_DMRs <- read.delim("../data/rhesus_heart_lung_DMRs.txt")
+rhesus_liver_lung_DMRs <- read.delim("../data/rhesus_liver_lung_DMRs.txt")
+rhesus_liver_kidney_DMRs <- read.delim("../data/rhesus_liver_kidney_DMRs.txt")
+rhesus_lung_kidney_DMRs <- read.delim("../data/rhesus_lung_kidney_DMRs.txt")
+
+levels(rhesus_heart_kidney_DMRs[,1])
+#count(rhesus_lung_kidney_DMRs[,1])
+```
+
+
+# Get human, chimp, and rhesus autosomal tDMRs and perform heart specific analysis as an example
+
+```{r}
+# Human heart-liver
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# Human heart-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# human heart-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_heart_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_heart_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX, check.chr = FALSE)
+
+
+# human liver-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_liver_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_liver_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+# human liver-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_liver_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_humans_liver_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# human lung-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- humans_lung_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_humans_lung_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+```
+
+
+
+
+## Heart specific
+
+## Heart specific in humans
+
+```{r}
+# 25% overlap
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+
+
+colnames(heart_liver_heart_lung_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_heart_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_liver_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_liver_lung_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_lung_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+head(heart_liver_heart_lung_only_75)
+head(heart_liver_heart_kidney_only_75)
+head(heart_liver_liver_kidney_only_75)
+head(heart_liver_liver_lung_only_75)
+head(heart_liver_lung_kidney_only_75)
+
+human_heart_liver_DMR <- left_join(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, by= c("chr", "start")) %>% left_join(., heart_liver_liver_lung_only_75, by=c("chr", "start")) %>% left_join(., heart_liver_liver_kidney_only_75, by=c("chr", "start")) %>% left_join(., heart_liver_lung_kidney_only_75, by=c("chr", "start"))
+
+
+human_DMR_heart_specific_25 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,16] > 0 & human_heart_liver_DMR[,23] < 1 & human_heart_liver_DMR[,30] < 1 & human_heart_liver_DMR[,37] < 1),]
+
+dim(human_DMR_heart_specific_25)
+
+# Same direction
+
+human_DMR_heart_specific_25 <- human_DMR_heart_specific_25[which(human_DMR_heart_specific_25[,4] == human_DMR_heart_specific_25[,8]),]
+
+human_DMR_heart_specific_25 <- human_DMR_heart_specific_25[which(human_DMR_heart_specific_25[,4] == human_DMR_heart_specific_25[,11]),]
+
+human_DMR_heart_specific_25 <- human_DMR_heart_specific_25[which(human_DMR_heart_specific_25[,4] == human_DMR_heart_specific_25[,15]),]
+
+## 50% overlap 
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_DMR_heart_specific_50 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_DMR_heart_specific_50)
+
+human_DMR_heart_specific_50 <- human_DMR_heart_specific_50[which(human_DMR_heart_specific_50[,4] == human_DMR_heart_specific_50[,8]),]
+
+human_DMR_heart_specific_50 <- human_DMR_heart_specific_50[which(human_DMR_heart_specific_50[,4] == human_DMR_heart_specific_50[,13]),]
+
+human_DMR_heart_specific_50 <- human_DMR_heart_specific_50[which(human_DMR_heart_specific_50[,4] == human_DMR_heart_specific_50[,17]),]
+
+
+
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+human_DMR_heart_specific_75 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(human_DMR_heart_specific_75)
+
+```
+
+
+
+## Heart specific in chimps
+
+```{r}
+# Chimp heart-liver
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- chimps_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_chimps_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# Chimp heart-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- chimps_heart_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_chimps_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# chimp heart-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- chimps_heart_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_chimps_heart_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX, check.chr = FALSE)
+
+
+# Chimp liver-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- chimps_liver_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_chimps_liver_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+# chimp liver-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- chimps_liver_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_chimps_liver_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# chimp lung-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- chimps_lung_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_chimps_lung_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+# 25% overlap
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+
+
+colnames(heart_liver_heart_lung_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_heart_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_liver_lung_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_liver_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_lung_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+human_heart_liver_DMR <- left_join(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, by= c("chr", "start")) %>% left_join(., heart_liver_liver_lung_only_75, by=c("chr", "start")) %>% left_join(., heart_liver_liver_kidney_only_75, by=c("chr", "start")) %>% left_join(., heart_liver_lung_kidney_only_75, by=c("chr", "start"))
+
+
+chimp_DMR_heart_specific_25 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,16] > 0 & human_heart_liver_DMR[,23] < 1 & human_heart_liver_DMR[,30] < 1 & human_heart_liver_DMR[,37] < 1),]
+
+dim(chimp_DMR_heart_specific_25)
+
+
+
+
+
+
+
+
+##### 50% overlap 
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.5 -F 0.5", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+chimp_DMR_heart_specific_50 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(chimp_DMR_heart_specific_50)
+
+
+
+##### 75% overlap 
+
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_chimps_heart_liver_DMRs_bed, b = sort_chimps_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.75 -F 0.75", check.chr = FALSE)
+
+human_heart_liver_DMR <- cbind(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, heart_liver_liver_lung_only_75, heart_liver_liver_kidney_only_75, heart_liver_lung_kidney_only_75)
+
+chimp_DMR_heart_specific_75 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,18] > 0 & human_heart_liver_DMR[,27] < 1 & human_heart_liver_DMR[,36] < 1 & human_heart_liver_DMR[,45] < 1),]
+
+dim(chimp_DMR_heart_specific_75)
+
+```
+
+
+
+
+## Heart specific in rhesus
+
+
+```{r}
+# Chimp heart-liver
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_heart_liver_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_rhesus_heart_liver_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# Chimp heart-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_heart_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_rhesus_heart_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# chimp heart-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_heart_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_rhesus_heart_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX, check.chr = FALSE)
+
+
+# Chimp liver-lung
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_liver_lung_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_rhesus_liver_lung_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+
+# chimp liver-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_liver_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+sort_rhesus_liver_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+# chimp lung-kidney
+
+# columns to pull
+pull_col <- c(1:3, 16)
+
+# make bed style format
+humans_heart_liver_DMRs_bed <- rhesus_lung_kidney_DMRs[,pull_col]
+
+# Get DMRs on the autosomal chromosomes only
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed[which(humans_heart_liver_DMRs_bed[,1] != "chrX"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr11_gl000202_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+
+humans_heart_liver_DMRs_bed_noX <- humans_heart_liver_DMRs_bed_noX[which(humans_heart_liver_DMRs_bed_noX[,1] != "chr17_gl000204_random"),]
+
+humans_heart_liver_DMRs_bed_noX[,1] <- as.character(humans_heart_liver_DMRs_bed_noX[,1])
+humans_heart_liver_DMRs_bed_noX[,2] <- as.integer(humans_heart_liver_DMRs_bed_noX[,2])
+humans_heart_liver_DMRs_bed_noX[,3] <- as.integer(humans_heart_liver_DMRs_bed_noX[,3])
+summary(humans_heart_liver_DMRs_bed_noX[,3] - humans_heart_liver_DMRs_bed_noX[,2])
+
+sort_rhesus_lung_kidney_DMRs_bed <- bedr.sort.region(humans_heart_liver_DMRs_bed_noX)
+
+```
+
+# Generalize the code with a function
+
+```{r}
+### Write functions for identifying tissue-specific DMRs in a given species
+
+# 25% overlap
+
+tissue_specific_25_overlap <- function(DMR1_tissue_to_overlap, DMR2_tissue_to_overlap, DMR3_tissue_to_overlap, DMR4_no_overlap, DMR5_no_overlap, DMR6_no_overlap){
+  
+  # Translate variables to previously-used code
+  sort_humans_heart_liver_DMRs_bed <- DMR1_tissue_to_overlap
+  sort_humans_liver_lung_DMRs_bed <- DMR2_tissue_to_overlap
+  sort_humans_liver_kidney_DMRs_bed <- DMR3_tissue_to_overlap
+  sort_humans_heart_kidney_DMRs_bed <- DMR4_no_overlap
+  sort_humans_heart_lung_DMRs_bed <- DMR5_no_overlap
+  sort_humans_lung_kidney_DMRs_bed <- DMR6_no_overlap
+
+  # Run bedtools to overlap  
+heart_liver_heart_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_heart_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_liver_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_liver_lung_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_liver_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_heart_lung_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+heart_liver_lung_kidney_only_75 <- bedr(input = list(a = sort_humans_heart_liver_DMRs_bed, b = sort_humans_lung_kidney_DMRs_bed), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+
+  # Convert to same name
+colnames(heart_liver_heart_lung_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_heart_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_liver_lung_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_liver_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+colnames(heart_liver_lung_kidney_only_75) <- c("chr", "start", "end", "direction", "chr.b", "start.b", "end.b", "direction.b", "overlap")
+
+human_heart_liver_DMR <- left_join(heart_liver_heart_lung_only_75, heart_liver_heart_kidney_only_75, by= c("chr", "start")) %>% left_join(., heart_liver_liver_lung_only_75, by=c("chr", "start")) %>% left_join(., heart_liver_liver_kidney_only_75, by=c("chr", "start")) %>% left_join(., heart_liver_lung_kidney_only_75, by=c("chr", "start"))
+
+
+DMR_tissue_specific_25 <- human_heart_liver_DMR[which(human_heart_liver_DMR[,9] > 0 & human_heart_liver_DMR[,16] > 0 & human_heart_liver_DMR[,23] < 1 & human_heart_liver_DMR[,30] < 1 & human_heart_liver_DMR[,37] < 1),]
+
+  return(DMR_tissue_specific_25)
+}
+```
+
+# Heart specific- all species
+
+```{r}
+# Make a function to confirm direction. Note, this will be different for each tissue
+
+heart_specific_direction <- function(filename_from_tissue_specific_overlap_function){
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,8]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,11]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,15]),]
+return(filename_from_tissue_specific_overlap_function)
+  }
+  
+  
+  
+  
+# Human heart specific
+
+human_heart_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_liver_DMRs_bed, sort_humans_heart_lung_DMRs_bed, sort_humans_heart_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_heart_specific_25) # 2949
+
+human_heart_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_lung_DMRs_bed, sort_humans_heart_kidney_DMRs_bed, sort_humans_heart_liver_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_heart_specific_25) #2969
+
+human_heart_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_kidney_DMRs_bed, sort_humans_heart_liver_DMRs_bed, sort_humans_heart_lung_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_heart_specific_25) #2965
+
+## 25% overlap
+human_heart_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_lung_DMRs_bed, sort_humans_heart_kidney_DMRs_bed, sort_humans_heart_liver_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_heart_specific_25)
+
+human_heart_specific_25 <- heart_specific_direction(human_heart_specific_25)
+dim(human_heart_specific_25)
+
+# Chimp heart specific- 25%
+
+chimp_heart_specific_25 <- tissue_specific_25_overlap(sort_chimps_heart_lung_DMRs_bed, sort_chimps_heart_liver_DMRs_bed, sort_chimps_heart_kidney_DMRs_bed, sort_chimps_liver_lung_DMRs_bed, sort_chimps_liver_kidney_DMRs_bed, sort_chimps_lung_kidney_DMRs_bed)
+
+dim(chimp_heart_specific_25)
+
+# Rhesus heart specific- 25%
+
+rhesus_heart_specific_25 <- tissue_specific_25_overlap(sort_rhesus_heart_lung_DMRs_bed, sort_rhesus_heart_liver_DMRs_bed, sort_rhesus_heart_kidney_DMRs_bed, sort_rhesus_liver_lung_DMRs_bed, sort_rhesus_liver_kidney_DMRs_bed, sort_rhesus_lung_kidney_DMRs_bed)
+
+dim(rhesus_heart_specific_25)
+
+
+
+
+```
+
+# Liver specific- all species
+
+```{r}
+# Make a function to confirm direction. Note, this will be different for each tissue
+
+liver_specific_direction <- function(filename_from_tissue_specific_overlap_function){
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,8]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,11]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] != filename_from_tissue_specific_overlap_function[,15]),]
+return(filename_from_tissue_specific_overlap_function)
+  }
+  
+
+  
+  
+# Human liver specific
+
+human_liver_specific_25 <- tissue_specific_25_overlap(sort_humans_liver_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_heart_liver_DMRs_bed,  sort_humans_heart_kidney_DMRs_bed, sort_humans_heart_lung_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_liver_specific_25) #3276
+
+human_liver_specific_25 <- tissue_specific_25_overlap(sort_humans_liver_lung_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_liver_DMRs_bed,  sort_humans_heart_kidney_DMRs_bed, sort_humans_heart_lung_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_liver_specific_25) #3293
+
+human_liver_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_liver_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed, sort_humans_heart_lung_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_liver_specific_25) #3280
+
+## 25% overlap
+human_liver_specific_25 <- tissue_specific_25_overlap(sort_humans_liver_lung_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_liver_DMRs_bed,  sort_humans_heart_kidney_DMRs_bed, sort_humans_heart_lung_DMRs_bed, sort_humans_lung_kidney_DMRs_bed)
+
+dim(human_liver_specific_25)
+
+human_liver_specific_25 <- liver_specific_direction(human_liver_specific_25)
+dim(human_liver_specific_25)
+
+
+# Chimp heart specific- 25%
+
+chimp_liver_specific_25 <- tissue_specific_25_overlap(sort_chimps_liver_lung_DMRs_bed, sort_chimps_liver_kidney_DMRs_bed, sort_chimps_heart_liver_DMRs_bed,  sort_chimps_heart_kidney_DMRs_bed, sort_chimps_heart_lung_DMRs_bed, sort_chimps_lung_kidney_DMRs_bed)
+
+dim(chimp_liver_specific_25)
+
+chimp_liver_specific_25 <- liver_specific_direction(chimp_liver_specific_25)
+dim(chimp_liver_specific_25)
+
+# Rhesus heart specific- 25%
+
+rhesus_liver_specific_25 <- tissue_specific_25_overlap(sort_rhesus_liver_lung_DMRs_bed, sort_rhesus_liver_kidney_DMRs_bed, sort_rhesus_heart_liver_DMRs_bed,  sort_rhesus_heart_kidney_DMRs_bed, sort_rhesus_heart_lung_DMRs_bed, sort_rhesus_lung_kidney_DMRs_bed)
+
+dim(rhesus_liver_specific_25)
+
+rhesus_liver_specific_25 <- liver_specific_direction(rhesus_liver_specific_25)
+dim(rhesus_liver_specific_25)
+
+```
+
+# Lung specific- all species
+
+```{r}
+# Make a function to confirm direction. Note, this will be different for each tissue
+
+lung_specific_direction <- function(filename_from_tissue_specific_overlap_function){
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] != filename_from_tissue_specific_overlap_function[,8]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,11]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,15]),]
+return(filename_from_tissue_specific_overlap_function)
+  }
+  
+
+  
+  
+# Human lung specific
+
+human_lung_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_lung_DMRs_bed, sort_humans_lung_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_heart_liver_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed)
+
+dim(human_lung_specific_25) #479
+
+human_lung_specific_25 <- tissue_specific_25_overlap(sort_humans_lung_kidney_DMRs_bed, sort_humans_heart_lung_DMRs_bed, sort_humans_liver_lung_DMRs_bed,   sort_humans_heart_liver_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed)
+
+dim(human_lung_specific_25) #469
+
+
+human_lung_specific_25 <- tissue_specific_25_overlap(sort_humans_liver_lung_DMRs_bed, sort_humans_lung_kidney_DMRs_bed, sort_humans_heart_lung_DMRs_bed,    sort_humans_heart_liver_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed)
+
+dim(human_lung_specific_25) # 464
+
+## 25% overlap
+
+human_lung_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_lung_DMRs_bed, sort_humans_lung_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed,   sort_humans_heart_liver_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed)
+
+dim(human_lung_specific_25)
+
+human_lung_specific_25 <- lung_specific_direction(human_lung_specific_25)
+dim(human_lung_specific_25)
+
+
+## Chimp liver specific
+
+## 25% overlap
+
+chimp_lung_specific_25 <- tissue_specific_25_overlap(sort_chimps_heart_lung_DMRs_bed, sort_chimps_lung_kidney_DMRs_bed, sort_chimps_liver_lung_DMRs_bed,   sort_chimps_heart_liver_DMRs_bed, sort_chimps_liver_kidney_DMRs_bed, sort_chimps_heart_kidney_DMRs_bed)
+
+dim(chimp_lung_specific_25)
+
+chimp_lung_specific_25 <- lung_specific_direction(chimp_lung_specific_25)
+dim(chimp_lung_specific_25)
+
+
+# Rhesus lung specific
+
+## 25% overlap
+
+rhesus_lung_specific_25 <- tissue_specific_25_overlap(sort_rhesus_heart_lung_DMRs_bed, sort_rhesus_lung_kidney_DMRs_bed, sort_rhesus_liver_lung_DMRs_bed,   sort_rhesus_heart_liver_DMRs_bed, sort_rhesus_liver_kidney_DMRs_bed, sort_rhesus_heart_kidney_DMRs_bed)
+
+dim(rhesus_lung_specific_25)
+
+```
+
+# Kidney specific- all species
+
+```{r}
+# Make a function to confirm direction. Note, this will be different for each tissue
+
+kidney_specific_direction <- function(filename_from_tissue_specific_overlap_function){
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,8]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,11]),]
+  filename_from_tissue_specific_overlap_function <- filename_from_tissue_specific_overlap_function[which(filename_from_tissue_specific_overlap_function[,4] == filename_from_tissue_specific_overlap_function[,15]),]
+return(filename_from_tissue_specific_overlap_function)
+  }
+  
+
+  
+  
+# Human kidney specific
+
+human_kidney_specific_25 <- tissue_specific_25_overlap(sort_humans_lung_kidney_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_heart_liver_DMRs_bed,  sort_humans_heart_lung_DMRs_bed)
+
+dim(human_kidney_specific_25) # 3968
+
+human_kidney_specific_25 <- tissue_specific_25_overlap(sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed, sort_humans_lung_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_heart_liver_DMRs_bed,  sort_humans_heart_lung_DMRs_bed)
+
+dim(human_kidney_specific_25) # 3940
+
+
+human_kidney_specific_25 <- tissue_specific_25_overlap(sort_humans_heart_kidney_DMRs_bed, sort_humans_lung_kidney_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_heart_liver_DMRs_bed,  sort_humans_heart_lung_DMRs_bed)
+
+dim(human_kidney_specific_25)  # 3962
+
+
+## 25% overlap
+
+human_kidney_specific_25 <- tissue_specific_25_overlap(sort_humans_lung_kidney_DMRs_bed, sort_humans_liver_kidney_DMRs_bed, sort_humans_heart_kidney_DMRs_bed, sort_humans_liver_lung_DMRs_bed, sort_humans_heart_liver_DMRs_bed,  sort_humans_heart_lung_DMRs_bed)
+
+dim(human_kidney_specific_25)
+
+human_kidney_specific_25 <- kidney_specific_direction(human_kidney_specific_25)
+dim(human_kidney_specific_25)
+
+
+# Chimp kidney specific
+
+## 25% overlap
+
+chimp_kidney_specific_25 <- tissue_specific_25_overlap(sort_chimps_lung_kidney_DMRs_bed, sort_chimps_liver_kidney_DMRs_bed, sort_chimps_heart_kidney_DMRs_bed, sort_chimps_liver_lung_DMRs_bed, sort_chimps_heart_liver_DMRs_bed,  sort_chimps_heart_lung_DMRs_bed)
+
+dim(chimp_kidney_specific_25)
+
+chimp_kidney_specific_25 <- kidney_specific_direction(chimp_kidney_specific_25)
+dim(chimp_kidney_specific_25)
+
+
+# Rhesus kidney specific
+
+## 25% overlap
+
+rhesus_kidney_specific_25 <- tissue_specific_25_overlap(sort_rhesus_lung_kidney_DMRs_bed, sort_rhesus_liver_kidney_DMRs_bed, sort_rhesus_heart_kidney_DMRs_bed, sort_rhesus_liver_lung_DMRs_bed, sort_rhesus_heart_liver_DMRs_bed,  sort_rhesus_heart_lung_DMRs_bed)
+
+dim(rhesus_kidney_specific_25)
+
+rhesus_kidney_specific_25 <- kidney_specific_direction(rhesus_kidney_specific_25)
+dim(rhesus_kidney_specific_25)
+```
+
+# General function for identifying conserved versus human-specific tDMRs
+
+```{r}
+
+human_chimp_rhesus_hs_versus_overlap_25 <- function(human_DMR_tissue_specific, chimp_DMR_tissue_specific, rhesus_DMR_tissue_specific, put_human_specific, put_human_chimp_conserved, put_human_specific_in_hcr, put_human_chimp_rhesus_conserved){
+  # Rename
+  human_DMR_heart_specific_25 <- human_DMR_tissue_specific[,1:4]
+  chimp_DMR_heart_specific_25 <- chimp_DMR_tissue_specific[,1:4]
+  rhesus_DMR_heart_specific_25 <- rhesus_DMR_tissue_specific[,1:4]
+  
+  human_DMR_heart_specific_25 <- bedr.merge.region(human_DMR_heart_specific_25)
+  chimp_DMR_heart_specific_25 <- bedr.merge.region(chimp_DMR_heart_specific_25)
+  rhesus_DMR_heart_specific_25 <- bedr.merge.region(rhesus_DMR_heart_specific_25)
+   
+  # Find the human 
+human_chimp_heart_specific_25 <- bedr(input = list(a = human_DMR_heart_specific_25, b = chimp_DMR_heart_specific_25), method = "intersect",  params = "-wao -f 0.25 -F 0.25", check.chr = FALSE)
+
+human_chimp_heart_specific_25_hs <- human_chimp_heart_specific_25[which(human_chimp_heart_specific_25[,9] == 0), ]
+colnames(human_chimp_heart_specific_25_hs) <- c("chr", "start", "end")
+
+write.table(human_chimp_heart_specific_25_hs[,1:4], put_human_specific, quote = FALSE, row.names = FALSE, sep = "\t")
+
+# Human-chimp conserved
+
+human_chimp_heart_specific_25_conserved <- human_chimp_heart_specific_25[which(human_chimp_heart_specific_25[,9] > 0), ]
+
+human_chimp_heart_specific_25_conserved <- human_chimp_heart_specific_25_conserved[which(human_chimp_heart_specific_25_conserved[,4] == human_chimp_heart_specific_25_conserved[,8]),]
+
+write.table(human_chimp_heart_specific_25_conserved[,1:4], put_human_chimp_conserved, quote = FALSE, row.names = FALSE, sep = "\t")
+
+
+  row_numbers <- cbind(nrow(human_chimp_heart_specific_25_hs), nrow(human_chimp_heart_specific_25_conserved))
+  
+  return(row_numbers)
+
+}
+
+# Heart specific
+
+human_chimp_rhesus_hs_versus_overlap_25(human_heart_specific_25, chimp_heart_specific_25, rhesus_heart_specific_25,  "../data/overlap_reg/overlap_25/human_chimp_heart_specific_25_hs.bed", "../data/overlap_reg/overlap_25/human_chimp_heart_specific_25_conserved.bed")
+
+# Liver specific
+
+human_chimp_rhesus_hs_versus_overlap_25(human_liver_specific_25, chimp_liver_specific_25, rhesus_liver_specific_25,  "../data/overlap_reg/overlap_25/human_chimp_liver_specific_25_hs.bed", "../data/overlap_reg/overlap_25/human_chimp_liver_specific_25_conserved.bed")
+
+# Lung specific
+
+human_chimp_rhesus_hs_versus_overlap_25(human_lung_specific_25, chimp_lung_specific_25, rhesus_lung_specific_25,  "../data/overlap_reg/overlap_25/human_chimp_lung_specific_25_hs.bed", "../data/overlap_reg/overlap_25/human_chimp_lung_specific_25_conserved.bed")
+
+# Kidney specific
+
+human_chimp_rhesus_hs_versus_overlap_25(human_kidney_specific_25, chimp_kidney_specific_25, rhesus_kidney_specific_25,  "../data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_hs.bed", "../data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_conserved.bed")
+```
+
+# H3K27ac 
+
+## Heart specific 
+
+bedtools intersect -a human_chimp_heart_specific_25_hs.bed -b E095-H3K27ac.broadPeak -wao -f 0.25 > human_chimp_heart_specific_25_hs_H3K27_HEART.bed
+
+bedtools intersect -a human_chimp_heart_specific_25_conserved.bed -b E095-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_heart_specific_25_conserved_H3K27_HEART.bed
+
+## Kidney specific
+
+bedtools intersect -a human_chimp_kidney_specific_25_hs.bed -b BI.Adult_Kidney.H3K27ac.153.broadPeak -wao -f 0.25  > human_chimp_kidney_specific_25_hs_H3K27_KIDNEY.bed
+
+bedtools intersect -a human_chimp_kidney_specific_25_conserved.bed -b BI.Adult_Kidney.H3K27ac.153.broadPeak -wao -f 0.25  > human_chimp_kidney_specific_25_conserved_H3K27_KIDNEY.bed
+
+## Liver specific
+
+bedtools intersect -a human_chimp_liver_specific_25_hs.bed -b E066-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_liver_specific_25_hs_H3K27_LIVER.bed
+
+bedtools intersect -a human_chimp_liver_specific_25_conserved.bed -b E066-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_liver_specific_25_conserved_H3K27_LIVER.bed
+
+## Lung specific
+
+bedtools intersect -a human_chimp_lung_specific_25_hs.bed -b E096-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_lung_specific_25_hs_H3K27_LUNG.bed
+
+bedtools intersect -a human_chimp_lung_specific_25_conserved.bed -b E096-H3K27ac.broadPeak -wao -f 0.25  > human_chimp_lung_specific_25_conserved_H3K27_LUNG.bed
+
+
+# DHS
+
+## Heart specific 
+
+bedtools intersect -a human_chimp_heart_specific_25_hs.bed -b ENCSR501FWC_rep2_1_pe_bwa_biorep_filtered_hotspots.bed  -wao -f 0.25  > human_chimp_heart_specific_25_hs_DHS_HEART.bed
+
+bedtools intersect -a human_chimp_heart_specific_25_conserved.bed -b ENCSR501FWC_rep2_1_pe_bwa_biorep_filtered_hotspots.bed  -wao -f 0.25  > human_chimp_heart_specific_25_conserved_DHS_HEART.bed
+
+## Kidney specific
+
+bedtools intersect -a human_chimp_kidney_specific_25_hs.bed -b ENCSR422PVL_rep1_2_se_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_kidney_specific_25_hs_DHS_KIDNEY.bed
+
+bedtools intersect -a human_chimp_kidney_specific_25_conserved.bed -b ENCSR422PVL_rep1_2_se_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_kidney_specific_25_conserved_DHS_KIDNEY.bed
+
+## Liver specific
+
+bedtools intersect -a human_chimp_liver_specific_25_hs.bed -b ENCSR562FNN_rep1_1_pe_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_liver_specific_25_hs_DHS_LIVER.bed
+
+bedtools intersect -a human_chimp_liver_specific_25_conserved.bed -b ENCSR562FNN_rep1_1_pe_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_liver_specific_25_conserved_DHS_LIVER.bed
+
+## Lung specific
+
+bedtools intersect -a human_chimp_lung_specific_25_hs.bed -b ENCSR541AVF_rep1_3_se_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_lung_specific_25_hs_DHS_LUNG.bed
+
+bedtools intersect -a human_chimp_lung_specific_25_conserved.bed -b ENCSR541AVF_rep1_3_se_bwa_biorep_filtered_hotspots.bed -wao -f 0.25  > human_chimp_lung_specific_25_conserved_DHS_LUNG.bed
+
+# H3K27ac - hypomethylated heart specific TDMRs
+```{r}
+# Read in data- conserved 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_heart_specific_25_conserved_H3K27_HEART.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+
+
+# Read in data- human specific 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_heart_specific_25_hs_H3K27_HEART.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+
+```
+
+# H3K27ac - hypomethylated kidney specific TDMRs
+```{r}
+# Read in data- conserved 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_conserved_H3K27_KIDNEY.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+
+
+# Read in data- conserved 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_hs_H3K27_KIDNEY.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+```
+
+# H3K27ac - hypomethylated liver specific TDMRs
+```{r}
+# Read in data- conserved 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_liver_specific_25_conserved_H3K27_LIVER.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+
+
+# Read in data- hs
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_liver_specific_25_hs_H3K27_LIVER.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+
+```
+
+# H3K27ac - hypomethylated lung specific TDMRs
+```{r}
+# Read in data- conserved 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_lung_specific_25_conserved_H3K27_LUNG.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+
+
+# Read in data- conserved 
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_lung_specific_25_hs_H3K27_LUNG.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+human_chimp_heart_specific_25_hs_test <- human_chimp_heart_specific_25_hs_test[!duplicated(human_chimp_heart_specific_25_hs_test[,1:2]),]
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+
+hyper_only_conserved_overlap <- hyper_only_conserved[which(hyper_only_conserved$V6 != -1),]
+
+nrow(hyper_only_conserved_overlap)
+nrow(hyper_only_conserved)
+```
+
+# DHS in heart specific TDMRs
+```{r}
+# Read in data- conserved
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_heart_specific_25_conserved_DHS_HEART.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+
+# Read in data- hs
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_heart_specific_25_hs_DHS_HEART.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+```
+
+# DHS in kidney specific TDMRs
+```{r}
+# Read in data- conserved
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_conserved_DHS_KIDNEY.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+
+# Read in data- hs
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_hs_DHS_KIDNEY.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+```
+
+# DHS in liver specific TDMRs
+```{r}
+# Read in data- conserved
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_liver_specific_25_conserved_DHS_LIVER.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+
+# Read in data- hs
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_liver_specific_25_hs_DHS_LIVER.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hypo"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+```
+
+# DHS in lung specific TDMRs
+```{r}
+# Read in data- conserved
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_lung_specific_25_conserved_DHS_LUNG.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+
+# Read in data- hs
+human_chimp_heart_specific_25_hs_test <- read.delim("../data/overlap_reg/overlap_25/human_chimp_lung_specific_25_hs_DHS_LUNG.bed", header = FALSE)
+dim(human_chimp_heart_specific_25_hs_test)
+
+hyper_only_conserved <- human_chimp_heart_specific_25_hs_test[which(human_chimp_heart_specific_25_hs_test[,4] == "hyper"),]
+dim(hyper_only_conserved)
+
+# Eliminate duplicates
+
+dedup_human_chimp_heart_specific_25_hs_test <- hyper_only_conserved[!duplicated(hyper_only_conserved[,1:2]),]
+dim(dedup_human_chimp_heart_specific_25_hs_test)
+
+
+# Look at fraction overlapping H3K27ac
+location <- dedup_human_chimp_heart_specific_25_hs_test[which(dedup_human_chimp_heart_specific_25_hs_test$V6 != -1),]
+
+nrow(location)
+
+```
+
+
+# H3K27ac difference of proportions
+
+```{r}
+prop.test(c(1771, 365), c(2183, 413))
+prop.test(c(2033, 614), c(2877, 855))
+prop.test(c(1327, 1053), c(1388, 1074))
+prop.test(c(243, 19), c(285, 30))
+
+hs1 <- 1771+2033+1327+243  
+hs1_total <- 2183+2877+1388+285
+
+cons1 <- 365+614+1053+19
+cons1_total <- 413+855+1074+30
+
+prop.test(c(hs1, cons1), c(hs1_total, cons1_total))
+```
+
+# DHS difference of proportions
+
+```{r}
+prop.test(c(1429, 283), c(2183, 413))
+prop.test(c(146, 65), c(2877, 855))
+prop.test(c(296, 293), c(1388, 1074))
+prop.test(c(28, 5), c(285, 30))
+
+hs2 <- 1429+146+296+28  
+hs2_total <- 2183+2877+1388+285
+
+cons2 <- 283+65+293+5
+cons2_total <- 413+855+1074+30
+
+prop.test(c(hs2, cons2), c(hs2_total, cons2_total))
+
+```
+
+# Combining H3K27ac and DHS results from all tissues
+```{r}
+prop.test(c(hs1+hs2, cons1+cons2), c(hs1_total+hs2_total, cons1_total+cons2_total))
+```
+

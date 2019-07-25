@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>PC_methylation</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">PC_methylation</h1>
+<h4 class="author">Lauren Blake</h4>
+<h4 class="date">December 3, 2018</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#part-one">PART ONE</a><ul>
+<li><a href="#conclusions-from-this-section">Conclusions from this section:</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>This RMarkdown file does the following:</p>
+<p>Analyzing technical variables associated with methylation data.</p>
+<div id="part-one" class="section level2">
+<h2>PART ONE</h2>
+<pre class="r"><code>#Chunk 1
+#Load PCs and methylation data
+
+methyl_pcs &lt;- read.csv(&quot;../data/methylation_pcs_noX.txt&quot;, sep=&quot;&quot;)
+methyl_pcs &lt;- as.data.frame(methyl_pcs)
+
+#This is combined data from all of the samples
+BS_seq_info_two &lt;- read.csv(&quot;../data/BS_seq_info_two.csv&quot;)
+
+BS_seq_sample_info &lt;- read.csv(&quot;../data/sample_info.csv&quot;)
+
+#Print the dimensions of the technical variables
+dim(BS_seq_info_two)</code></pre>
+<pre><code>## [1] 48 32</code></pre>
+<pre class="r"><code>#Add library
+
+library(&quot;ggplot2&quot;)</code></pre>
+<pre class="r"><code>#Chunk 23
+#Testing association between a particular variable and PCs with a linear model
+
+#Make an empty matrix to put all of the data in
+
+pvaluesandr2 = matrix(data = NA, nrow = 5, ncol = 31*2, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;), c(&quot;Species&quot;, &quot;R^2&quot;, &quot;Tissue&quot;, &quot;R^2&quot;, &quot;Number of reads used for methylation extraction&quot;, &quot;R^2&quot;, &quot;Number of CpG sites with at least 1x coverage&quot;, &quot;R^2&quot;, &quot;Number of CpG sites with at least 2x coverage&quot;, &quot;R^2&quot;, &quot;Number of CpG sites with at least 4x coverage&quot;, &quot;R^2&quot;, &quot;Mean coverage at orthologous CpG sites&quot;, &quot;R^2&quot;, &quot;Proportion of orthologous CpG sites with low methylation&quot;, &quot;R^2&quot;, &quot;Proportion of orthologous CpG sites with intermediate methylation&quot;, &quot;R^2&quot;, &quot;Proportion of orthologous CpG sites with high methylation&quot;, &quot;R^2&quot;, &quot;Mean methylation at CpG sites&quot;, &quot;R^2&quot;, &quot;Number of sequenced reads&quot;, &quot;R^2&quot;, &quot;Number of reads after trimming&quot;, &quot;R^2&quot;, &quot;Number of mapped reads&quot;, &quot;R^2&quot;, &quot;Number of reads after deduplication&quot;, &quot;R^2&quot;, &quot;Number of 5&#39; nt for methylation extraction&quot;, &quot;R^2&quot;, &quot;Percentage of methylation in non-CpG context&quot;, &quot;R^2&quot;, &quot;Number of reads mapped to lambda phage genome&quot;, &quot;R^2&quot;, &quot;Coverage on lambda phage DNA&quot;, &quot;R^2&quot;, &quot;Conversion efficiency of lambda phage DNA&quot;, &quot;R^2&quot;, &quot;Read length&quot;, &quot;R^2&quot;, &quot;DNA concentration&quot;, &quot;R^2&quot;, &quot;Library Fragment Size&quot;, &quot;R^2&quot;, &quot;Library concentration&quot;, &quot;R^2&quot;, &quot;Number of libraries&quot;, &quot;R^2&quot;, &quot;Flowcell&quot;, &quot;R^2&quot;, &quot;Library Preparation Date&quot;, &quot;R^2&quot;, &quot;Multiplexing ID&quot;, &quot;R^2&quot;,  &quot;Machine ID&quot;, &quot;R^2&quot;, &quot;Sequencing Facility&quot;, &quot;R^2&quot;, &quot;Encoding&quot;, &quot;R^2&quot;)))        
+
+
+#Check lm to see how well the species and tissue are correlated with a PC
+
+l = 1
+
+for (i in 2:3){
+  #For variables starting in the chart with Species
+  k = 1
+  
+  for (j in 1:5){
+    #print(k)
+    #print(l)
+    checkPC1 &lt;- lm(methyl_pcs[,j] ~ as.factor(BS_seq_info_two[,i]))
+    
+    #Get the summary statistics from it
+    summary(checkPC1)
+    
+    #Get the p-value of the F-statistic
+    summary(checkPC1)$fstatistic
+    
+    fstat &lt;- as.data.frame(summary(checkPC1)$fstatistic)
+    p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    
+    #Fraction of the variance explained by the model
+    r2_value &lt;- summary(checkPC1)$r.squared
+    
+    #Put the summary statistics into the matrix w
+    
+    pvaluesandr2[k,l] &lt;- p_fstat
+    pvaluesandr2[k,l+1] &lt;- r2_value
+    
+    k = k+1  
+    
+  }
+  l = l+2
+}
+
+
+#Check lm to see how well the variables containing numerical data are correlated with a PC
+
+for (i in 4:26){
+  k = 1
+  for (j in 1:5){
+    #print(k)
+    #print(l)
+    checkPC1 &lt;- lm(methyl_pcs[,j] ~ BS_seq_info_two[,i])
+    
+    #Get the summary statistics from it
+    summary(checkPC1)
+    
+    #Get the p-value of the F-statistic
+    summary(checkPC1)$fstatistic
+    
+    fstat &lt;- as.data.frame(summary(checkPC1)$fstatistic)
+    p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    
+    #Fraction of the variance explained by the model
+    r2_value &lt;- summary(checkPC1)$r.squared
+    
+    #Put the summary statistics into the matrix w
+    
+    pvaluesandr2[k,l] &lt;- p_fstat
+    pvaluesandr2[k,l+1] &lt;- r2_value
+    
+    k = k+1  
+    
+  }
+  l = l+2
+}
+
+
+#Check lm to see how well the variables containing ordinal data are correlated with a PC
+
+for (i in 27:32){
+  #For variables starting in the chart with Species
+  k = 1
+  
+  for (j in 1:5){
+    #print(k)
+    #print(l)
+    checkPC1 &lt;- lm(methyl_pcs[,j] ~ as.factor(BS_seq_info_two[,i]))
+    
+    #Get the summary statistics from it
+    summary(checkPC1)
+    
+    #Get the p-value of the F-statistic
+    summary(checkPC1)$fstatistic
+    
+    fstat &lt;- as.data.frame(summary(checkPC1)$fstatistic)
+    p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    
+    #Fraction of the variance explained by the model
+    r2_value &lt;- summary(checkPC1)$r.squared
+    
+    #Put the summary statistics into the matrix w
+    
+    pvaluesandr2[k,l] &lt;- p_fstat
+    pvaluesandr2[k,l+1] &lt;- r2_value
+    
+    k = k+1  
+    
+  }
+  l = l+2
+}
+
+pvaluesandr2</code></pre>
+<pre><code>##          Species          R^2       Tissue        R^2
+## PC1 0.000000e+00 0.9596541802 7.105992e-01 0.03050508
+## PC2 5.384616e-01 0.0271378170 0.000000e+00 0.92552201
+## PC3 1.093297e-03 0.2614356213 1.824896e-11 0.69658756
+## PC4 2.398082e-13 0.7251460149 3.257615e-03 0.26599079
+## PC5 9.832601e-01 0.0007500112 0.000000e+00 0.95085769
+##     Number of reads used for methylation extraction         R^2
+## PC1                                      0.24234789 0.029592098
+## PC2                                      0.58879715 0.006401561
+## PC3                                      0.41576837 0.014448376
+## PC4                                      0.23220205 0.030880073
+## PC5                                      0.09062576 0.060981927
+##     Number of CpG sites with at least 1x coverage          R^2
+## PC1                                  2.961172e-09 5.384839e-01
+## PC2                                  1.884695e-01 3.729503e-02
+## PC3                                  9.825060e-01 1.056637e-05
+## PC4                                  1.567370e-02 1.204188e-01
+## PC5                                  2.027732e-01 3.502332e-02
+##     Number of CpG sites with at least 2x coverage         R^2
+## PC1                                   0.006469523 0.150345101
+## PC2                                   0.095834062 0.059129551
+## PC3                                   0.558063307 0.007511111
+## PC4                                   0.098024101 0.058382094
+## PC5                                   0.044590981 0.084832090
+##     Number of CpG sites with at least 4x coverage         R^2
+## PC1                                    0.36403579 0.017943852
+## PC2                                    0.06926576 0.069958097
+## PC3                                    0.52676835 0.008765627
+## PC4                                    0.38577512 0.016395113
+## PC5                                    0.03014966 0.098140861
+##     Mean coverage at orthologous CpG sites         R^2
+## PC1                             0.57117204 0.007023657
+## PC2                             0.04991866 0.081006324
+## PC3                             0.61409763 0.005571986
+## PC4                             0.44653459 0.012653145
+## PC5                             0.02748346 0.101294843
+##     Proportion of orthologous CpG sites with low methylation         R^2
+## PC1                                             0.0021508865 0.186895441
+## PC2                                             0.0003652673 0.243517944
+## PC3                                             0.7146807055 0.002932793
+## PC4                                             0.7978130391 0.001441232
+## PC5                                             0.0162408197 0.119210038
+##     Proportion of orthologous CpG sites with intermediate methylation
+## PC1                                                      2.420571e-07
+## PC2                                                      1.284282e-02
+## PC3                                                      9.218255e-02
+## PC4                                                      1.938715e-01
+## PC5                                                      4.604209e-01
+##            R^2 Proportion of orthologous CpG sites with high methylation
+## PC1 0.44327257                                              8.790746e-13
+## PC2 0.12718592                                              8.986943e-01
+## PC3 0.06041675                                              7.657407e-02
+## PC4 0.03641473                                              3.334019e-01
+## PC5 0.01190293                                              2.688905e-02
+##              R^2 Mean methylation at CpG sites          R^2
+## PC1 0.6743096761                  2.597922e-14 0.7201697327
+## PC2 0.0003561364                  9.125914e-01 0.0002647744
+## PC3 0.0665967876                  2.121341e-03 0.1873484101
+## PC4 0.0203519102                  2.861303e-01 0.0246932078
+## PC5 0.1020397871                  5.659653e-01 0.0072146885
+##     Number of sequenced reads        R^2 Number of reads after trimming
+## PC1               0.009998997 0.13566735                     0.01010782
+## PC2               0.407654100 0.01495477                     0.38730286
+## PC3               0.173671130 0.03986040                     0.19829575
+## PC4               0.216308900 0.03303653                     0.21383754
+## PC5               0.063740486 0.07275260                     0.06761553
+##            R^2 Number of mapped reads         R^2
+## PC1 0.13530114             0.62239052 0.005315627
+## PC2 0.01629083             0.83236496 0.000984157
+## PC3 0.03571427             0.04487892 0.084613706
+## PC4 0.03338839             0.33464743 0.020248369
+## PC5 0.07076791             0.01445224 0.123176676
+##     Number of reads after deduplication         R^2
+## PC1                          0.24234789 0.029592098
+## PC2                          0.58879715 0.006401561
+## PC3                          0.41576837 0.014448376
+## PC4                          0.23220205 0.030880073
+## PC5                          0.09062576 0.060981927
+##     Number of 5&#39; nt for methylation extraction         R^2
+## PC1                                  0.6320601 0.005026066
+## PC2                                  0.7600130 0.002048499
+## PC3                                  0.6169891 0.005481751
+## PC4                                  0.2194449 0.032596687
+## PC5                                  0.6259127 0.005208998
+##     Percentage of methylation in non-CpG context          R^2
+## PC1                                   0.43986219 1.302647e-02
+## PC2                                   0.98604618 6.722200e-06
+## PC3                                   0.27318841 2.604098e-02
+## PC4                                   0.97072284 2.960252e-05
+## PC5                                   0.01701047 1.176349e-01
+##     Number of reads mapped to lambda phage genome          R^2
+## PC1                                    0.87684231 0.0005276692
+## PC2                                    0.45115526 0.0123995627
+## PC3                                    0.06935851 0.0699131789
+## PC4                                    0.03844269 0.0898712531
+## PC5                                    0.75567643 0.0021255752
+##     Coverage on lambda phage DNA        R^2
+## PC1                  0.046446220 0.08344945
+## PC2                  0.082416329 0.06414130
+## PC3                  0.088453156 0.06178794
+## PC4                  0.003361155 0.17219078
+## PC5                  0.312258104 0.02219005
+##     Conversion efficiency of lambda phage DNA          R^2 Read length
+## PC1                                 0.5482041 0.0078922063   0.7601980
+## PC2                                 0.6831152 0.0036554902   0.2282825
+## PC3                                 0.6847866 0.0036149193   0.9289147
+## PC4                                 0.9377868 0.0001338751   0.8513707
+## PC5                                 0.1033390 0.0566390911   0.6953966
+##              R^2 DNA concentration          R^2 Library Fragment Size
+## PC1 0.0020452457         0.5048653 0.0097252275            0.77399751
+## PC2 0.0313955071         0.3779842 0.0169360138            0.39154762
+## PC3 0.0001748861         0.2496834 0.0287000719            0.83261925
+## PC4 0.0007712476         0.9137013 0.0002580673            0.03641812
+## PC5 0.0033634611         0.7022867 0.0032057244            0.81489036
+##              R^2 Library concentration          R^2 Number of libraries
+## PC1 0.0018104466            0.06319181 7.304363e-02          0.22965484
+## PC2 0.0160040745            0.64762566 4.580537e-03          0.09480894
+## PC3 0.0009811302            0.86513668 6.337235e-04          0.70283756
+## PC4 0.0917110479            0.04014877 8.839538e-02          0.97968197
+## PC5 0.0012038832            0.97076360 2.952012e-05          0.30604525
+##              R^2  Flowcell       R^2 Library Preparation Date       R^2
+## PC1 3.121387e-02 0.7429279 0.5982280                0.4337596 0.3523720
+## PC2 5.948563e-02 0.8527387 0.5569944                0.9413863 0.1968376
+## PC3 3.193299e-03 0.4913797 0.6662957                0.8232920 0.2493840
+## PC4 1.425399e-05 0.6675490 0.6207337                0.2533054 0.4029835
+## PC5 2.276073e-02 0.4002271 0.6887227                0.1387550 0.4469582
+##     Multiplexing ID        R^2 Machine ID        R^2 Sequencing Facility
+## PC1      0.22977961 0.14639607  0.6664859 0.07134384           0.7734944
+## PC2      0.24820744 0.14182986  0.7274382 0.06284889           0.5114532
+## PC3      0.66839240 0.07107864  0.9182417 0.03290565           0.7299973
+## PC4      0.03921478 0.23599643  0.0219365 0.26132792           0.7435460
+## PC5      0.12376179 0.18054010  0.9252666 0.03149420           0.4119342
+##             R^2  Encoding         R^2
+## PC1 0.001818735 0.7734944 0.001818735
+## PC2 0.009429178 0.5114532 0.009429178
+## PC3 0.002614305 0.7299973 0.002614305
+## PC4 0.002349493 0.7435460 0.002349493
+## PC5 0.014685854 0.4119342 0.014685854</code></pre>
+<pre class="r"><code>#Chunk 24
+#Get rid of the R^2 values
+all_col &lt;- 1:ncol(pvaluesandr2)
+matrix_pval &lt;- pvaluesandr2[ , all_col%%2==1 ]
+
+#Find which variables/PC combinations are p-value &lt; 0.05
+TorF_matrix &lt;- matrix_pval &lt;=0.05
+sum(matrix_pval &lt;= 0.05/((length(BS_seq_info_two)-1)*5))</code></pre>
+<pre><code>## [1] 9</code></pre>
+<pre class="r"><code>#Find which variables/PC combinations are p-value &lt; 0.05 not including species or tissue (because those explain PC1 and PC2)
+matrix_pval_no_tissue_or_species = matrix_pval[ , 3:ncol(matrix_pval)]
+
+sum(matrix_pval_no_tissue_or_species &lt;= 0.05/(ncol(matrix_pval_no_tissue_or_species)*5))</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>#Distribution of p-values adjusted by FDR not including species or tissue
+
+fdr_val = p.adjust(matrix_pval_no_tissue_or_species, method = &quot;fdr&quot;, n = length(matrix_pval_no_tissue_or_species))
+fdr_val_order = fdr_val[order(fdr_val)]
+hist(fdr_val_order, ylab = &quot;BH-adjusted p-values&quot;, main = &quot;Distribution of Benjamini and Hochberg adjusted p-values&quot;, breaks = 10)</code></pre>
+<p><img src="PC_RNA_seq_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>matrix_fdr_val = matrix(data = fdr_val, nrow = 5, ncol = 36, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;), c(&quot;Individual&quot;, &quot;Sex&quot;, &quot;Age quantile&quot;, &quot;Hours post&quot;, &quot;Cause of death&quot;, &quot;Possible conditions&quot;, &quot;Source&quot;, &quot;Number of reads used for methulation extraction&quot;,  &quot;Number of CpG sites with at least 1x coverage&quot;, &quot;Number of CpG sites with at least 2x coverage&quot;,  &quot;Number of CpG sites with at least 4x coverage&quot;,  &quot;Mean coverage at orthologous CpG sites&quot;, &quot;Proportion of orthologous CpG sites with low methylation&quot;,  &quot;Proportion of orthologous CpG sites with intermediate methylation&quot;,  &quot;Proportion of orthologous CpG sites with high methylation&quot;,  &quot;Mean methylation at CpG sites&quot;,  &quot;Number of sequenced reads&quot;, &quot;Number of reads after trimming&quot;,  &quot;Number of mapped reads&quot;, &quot;Number of reads after deduplication&quot;,  &quot;Number of 5&#39; nt for methylation extraction&quot;, &quot;Percentage of methylation in non-CpG context&quot;,  &quot;Number of reads mapped to lambda phage genome&quot;,  &quot;Coverage on lambda phage DNA&quot;, &quot;Conversion efficiency of lambda phage DNA&quot;,  &quot;Read length&quot;,  &quot;DNA concentration&quot;,  &quot;Library Fragment Size&quot;, &quot;Library concentration&quot;, &quot;Number of libraries&quot;, &quot;Flowcell&quot;, &quot;Library Preparation Date&quot;, &quot;Multiplexing ID&quot;, &quot;Machine ID&quot;, &quot;Sequencing Facility&quot;,  &quot;Encoding&quot;)))        </code></pre>
+<pre><code>## Warning in matrix(data = fdr_val, nrow = 5, ncol = 36, dimnames =
+## list(c(&quot;PC1&quot;, : data length [145] is not a sub-multiple or multiple of the
+## number of columns [36]</code></pre>
+<pre class="r"><code>matrix_fdr_val</code></pre>
+<pre><code>##     Individual          Sex Age quantile Hours post Cause of death
+## PC1  0.5830045 1.431233e-07    0.1042312  0.7535802      0.8810633
+## PC2  0.8893290 5.805051e-01    0.3384165  0.3047571      0.2585073
+## PC3  0.7535802 9.860462e-01    0.8795563  0.8486823      0.9074130
+## PC4  0.5805051 1.541573e-01    0.3384165  0.7535802      0.7787799
+## PC5  0.3384165 5.805051e-01    0.2494334  0.2185850      0.2097422
+##     Possible conditions       Source
+## PC1          0.04455408 8.774570e-06
+## PC2          0.01059275 1.541573e-01
+## PC3          0.91243609 3.384165e-01
+## PC4          0.93292654 5.805051e-01
+## PC5          0.15415734 7.854238e-01
+##     Number of reads used for methulation extraction
+## PC1                                    6.373291e-11
+## PC2                                    9.750072e-01
+## PC3                                    3.265659e-01
+## PC4                                    7.032446e-01
+## PC5                                    2.097422e-01
+##     Number of CpG sites with at least 1x coverage
+## PC1                                  3.766987e-12
+## PC2                                  9.750072e-01
+## PC3                                  4.455408e-02
+## PC4                                  6.382907e-01
+## PC5                                  8.810633e-01
+##     Number of CpG sites with at least 2x coverage
+## PC1                                     0.1332394
+## PC2                                     0.7535802
+## PC3                                     0.5474416
+## PC4                                     0.5805051
+## PC5                                     0.3047571
+##     Number of CpG sites with at least 4x coverage
+## PC1                                     0.1332394
+## PC2                                     0.7535802
+## PC3                                     0.5805051
+## PC4                                     0.5805051
+## PC5                                     0.3047571
+##     Mean coverage at orthologous CpG sites
+## PC1                              0.9074130
+## PC2                              0.9432015
+## PC3                              0.2494334
+## PC4                              0.7032446
+## PC5                              0.1541573
+##     Proportion of orthologous CpG sites with low methylation
+## PC1                                                0.5830045
+## PC2                                                0.8893290
+## PC3                                                0.7535802
+## PC4                                                0.5805051
+## PC5                                                0.3384165
+##     Proportion of orthologous CpG sites with intermediate methylation
+## PC1                                                         0.9074130
+## PC2                                                         0.9124361
+## PC3                                                         0.9074130
+## PC4                                                         0.5805051
+## PC5                                                         0.9074130
+##     Proportion of orthologous CpG sites with high methylation
+## PC1                                                 0.7778051
+## PC2                                                 0.9860462
+## PC3                                                 0.6189425
+## PC4                                                 0.9860462
+## PC5                                                 0.1541573
+##     Mean methylation at CpG sites Number of sequenced reads
+## PC1                     0.9631980                0.24943340
+## PC2                     0.7787799                0.33841654
+## PC3                     0.3047571                0.33841654
+## PC4                     0.2425655                0.06092094
+## PC5                     0.9124361                0.67578246
+##     Number of reads after trimming Number of mapped reads
+## PC1                      0.8735120              0.9124361
+## PC2                      0.9124361              0.5805051
+## PC3                      0.9124361              0.9750072
+## PC4                      0.9750072              0.9511316
+## PC5                      0.3484689              0.9124361
+##     Number of reads after deduplication
+## PC1                           0.8332664
+## PC2                           0.7535802
+## PC3                           0.5830045
+## PC4                           0.9750072
+## PC5                           0.9124361
+##     Number of 5&#39; nt for methylation extraction
+## PC1                                  0.9124361
+## PC2                                  0.7535802
+## PC3                                  0.9432015
+## PC4                                  0.2425655
+## PC5                                  0.9432015
+##     Percentage of methylation in non-CpG context
+## PC1                                    0.3047571
+## PC2                                    0.9124361
+## PC3                                    0.9575940
+## PC4                                    0.2425655
+## PC5                                    0.9860462
+##     Number of reads mapped to lambda phage genome
+## PC1                                     0.5805051
+## PC2                                     0.3384165
+## PC3                                     0.9124361
+## PC4                                     0.9860462
+## PC5                                     0.6723721
+##     Coverage on lambda phage DNA Conversion efficiency of lambda phage DNA
+## PC1                    0.9124361                                 0.7764832
+## PC2                    0.9511316                                 0.9750072
+## PC3                    0.8284889                                 0.9432015
+## PC4                    0.9124361                                 0.5830045
+## PC5                    0.7535802                                 0.4470994
+##     Read length DNA concentration Library Fragment Size
+## PC1   0.5805051         0.9124361             0.9124361
+## PC2   0.5830045         0.9124361             0.8332664
+## PC3   0.9124361         0.9750072             0.9124361
+## PC4   0.2425655         0.1871055             0.9124361
+## PC5   0.4078514         0.9750072             0.7535802
+##     Library concentration Number of libraries     Flowcell
+## PC1             0.9124361           0.5830045 1.431233e-07
+## PC2             0.8332664           0.8893290 5.805051e-01
+## PC3             0.9124361           0.7535802 9.860462e-01
+## PC4             0.9124361           0.5805051 1.541573e-01
+## PC5             0.7535802           0.3384165 5.805051e-01
+##     Library Preparation Date Multiplexing ID Machine ID
+## PC1                0.1042312       0.7535802  0.8810633
+## PC2                0.3384165       0.3047571  0.2585073
+## PC3                0.8795563       0.8486823  0.9074130
+## PC4                0.3384165       0.7535802  0.7787799
+## PC5                0.2494334       0.2185850  0.2097422
+##     Sequencing Facility     Encoding
+## PC1          0.04455408 8.774570e-06
+## PC2          0.01059275 1.541573e-01
+## PC3          0.91243609 3.384165e-01
+## PC4          0.93292654 5.805051e-01
+## PC5          0.15415734 7.854238e-01</code></pre>
+<pre class="r"><code>#write.csv(matrix_fdr_val, &quot;../data/matrix_pval_no_tissue_or_species1.csv&quot;)</code></pre>
+<pre class="r"><code>#Chunk 25
+# Number of values significant at 10% FDR not including species or tissue   
+
+sum(matrix_fdr_val &lt;= 0.1)</code></pre>
+<pre><code>## [1] 12</code></pre>
+<pre class="r"><code>#Get the coordinates of which variables/PC combinations are significant at FDR 10%
+
+TorF_matrix_fdr &lt;- matrix_fdr_val &lt;=0.1
+coor_to_check &lt;- which(matrix_fdr_val &lt;= 0.1, arr.ind=T)
+coor_to_check &lt;- as.data.frame(coor_to_check)
+
+# Number of variables significant at 10% FDR not including species or tissue (note: off by 3 from column number in BS_seq_info_two file; see notes in next section)
+
+coor_to_check_col &lt;- coor_to_check$col
+unique(coor_to_check_col)</code></pre>
+<pre><code>## [1]  2  6  7  8  9 17 31 35 36</code></pre>
+<pre class="r"><code>length(unique(coor_to_check_col))</code></pre>
+<pre><code>## [1] 9</code></pre>
+<div id="conclusions-from-this-section" class="section level3">
+<h3>Conclusions from this section:</h3>
+<p>Check the following variables to see if they segregate with species and/or tissue</p>
+<ul>
+<li>Number of CpG sites with at least 1x coverage</li>
+<li>Number of CpG sites with at least 2x coverage</li>
+<li>Proportion of orthologous CpG sites with low methylation</li>
+<li>Proportion of orthologous CpG sites with intermediate methylation</li>
+<li>Proportion of orthologous CpG sites with high methylation</li>
+<li>Mean methylation level at orthologous CpG sites</li>
+<li>Coverage on the lambda phage genome</li>
+</ul>
+<p>For the variable(s) that correlate, see if these segregate with either species or tissue.</p>
+<p>In coor_to_check_col, row is the PC # and col is the column # -3 that is associated with the PC Want to take the coor_to_check_col column # and add three. That is the variable that we should check to see if it correlates with tissue or species.</p>
+<pre class="r"><code>#Chunk 27
+#Testing to see if differences across variable groups are statistically significant for species. If statistically significant, then we should investigate further whether this variable is confounded with species or tissue. 
+var_numb = c(5,6,9,10,11,12,20)
+var.numb = c(5,6,9,10,11,12,20)
+#Make a matrix to store the p-values
+
+pvalues_species1 = matrix(data = NA, nrow = 1, ncol = 6, dimnames = list(c(&quot;p-value&quot;), c(&quot;Individual&quot;,&quot;Age quantile&quot;, &quot;Hours post&quot;, &quot;Cause of death&quot;, &quot;Possible conditions&quot;, &quot;Source&quot;)))
+                                                                              
+j=1
+for (i in var.numb[1:6]) {  
+ pvalues_species1[,j] &lt;- chisq.test(as.factor(BS_seq_info_two[,i]), as.factor(BS_seq_info_two$Species), simulate.p.value = TRUE)$p.value
+}
+
+
+
+
+
+
+
+
+
+
+
+pvalues_species2 =  matrix(data = NA, nrow = 1, ncol = 7, dimnames = list(c(&quot;p-value&quot;), c(&quot;Number of CpG sites with at least 1x coverage&quot;, &quot;Number of CpG sites with at least 2x coverage&quot;, &quot;Proportion of orthologous CpG sites with low methylation&quot;, &quot;Proportion of orthologous CpG sites with intermediate methylation&quot;, &quot;Proportion of orthologous CpG sites with high methylation&quot;, &quot;Mean methylation level at orthologous CpG sites&quot;, &quot;Coverage on the lambda phage genome&quot;)))
+
+      
+
+var_numb = c(5,6,9,10,11,12,20)
+
+#Performing this test of significance for variables that are numerical data (Using an ANOVA)
+j=1
+for (i in var.numb[1:7]) {  
+  summary_anova = summary(aov(BS_seq_info_two[,i]~ as.factor(BS_seq_info_two$Species)))
+  data_summary_anova &lt;- as.data.frame(summary_anova[[1]]$`Pr(&gt;F)`)
+  p_val_anova &lt;- data_summary_anova[1,]
+  pvalues_species2[,j] &lt;- p_val_anova  
+  j=j+1
+}
+
+pvalues_species &lt;- cbind(pvalues_species1, pvalues_species2)
+
+
+#Testing to see if differences across variable groups are statistically significant for tissues. If statistically significant, then we should investigate further whether this variable is confounded with species or tissue. 
+
+pvalues_tissues1 = matrix(data = NA, nrow = 1, ncol = 6, dimnames = list(c(&quot;p-value&quot;), c(&quot;Individual&quot;,&quot;Age quantile&quot;, &quot;Hours post&quot;, &quot;Cause of death&quot;, &quot;Possible conditions&quot;, &quot;Source&quot;)))
+                                                                              
+j=1
+for (i in var.numb[1:6]) {  
+ pvalues_tissues1[,j] &lt;- chisq.test(as.factor(BS_seq_info_two[,i]), as.factor(BS_seq_info_two$Tissue), simulate.p.value = TRUE)$p.value
+  j=j+1
+}
+
+
+#Make a matrix to store the p-values
+
+pvalues_tissues2 =  matrix(data = NA, nrow = 1, ncol = 7, dimnames = list(c(&quot;p-value&quot;), c(&quot;Number of CpG sites with at least 1x coverage&quot;, &quot;Number of CpG sites with at least 2x coverage&quot;, &quot;Proportion of orthologous CpG sites with low methylation&quot;, &quot;Proportion of orthologous CpG sites with intermediate methylation&quot;, &quot;Proportion of orthologous CpG sites with high methylation&quot;, &quot;Mean methylation level at orthologous CpG sites&quot;, &quot;Coverage on the lambda phage genome&quot;)))
+
+#Performing this test of significance for variables that are numerical data (Using an ANOVA)
+j=1
+for (i in var.numb[1:7]) {  
+  summary_anova = summary(aov(BS_seq_info_two[,i]~ as.factor(BS_seq_info_two$Tissue)))
+  data_summary_anova &lt;- as.data.frame(summary_anova[[1]]$`Pr(&gt;F)`)
+  p_val_anova &lt;- data_summary_anova[1,]
+  pvalues_tissues2[,j] &lt;- p_val_anova  
+  j=j+1
+}
+
+
+pvalues_tissues &lt;- cbind(pvalues_tissues1, pvalues_tissues2)
+
+collapse_table &lt;- rbind(pvalues_species, pvalues_tissues)
+colnames(collapse_table) &lt;- c(&quot;Individual&quot;, &quot;Age quantile&quot;, &quot;Hours postmortem&quot;, &quot;Cause of death&quot;, &quot;Possible conditions affecting tissues&quot;, &quot;Source&quot;, &quot;Number of CpG sites with at least 1x coverage&quot;, &quot;Number of CpG sites with at least 2x coverage&quot;, &quot;Proportion of orthologous CpG sites with low methylation&quot;, &quot;Proportion of orthologous CpG sites with intermediate methylation&quot;, &quot;Proportion of orthologous CpG sites with high methylation&quot;, &quot;Mean methylation level at orthologous CpG sites&quot;, &quot;Coverage on the lambda phage genome&quot;)
+
+rownames(collapse_table) &lt;- c(&quot;Species&quot;, &quot;Tissue&quot;)
+
+collapse_table</code></pre>
+<pre><code>##         Individual Age quantile Hours postmortem Cause of death
+## Species 0.04847576           NA               NA             NA
+## Tissue  1.00000000            1        0.2723638        0.13993
+##         Possible conditions affecting tissues    Source
+## Species                                    NA        NA
+## Tissue                              0.5042479 0.8415792
+##         Number of CpG sites with at least 1x coverage
+## Species                                  3.452343e-12
+## Tissue                                   6.391236e-01
+##         Number of CpG sites with at least 2x coverage
+## Species                                   0.003819978
+## Tissue                                    0.129960572
+##         Proportion of orthologous CpG sites with low methylation
+## Species                                              0.002856827
+## Tissue                                               0.003785922
+##         Proportion of orthologous CpG sites with intermediate methylation
+## Species                                                      9.772687e-06
+## Tissue                                                       3.548493e-02
+##         Proportion of orthologous CpG sites with high methylation
+## Species                                              1.488956e-10
+## Tissue                                               8.046766e-02
+##         Mean methylation level at orthologous CpG sites
+## Species                                    6.115829e-13
+## Tissue                                     9.695033e-02
+##         Coverage on the lambda phage genome
+## Species                        0.1154996111
+## Tissue                         0.0004701676</code></pre>
+<pre class="r"><code>#Chunk 28
+#Calculate q-values (FDR = 10%)
+
+fdr_val = p.adjust(collapse_table, method = &quot;fdr&quot;, n = length(collapse_table)*2)
+fdr_val_order = fdr_val[order(fdr_val)]
+hist(fdr_val_order, ylab = &quot;BH-adjusted p-values&quot;, main = &quot;Distribution of Benjamini and Hochberg adjusted p-values&quot;, breaks = 10)</code></pre>
+<p><img src="PC_RNA_seq_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>collapse_table_fdr_val = matrix(data = fdr_val, nrow = 2, ncol = 13, dimnames = list(c(&quot;Species&quot;, &quot;Tissue&quot;), c(&quot;Individual&quot;, &quot;Age quantile&quot;, &quot;Hours postmortem&quot;, &quot;Cause of death&quot;, &quot;Possible conditions affecting tissues&quot;, &quot;Source&quot;, &quot;Number of CpG sites with at least 1x coverage&quot;, &quot;Number of CpG sites with at least 2x coverage&quot;, &quot;Proportion of orthologous CpG sites with low methylation&quot;, &quot;Proportion of orthologous CpG sites with intermediate methylation&quot;, &quot;Proportion of orthologous CpG sites with high methylation&quot;, &quot;Mean methylation level at orthologous CpG sites&quot;, &quot;Coverage on the lambda phage genome&quot;)))
+
+collapse_table_fdr_val</code></pre>
+<pre><code>##         Individual Age quantile Hours postmortem Cause of death
+## Species   0.252074           NA               NA             NA
+## Tissue    1.000000            1        0.8851824      0.4850908
+##         Possible conditions affecting tissues Source
+## Species                                    NA     NA
+## Tissue                                      1      1
+##         Number of CpG sites with at least 1x coverage
+## Species                                  8.976091e-11
+## Tissue                                   1.000000e+00
+##         Number of CpG sites with at least 2x coverage
+## Species                                    0.02482986
+## Tissue                                     0.48271069
+##         Proportion of orthologous CpG sites with low methylation
+## Species                                               0.02475916
+## Tissue                                                0.02482986
+##         Proportion of orthologous CpG sites with intermediate methylation
+## Species                                                      0.0001270449
+## Tissue                                                       0.2050240230
+##         Proportion of orthologous CpG sites with high methylation
+## Species                                              2.580857e-09
+## Tissue                                               3.803926e-01
+##         Mean methylation level at orthologous CpG sites
+## Species                                    3.180231e-11
+## Tissue                                     4.201181e-01
+##         Coverage on the lambda phage genome
+## Species                         0.461998444
+## Tissue                          0.004889743</code></pre>
+<pre class="r"><code>write.csv(collapse_table_fdr_val, &quot;../data/matrix_pval_tissue_or_species2.csv&quot;)
+
+new_plot &lt;- cbind(BS_seq_info_two$Coverage.on.the.lambda.phage.genome...averaged.over.technical.replicates., BS_seq_info_two$Species)
+
+plot(new_plot[,2], new_plot[,1])</code></pre>
+<p><img src="PC_RNA_seq_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>h_new &lt;- new_plot[17:31,]
+c_new &lt;- new_plot[32:47,]
+
+t.test(h_new[,1], c_new[,1])</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  h_new[, 1] and c_new[, 1]
+## t = -1.4583, df = 27.245, p-value = 0.1562
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -8.977207  1.516235
+## sample estimates:
+## mean of x mean of y 
+##  85.97806  89.70854</code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

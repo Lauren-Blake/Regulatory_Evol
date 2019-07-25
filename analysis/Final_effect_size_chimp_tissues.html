@@ -106,9 +106,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -127,25 +125,98 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -175,8 +246,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Final_effect_size_human_chimp_conservation_status</h1>
-<h4 class="author"><em>Lauren Blake</em></h4>
-<h4 class="date"><em>June 30, 2018</em></h4>
+<h4 class="author">Lauren Blake</h4>
+<h4 class="date">June 30, 2018</h4>
 
 </div>
 
@@ -235,8 +306,10 @@ library(&quot;edgeR&quot;)</code></pre>
 <pre><code>## Loading required package: limma</code></pre>
 <pre class="r"><code>library(&quot;limma&quot;)
 library(&quot;plyr&quot;)
-library(&quot;ashr&quot;)
-library(&quot;cowplot&quot;)</code></pre>
+library(&quot;ashr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ashr&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;cowplot&quot;)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;cowplot&#39;</code></pre>
@@ -252,7 +325,7 @@ library(&quot;medinome&quot;)</code></pre>
 <div id="set-fdr-levelsvalue" class="section level1">
 <h1>Set FDR level/svalue</h1>
 <pre class="r"><code>FDR_level &lt;- 0.05
-FDR_add &lt;- 0.10</code></pre>
+#FDR_add &lt;- 0.10</code></pre>
 </div>
 <div id="chimp-heart-kidney" class="section level1">
 <h1>Chimp heart-kidney</h1>
@@ -283,11 +356,11 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 
 
-check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
-fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)</code></pre>
+<pre><code>## Warning: package &#39;assertthat&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7407     318</code></pre>
 <div id="human-heart-versus-kidney--de-genes" class="section level2">
@@ -319,9 +392,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -379,9 +452,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical     843     320</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -439,9 +512,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    2177      95</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -479,9 +552,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -519,9 +592,8 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7276     449</code></pre>
 <div id="human-heart-versus-lung--de-genes" class="section level2">
@@ -553,9 +625,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -613,9 +685,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical     849     485</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -673,9 +745,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    2162     127</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -713,9 +785,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -753,9 +825,8 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7565     160</code></pre>
 <div id="human-heart-versus-kidney--de-genes-1" class="section level2">
@@ -787,9 +858,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -847,9 +918,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical     920     197</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -907,9 +978,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    1900      42</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -947,9 +1018,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -987,9 +1058,8 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7476     249</code></pre>
 <div id="human-heart-versus-kidney--de-genes-2" class="section level2">
@@ -1021,9 +1091,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -1081,9 +1151,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    1034     277</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -1141,9 +1211,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    1590      43</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -1181,9 +1251,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -1221,9 +1291,8 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7591     134</code></pre>
 <div id="human-heart-versus-kidney--de-genes-3" class="section level2">
@@ -1255,9 +1324,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -1315,9 +1384,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical     555     136</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -1375,9 +1444,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    1977      65</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -1415,9 +1484,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -1455,9 +1524,8 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7427     298</code></pre>
 <div id="human-heart-versus-kidney--de-genes-4" class="section level2">
@@ -1489,9 +1557,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -1549,9 +1617,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical     917     303</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -1609,9 +1677,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    1967      76</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -1649,9 +1717,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>

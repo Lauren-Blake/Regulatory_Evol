@@ -17,6 +17,16 @@ library("vashr")
 library("devtools")
 #devtools::install_github("jhsiao999/mediation/pkg")
 library("medinome")
+
+library("ggplot2")
+library("qvalue")
+library("RColorBrewer")
+library("topGO")
+library("clusterProfiler")
+library("org.Hs.eg.db")
+library(tidyverse)
+library(data.table)
+library("dplyr")
 ```
 
 # Human heart-kidney conserved DE
@@ -182,8 +192,11 @@ combine_dataa[,1] <- as.numeric(combine_dataa[,1])
 combine_dataa[,2] <- as.numeric(combine_dataa[,2])
 colnames(combine_dataa) <- c("Effect", "SE", "ind_siga")
 
-h_cons <- ggplot(combine_dataa, aes(combine_dataa$Effect, combine_dataa$SE)) + geom_point(color = c(combine_dataa$ind_siga)) + ylab("Standard error") + xlab(" ") + ylim(0,5.5) + xlim(-8, 8)
+h_cons <- ggplot(combine_dataa, aes(combine_dataa$Effect, combine_dataa$SE)) + geom_point(color = c(combine_dataa$ind_siga)) + ylab("Standard error") + xlab("Effect size difference") + ylim(0,5.5) + xlim(-8, 8)
+
+
 ```
+
 
 # Human heart-kidney human specific DE
 
@@ -256,7 +269,7 @@ combine_datab[,1] <- as.numeric(combine_datab[,1])
 combine_datab[,2] <- as.numeric(combine_datab[,2])
 colnames(combine_datab) <- c("Effect", "SE", "ind_sigb")
 
-h_spec <- ggplot(combine_datab, aes(combine_datab$Effect, combine_datab$SE)) + geom_point(color = c(combine_datab$ind_sigb)) + ylab(" ") + xlab("Effect size difference") + ylim(0,5.5) + xlim(-8, 8)
+h_spec <- ggplot(combine_datab, aes(combine_datab$Effect, combine_datab$SE)) + geom_point(color = c(combine_datab$ind_sigb)) + ylab("Standard error") + xlab("Effect size difference") + ylim(0,5.5) + xlim(-8, 8)
 ```
 
 # Human heart-kidney non-DE
@@ -306,7 +319,7 @@ combine_datac[,1] <- as.numeric(combine_datac[,1])
 combine_datac[,2] <- as.numeric(combine_datac[,2])
 colnames(combine_datac) <- c("Effect", "SE", "ind_sigc")
 
-h_non <- ggplot(combine_datac, aes(combine_datac$Effect, combine_datac$SE)) + geom_point(color = c(combine_datac$ind_sigc)) + ylab("") + xlab(" ") + ylim(0,5.5) + xlim(-8, 8)
+h_non <- ggplot(combine_datac, aes(combine_datac$Effect, combine_datac$SE)) + geom_point(color = c(combine_datac$ind_sigc)) + ylab("Standard error") + xlab("Effect size difference") + ylim(0,5.5) + xlim(-8, 8)
 
 ```
 
@@ -345,21 +358,38 @@ plot_intertissue <- ggplot(data=df1, aes(x=Gene_type, y=Percentage)) +
 # bottom row (plot.mpg)
 
 # then build the bottom row
-top_row <- plot_grid(h_cons, h_spec, h_non, 
-                        labels = c('5A.', '5B.', '5C.'), nrow = 1)
+top_row <- plot_grid(h_cons, h_spec, h_non, nrow = 1)
 
-bottom_row <- plot_grid(plot_intertissue, labels = c('5D.'))
+bottom_row <- plot_grid(plot_intertissue, labels = c('5D. All tissues'))
 
 plot_fig5 <- plot_grid(top_row, bottom_row, ncol = 1, nrow = 2, rel_heights = c(1,1.5))
 
-#save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Draft_4/Figure_5.png", plot_fig5,
-#           ncol = 1, # we're saving a grid plot of 2 columns
-#           nrow = 2, # and 2 rows
+save_plot("/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5_test.png", plot_fig5,
+           ncol = 1, # we're saving a grid plot of 2 columns
+           nrow = 2, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
-          # base_aspect_ratio = 1
-#           )
+           base_aspect_ratio = 1
+           )
 
+# Divide into 2 plots
 
+plot_fig5ac <- plot_grid(top_row, nrow = 1)
+
+save_plot("/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5ac_test.pdf", plot_fig5ac,
+           ncol = 3, # we're saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )
+
+plot_fig5d <- plot_grid(bottom_row, ncol = 1, nrow = 1)
+
+save_plot("/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5d_test.pdf", plot_fig5d,
+           ncol = 1, # we're saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )
 ```
 
 
@@ -643,11 +673,1075 @@ top_row_poster <- plot_grid(h_cons, h_spec, h_non,
 
 
 
-save_plot("/Users/laurenblake/Dropbox/primate_BS-seq_project/Presentations/Poster_5D.pdf", plot_intertissue,
-           ncol = 1, # we're saving a grid plot of 2 columns
-           nrow = 1, # and 2 rows
-           # each individual subplot should have an aspect ratio of 1.3
-          base_aspect_ratio = 1
-           )
+#save_plot("/Users/laurenblake/Dropbox/primate_BS-seq_project/Presentations/Poster_5D.pdf", plot_intertissue,
+#           ncol = 1, # we're saving a grid plot of 2 columns
+#           nrow = 1, # and 2 rows
+            # each individual subplot should have an aspect ratio of 1.3
+#          base_aspect_ratio = 1
+#           )
 ```
 
+
+# For revisions
+
+## Human heart-kidney
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+summary(fit_ash_normal$result$svalue < 0.05)
+
+
+```
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+
+```
+
+```{r}
+# Species no DE
+species_no_DE <- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+ind_siga <- (fit_ash$result$svalue < 0.05)
+ind_siga[ind_siga == TRUE] <- "red"
+ind_siga[ind_siga == FALSE] <- "black"
+
+combine_dataa <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] <- as.numeric(combine_dataa[,1])
+combine_dataa[,2] <- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) <- c("Effect", "SE", "ind_siga")
+
+```
+
+## Signficant conserved heart-kidney in human 
+
+```{r}
+# Revisions- run GO
+rownames(combine_dataa) <- rownames(Y)
+
+
+check <- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(check)
+names(test_gene) <- rownames(Y)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+```
+
+## Human heart-liver
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(18, 20, 22, 24, 26, 28, 30)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+summary(fit_ash_normal$result$svalue < 0.05)
+
+
+```
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+
+```
+
+```{r}
+# Species no DE
+species_no_DE <- c(1, 3, 5, 7, 9, 11, 13, 15)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+ind_siga <- (fit_ash$result$svalue < 0.05)
+ind_siga[ind_siga == TRUE] <- "red"
+ind_siga[ind_siga == FALSE] <- "black"
+
+combine_dataa <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] <- as.numeric(combine_dataa[,1])
+combine_dataa[,2] <- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) <- c("Effect", "SE", "ind_siga")
+
+```
+
+## Signficant conserved heart-liver in human 
+
+```{r}
+# Revisions- run GO
+rownames(combine_dataa) <- rownames(Y)
+
+
+check <- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(check)
+names(test_gene) <- rownames(Y)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+```
+
+## Human heart-lung
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(19, 20, 23, 24, 27, 28, 31)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+summary(fit_ash_normal$result$svalue < 0.05)
+
+
+```
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+
+```
+
+```{r}
+# Species no DE
+species_no_DE <- c(1, 4, 5, 8, 9, 12, 13, 16)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+ind_siga <- (fit_ash$result$svalue < 0.05)
+ind_siga[ind_siga == TRUE] <- "red"
+ind_siga[ind_siga == FALSE] <- "black"
+
+combine_dataa <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] <- as.numeric(combine_dataa[,1])
+combine_dataa[,2] <- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) <- c("Effect", "SE", "ind_siga")
+
+```
+
+## Signficant conserved heart-lung in human 
+
+```{r}
+# Revisions- run GO
+rownames(combine_dataa) <- rownames(Y)
+
+
+check <- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(check)
+names(test_gene) <- rownames(Y)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+```
+
+## Human kidney-liver
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(17, 18, 21, 22, 25, 26, 29, 30)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+summary(fit_ash_normal$result$svalue < 0.05)
+
+
+```
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+
+```
+
+```{r}
+# Species no DE
+species_no_DE <- c(2, 3, 6, 7, 10, 11, 14, 15)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+ind_siga <- (fit_ash$result$svalue < 0.05)
+ind_siga[ind_siga == TRUE] <- "red"
+ind_siga[ind_siga == FALSE] <- "black"
+
+combine_dataa <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] <- as.numeric(combine_dataa[,1])
+combine_dataa[,2] <- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) <- c("Effect", "SE", "ind_siga")
+
+```
+
+## Signficant conserved kidney-liver in human 
+
+```{r}
+# Revisions- run GO
+rownames(combine_dataa) <- rownames(Y)
+
+
+check <- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(check)
+names(test_gene) <- rownames(Y)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+```
+
+## Human kidney-lung
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(17, 19, 21, 23, 25, 27, 29, 31)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+summary(fit_ash_normal$result$svalue < 0.05)
+
+
+```
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+
+```
+
+```{r}
+# Species no DE
+species_no_DE <- c(2, 4, 6, 8, 10, 12, 14, 16)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+ind_siga <- (fit_ash$result$svalue < 0.05)
+ind_siga[ind_siga == TRUE] <- "red"
+ind_siga[ind_siga == FALSE] <- "black"
+
+combine_dataa <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] <- as.numeric(combine_dataa[,1])
+combine_dataa[,2] <- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) <- c("Effect", "SE", "ind_siga")
+
+```
+
+## Signficant conserved kidney-lung in human 
+
+```{r}
+# Revisions- run GO
+rownames(combine_dataa) <- rownames(Y)
+
+
+check <- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(check)
+names(test_gene) <- rownames(Y)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+```
+
+## Human liver-lung
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(18, 19, 22, 23, 26, 27, 30, 31)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Tissue[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+summary(fit_ash_normal$result$svalue < 0.05)
+
+
+```
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+
+```
+
+```{r}
+# Species no DE
+species_no_DE <- c(3, 4, 7, 8, 11, 12, 15, 16)
+
+species_no_DE_exprs <- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl <- exprs_methyl[,species_no_DE]
+
+two_species <- samples$Tissue[species_no_DE]
+no_DE_tissue <- droplevels.factor(two_species)
+
+no_DE_RIN <- RIN[species_no_DE]
+
+design <- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE <- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE <- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust="BH", number=Inf,
+sort.by="none")
+
+# Species DE 
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc <- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] <  FDR_level & HvC_Heart_fit_species_no_DE[,13] < FDR_level), ]
+
+  
+   human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:8]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=6, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+ind_siga <- (fit_ash$result$svalue < 0.05)
+ind_siga[ind_siga == TRUE] <- "red"
+ind_siga[ind_siga == FALSE] <- "black"
+
+combine_dataa <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] <- as.numeric(combine_dataa[,1])
+combine_dataa[,2] <- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) <- c("Effect", "SE", "ind_siga")
+
+```
+
+## Signficant conserved liver-lung in human 
+
+```{r}
+# Revisions- run GO
+rownames(combine_dataa) <- rownames(Y)
+
+
+check <- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(check)
+names(test_gene) <- rownames(Y)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+```

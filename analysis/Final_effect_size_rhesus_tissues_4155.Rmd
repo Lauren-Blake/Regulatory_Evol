@@ -2,9 +2,7 @@
 title: "Final_effect_size_human_chimp_conservation_status"
 author: "Lauren Blake"
 date: "June 30, 2018"
-output:
-  pdf_document: default
-  html_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -39,11 +37,11 @@ library("medinome")
 # Set FDR level/svalue
 
 ```{r}
-FDR_level <- 0.05
-FDR_add <- 0.10
+FDR_level <- 0.1
+#FDR_add <- 0.10
 ```
 
-# Chimp heart-kidney
+# Rhesus heart-kidney
 
 ```{r}
 # Check parameters

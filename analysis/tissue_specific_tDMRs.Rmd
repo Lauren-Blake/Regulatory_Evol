@@ -61,6 +61,11 @@ rhesus_lung_kidney_DMRs <- read.delim("../data/rhesus_lung_kidney_DMRs.txt")
 
 levels(rhesus_heart_kidney_DMRs[,1])
 #count(rhesus_lung_kidney_DMRs[,1])
+
+library("topGO")
+#library("biomaRt")
+library("clusterProfiler")
+library("org.Hs.eg.db")
 ```
 
 

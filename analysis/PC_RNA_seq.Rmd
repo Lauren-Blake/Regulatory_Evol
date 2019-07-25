@@ -1,0 +1,323 @@
+---
+title: "PC_methylation"
+author: "Lauren Blake"
+date: "December 3, 2018"
+output: html_document
+---
+
+This RMarkdown file does the following:
+
+Analyzing technical variables associated with methylation data. 
+
+##PART ONE
+
+```{r}
+#Chunk 1
+#Load PCs and methylation data
+
+methyl_pcs <- read.csv("../data/methylation_pcs_noX.txt", sep="")
+methyl_pcs <- as.data.frame(methyl_pcs)
+
+#This is combined data from all of the samples
+BS_seq_info_two <- read.csv("../data/BS_seq_info_two.csv")
+
+BS_seq_sample_info <- read.csv("../data/sample_info.csv")
+
+#Print the dimensions of the technical variables
+dim(BS_seq_info_two)
+
+#Add library
+
+library("ggplot2")
+```
+
+```{r}
+#Chunk 23
+#Testing association between a particular variable and PCs with a linear model
+
+#Make an empty matrix to put all of the data in
+
+pvaluesandr2 = matrix(data = NA, nrow = 5, ncol = 31*2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"), c("Species", "R^2", "Tissue", "R^2", "Number of reads used for methylation extraction", "R^2", "Number of CpG sites with at least 1x coverage", "R^2", "Number of CpG sites with at least 2x coverage", "R^2", "Number of CpG sites with at least 4x coverage", "R^2", "Mean coverage at orthologous CpG sites", "R^2", "Proportion of orthologous CpG sites with low methylation", "R^2", "Proportion of orthologous CpG sites with intermediate methylation", "R^2", "Proportion of orthologous CpG sites with high methylation", "R^2", "Mean methylation at CpG sites", "R^2", "Number of sequenced reads", "R^2", "Number of reads after trimming", "R^2", "Number of mapped reads", "R^2", "Number of reads after deduplication", "R^2", "Number of 5' nt for methylation extraction", "R^2", "Percentage of methylation in non-CpG context", "R^2", "Number of reads mapped to lambda phage genome", "R^2", "Coverage on lambda phage DNA", "R^2", "Conversion efficiency of lambda phage DNA", "R^2", "Read length", "R^2", "DNA concentration", "R^2", "Library Fragment Size", "R^2", "Library concentration", "R^2", "Number of libraries", "R^2", "Flowcell", "R^2", "Library Preparation Date", "R^2", "Multiplexing ID", "R^2",  "Machine ID", "R^2", "Sequencing Facility", "R^2", "Encoding", "R^2")))        
+
+
+#Check lm to see how well the species and tissue are correlated with a PC
+
+l = 1
+
+for (i in 2:3){
+  #For variables starting in the chart with Species
+  k = 1
+  
+  for (j in 1:5){
+    #print(k)
+    #print(l)
+    checkPC1 <- lm(methyl_pcs[,j] ~ as.factor(BS_seq_info_two[,i]))
+    
+    #Get the summary statistics from it
+    summary(checkPC1)
+    
+    #Get the p-value of the F-statistic
+    summary(checkPC1)$fstatistic
+    
+    fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+    p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    
+    #Fraction of the variance explained by the model
+    r2_value <- summary(checkPC1)$r.squared
+    
+    #Put the summary statistics into the matrix w
+    
+    pvaluesandr2[k,l] <- p_fstat
+    pvaluesandr2[k,l+1] <- r2_value
+    
+    k = k+1  
+    
+  }
+  l = l+2
+}
+
+
+#Check lm to see how well the variables containing numerical data are correlated with a PC
+
+for (i in 4:26){
+  k = 1
+  for (j in 1:5){
+    #print(k)
+    #print(l)
+    checkPC1 <- lm(methyl_pcs[,j] ~ BS_seq_info_two[,i])
+    
+    #Get the summary statistics from it
+    summary(checkPC1)
+    
+    #Get the p-value of the F-statistic
+    summary(checkPC1)$fstatistic
+    
+    fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+    p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    
+    #Fraction of the variance explained by the model
+    r2_value <- summary(checkPC1)$r.squared
+    
+    #Put the summary statistics into the matrix w
+    
+    pvaluesandr2[k,l] <- p_fstat
+    pvaluesandr2[k,l+1] <- r2_value
+    
+    k = k+1  
+    
+  }
+  l = l+2
+}
+
+
+#Check lm to see how well the variables containing ordinal data are correlated with a PC
+
+for (i in 27:32){
+  #For variables starting in the chart with Species
+  k = 1
+  
+  for (j in 1:5){
+    #print(k)
+    #print(l)
+    checkPC1 <- lm(methyl_pcs[,j] ~ as.factor(BS_seq_info_two[,i]))
+    
+    #Get the summary statistics from it
+    summary(checkPC1)
+    
+    #Get the p-value of the F-statistic
+    summary(checkPC1)$fstatistic
+    
+    fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+    p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+    
+    #Fraction of the variance explained by the model
+    r2_value <- summary(checkPC1)$r.squared
+    
+    #Put the summary statistics into the matrix w
+    
+    pvaluesandr2[k,l] <- p_fstat
+    pvaluesandr2[k,l+1] <- r2_value
+    
+    k = k+1  
+    
+  }
+  l = l+2
+}
+
+pvaluesandr2
+```
+
+
+```{r}
+#Chunk 24
+#Get rid of the R^2 values
+all_col <- 1:ncol(pvaluesandr2)
+matrix_pval <- pvaluesandr2[ , all_col%%2==1 ]
+
+#Find which variables/PC combinations are p-value < 0.05
+TorF_matrix <- matrix_pval <=0.05
+sum(matrix_pval <= 0.05/((length(BS_seq_info_two)-1)*5))
+
+#Find which variables/PC combinations are p-value < 0.05 not including species or tissue (because those explain PC1 and PC2)
+matrix_pval_no_tissue_or_species = matrix_pval[ , 3:ncol(matrix_pval)]
+
+sum(matrix_pval_no_tissue_or_species <= 0.05/(ncol(matrix_pval_no_tissue_or_species)*5))
+
+#Distribution of p-values adjusted by FDR not including species or tissue
+
+fdr_val = p.adjust(matrix_pval_no_tissue_or_species, method = "fdr", n = length(matrix_pval_no_tissue_or_species))
+fdr_val_order = fdr_val[order(fdr_val)]
+hist(fdr_val_order, ylab = "BH-adjusted p-values", main = "Distribution of Benjamini and Hochberg adjusted p-values", breaks = 10)
+
+matrix_fdr_val = matrix(data = fdr_val, nrow = 5, ncol = 36, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"), c("Individual", "Sex", "Age quantile", "Hours post", "Cause of death", "Possible conditions", "Source", "Number of reads used for methulation extraction",  "Number of CpG sites with at least 1x coverage", "Number of CpG sites with at least 2x coverage",  "Number of CpG sites with at least 4x coverage",  "Mean coverage at orthologous CpG sites", "Proportion of orthologous CpG sites with low methylation",  "Proportion of orthologous CpG sites with intermediate methylation",  "Proportion of orthologous CpG sites with high methylation",  "Mean methylation at CpG sites",  "Number of sequenced reads", "Number of reads after trimming",  "Number of mapped reads", "Number of reads after deduplication",  "Number of 5' nt for methylation extraction", "Percentage of methylation in non-CpG context",  "Number of reads mapped to lambda phage genome",  "Coverage on lambda phage DNA", "Conversion efficiency of lambda phage DNA",  "Read length",  "DNA concentration",  "Library Fragment Size", "Library concentration", "Number of libraries", "Flowcell", "Library Preparation Date", "Multiplexing ID", "Machine ID", "Sequencing Facility",  "Encoding")))        
+
+matrix_fdr_val
+
+#write.csv(matrix_fdr_val, "../data/matrix_pval_no_tissue_or_species1.csv")
+```
+
+
+```{r}
+#Chunk 25
+# Number of values significant at 10% FDR not including species or tissue   
+
+sum(matrix_fdr_val <= 0.1)
+
+#Get the coordinates of which variables/PC combinations are significant at FDR 10%
+
+TorF_matrix_fdr <- matrix_fdr_val <=0.1
+coor_to_check <- which(matrix_fdr_val <= 0.1, arr.ind=T)
+coor_to_check <- as.data.frame(coor_to_check)
+
+# Number of variables significant at 10% FDR not including species or tissue (note: off by 3 from column number in BS_seq_info_two file; see notes in next section)
+
+coor_to_check_col <- coor_to_check$col
+unique(coor_to_check_col)
+length(unique(coor_to_check_col))
+```
+
+###Conclusions from this section:
+
+Check the following variables to see if they segregate with species and/or tissue
+
+* Number of CpG sites with at least 1x coverage
+* Number of CpG sites with at least 2x coverage
+* Proportion of orthologous CpG sites with low methylation
+* Proportion of orthologous CpG sites with intermediate methylation
+* Proportion of orthologous CpG sites with high methylation
+* Mean methylation level at orthologous CpG sites
+* Coverage on the lambda phage genome
+
+
+For the variable(s) that correlate, see if these segregate with either species or tissue. 
+
+In coor_to_check_col, row is the PC # and col is the column # -3 that is associated with the PC
+Want to take the coor_to_check_col column # and add three. That is the variable that we should check to see if it correlates with tissue or species.
+
+
+```{r}
+#Chunk 27
+#Testing to see if differences across variable groups are statistically significant for species. If statistically significant, then we should investigate further whether this variable is confounded with species or tissue. 
+var_numb = c(5,6,9,10,11,12,20)
+var.numb = c(5,6,9,10,11,12,20)
+#Make a matrix to store the p-values
+
+pvalues_species1 = matrix(data = NA, nrow = 1, ncol = 6, dimnames = list(c("p-value"), c("Individual","Age quantile", "Hours post", "Cause of death", "Possible conditions", "Source")))
+                                                                              
+j=1
+for (i in var.numb[1:6]) {  
+ pvalues_species1[,j] <- chisq.test(as.factor(BS_seq_info_two[,i]), as.factor(BS_seq_info_two$Species), simulate.p.value = TRUE)$p.value
+}
+
+
+
+
+
+
+
+
+
+
+
+pvalues_species2 =  matrix(data = NA, nrow = 1, ncol = 7, dimnames = list(c("p-value"), c("Number of CpG sites with at least 1x coverage", "Number of CpG sites with at least 2x coverage", "Proportion of orthologous CpG sites with low methylation", "Proportion of orthologous CpG sites with intermediate methylation", "Proportion of orthologous CpG sites with high methylation", "Mean methylation level at orthologous CpG sites", "Coverage on the lambda phage genome")))
+
+
+      
+
+var_numb = c(5,6,9,10,11,12,20)
+
+#Performing this test of significance for variables that are numerical data (Using an ANOVA)
+j=1
+for (i in var.numb[1:7]) {  
+  summary_anova = summary(aov(BS_seq_info_two[,i]~ as.factor(BS_seq_info_two$Species)))
+  data_summary_anova <- as.data.frame(summary_anova[[1]]$`Pr(>F)`)
+  p_val_anova <- data_summary_anova[1,]
+  pvalues_species2[,j] <- p_val_anova  
+  j=j+1
+}
+
+pvalues_species <- cbind(pvalues_species1, pvalues_species2)
+
+
+#Testing to see if differences across variable groups are statistically significant for tissues. If statistically significant, then we should investigate further whether this variable is confounded with species or tissue. 
+
+pvalues_tissues1 = matrix(data = NA, nrow = 1, ncol = 6, dimnames = list(c("p-value"), c("Individual","Age quantile", "Hours post", "Cause of death", "Possible conditions", "Source")))
+                                                                              
+j=1
+for (i in var.numb[1:6]) {  
+ pvalues_tissues1[,j] <- chisq.test(as.factor(BS_seq_info_two[,i]), as.factor(BS_seq_info_two$Tissue), simulate.p.value = TRUE)$p.value
+  j=j+1
+}
+
+
+#Make a matrix to store the p-values
+
+pvalues_tissues2 =  matrix(data = NA, nrow = 1, ncol = 7, dimnames = list(c("p-value"), c("Number of CpG sites with at least 1x coverage", "Number of CpG sites with at least 2x coverage", "Proportion of orthologous CpG sites with low methylation", "Proportion of orthologous CpG sites with intermediate methylation", "Proportion of orthologous CpG sites with high methylation", "Mean methylation level at orthologous CpG sites", "Coverage on the lambda phage genome")))
+
+#Performing this test of significance for variables that are numerical data (Using an ANOVA)
+j=1
+for (i in var.numb[1:7]) {  
+  summary_anova = summary(aov(BS_seq_info_two[,i]~ as.factor(BS_seq_info_two$Tissue)))
+  data_summary_anova <- as.data.frame(summary_anova[[1]]$`Pr(>F)`)
+  p_val_anova <- data_summary_anova[1,]
+  pvalues_tissues2[,j] <- p_val_anova  
+  j=j+1
+}
+
+
+pvalues_tissues <- cbind(pvalues_tissues1, pvalues_tissues2)
+
+collapse_table <- rbind(pvalues_species, pvalues_tissues)
+colnames(collapse_table) <- c("Individual", "Age quantile", "Hours postmortem", "Cause of death", "Possible conditions affecting tissues", "Source", "Number of CpG sites with at least 1x coverage", "Number of CpG sites with at least 2x coverage", "Proportion of orthologous CpG sites with low methylation", "Proportion of orthologous CpG sites with intermediate methylation", "Proportion of orthologous CpG sites with high methylation", "Mean methylation level at orthologous CpG sites", "Coverage on the lambda phage genome")
+
+rownames(collapse_table) <- c("Species", "Tissue")
+
+collapse_table
+```
+
+
+```{r}
+#Chunk 28
+#Calculate q-values (FDR = 10%)
+
+fdr_val = p.adjust(collapse_table, method = "fdr", n = length(collapse_table)*2)
+fdr_val_order = fdr_val[order(fdr_val)]
+hist(fdr_val_order, ylab = "BH-adjusted p-values", main = "Distribution of Benjamini and Hochberg adjusted p-values", breaks = 10)
+
+collapse_table_fdr_val = matrix(data = fdr_val, nrow = 2, ncol = 13, dimnames = list(c("Species", "Tissue"), c("Individual", "Age quantile", "Hours postmortem", "Cause of death", "Possible conditions affecting tissues", "Source", "Number of CpG sites with at least 1x coverage", "Number of CpG sites with at least 2x coverage", "Proportion of orthologous CpG sites with low methylation", "Proportion of orthologous CpG sites with intermediate methylation", "Proportion of orthologous CpG sites with high methylation", "Mean methylation level at orthologous CpG sites", "Coverage on the lambda phage genome")))
+
+collapse_table_fdr_val
+
+write.csv(collapse_table_fdr_val, "../data/matrix_pval_tissue_or_species2.csv")
+
+new_plot <- cbind(BS_seq_info_two$Coverage.on.the.lambda.phage.genome...averaged.over.technical.replicates., BS_seq_info_two$Species)
+
+plot(new_plot[,2], new_plot[,1])
+
+h_new <- new_plot[17:31,]
+c_new <- new_plot[32:47,]
+
+t.test(h_new[,1], c_new[,1])
+
+```
+

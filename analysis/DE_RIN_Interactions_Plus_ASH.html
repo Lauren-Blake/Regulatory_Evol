@@ -21,8 +21,8 @@
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="libs/navigation-1.1/tabsets.js"></script>
-<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="libs/highlightjs-1.1/highlight.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">
 
@@ -66,10 +66,12 @@ body {
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -103,9 +105,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -124,25 +124,98 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -172,8 +245,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">ASH_DE_RIN</h1>
-<h4 class="author"><em>Lauren Blake</em></h4>
-<h4 class="date"><em>June 7, 2017</em></h4>
+<h4 class="author">Lauren Blake</h4>
+<h4 class="date">June 7, 2017</h4>
 
 </div>
 
@@ -182,35 +255,36 @@ $(document).ready(function () {
 <li><a href="#test-interactions">Test interactions</a><ul>
 <li><a href="#fit-the-linear-model">Fit the linear model</a></li>
 </ul></li>
+<li><a href="#go-enrichment-for-revisions">GO Enrichment for revisions</a><ul>
+<li><a href="#human-liver">Human liver</a></li>
+<li><a href="#human-lung">Human lung</a></li>
+<li><a href="#human-kidney">Human kidney</a></li>
+</ul></li>
 </ul>
 </div>
 
 <pre class="r"><code># Load libraries
 
 library(&quot;gplots&quot;)</code></pre>
-<pre><code>Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>Warning: package &#39;gplots&#39; was built under R version 3.4.4</code></pre>
 <pre><code>
 Attaching package: &#39;gplots&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:stats&#39;:
 
     lowess</code></pre>
-<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+library(&quot;RColorBrewer&quot;)
 library(&quot;scales&quot;)</code></pre>
-<pre><code>Warning: package &#39;scales&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;scales&#39; was built under R version 3.4.4</code></pre>
 <pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
-<pre><code>Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
 <pre><code>Loading required package: limma</code></pre>
-<pre><code>Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
 <pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
-<pre><code>Warning: package &#39;R.utils&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;R.utils&#39; was built under R version 3.4.4</code></pre>
 <pre><code>Loading required package: R.oo</code></pre>
-<pre><code>Warning: package &#39;R.oo&#39; was built under R version 3.2.5</code></pre>
+<pre><code>Warning: package &#39;R.oo&#39; was built under R version 3.4.4</code></pre>
 <pre><code>Loading required package: R.methodsS3</code></pre>
-<pre><code>Warning: package &#39;R.methodsS3&#39; was built under R version 3.2.3</code></pre>
 <pre><code>R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
-<pre><code>R.oo v1.21.0 (2016-10-30) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>R.oo v1.22.0 (2018-04-21) successfully loaded. See ?R.oo for help.</code></pre>
 <pre><code>
 Attaching package: &#39;R.oo&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:methods&#39;:
@@ -219,7 +293,7 @@ Attaching package: &#39;R.oo&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:base&#39;:
 
     attach, detach, gc, load, save</code></pre>
-<pre><code>R.utils v2.5.0 (2016-11-07) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>R.utils v2.8.0 successfully loaded. See ?R.utils for help.</code></pre>
 <pre><code>
 Attaching package: &#39;R.utils&#39;</code></pre>
 <pre><code>The following object is masked from &#39;package:utils&#39;:
@@ -228,21 +302,112 @@ Attaching package: &#39;R.utils&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:base&#39;:
 
     cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
-<pre class="r"><code>library(&quot;plyr&quot;)</code></pre>
-<pre><code>Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code>library(&quot;limma&quot;)
-library(&quot;gridExtra&quot;)</code></pre>
-<pre><code>Warning: package &#39;gridExtra&#39; was built under R version 3.2.4</code></pre>
-<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
-<pre><code>Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)
+library(&quot;limma&quot;)
+library(&quot;gridExtra&quot;)
+library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>Warning: package &#39;VennDiagram&#39; was built under R version 3.4.4</code></pre>
 <pre><code>Loading required package: grid</code></pre>
 <pre><code>Loading required package: futile.logger</code></pre>
-<pre><code>Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
 <pre class="r"><code>source(&quot;functions.R&quot;)
-library(ashr)
-library(ggplot2)
+library(ashr)</code></pre>
+<pre><code>Warning: package &#39;ashr&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(&quot;topGO&quot;)</code></pre>
+<pre><code>Loading required package: BiocGenerics</code></pre>
+<pre><code>Loading required package: parallel</code></pre>
+<pre><code>
+Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:parallel&#39;:
 
-# Set directory to save the data
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>The following object is masked from &#39;package:gridExtra&#39;:
+
+    combine</code></pre>
+<pre><code>The following object is masked from &#39;package:limma&#39;:
+
+    plotMA</code></pre>
+<pre><code>The following objects are masked from &#39;package:stats&#39;:
+
+    IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    anyDuplicated, append, as.data.frame, cbind, colMeans,
+    colnames, colSums, do.call, duplicated, eval, evalq, Filter,
+    Find, get, grep, grepl, intersect, is.unsorted, lapply,
+    lengths, Map, mapply, match, mget, order, paste, pmax,
+    pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce,
+    rowMeans, rownames, rowSums, sapply, setdiff, sort, table,
+    tapply, union, unique, unsplit, which, which.max, which.min</code></pre>
+<pre><code>Loading required package: graph</code></pre>
+<pre><code>
+Attaching package: &#39;graph&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:plyr&#39;:
+
+    join</code></pre>
+<pre><code>Loading required package: Biobase</code></pre>
+<pre><code>Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    &#39;browseVignettes()&#39;. To cite Bioconductor, see
+    &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>Loading required package: GO.db</code></pre>
+<pre><code>Loading required package: AnnotationDbi</code></pre>
+<pre><code>Loading required package: stats4</code></pre>
+<pre><code>Loading required package: IRanges</code></pre>
+<pre><code>Loading required package: S4Vectors</code></pre>
+<pre><code>
+Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:plyr&#39;:
+
+    rename</code></pre>
+<pre><code>The following object is masked from &#39;package:gplots&#39;:
+
+    space</code></pre>
+<pre><code>The following object is masked from &#39;package:base&#39;:
+
+    expand.grid</code></pre>
+<pre><code>
+Attaching package: &#39;IRanges&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:plyr&#39;:
+
+    desc</code></pre>
+<pre><code>The following object is masked from &#39;package:R.oo&#39;:
+
+    trim</code></pre>
+<pre><code></code></pre>
+<pre><code>Loading required package: SparseM</code></pre>
+<pre><code>
+Attaching package: &#39;SparseM&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:base&#39;:
+
+    backsolve</code></pre>
+<pre><code>
+groupGOTerms:   GOBPTerm, GOMFTerm, GOCCTerm environments built.</code></pre>
+<pre><code>
+Attaching package: &#39;topGO&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:IRanges&#39;:
+
+    members</code></pre>
+<pre><code>The following object is masked from &#39;package:grid&#39;:
+
+    depth</code></pre>
+<pre class="r"><code>#library(&quot;biomaRt&quot;)
+library(&quot;clusterProfiler&quot;)</code></pre>
+<pre><code>Loading required package: DOSE</code></pre>
+<pre><code>DOSE v3.4.0  For help: https://guangchuangyu.github.io/DOSE
+
+If you use DOSE in published research, please cite:
+Guangchuang Yu, Li-Gen Wang, Guang-Rong Yan, Qing-Yu He. DOSE: an R/Bioconductor package for Disease Ontology Semantic and Enrichment analysis. Bioinformatics 2015, 31(4):608-609</code></pre>
+<pre><code>clusterProfiler v3.6.0  For help: https://guangchuangyu.github.io/clusterProfiler
+
+If you use clusterProfiler in published research, please cite:
+Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287.</code></pre>
+<pre class="r"><code>library(&quot;org.Hs.eg.db&quot;)</code></pre>
+<pre><code></code></pre>
+<pre class="r"><code># Set directory to save the data
 
 data_dir &lt;- &quot;../data&quot;
 
@@ -252,13 +417,13 @@ colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9
 pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
 
 # Retrieve RIN score for each sample
-RNA_seq_info &lt;- read.csv(&quot;../data/RNA_seq_info.csv&quot;)
+RNA_seq_info &lt;- read.csv(&quot;../../../Reg_Evo_Primates/data/RNA_seq_info.csv&quot;)
 RIN &lt;- as.data.frame(RNA_seq_info[,22])
 RIN &lt;- as.matrix(RIN)
 colnames(RIN) &lt;- c(&quot;RIN&quot;)
 
 # Retrieve sample information
-samples &lt;- read.delim(&quot;../data/Sample_info_RNAseq_limma.txt&quot;)
+samples &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt&quot;)
 
 # Eliminate H1H
 samples &lt;- samples[-17,]
@@ -299,7 +464,7 @@ colSums(design)</code></pre>
       4.0       4.0       4.0       4.0       4.0       4.0 </code></pre>
 <pre class="r"><code># Load count data
 
-counts_genes_in_cutoff &lt;- read.delim(&quot;../data/counts_12184.txt&quot;)
+counts_genes_in_cutoff &lt;- read.delim(&quot;../../../Reg_Evo_Primates/data/counts_12184.txt&quot;)
 
 # TMM 
 
@@ -436,13 +601,11 @@ mylist[[&quot;Lung&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(t
 
 
 # Make 
-dev.off()</code></pre>
-<pre><code>null device 
-          1 </code></pre>
-<pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Significant interactions in Humans (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
-grid.draw(Four_comp)
-
-## Significant interactions in Rhesus (baseline = chimp hearts)
+#dev.off()
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Significant interactions in Humans (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+grid.draw(Four_comp)</code></pre>
+<p><img src="figure/DE_RIN_Interactions_Plus_ASH.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>## Significant interactions in Rhesus (baseline = chimp hearts)
 
 mylist &lt;- list()
 mylist[[&quot;Kidney&quot;]] &lt;- row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
@@ -456,7 +619,30 @@ dev.off()</code></pre>
           1 </code></pre>
 <pre class="r"><code>Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Significant interactions in Rhesus (FDR 1%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
 grid.draw(Four_comp)</code></pre>
-<pre class="r"><code># Prepare the data for the 
+<pre class="r"><code># Perform multiple testing correction with adaptive shrinkage (ASH) 
+ #
+ # x - object MArrayLM from eBayes output
+ # coef - coefficient tested by eBayes
+
+run_ash &lt;- function(x, coef){
+  #stopifnot(class(x) == &quot;MArrayLM&quot;, coef %in% colnames(x$coefficients),
+  #             length(unique(x$df.total) == 1))
+  result &lt;- ash(betahat = x$coefficients[, coef], sebetahat = x$stdev.unscaled[, coef] * sqrt(x$s2.post), df = x$df.total[1])
+  return(result)
+}
+
+get_results &lt;- function(x, number = nrow(x$coefficients), sort.by = &quot;none&quot;,
+                        ...) {
+  # x - object MArrayLM from eBayes output
+  # ... - additional arguments passed to topTable
+  stopifnot(class(x) == &quot;MArrayLM&quot;)
+  results &lt;- topTable(x, number = number, sort.by = sort.by, ...)
+  return(results)
+}
+
+
+
+# Prepare the data for the ASH
 tests &lt;- colnames(fit1$coefficients)
 results &lt;- vector(length = length(tests), mode = &quot;list&quot;)
 names(results) &lt;- tests
@@ -471,15 +657,470 @@ for (test in tests) {
                            lfdr = output_ash$result$lfdr, qvalue = output_ash$result$qvalue,
                            svalue = output_ash$result$svalue, beta_est = output_ash$result$PosteriorMean, se_est =
                              output_ash$result$PosteriorSD)
-}</code></pre>
-<pre><code>Due to absence of package REBayes, switching to EM algorithm
-Due to absence of package REBayes, switching to EM algorithm
-Due to absence of package REBayes, switching to EM algorithm
-Due to absence of package REBayes, switching to EM algorithm
-Due to absence of package REBayes, switching to EM algorithm
-Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code># Save results from analysis with limma and ash.
-saveRDS(results, file.path(data_dir, &quot;results-limma-voom-ash-interactions.rds&quot;))</code></pre>
+}
+
+# Save results from analysis with limma and ash.
+#saveRDS(results, file.path(data_dir, #&quot;results-limma-voom-ash-interactions.rds&quot;))</code></pre>
+</div>
+</div>
+<div id="go-enrichment-for-revisions" class="section level1">
+<h1>GO Enrichment for revisions</h1>
+<pre class="r"><code>FDR_level &lt;- 0.05
+
+human_kidney_inter &lt;- top3$H_K_inter
+human_liver_inter &lt;- top3$H_Li_inter
+human_lung_inter &lt;- top3$H_Lu_inter
+
+rhesus_kidney_inter &lt;- top3$R_K_inter
+rhesus_liver_inter &lt;- top3$R_Li_inter
+rhesus_lung_inter &lt;- top3$R_Lu_inter
+
+# Find human_kidney specific
+human_kidney_only &lt;- human_kidney_inter[which(human_kidney_inter$adj.P.Val &lt; FDR_level &amp; human_liver_inter$adj.P.Val &gt; FDR_level &amp; human_lung_inter$adj.P.Val &gt; FDR_level &amp; rhesus_kidney_inter$adj.P.Val &gt; FDR_level &amp; rhesus_liver_inter$adj.P.Val &gt; FDR_level &amp; rhesus_lung_inter$adj.P.Val &gt; FDR_level), 1]                                   
+
+human_kidney_inter_only &lt;- human_kidney_inter$genes %in% human_kidney_only</code></pre>
+<div id="human-liver" class="section level2">
+<h2>Human liver</h2>
+<pre class="r"><code># Find human_kidney specific
+human_liver_only &lt;- human_liver_inter[which(human_kidney_inter$adj.P.Val &gt; FDR_level &amp; human_liver_inter$adj.P.Val &lt; FDR_level &amp; human_lung_inter$adj.P.Val &gt; FDR_level &amp; rhesus_kidney_inter$adj.P.Val &gt; FDR_level &amp; rhesus_liver_inter$adj.P.Val &gt; FDR_level &amp; rhesus_lung_inter$adj.P.Val &gt; FDR_level), 1]                                   
+
+human_liver_inter_only &lt;- human_liver_inter$genes %in% human_liver_only
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene &lt;- as.numeric(as.vector(human_liver_inter_only))
+names(test_gene) &lt;- human_liver_inter$genes
+
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 10269 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 14352 GO terms and 33417 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 10194 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 3382 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 16:  8 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  16 nodes to be scored   (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  45 nodes to be scored   (139 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  92 nodes to be scored   (333 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  134 nodes to be scored  (991 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  234 nodes to be scored  (2674 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  334 nodes to be scored  (3782 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   421 nodes to be scored  (5340 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   469 nodes to be scored  (6621 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   537 nodes to be scored  (7870 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   477 nodes to be scored  (8820 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   331 nodes to be scored  (9344 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   180 nodes to be scored  (9691 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   83 nodes to be scored   (9882 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   20 nodes to be scored   (9976 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (10067 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0019388                 galactose catabolic process         7
+2  GO:0007281                       germ cell development       116
+3  GO:0005978               glycogen biosynthetic process        30
+4  GO:0000185               activation of MAPKKK activity        15
+5  GO:0090382                        phagosome maturation        30
+6  GO:0031659 positive regulation of cyclin-dependent ...         5
+7  GO:0051896    regulation of protein kinase B signaling       130
+8  GO:0072655 establishment of protein localization to...       142
+9  GO:0002480 antigen processing and presentation of e...         6
+10 GO:0002138          retinoic acid biosynthetic process         6
+11 GO:0019919 peptidyl-arginine methylation, to asymme...         6
+12 GO:0060050 positive regulation of protein glycosyla...         7
+13 GO:0035646            endosome to melanosome transport         7
+   Significant Expected weightFisher
+1            3     0.15      0.00029
+2            7     2.41      0.00081
+3            4     0.62      0.00216
+4            3     0.31      0.00335
+5            4     0.62      0.00407
+6            2     0.10      0.00413
+7            5     2.70      0.00609
+8            5     2.95      0.00610
+9            2     0.12      0.00611
+10           2     0.12      0.00611
+11           2     0.12      0.00611
+12           2     0.15      0.00844
+13           2     0.15      0.00844</code></pre>
+<pre class="r"><code># Get names of liver genes
+sig.genes &lt;- sigGenes(go_data)
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults[&quot;GO:0005978&quot;] </code></pre>
+<pre><code>$`GO:0005978`
+[1] &quot;ENSG00000079739&quot; &quot;ENSG00000114480&quot; &quot;ENSG00000132326&quot; &quot;ENSG00000142208&quot;</code></pre>
+<pre class="r"><code># Gene to ID conversion document
+
+gene_id &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv&quot;, stringsAsFactors = FALSE, header=TRUE, sep = &quot;,&quot;)
+
+human_liver_only_data &lt;- as.data.frame(c(&quot;ENSG00000079739&quot;, &quot;ENSG00000114480&quot;, &quot;ENSG00000132326&quot;, &quot;ENSG00000142208&quot;))
+colnames(human_liver_only_data) &lt;- c(&quot;ensg&quot;)
+
+# Get gene names of the background
+comb_liver &lt;- merge(human_liver_only_data, gene_id, by = c(&quot;ensg&quot;))
+
+# glycogen biosynthetic proces
+
+comb_liver</code></pre>
+<pre><code>             ensg Gene
+1 ENSG00000079739 PGM1
+2 ENSG00000114480 GBE1
+3 ENSG00000132326 PER2
+4 ENSG00000142208 AKT1</code></pre>
+</div>
+<div id="human-lung" class="section level2">
+<h2>Human lung</h2>
+<pre class="r"><code># Find human_kidney specific
+human_lung_only &lt;- human_lung_inter[which(human_lung_inter$adj.P.Val &lt; FDR_level &amp; human_liver_inter$adj.P.Val &gt; FDR_level &amp; human_kidney_inter$adj.P.Val &gt; FDR_level &amp; rhesus_kidney_inter$adj.P.Val &gt; FDR_level &amp; rhesus_liver_inter$adj.P.Val &gt; FDR_level &amp; rhesus_lung_inter$adj.P.Val &gt; FDR_level), 1]                                   
+
+human_lung_inter_only &lt;- human_lung_inter$genes %in% human_lung_only
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene &lt;- as.numeric(as.vector(human_lung_inter_only))
+names(test_gene) &lt;- human_lung_inter$genes
+
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 10269 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 14352 GO terms and 33417 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 10194 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 4276 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 19:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 18:  3 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 17:  7 nodes to be scored    (17 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  7 nodes to be scored    (28 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  28 nodes to be scored   (54 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  70 nodes to be scored   (90 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  123 nodes to be scored  (472 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  203 nodes to be scored  (1323 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  325 nodes to be scored  (2905 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  461 nodes to be scored  (4120 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   561 nodes to be scored  (5501 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   596 nodes to be scored  (6960 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   635 nodes to be scored  (8013 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   566 nodes to be scored  (8914 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   370 nodes to be scored  (9398 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   210 nodes to be scored  (9707 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   89 nodes to be scored   (9896 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   20 nodes to be scored   (9976 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (10068 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0006919 activation of cysteine-type endopeptidas...        62
+2  GO:0032736 positive regulation of interleukin-13 pr...         9
+3  GO:0031053                    primary miRNA processing         9
+4  GO:0002726 positive regulation of T cell cytokine p...        10
+5  GO:0006325                      chromatin organization       522
+6  GO:0032753 positive regulation of interleukin-4 pro...        11
+7  GO:0007183               SMAD protein complex assembly        11
+8  GO:0001657                    ureteric bud development        61
+9  GO:0034380 high-density lipoprotein particle assemb...        13
+10 GO:0030878                   thyroid gland development        13
+11 GO:0009615                           response to virus       206
+12 GO:0035019    somatic stem cell population maintenance        43
+13 GO:0044782                         cilium organization       262
+14 GO:0051098                       regulation of binding       256
+15 GO:0003161       cardiac conduction system development         5
+16 GO:0051534 negative regulation of NFAT protein impo...         5
+17 GO:0038092                     nodal signaling pathway         5
+18 GO:0035745         T-helper 2 cell cytokine production         5
+19 GO:0048340             paraxial mesoderm morphogenesis         5
+20 GO:0045494              photoreceptor cell maintenance        16
+21 GO:2000810 regulation of bicellular tight junction ...        16
+22 GO:0045599 negative regulation of fat cell differen...        30
+23 GO:0022008                                neurogenesis       922
+   Significant Expected weightFisher
+1            8     1.74      0.00072
+2            3     0.25      0.00162
+3            3     0.25      0.00162
+4            3     0.28      0.00227
+5           23    14.65      0.00287
+6            3     0.31      0.00305
+7            3     0.31      0.00305
+8            5     1.71      0.00482
+9            3     0.36      0.00507
+10           3     0.36      0.00507
+11          11     5.78      0.00598
+12           5     1.21      0.00675
+13          12     7.35      0.00727
+14          11     7.18      0.00731
+15           2     0.14      0.00742
+16           2     0.14      0.00742
+17           2     0.14      0.00742
+18           2     0.14      0.00742
+19           2     0.14      0.00742
+20           3     0.45      0.00933
+21           3     0.45      0.00933
+22           4     0.84      0.00936
+23          27    25.87      0.00946</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+goresults[&quot;GO:0048340&quot;] </code></pre>
+<pre><code>$&lt;NA&gt;
+NULL</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0032736&quot;] </code></pre>
+<pre><code>$&lt;NA&gt;
+NULL</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0032753&quot;] </code></pre>
+<pre><code>$&lt;NA&gt;
+NULL</code></pre>
+<pre class="r"><code># Gene to ID conversion document
+
+#gene_id &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv&quot;, stringsAsFactors = FALSE, header=TRUE, sep = &quot;,&quot;)
+
+#human_lung_only_data &lt;- as.data.frame(c(&quot;ENSG00000105698&quot;, &quot;ENSG00000131165&quot;))
+#colnames(human_liver_only_data) &lt;- c(&quot;ensg&quot;)
+
+# Get gene names of the background
+#comb_lung &lt;- merge(human_lung_only_data, gene_id, by = c(&quot;ensg&quot;))
+
+#positive regulation of lipoprotein lipas...
+
+#comb_lung</code></pre>
+</div>
+<div id="human-kidney" class="section level2">
+<h2>Human kidney</h2>
+<pre class="r"><code># Find human_kidney specific
+human_kidney_only &lt;- human_kidney_inter[which(human_kidney_inter$adj.P.Val &lt; FDR_level &amp; human_liver_inter$adj.P.Val &gt; FDR_level &amp; human_lung_inter$adj.P.Val &gt; FDR_level &amp; rhesus_kidney_inter$adj.P.Val &gt; FDR_level &amp; rhesus_liver_inter$adj.P.Val &gt; FDR_level &amp; rhesus_lung_inter$adj.P.Val &gt; FDR_level), 1]                                   
+
+human_kidney_inter_only &lt;- human_kidney_inter$genes %in% human_kidney_only
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene &lt;- as.numeric(as.vector(human_kidney_inter_only))
+names(test_gene) &lt;- human_kidney_inter$genes
+
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 10269 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 14352 GO terms and 33417 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 10194 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 3511 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 19:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 18:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 17:  1 nodes to be scored    (17 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  5 nodes to be scored    (21 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  27 nodes to be scored   (21 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  49 nodes to be scored   (80 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  86 nodes to be scored   (448 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  141 nodes to be scored  (1110 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  226 nodes to be scored  (2671 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  344 nodes to be scored  (3832 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   435 nodes to be scored  (5359 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   483 nodes to be scored  (6858 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   559 nodes to be scored  (7896 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   505 nodes to be scored  (8843 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   349 nodes to be scored  (9391 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   192 nodes to be scored  (9696 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   87 nodes to be scored   (9877 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   19 nodes to be scored   (9973 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (10068 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0051451                          myoblast migration         8
+2  GO:0045833 negative regulation of lipid metabolic p...        57
+3  GO:0001975                     response to amphetamine        12
+4  GO:0098719    sodium ion import across plasma membrane         5
+5  GO:0043697                      cell dedifferentiation         5
+6  GO:0019323                   pentose catabolic process         5
+7  GO:0030091                              protein repair         5
+8  GO:2000035            regulation of stem cell division         6
+9  GO:0032494                   response to peptidoglycan         6
+10 GO:1900125 regulation of hyaluronan biosynthetic pr...         6
+11 GO:0031115 negative regulation of microtubule polym...         6
+12 GO:0060088 auditory receptor cell stereocilium orga...         7
+13 GO:2000402 negative regulation of lymphocyte migrat...         7
+14 GO:1901223 negative regulation of NIK/NF-kappaB sig...         7
+15 GO:0051272 positive regulation of cellular componen...       325
+16 GO:0007141                              male meiosis I         8
+17 GO:0071447          cellular response to hydroperoxide         8
+18 GO:0090280 positive regulation of calcium ion impor...         8
+   Significant Expected weightFisher
+1            3     0.15      0.00037
+2            5     1.10      0.00108
+3            3     0.23      0.00137
+4            2     0.10      0.00358
+5            2     0.10      0.00358
+6            2     0.10      0.00358
+7            2     0.10      0.00358
+8            2     0.12      0.00530
+9            2     0.12      0.00530
+10           2     0.12      0.00530
+11           2     0.12      0.00530
+12           2     0.14      0.00732
+13           2     0.14      0.00732
+14           2     0.14      0.00732
+15          10     6.28      0.00945
+16           2     0.15      0.00964
+17           2     0.15      0.00964
+18           2     0.15      0.00964</code></pre>
+<pre class="r"><code># Get names of kidney genes
+sig.genes &lt;- sigGenes(go_data)
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults[&quot;GO:0098719&quot;] </code></pre>
+<pre><code>$`GO:0098719`
+[1] &quot;ENSG00000066230&quot; &quot;ENSG00000130529&quot;</code></pre>
+<pre class="r"><code># Gene to ID conversion document
+
+#gene_id &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv&quot;, stringsAsFactors = FALSE, header=TRUE, sep = &quot;,&quot;)
+
+#human_kidney_only_data &lt;- as.data.frame(c(&quot;ENSG00000138031&quot;, &quot;ENSG00000142875&quot;, &quot;ENSG00000173175&quot;))
+#colnames(human_kidney_only_data) &lt;- c(&quot;ensg&quot;)
+
+# Get gene names of the background
+#comb_kidney &lt;- merge(human_kidney_only_data, gene_id, by = c(&quot;ensg&quot;))
+
+# renal water homeostasis
+
+#comb_kidney</code></pre>
 </div>
 </div>
 

@@ -35,6 +35,7 @@ title: "Home"
 
 ### Final filtering, normalizations, and analysis with technical factors (12,184 genes)
 
+*  [Technical factor analysis](../analysis/PC_RNA_seq.html)
 *  [Processing using filtering with lowly expressed genes](../analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html)
 
 ### Univariate analysis on gene expression
@@ -51,7 +52,7 @@ title: "Home"
 
 *  [Human-chimpanzee orthologous promoters](../analysis/Hg19_PanTro3_TSS.html)
 *  [Human-chimpanzee-rhesus orthologous promoters](../analysis/hg19_to_rhesus_and_chimp_coor.html)
-*  Clustering after testing for technical variables 
+
 
 
 ## Differentially methylated regions
@@ -61,9 +62,10 @@ title: "Home"
 *  [Pairwise tDMRs II](../analysis/Pairwise_tDMRs.html)
 *  [Tissue specific tDMRs](../analysis/tissue_specific_tDMRs.html)
 *  [Finding conserved tDMRs I](../analysis/Finding_conserved_DMRs.html)
-*  Finding conserved tDMRs
+*  [List of conserved tDMRs] conserved tDMRs(../Conserved_tDMR_list.html)
 *  [Pairwise tDMR overlap](../analysis/Pairwise_tDMR_overlap.html)
-*  [Overlap of tDMRs with H3K27ac and DHS](../analysis/Overlap_reg_features.html)
+*  [Overlap of tDMRs with H3K27ac and DHS](Overlap_H3K27ac.html) 
+*  [Exploring the parameters for this overlap analysis](../analysis/Overlap_reg_features.html)
 *  [Pairwise sDMRs](../analysis/Pairwise_SDMRs.html)
 
 
@@ -96,8 +98,20 @@ title: "Home"
 * [Figure 3](../analysis/Figures_methylation.html)
 * [Figure 4](../analysis/Final_effect_size_figure_4.html)
 * [Figure 5](../analysis/Final_effect_size_figure_5.html)
+* [Figures S7-9](../analysis/Supplementary_figures_clustering.html)
+* [Figure S10](../analysis/Figure_Supplementary10.html)
+* [Figure S11](../analysis/Figure_Supplementary11.html)
 
+## Revisions
 
+Many thanks to the editor and 3 reviewers who provided helpful comments on this manuscript. 
+
+* [Matched versus non matched individuals]
+* [Futher H3K27ac analysis](../analysis/Revisions_H3K27ac.html)
+* [HG19 versus HG38 genome builds](../analysis/Revisions_genomes.html)
+* [Clustering](../analysis/Supplementary_figures_clustering.html)
+* [Network analysis](../analysis/revisions_networks.html)
+* [Number of genes per tissue](../analysis/revisions_misc.html)
 
 ## Notes
 

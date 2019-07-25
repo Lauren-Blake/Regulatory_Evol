@@ -106,9 +106,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -133,22 +131,92 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -178,8 +246,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Final_effect_size_figure_5</h1>
-<h4 class="author"><em>Lauren Blake</em></h4>
-<h4 class="date"><em>October 11, 2018</em></h4>
+<h4 class="author">Lauren Blake</h4>
+<h4 class="date">October 11, 2018</h4>
 
 </div>
 
@@ -195,6 +263,20 @@ $(document).ready(function () {
 <li><a href="#human-heart-kidney-1">Human heart-kidney</a></li>
 <li><a href="#human-heart-kidney-human-specific-de-1">Human heart-kidney human specific DE</a></li>
 <li><a href="#human-heart-kidney-non-de-1">Human heart-kidney non-DE</a></li>
+<li><a href="#for-revisions">For revisions</a><ul>
+<li><a href="#human-heart-kidney-2">Human heart-kidney</a></li>
+<li><a href="#signficant-conserved-heart-kidney-in-human">Signficant conserved heart-kidney in human</a></li>
+<li><a href="#human-heart-liver">Human heart-liver</a></li>
+<li><a href="#signficant-conserved-heart-liver-in-human">Signficant conserved heart-liver in human</a></li>
+<li><a href="#human-heart-lung">Human heart-lung</a></li>
+<li><a href="#signficant-conserved-heart-lung-in-human">Signficant conserved heart-lung in human</a></li>
+<li><a href="#human-kidney-liver">Human kidney-liver</a></li>
+<li><a href="#signficant-conserved-kidney-liver-in-human">Signficant conserved kidney-liver in human</a></li>
+<li><a href="#human-kidney-lung">Human kidney-lung</a></li>
+<li><a href="#signficant-conserved-kidney-lung-in-human">Signficant conserved kidney-lung in human</a></li>
+<li><a href="#human-liver-lung">Human liver-lung</a></li>
+<li><a href="#signficant-conserved-liver-lung-in-human">Signficant conserved liver-lung in human</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -203,11 +285,11 @@ library(&quot;edgeR&quot;)</code></pre>
 <pre><code>## Loading required package: limma</code></pre>
 <pre class="r"><code>library(&quot;limma&quot;)
 library(&quot;plyr&quot;)
-library(&quot;ashr&quot;)
-library(&quot;cowplot&quot;)</code></pre>
+library(&quot;ashr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ashr&#39; was built under R version 3.4.4</code></pre>
+<pre class="r"><code>library(&quot;cowplot&quot;)</code></pre>
 <pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;cowplot&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
@@ -216,10 +298,148 @@ library(&quot;cowplot&quot;)</code></pre>
 <pre class="r"><code>library(&quot;vashr&quot;)</code></pre>
 <pre><code>## Loading required package: SQUAREM</code></pre>
 <pre><code>## Loading required package: qvalue</code></pre>
-<pre class="r"><code>library(&quot;devtools&quot;)</code></pre>
-<pre><code>## Warning: package &#39;devtools&#39; was built under R version 3.4.4</code></pre>
-<pre class="r"><code>#devtools::install_github(&quot;jhsiao999/mediation/pkg&quot;)
-library(&quot;medinome&quot;)</code></pre>
+<pre class="r"><code>library(&quot;devtools&quot;)
+#devtools::install_github(&quot;jhsiao999/mediation/pkg&quot;)
+library(&quot;medinome&quot;)
+
+library(&quot;ggplot2&quot;)
+library(&quot;qvalue&quot;)
+library(&quot;RColorBrewer&quot;)
+library(&quot;topGO&quot;)</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following object is masked from &#39;package:limma&#39;:
+## 
+##     plotMA</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, cbind, colMeans,
+##     colnames, colSums, do.call, duplicated, eval, evalq, Filter,
+##     Find, get, grep, grepl, intersect, is.unsorted, lapply,
+##     lengths, Map, mapply, match, mget, order, paste, pmax,
+##     pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce,
+##     rowMeans, rownames, rowSums, sapply, setdiff, sort, table,
+##     tapply, union, unique, unsplit, which, which.max, which.min</code></pre>
+<pre><code>## Loading required package: graph</code></pre>
+<pre><code>## 
+## Attaching package: &#39;graph&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     join</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## Loading required package: GO.db</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     rename</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     expand.grid</code></pre>
+<pre><code>## 
+## Attaching package: &#39;IRanges&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     desc</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Loading required package: SparseM</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SparseM&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     backsolve</code></pre>
+<pre><code>## 
+## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;topGO&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     members</code></pre>
+<pre class="r"><code>library(&quot;clusterProfiler&quot;)</code></pre>
+<pre><code>## Loading required package: DOSE</code></pre>
+<pre><code>## DOSE v3.4.0  For help: https://guangchuangyu.github.io/DOSE
+## 
+## If you use DOSE in published research, please cite:
+## Guangchuang Yu, Li-Gen Wang, Guang-Rong Yan, Qing-Yu He. DOSE: an R/Bioconductor package for Disease Ontology Semantic and Enrichment analysis. Bioinformatics 2015, 31(4):608-609</code></pre>
+<pre><code>## clusterProfiler v3.6.0  For help: https://guangchuangyu.github.io/clusterProfiler
+## 
+## If you use clusterProfiler in published research, please cite:
+## Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287.</code></pre>
+<pre class="r"><code>library(&quot;org.Hs.eg.db&quot;)</code></pre>
+<pre><code>## </code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ tibble  2.1.1       ✔ purrr   0.3.2  
+## ✔ tidyr   0.8.3       ✔ dplyr   0.8.0.1
+## ✔ readr   1.3.1       ✔ stringr 1.4.0  
+## ✔ tibble  2.1.1       ✔ forcats 0.4.0</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package &#39;readr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## Warning: package &#39;forcats&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::arrange()         masks plyr::arrange()
+## ✖ stringr::boundary()      masks graph::boundary()
+## ✖ dplyr::collapse()        masks IRanges::collapse()
+## ✖ dplyr::combine()         masks Biobase::combine(), BiocGenerics::combine()
+## ✖ purrr::compact()         masks plyr::compact()
+## ✖ dplyr::count()           masks plyr::count()
+## ✖ dplyr::desc()            masks IRanges::desc(), plyr::desc()
+## ✖ tidyr::expand()          masks S4Vectors::expand()
+## ✖ dplyr::failwith()        masks plyr::failwith()
+## ✖ dplyr::filter()          masks stats::filter()
+## ✖ dplyr::first()           masks S4Vectors::first()
+## ✖ cowplot::ggsave()        masks ggplot2::ggsave()
+## ✖ dplyr::id()              masks plyr::id()
+## ✖ dplyr::lag()             masks stats::lag()
+## ✖ dplyr::mutate()          masks plyr::mutate()
+## ✖ BiocGenerics::Position() masks ggplot2::Position(), base::Position()
+## ✖ purrr::reduce()          masks IRanges::reduce()
+## ✖ dplyr::rename()          masks S4Vectors::rename(), plyr::rename()
+## ✖ dplyr::select()          masks AnnotationDbi::select()
+## ✖ purrr::simplify()        masks clusterProfiler::simplify()
+## ✖ dplyr::slice()           masks IRanges::slice()
+## ✖ dplyr::summarise()       masks plyr::summarise()
+## ✖ dplyr::summarize()       masks plyr::summarize()</code></pre>
+<pre class="r"><code>library(data.table)</code></pre>
+<pre><code>## Warning: package &#39;data.table&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;data.table&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     between, first, last</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     transpose</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     shift</code></pre>
+<pre><code>## The following objects are masked from &#39;package:S4Vectors&#39;:
+## 
+##     first, second</code></pre>
+<pre class="r"><code>library(&quot;dplyr&quot;)</code></pre>
 <div id="human-heart-kidney-conserved-de" class="section level1">
 <h1>Human heart-kidney conserved DE</h1>
 <pre class="r"><code>getwd()</code></pre>
@@ -269,11 +489,16 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 
 
-check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
-fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)</code></pre>
+<pre><code>## Warning: package &#39;assertthat&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;assertthat&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tibble&#39;:
+## 
+##     has_name</code></pre>
+<pre class="r"><code>fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7603     122</code></pre>
 <pre class="r"><code># Run the linear model in limma
@@ -303,9 +528,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -360,9 +585,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
 ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
 ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
 
@@ -372,7 +597,7 @@ combine_dataa[,1] &lt;- as.numeric(combine_dataa[,1])
 combine_dataa[,2] &lt;- as.numeric(combine_dataa[,2])
 colnames(combine_dataa) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_siga&quot;)
 
-h_cons &lt;- ggplot(combine_dataa, aes(combine_dataa$Effect, combine_dataa$SE)) + geom_point(color = c(combine_dataa$ind_siga)) + ylab(&quot;Standard error&quot;) + xlab(&quot; &quot;) + ylim(0,5.5) + xlim(-8, 8)</code></pre>
+h_cons &lt;- ggplot(combine_dataa, aes(combine_dataa$Effect, combine_dataa$SE)) + geom_point(color = c(combine_dataa$ind_siga)) + ylab(&quot;Standard error&quot;) + xlab(&quot;Effect size difference&quot;) + ylim(0,5.5) + xlim(-8, 8)</code></pre>
 </div>
 <div id="human-heart-kidney-human-specific-de" class="section level1">
 <h1>Human heart-kidney human specific DE</h1>
@@ -426,9 +651,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical     294       8</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -446,7 +671,7 @@ combine_datab[,1] &lt;- as.numeric(combine_datab[,1])
 combine_datab[,2] &lt;- as.numeric(combine_datab[,2])
 colnames(combine_datab) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_sigb&quot;)
 
-h_spec &lt;- ggplot(combine_datab, aes(combine_datab$Effect, combine_datab$SE)) + geom_point(color = c(combine_datab$ind_sigb)) + ylab(&quot; &quot;) + xlab(&quot;Effect size difference&quot;) + ylim(0,5.5) + xlim(-8, 8)</code></pre>
+h_spec &lt;- ggplot(combine_datab, aes(combine_datab$Effect, combine_datab$SE)) + geom_point(color = c(combine_datab$ind_sigb)) + ylab(&quot;Standard error&quot;) + xlab(&quot;Effect size difference&quot;) + ylim(0,5.5) + xlim(-8, 8)</code></pre>
 </div>
 <div id="human-heart-kidney-non-de" class="section level1">
 <h1>Human heart-kidney non-DE</h1>
@@ -477,9 +702,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -494,7 +719,7 @@ combine_datac[,1] &lt;- as.numeric(combine_datac[,1])
 combine_datac[,2] &lt;- as.numeric(combine_datac[,2])
 colnames(combine_datac) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_sigc&quot;)
 
-h_non &lt;- ggplot(combine_datac, aes(combine_datac$Effect, combine_datac$SE)) + geom_point(color = c(combine_datac$ind_sigc)) + ylab(&quot;&quot;) + xlab(&quot; &quot;) + ylim(0,5.5) + xlim(-8, 8)</code></pre>
+h_non &lt;- ggplot(combine_datac, aes(combine_datac$Effect, combine_datac$SE)) + geom_point(color = c(combine_datac$ind_sigc)) + ylab(&quot;Standard error&quot;) + xlab(&quot;Effect size difference&quot;) + ylim(0,5.5) + xlim(-8, 8)</code></pre>
 </div>
 <div id="human-all-comparisons" class="section level1">
 <h1>Human all comparisons</h1>
@@ -526,19 +751,38 @@ plot_intertissue &lt;- ggplot(data=df1, aes(x=Gene_type, y=Percentage)) +
 # bottom row (plot.mpg)
 
 # then build the bottom row
-top_row &lt;- plot_grid(h_cons, h_spec, h_non, 
-                        labels = c(&#39;5A.&#39;, &#39;5B.&#39;, &#39;5C.&#39;), nrow = 1)</code></pre>
+top_row &lt;- plot_grid(h_cons, h_spec, h_non, nrow = 1)</code></pre>
 <pre><code>## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
-<pre class="r"><code>bottom_row &lt;- plot_grid(plot_intertissue, labels = c(&#39;5D.&#39;))
+<pre class="r"><code>bottom_row &lt;- plot_grid(plot_intertissue, labels = c(&#39;5D. All tissues&#39;))
 
 plot_fig5 &lt;- plot_grid(top_row, bottom_row, ncol = 1, nrow = 2, rel_heights = c(1,1.5))
 
-#save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_4/Figure_5.png&quot;, plot_fig5,
-#           ncol = 1, # we&#39;re saving a grid plot of 2 columns
-#           nrow = 2, # and 2 rows
+save_plot(&quot;/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5_test.png&quot;, plot_fig5,
+           ncol = 1, # we&#39;re saving a grid plot of 2 columns
+           nrow = 2, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
-          # base_aspect_ratio = 1
-#           )</code></pre>
+           base_aspect_ratio = 1
+           )
+
+# Divide into 2 plots
+
+plot_fig5ac &lt;- plot_grid(top_row, nrow = 1)
+
+save_plot(&quot;/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5ac_test.pdf&quot;, plot_fig5ac,
+           ncol = 3, # we&#39;re saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )
+
+plot_fig5d &lt;- plot_grid(bottom_row, ncol = 1, nrow = 1)
+
+save_plot(&quot;/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5d_test.pdf&quot;, plot_fig5d,
+           ncol = 1, # we&#39;re saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )</code></pre>
 </div>
 <div id="human-heart-kidney-1" class="section level1">
 <h1>Human heart-kidney</h1>
@@ -571,9 +815,8 @@ RIN_subset &lt;- RIN[human_chimp_heart]
 
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical    7603     122</code></pre>
 <pre class="r"><code># Run the linear model in limma
@@ -603,9 +846,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -660,9 +903,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
 ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
 ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
 
@@ -726,9 +969,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+summary(fit_ash$result$svalue &lt; FDR_level)</code></pre>
 <pre><code>##    Mode   FALSE    TRUE 
 ## logical     294       8</code></pre>
 <pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
@@ -777,9 +1020,9 @@ Y &lt;- counts_human_chimp_heart_subset
 check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
 
 fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
-fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre class="r"><code>calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
 calc2 &lt;- as.numeric(calc[[2]])
 
 (nrow(Y)-calc2)/nrow(Y)</code></pre>
@@ -807,12 +1050,1509 @@ h_non &lt;- ggplot(combine_datac, aes(combine_datac$Effect, combine_datac$SE)) +
 
 
 
-save_plot(&quot;/Users/laurenblake/Dropbox/primate_BS-seq_project/Presentations/Poster_5D.pdf&quot;, plot_intertissue,
-           ncol = 1, # we&#39;re saving a grid plot of 2 columns
-           nrow = 1, # and 2 rows
-           # each individual subplot should have an aspect ratio of 1.3
-          base_aspect_ratio = 1
-           )</code></pre>
+#save_plot(&quot;/Users/laurenblake/Dropbox/primate_BS-seq_project/Presentations/Poster_5D.pdf&quot;, plot_intertissue,
+#           ncol = 1, # we&#39;re saving a grid plot of 2 columns
+#           nrow = 1, # and 2 rows
+            # each individual subplot should have an aspect ratio of 1.3
+#          base_aspect_ratio = 1
+#           )</code></pre>
+</div>
+<div id="for-revisions" class="section level1">
+<h1>For revisions</h1>
+<div id="human-heart-kidney-2" class="section level2">
+<h2>Human heart-kidney</h2>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    7603     122</code></pre>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+calc2 &lt;- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)</code></pre>
+<pre><code>## [1] 0.134471</code></pre>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(1, 2, 5, 6, 9, 10, 13, 14)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
+ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
+
+combine_dataa &lt;- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] &lt;- as.numeric(combine_dataa[,1])
+combine_dataa[,2] &lt;- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_siga&quot;)</code></pre>
+</div>
+<div id="signficant-conserved-heart-kidney-in-human" class="section level2">
+<h2>Signficant conserved heart-kidney in human</h2>
+<pre class="r"><code># Revisions- run GO
+rownames(combine_dataa) &lt;- rownames(Y)
+
+
+check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(check)
+names(test_gene) &lt;- rownames(Y)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 3826 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 7633 GO terms and 17464 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 1050 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 2225 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 18:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 17:  2 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  3 nodes to be scored    (5 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  6 nodes to be scored    (7 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  13 nodes to be scored   (16 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  34 nodes to be scored   (53 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  56 nodes to be scored   (104 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  87 nodes to be scored   (254 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  164 nodes to be scored  (337 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   249 nodes to be scored  (464 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   295 nodes to be scored  (591 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   368 nodes to be scored  (744 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   381 nodes to be scored  (857 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   291 nodes to be scored  (926 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   174 nodes to be scored  (983 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   80 nodes to be scored   (1011 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   20 nodes to be scored   (1026 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (1037 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0030049                     muscle filament sliding        12
+## 2  GO:0060048                  cardiac muscle contraction        26
+## 3  GO:0002026 regulation of the force of heart contrac...         7
+## 4  GO:0008016             regulation of heart contraction        33
+## 5  GO:0006937            regulation of muscle contraction        25
+## 6  GO:0045214                      sarcomere organization        13
+## 7  GO:0032386       regulation of intracellular transport        51
+## 8  GO:0043502             regulation of muscle adaptation        12
+## 9  GO:0055010 ventricular cardiac muscle tissue morpho...        12
+## 10 GO:0086064 cell communication by electrical couplin...         6
+## 11 GO:1901655                 cellular response to ketone         6
+##    Significant Expected weightFisher
+## 1           10     1.95      5.1e-07
+## 2           12     4.23      4.2e-05
+## 3            6     1.14      0.00010
+## 4           15     5.37      0.00048
+## 5           14     4.07      0.00145
+## 6            7     2.12      0.00194
+## 7           11     8.31      0.00406
+## 8            4     1.95      0.00429
+## 9            6     1.95      0.00672
+## 10           4     0.98      0.00780
+## 11           4     0.98      0.00780</code></pre>
+</div>
+<div id="human-heart-liver" class="section level2">
+<h2>Human heart-liver</h2>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(18, 20, 22, 24, 26, 28, 30)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    7562     163</code></pre>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+calc2 &lt;- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)</code></pre>
+<pre><code>## [1] 0.1703801</code></pre>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(1, 3, 5, 7, 9, 11, 13, 15)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
+ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
+
+combine_dataa &lt;- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] &lt;- as.numeric(combine_dataa[,1])
+combine_dataa[,2] &lt;- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_siga&quot;)</code></pre>
+</div>
+<div id="signficant-conserved-heart-liver-in-human" class="section level2">
+<h2>Signficant conserved heart-liver in human</h2>
+<pre class="r"><code># Revisions- run GO
+rownames(combine_dataa) &lt;- rownames(Y)
+
+
+check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(check)
+names(test_gene) &lt;- rownames(Y)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 4342 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 8265 GO terms and 18972 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 1225 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 2512 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 17:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  2 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  8 nodes to be scored    (5 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  18 nodes to be scored   (17 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  42 nodes to be scored   (53 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  63 nodes to be scored   (123 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  110 nodes to be scored  (308 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  190 nodes to be scored  (413 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   298 nodes to be scored  (590 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   352 nodes to be scored  (748 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   420 nodes to be scored  (906 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   434 nodes to be scored  (1038 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   301 nodes to be scored  (1116 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   172 nodes to be scored  (1173 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   81 nodes to be scored   (1187 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   19 nodes to be scored   (1197 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (1207 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0030049                     muscle filament sliding        11
+## 2  GO:0060048                  cardiac muscle contraction        20
+## 3  GO:0010951 negative regulation of endopeptidase act...        28
+## 4  GO:0006953                        acute-phase response        12
+## 5  GO:0002576                      platelet degranulation        32
+## 6  GO:0045214                      sarcomere organization        13
+## 7  GO:1901381 positive regulation of potassium ion tra...         5
+## 8  GO:0030194    positive regulation of blood coagulation         8
+## 9  GO:0140115               export across plasma membrane         6
+## 10 GO:0032722 positive regulation of chemokine product...         6
+## 11 GO:0019835                                   cytolysis         6
+## 12 GO:0002026 regulation of the force of heart contrac...         6
+## 13 GO:0050830 defense response to Gram-positive bacter...         6
+## 14 GO:0055010 ventricular cardiac muscle tissue morpho...        11
+## 15 GO:0031639                      plasminogen activation        11
+## 16 GO:0007597        blood coagulation, intrinsic pathway         9
+## 17 GO:0032103 positive regulation of response to exter...        26
+## 18 GO:1904063 negative regulation of cation transmembr...         7
+## 19 GO:2001259 positive regulation of cation channel ac...         7
+## 20 GO:0051917                  regulation of fibrinolysis         7
+## 21 GO:0006641              triglyceride metabolic process        23
+## 22 GO:0008016             regulation of heart contraction        31
+## 23 GO:0006937            regulation of muscle contraction        22
+## 24 GO:0042168                      heme metabolic process         5
+## 25 GO:0071688 striated muscle myosin thick filament as...         5
+## 26 GO:0099622 cardiac muscle cell membrane repolarizat...         5
+## 27 GO:1901021 positive regulation of calcium ion trans...         5
+## 28 GO:0002719 negative regulation of cytokine producti...         5
+## 29 GO:0050829 defense response to Gram-negative bacter...         5
+## 30 GO:0072378    blood coagulation, fibrin clot formation        12
+## 31 GO:0042730                                fibrinolysis        10
+## 32 GO:0006942 regulation of striated muscle contractio...         9
+## 33 GO:0090277 positive regulation of peptide hormone s...        13
+## 34 GO:0050728 negative regulation of inflammatory resp...        17
+## 35 GO:1903115 regulation of actin filament-based movem...         8
+## 36 GO:0015909             long-chain fatty acid transport         8
+## 37 GO:0032755 positive regulation of interleukin-6 pro...         8
+## 38 GO:0050873              brown fat cell differentiation         8
+## 39 GO:0050729 positive regulation of inflammatory resp...        11
+##    Significant Expected weightFisher
+## 1           10     2.11      5.3e-07
+## 2           13     3.84      1.1e-05
+## 3           14     5.37      1.7e-05
+## 4            9     2.30      3.9e-05
+## 5           16     6.14      6.7e-05
+## 6            9     2.49      0.00011
+## 7            5     0.96      0.00025
+## 8            6     1.53      0.00093
+## 9            5     1.15      0.00127
+## 10           5     1.15      0.00127
+## 11           5     1.15      0.00127
+## 12           5     1.15      0.00127
+## 13           5     1.15      0.00127
+## 14           7     2.11      0.00144
+## 15           7     2.11      0.00144
+## 16           6     1.73      0.00235
+## 17          12     4.99      0.00350
+## 18           5     1.34      0.00375
+## 19           5     1.34      0.00375
+## 20           5     1.34      0.00375
+## 21          11     4.41      0.00466
+## 22          17     5.95      0.00491
+## 23          11     4.22      0.00529
+## 24           4     0.96      0.00563
+## 25           4     0.96      0.00563
+## 26           4     0.96      0.00563
+## 27           4     0.96      0.00563
+## 28           4     0.96      0.00563
+## 29           4     0.96      0.00563
+## 30           9     2.30      0.00661
+## 31           8     1.92      0.00666
+## 32           6     1.73      0.00682
+## 33           4     2.49      0.00707
+## 34           8     3.26      0.00803
+## 35           5     1.53      0.00844
+## 36           5     1.53      0.00844
+## 37           5     1.53      0.00844
+## 38           5     1.53      0.00844
+## 39           6     2.11      0.00915</code></pre>
+</div>
+<div id="human-heart-lung" class="section level2">
+<h2>Human heart-lung</h2>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(19, 20, 23, 24, 27, 28, 31)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    7637      88</code></pre>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+calc2 &lt;- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)</code></pre>
+<pre><code>## [1] 0.1143466</code></pre>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(1, 4, 5, 8, 9, 12, 13, 16)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:7]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=5, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
+ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
+
+combine_dataa &lt;- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] &lt;- as.numeric(combine_dataa[,1])
+combine_dataa[,2] &lt;- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_siga&quot;)</code></pre>
+</div>
+<div id="signficant-conserved-heart-lung-in-human" class="section level2">
+<h2>Signficant conserved heart-lung in human</h2>
+<pre class="r"><code># Revisions- run GO
+rownames(combine_dataa) &lt;- rownames(Y)
+
+
+check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(check)
+names(test_gene) &lt;- rownames(Y)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 3693 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 7318 GO terms and 16609 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 1028 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 2136 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 19:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 18:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 17:  1 nodes to be scored    (5 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  4 nodes to be scored    (6 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  7 nodes to be scored    (6 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  17 nodes to be scored   (23 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  38 nodes to be scored   (70 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  58 nodes to be scored   (137 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  98 nodes to be scored   (267 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  166 nodes to be scored  (353 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   234 nodes to be scored  (480 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   279 nodes to be scored  (635 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   344 nodes to be scored  (761 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   370 nodes to be scored  (873 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   271 nodes to be scored  (928 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   155 nodes to be scored  (968 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   72 nodes to be scored   (989 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   19 nodes to be scored   (1000 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (1007 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##        GO.ID                                        Term Annotated
+## 1 GO:0051056 regulation of small GTPase mediated sign...        29
+## 2 GO:0001658 branching involved in ureteric bud morph...         6
+## 3 GO:0006939                   smooth muscle contraction         6
+## 4 GO:0001934 positive regulation of protein phosphory...        67
+##   Significant Expected weightFisher
+## 1           6     3.95       0.0037
+## 2           4     0.82       0.0040
+## 3           4     0.82       0.0040
+## 4          11     9.12       0.0041</code></pre>
+</div>
+<div id="human-kidney-liver" class="section level2">
+<h2>Human kidney-liver</h2>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(17, 18, 21, 22, 25, 26, 29, 30)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    7614     111</code></pre>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+calc2 &lt;- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)</code></pre>
+<pre><code>## [1] 0.09890777</code></pre>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(2, 3, 6, 7, 10, 11, 14, 15)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
+ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
+
+combine_dataa &lt;- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] &lt;- as.numeric(combine_dataa[,1])
+combine_dataa[,2] &lt;- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_siga&quot;)</code></pre>
+</div>
+<div id="signficant-conserved-kidney-liver-in-human" class="section level2">
+<h2>Signficant conserved kidney-liver in human</h2>
+<pre class="r"><code># Revisions- run GO
+rownames(combine_dataa) &lt;- rownames(Y)
+
+
+check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(check)
+names(test_gene) &lt;- rownames(Y)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 4430 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 8345 GO terms and 19236 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 1191 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 2435 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 17:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  4 nodes to be scored    (6 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  10 nodes to be scored   (9 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  33 nodes to be scored   (27 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  63 nodes to be scored   (75 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  105 nodes to be scored  (264 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  187 nodes to be scored  (383 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   290 nodes to be scored  (549 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   346 nodes to be scored  (728 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   405 nodes to be scored  (907 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   399 nodes to be scored  (1032 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   307 nodes to be scored  (1093 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   178 nodes to be scored  (1142 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   85 nodes to be scored   (1162 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   20 nodes to be scored   (1171 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (1180 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0006898               receptor-mediated endocytosis        47
+## 2  GO:0010951 negative regulation of endopeptidase act...        35
+## 3  GO:0030449         regulation of complement activation        14
+## 4  GO:0006953                        acute-phase response        14
+## 5  GO:0006958    complement activation, classical pathway        11
+## 6  GO:0032374         regulation of cholesterol transport        12
+## 7  GO:0010873 positive regulation of cholesterol ester...         5
+## 8  GO:0033700                         phospholipid efflux         5
+## 9  GO:0034380 high-density lipoprotein particle assemb...         5
+## 10 GO:0034371                      chylomicron remodeling         5
+## 11 GO:0010896 regulation of triglyceride catabolic pro...         5
+## 12 GO:0033344                          cholesterol efflux        13
+## 13 GO:0022409 positive regulation of cell-cell adhesio...        29
+## 14 GO:0007597        blood coagulation, intrinsic pathway         8
+## 15 GO:0034372 very-low-density lipoprotein particle re...         8
+## 16 GO:0060192      negative regulation of lipase activity         6
+## 17 GO:0034384 high-density lipoprotein particle cleara...         6
+## 18 GO:0034378                        chylomicron assembly         6
+## 19 GO:0043691               reverse cholesterol transport        10
+## 20 GO:0050777      negative regulation of immune response        18
+## 21 GO:0050996 positive regulation of lipid catabolic p...         7
+## 22 GO:0034375 high-density lipoprotein particle remode...         7
+## 23 GO:0051047            positive regulation of secretion        41
+## 24 GO:0090277 positive regulation of peptide hormone s...        13
+## 25 GO:0002576                      platelet degranulation        34
+## 26 GO:0030212                hyaluronan metabolic process        11
+##    Significant Expected weightFisher
+## 1           15     6.08      3.0e-06
+## 2           13     4.53      2.8e-05
+## 3            7     1.81      0.00082
+## 4            7     1.81      0.00082
+## 5            6     1.42      0.00113
+## 6            5     1.55      0.00121
+## 7            4     0.65      0.00121
+## 8            4     0.65      0.00121
+## 9            4     0.65      0.00121
+## 10           4     0.65      0.00121
+## 11           4     0.65      0.00121
+## 12           6     1.68      0.00136
+## 13           8     3.75      0.00136
+## 14           5     1.03      0.00137
+## 15           5     1.03      0.00137
+## 16           4     0.78      0.00328
+## 17           4     0.78      0.00328
+## 18           4     0.78      0.00328
+## 19           5     1.29      0.00496
+## 20           8     2.33      0.00645
+## 21           4     0.91      0.00688
+## 22           4     0.91      0.00688
+## 23          13     5.30      0.00693
+## 24           6     1.68      0.00742
+## 25          10     4.40      0.00799
+## 26           5     1.42      0.00816</code></pre>
+</div>
+<div id="human-kidney-lung" class="section level2">
+<h2>Human kidney-lung</h2>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(17, 19, 21, 23, 25, 27, 29, 31)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    7665      60</code></pre>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+calc2 &lt;- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)</code></pre>
+<pre><code>## [1] 0.1664581</code></pre>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(2, 4, 6, 8, 10, 12, 14, 16)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
+ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
+
+combine_dataa &lt;- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] &lt;- as.numeric(combine_dataa[,1])
+combine_dataa[,2] &lt;- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_siga&quot;)</code></pre>
+</div>
+<div id="signficant-conserved-kidney-lung-in-human" class="section level2">
+<h2>Signficant conserved kidney-lung in human</h2>
+<pre class="r"><code># Revisions- run GO
+rownames(combine_dataa) &lt;- rownames(Y)
+
+
+check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(check)
+names(test_gene) &lt;- rownames(Y)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 2940 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 6579 GO terms and 15016 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 627 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 1704 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 15:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  7 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  22 nodes to be scored   (5 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  37 nodes to be scored   (47 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  61 nodes to be scored   (132 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  114 nodes to be scored  (176 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   172 nodes to be scored  (265 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   211 nodes to be scored  (352 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   279 nodes to be scored  (437 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   305 nodes to be scored  (496 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   255 nodes to be scored  (543 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   149 nodes to be scored  (587 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   71 nodes to be scored   (602 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   19 nodes to be scored   (611 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (614 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##        GO.ID                                        Term Annotated
+## 1 GO:0030858 positive regulation of epithelial cell d...         5
+## 2 GO:0019933                     cAMP-mediated signaling         5
+## 3 GO:0035556           intracellular signal transduction       127
+##   Significant Expected weightFisher
+## 1           4     0.93       0.0048
+## 2           4     0.93       0.0048
+## 3          32    23.50       0.0095</code></pre>
+</div>
+<div id="human-liver-lung" class="section level2">
+<h2>Human liver-lung</h2>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(18, 19, 22, 23, 26, 27, 30, 31)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+
+Y &lt;- hc_exprs_heart
+two_species &lt;- samples$Tissue[human_chimp_heart]
+X &lt;- droplevels.factor(two_species)
+M &lt;- methyl
+RIN_subset &lt;- RIN[human_chimp_heart]
+
+
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash_normal &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+summary(fit_ash_normal$result$svalue &lt; 0.05)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    7649      76</code></pre>
+<pre class="r"><code># Run the linear model in limma
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  HvC_Heart_fit_all_5perc &lt;-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val &lt; FDR_level), ]
+  
+ human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+calc &lt;- as.array(summary(fit_ash$result$svalue &lt; FDR_level))
+calc2 &lt;- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)</code></pre>
+<pre><code>## [1] 0.118798</code></pre>
+<pre class="r"><code># Species no DE
+species_no_DE &lt;- c(3, 4, 7, 8, 11, 12, 15, 16)
+
+species_no_DE_exprs &lt;- hc_exprs[,species_no_DE]
+
+species_no_DE_methyl &lt;- exprs_methyl[,species_no_DE]
+
+two_species &lt;- samples$Tissue[species_no_DE]
+no_DE_tissue &lt;- droplevels.factor(two_species)
+
+no_DE_RIN &lt;- RIN[species_no_DE]
+
+design &lt;- model.matrix(~ as.factor(no_DE_tissue) + no_DE_RIN)
+  fit_species_no_DE &lt;- lmFit(cpm.voom.cyclic[,species_no_DE], design)
+  fit_species_no_DE &lt;- eBayes(fit_species_no_DE)
+
+  HvC_Heart_fit_species_no_DE = topTable(fit_species_no_DE, coef=2, adjust=&quot;BH&quot;, number=Inf,
+sort.by=&quot;none&quot;)
+
+# Species DE 
+  design_1 &lt;- model.matrix(~ X + RIN_subset)
+  fit_all &lt;- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all &lt;- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+  
+  HvC_Heart_fit_species_no_DE = cbind(HvC_Heart_fit_species_no_DE, HvC_Heart_fit_all)
+  
+ 
+      HvC_Heart_fit_all_5perc &lt;- HvC_Heart_fit_species_no_DE[which(HvC_Heart_fit_species_no_DE[,6] &lt;  FDR_level &amp; HvC_Heart_fit_species_no_DE[,13] &lt; FDR_level), ]
+
+  
+   human_chimp_heart1 &lt;-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+M &lt;- counts_human_chimp_heart_subset
+
+human_chimp_heart1 &lt;-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 &lt;- as.data.frame(human_chimp_heart1)
+counts_genes_in &lt;- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, human_chimp_heart1 == &quot;TRUE&quot;)
+counts_human_chimp_heart_subset &lt;- counts_genes_in_cutoff[,1:8]
+Y &lt;- counts_human_chimp_heart_subset
+
+check_values &lt;- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit &lt;- vash(check_values$d_se,df=6, singlecomp = T, unimodal = &quot;auto&quot;) 
+fit_ash &lt;- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = &quot;normal&quot;)
+
+ind_siga &lt;- (fit_ash$result$svalue &lt; 0.05)
+ind_siga[ind_siga == TRUE] &lt;- &quot;red&quot;
+ind_siga[ind_siga == FALSE] &lt;- &quot;black&quot;
+
+combine_dataa &lt;- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_siga), stringsAsFactors = FALSE)
+
+combine_dataa[,1] &lt;- as.numeric(combine_dataa[,1])
+combine_dataa[,2] &lt;- as.numeric(combine_dataa[,2])
+colnames(combine_dataa) &lt;- c(&quot;Effect&quot;, &quot;SE&quot;, &quot;ind_siga&quot;)</code></pre>
+</div>
+<div id="signficant-conserved-liver-lung-in-human" class="section level2">
+<h2>Signficant conserved liver-lung in human</h2>
+<pre class="r"><code># Revisions- run GO
+rownames(combine_dataa) &lt;- rownames(Y)
+
+
+check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(check)
+names(test_gene) &lt;- rownames(Y)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 1)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 3885 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 7600 GO terms and 17347 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 1120 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 2287 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 15:  3 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  12 nodes to be scored   (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  33 nodes to be scored   (19 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  58 nodes to be scored   (81 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  107 nodes to be scored  (229 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  182 nodes to be scored  (338 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   262 nodes to be scored  (489 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   318 nodes to be scored  (690 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   380 nodes to be scored  (831 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   382 nodes to be scored  (949 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   290 nodes to be scored  (1016 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   164 nodes to be scored  (1070 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   76 nodes to be scored   (1088 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   19 nodes to be scored   (1095 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (1104 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0002576                      platelet degranulation        26
+## 2  GO:0010951 negative regulation of endopeptidase act...        34
+## 3  GO:0032374         regulation of cholesterol transport        11
+## 4  GO:0045087                      innate immune response        65
+## 5  GO:0007597        blood coagulation, intrinsic pathway         9
+## 6  GO:0051004 regulation of lipoprotein lipase activit...         9
+## 7  GO:0048146 positive regulation of fibroblast prolif...         6
+## 8  GO:0032722 positive regulation of chemokine product...         6
+## 9  GO:0010035             response to inorganic substance        62
+## 10 GO:0042632                     cholesterol homeostasis        21
+## 11 GO:0006953                        acute-phase response        14
+## 12 GO:0006641              triglyceride metabolic process        19
+## 13 GO:0044273           sulfur compound catabolic process         7
+## 14 GO:0046470       phosphatidylcholine metabolic process         7
+## 15 GO:0001960 negative regulation of cytokine-mediated...         7
+## 16 GO:0030194    positive regulation of blood coagulation         7
+## 17 GO:0034372 very-low-density lipoprotein particle re...         7
+## 18 GO:0051917                  regulation of fibrinolysis         7
+## 19 GO:0002673 regulation of acute inflammatory respons...        19
+## 20 GO:0070613            regulation of protein processing        19
+## 21 GO:0034381       plasma lipoprotein particle clearance        10
+## 22 GO:1902106 negative regulation of leukocyte differe...         9
+## 23 GO:0003014                        renal system process        15
+##    Significant Expected weightFisher
+## 1           11     3.53      0.00025
+## 2           13     4.61      0.00109
+## 3            5     1.49      0.00146
+## 4           17     8.82      0.00209
+## 5            5     1.22      0.00345
+## 6            5     1.22      0.00345
+## 7            4     0.81      0.00393
+## 8            4     0.81      0.00393
+## 9           11     8.41      0.00399
+## 10           8     2.85      0.00410
+## 11           6     1.90      0.00668
+## 12          10     2.58      0.00736
+## 13           4     0.95      0.00821
+## 14           4     0.95      0.00821
+## 15           4     0.95      0.00821
+## 16           4     0.95      0.00821
+## 17           4     0.95      0.00821
+## 18           4     0.95      0.00821
+## 19           8     2.58      0.00834
+## 20           8     2.58      0.00834
+## 21           5     1.36      0.00864
+## 22           4     1.22      0.00879
+## 23           6     2.04      0.00991</code></pre>
+</div>
 </div>
 
 

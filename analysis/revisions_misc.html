@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2019-06-17" />
+
+<title>Revisions_misc</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Revisions_misc</h1>
+<h4 class="author">Lauren Blake</h4>
+<h4 class="date">June 17, 2019</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#looking-at-number-of-genes-per-tissue">Looking at number of genes per tissue</a></li>
+</ul>
+</div>
+
+<div id="looking-at-number-of-genes-per-tissue" class="section level1">
+<h1>Looking at number of genes per tissue</h1>
+<pre class="r"><code>cpm_12184 &lt;- read.delim(&quot;~/Desktop/Reg_Evo_Primates/data/cpm_12184.txt&quot;)
+
+chimp_heart &lt;- c(1, 5, 9, 13)
+human_heart &lt;- c(20, 24, 28)
+rhesus_heart &lt;- c(32, 36, 40, 44)
+
+chimp_kidney &lt;- c(2, 6, 10, 14)
+human_kidney &lt;- c(17, 21, 25, 29)
+rhesus_kidney &lt;- c(33, 37, 41, 45)
+
+chimp_liver &lt;- c(3, 7, 11, 15)
+human_liver &lt;- c(18, 22, 26, 30)
+rhesus_liver &lt;- c(34, 38, 42, 46)
+
+chimp_lung &lt;- c(4, 8, 12, 16)
+human_lung &lt;- c(19, 23, 27, 31)
+rhesus_lung &lt;- c(35, 39, 43, 47)
+
+# Expression on a per tissue, per species basis
+chimp_heart_exp &lt;- cpm_12184[,chimp_heart]
+
+human_heart_exp &lt;- cpm_12184[,human_heart]
+
+rhesus_heart_exp &lt;- cpm_12184[,rhesus_heart]
+
+chimp_kidney_exp &lt;- cpm_12184[,chimp_kidney]
+
+human_kidney_exp &lt;- cpm_12184[,human_kidney]
+summary(apply(human_kidney_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     489   11695</code></pre>
+<pre class="r"><code>summary(rowSums(human_kidney_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     364   11820</code></pre>
+<pre class="r"><code>rhesus_kidney_exp &lt;- cpm_12184[,rhesus_kidney]
+summary(apply(rhesus_kidney_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     769   11415</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_kidney_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     669   11515</code></pre>
+<pre class="r"><code>chimp_liver_exp &lt;- cpm_12184[,chimp_liver]
+summary(apply(chimp_liver_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     920   11264</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_liver_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     735   11449</code></pre>
+<pre class="r"><code>human_liver_exp &lt;- cpm_12184[,human_liver]
+summary(apply(human_liver_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     745   11439</code></pre>
+<pre class="r"><code>summary(rowSums(human_liver_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     568   11616</code></pre>
+<pre class="r"><code>rhesus_liver_exp &lt;- cpm_12184[,rhesus_liver]
+summary(apply(rhesus_liver_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    1202   10982</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_liver_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    1099   11085</code></pre>
+<pre class="r"><code>chimp_lung_exp &lt;- cpm_12184[,chimp_lung]
+summary(apply(chimp_lung_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     599   11585</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_lung_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     465   11719</code></pre>
+<pre class="r"><code>human_lung_exp &lt;- cpm_12184[,human_lung]
+summary(apply(human_lung_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     480   11704</code></pre>
+<pre class="r"><code>summary(rowSums(human_lung_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     384   11800</code></pre>
+<pre class="r"><code>rhesus_lung_exp &lt;- cpm_12184[,rhesus_lung]
+summary(apply(rhesus_lung_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     674   11510</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_lung_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     604   11580</code></pre>
+<pre class="r"><code>summary(apply(chimp_heart_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     804   11380</code></pre>
+<pre class="r"><code>summary(apply(human_heart_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     865   11319</code></pre>
+<pre class="r"><code>summary(apply(rhesus_heart_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    1096   11088</code></pre>
+<pre class="r"><code>summary(apply(chimp_kidney_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     475   11709</code></pre>
+<pre class="r"><code>summary(apply(human_kidney_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     489   11695</code></pre>
+<pre class="r"><code>summary(apply(rhesus_kidney_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     769   11415</code></pre>
+<pre class="r"><code>summary(apply(chimp_liver_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     920   11264</code></pre>
+<pre class="r"><code>summary(apply(human_liver_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     745   11439</code></pre>
+<pre class="r"><code>summary(apply(rhesus_liver_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    1202   10982</code></pre>
+<pre class="r"><code>summary(apply(chimp_lung_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     599   11585</code></pre>
+<pre class="r"><code>summary(apply(human_lung_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     480   11704</code></pre>
+<pre class="r"><code>summary(apply(rhesus_lung_exp, 1, mean) &gt; 1.5)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     674   11510</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_heart_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     665   11519</code></pre>
+<pre class="r"><code>summary(rowSums(human_heart_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     824   11360</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_heart_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     983   11201</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_kidney_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     370   11814</code></pre>
+<pre class="r"><code>summary(rowSums(human_kidney_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     364   11820</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_kidney_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     669   11515</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_liver_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     735   11449</code></pre>
+<pre class="r"><code>summary(rowSums(human_liver_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     568   11616</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_liver_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical    1099   11085</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_lung_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     465   11719</code></pre>
+<pre class="r"><code>summary(rowSums(human_lung_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     384   11800</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_lung_exp &gt; 1.5) &gt;= 2)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     604   11580</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_heart_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     103   12081</code></pre>
+<pre class="r"><code>summary(rowSums(human_heart_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      88   12096</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_heart_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     240   11944</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_kidney_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      36   12148</code></pre>
+<pre class="r"><code>summary(rowSums(human_kidney_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      26   12158</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_kidney_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     134   12050</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_liver_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      96   12088</code></pre>
+<pre class="r"><code>summary(rowSums(human_liver_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      43   12141</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_liver_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     273   11911</code></pre>
+<pre class="r"><code>summary(rowSums(chimp_lung_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      54   12130</code></pre>
+<pre class="r"><code>summary(rowSums(human_lung_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical      26   12158</code></pre>
+<pre class="r"><code>summary(rowSums(rhesus_lung_exp &gt; 0) &gt;= 1)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE 
+## logical     112   12072</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

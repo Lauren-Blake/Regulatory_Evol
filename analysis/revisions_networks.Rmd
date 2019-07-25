@@ -1,0 +1,2481 @@
+---
+title: "network_analysis"
+author: "Lauren Blake"
+date: "May 23, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Open ENSG files
+
+```{r}
+library(tidyverse)
+
+# Human and Tissue specific data
+
+human_specific_downreg_heart_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_downreg_heart_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_downreg_kidney_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_downreg_kidney_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_downreg_liver_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_downreg_liver_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_downreg_lung_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_downreg_lung_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_upreg_heart_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_upreg_heart_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_upreg_kidney_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_upreg_kidney_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_upreg_liver_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_upreg_liver_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_upreg_lung_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/human_specific_upreg_lung_genes.csv", sep="", stringsAsFactors = FALSE)
+
+human_specific_heart <- rbind(human_specific_downreg_heart_genes, human_specific_upreg_heart_genes)
+
+dim(human_specific_heart)
+
+human_specific_kidney <- rbind(human_specific_downreg_kidney_genes, human_specific_upreg_kidney_genes)
+
+dim(human_specific_kidney)
+
+human_specific_liver <- rbind(human_specific_downreg_liver_genes, human_specific_upreg_liver_genes)
+
+dim(human_specific_liver)
+
+human_specific_lung <- rbind(human_specific_downreg_lung_genes, human_specific_upreg_lung_genes)
+
+dim(human_specific_lung)
+
+
+
+
+# Conserved and Tissue specific data
+
+specific_downreg_heart_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_downreg_heart_genes.csv", sep="", stringsAsFactors = FALSE)
+
+specific_downreg_kidney_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_downreg_kidney_genes.csv", sep="", stringsAsFactors = FALSE)
+
+specific_downreg_liver_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_downreg_liver_genes.csv", sep="", stringsAsFactors = FALSE)
+
+specific_downreg_lung_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_downreg_lung_genes.csv", sep="", stringsAsFactors = FALSE)
+
+specific_upreg_heart_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_upreg_heart_genes.csv", sep="", stringsAsFactors = FALSE)
+
+specific_upreg_kidney_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_upreg_kidney_genes.csv", sep="", stringsAsFactors = FALSE)
+
+specific_upreg_liver_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_upreg_liver_genes.csv", sep="", stringsAsFactors = FALSE)
+
+specific_upreg_lung_genes <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/specific_upreg_lung_genes.csv", sep="", stringsAsFactors = FALSE)
+
+conserved_specific_heart <- rbind(specific_downreg_heart_genes, specific_upreg_heart_genes)
+
+dim(conserved_specific_heart)
+
+conserved_specific_kidney <- rbind(specific_downreg_kidney_genes, specific_upreg_kidney_genes)
+
+dim(conserved_specific_kidney)
+
+conserved_specific_liver <- rbind(specific_downreg_liver_genes, specific_upreg_liver_genes)
+
+dim(conserved_specific_liver)
+
+conserved_specific_lung <- rbind(specific_downreg_lung_genes, specific_upreg_lung_genes)
+
+dim(conserved_specific_lung)
+
+all_background_genes <- read.table("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/human_chimp/no_methyl_p_05/all_background_genes.txt", quote="\"", comment.char="", stringsAsFactors = FALSE)
+```
+
+# Open data files
+
+You can also embed plots, for example:
+
+```{r}
+# Heart network
+
+heart_TE_TE <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/heart_TE_TE.csv", stringsAsFactors = FALSE)
+
+heart_TE_TE <- heart_TE_TE[,1:4]
+
+ENSG_GENE_HG19 <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE)
+
+merge_heart_TE_TE <- merge(heart_TE_TE, ENSG_GENE_HG19, by.x = "Name1", by.y = "Gene")
+
+merge_heart_TE_TE_2 <- merge(merge_heart_TE_TE, ENSG_GENE_HG19, by.x = "Name2", by.y = "Gene")
+
+heart_TE_TE <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/heart_TE_TE.csv", stringsAsFactors = FALSE)
+
+# Heart hub neighbors
+
+heart_hub_neighbor <-  read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/heart_hub_neighbor.csv", header=FALSE, stringsAsFactors = FALSE)
+
+heart_hub_neighbor <- merge(heart_hub_neighbor, ENSG_GENE_HG19, by.x = "V1", by.y = "Gene")
+
+# Lung network
+
+lung_TE_TE <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/lung_TE_TE.csv")
+
+lung_TE_TE <- lung_TE_TE[,1:4]
+
+merge_lung_TE_TE <- merge(lung_TE_TE, ENSG_GENE_HG19, by.x = "Name1", by.y = "Gene")
+
+merge_lung_TE_TE_2 <- merge(merge_lung_TE_TE, ENSG_GENE_HG19, by.x = "Name2", by.y = "Gene")
+
+
+# Lung hub neighbors
+
+lung_hub_neighbor <-  read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/lung_hub_neighbor.csv", header=FALSE, stringsAsFactors = FALSE)
+
+lung_hub_neighbor <- merge(lung_hub_neighbor, ENSG_GENE_HG19, by.x = "V1", by.y = "Gene")
+
+# Shared hubs
+
+shared_hubs <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/shared_hubs.csv", stringsAsFactors = FALSE)
+
+shared_hubs <- merge(shared_hubs, ENSG_GENE_HG19, by.x = "hub", by.y = "Gene")
+
+# TSN Heart
+
+tsn_heart <- read.csv("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/tsn_heart.csv", stringsAsFactors = FALSE)
+
+tsn_heart <- tsn_heart[,1:3]
+
+tsn_heart <- merge(tsn_heart, ENSG_GENE_HG19, by.x = "hub", by.y = "Gene", )
+
+# PPI data
+
+protein_heart.muscle_myocytes <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/protein_heart muscle_myocytes.txt", header=FALSE, stringsAsFactors = FALSE)
+
+protein_kidney <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/protein_kidney.txt", header=FALSE, stringsAsFactors = FALSE)
+
+protein_liver <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/protein_liver.txt", header=FALSE, stringsAsFactors = FALSE)
+
+protein_lung <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/revisions/network_external_data/protein_lung.txt", header=FALSE, stringsAsFactors = FALSE)
+
+# Find gene expression levels
+
+# Normalized gene expression data
+cpm.voom.cyclic <- readRDS("../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_voom_cyclic.rds")
+
+
+# Load libraries
+library("edgeR")
+library("limma")
+
+# Tissue specific heart expression
+all_cons_exp <- cpm.voom.cyclic$E[rownames(cpm.voom.cyclic$E) %in% conserved_specific_heart$x | rownames(cpm.voom.cyclic$E) %in% human_specific_heart$x, ]  
+
+hearts <- c(20, 24, 28)
+
+all_cons_heart_exp <- all_cons_exp[,hearts]
+
+# Take variance
+
+heart_tissue_spec_var <- as.data.frame(apply(all_cons_heart_exp, 1, var))
+
+heart_tissue_spec_var[,2] <- rank(heart_tissue_spec_var[,1])
+
+colnames(heart_tissue_spec_var) <- c("var", "var_rank")
+
+
+#plot(heart_tissue_spec_var$var, log2(heart_tissue_spec_var$var))
+
+#heart_tissue_spec_var$var <- log2(heart_tissue_spec_var$var)
+
+```
+
+# How many times do genes appear in the TE-TE files?
+
+```{r}
+#Conserved heart
+
+heart_cons_te <- merge_heart_TE_TE_2[merge_heart_TE_TE_2$ensg.x  %in% conserved_specific_heart$x | merge_heart_TE_TE_2$ensg.x  %in% conserved_specific_heart$x, ]
+
+# 1527
+
+# Human specific heart
+
+heart_hs_te <- merge_heart_TE_TE_2[merge_heart_TE_TE_2$ensg.x  %in% human_specific_heart$x | merge_heart_TE_TE_2$ensg.x  %in% human_specific_heart$x, ]
+
+# 438
+
+prop.test(x = c(482,219), n = c(1527,438))
+t.test(heart_cons_te$Edge.weight, heart_hs_te$Edge.weight)
+
+
+#Conserved lung
+
+lung_cons_te <- merge_lung_TE_TE_2[merge_lung_TE_TE_2$ensg.x  %in% conserved_specific_lung$x | merge_lung_TE_TE_2$ensg.x  %in% conserved_specific_lung$x, ]
+
+# 1502
+
+# Human specific lung
+
+lung_hs_te <- merge_lung_TE_TE_2[merge_lung_TE_TE_2$ensg.x  %in% human_specific_lung$x | merge_lung_TE_TE_2$ensg.x  %in% human_specific_lung$x, ]
+
+# 164
+
+prop.test(x = c(408,126), n = c(1502,164))
+t.test(lung_cons_te$Edge.weight, lung_hs_te$Edge.weight)
+
+```
+
+# Look at the number of neighbors to the hub
+
+```{r}
+#Conserved heart
+
+conserved_heart_hub_neighbor <- heart_hub_neighbor[heart_hub_neighbor$ensg  %in% conserved_specific_heart$x, ]
+
+nrow(conserved_heart_hub_neighbor)
+
+summary(conserved_heart_hub_neighbor)
+
+#HS heart
+
+hs_heart_hub_neighbor <- heart_hub_neighbor[heart_hub_neighbor$ensg  %in% human_specific_heart$x, ]
+
+nrow(hs_heart_hub_neighbor)
+
+summary(hs_heart_hub_neighbor)
+
+
+prop.test(x = c(228,79), n = c(482,219))
+t.test(conserved_heart_hub_neighbor$V2, hs_heart_hub_neighbor$V2)
+
+#Conserved lung
+
+conserved_lung_hub_neighbor <- lung_hub_neighbor[lung_hub_neighbor$ensg  %in% conserved_specific_lung$x, ]
+
+nrow(conserved_lung_hub_neighbor)
+
+summary(conserved_heart_hub_neighbor)
+
+#HS lung
+
+hs_lung_hub_neighbor <- lung_hub_neighbor[lung_hub_neighbor$ensg  %in% human_specific_lung$x, ]
+
+nrow(hs_lung_hub_neighbor)
+
+summary(hs_lung_hub_neighbor)
+
+prop.test(x = c(198,30), n = c(408,126))
+t.test(conserved_lung_hub_neighbor$V2, hs_lung_hub_neighbor$V2)
+```
+
+
+
+
+
+
+# How many times do genes appear in the shared hub files?
+
+```{r}
+#Conserved heart
+
+conserved_heart_shared_hubs <- shared_hubs[shared_hubs$ensg  %in% conserved_specific_heart$x, ]
+
+nrow(conserved_heart_shared_hubs)
+
+summary(conserved_heart_shared_hubs)
+
+
+# Human specific heart
+
+hs_heart_shared_hubs <- shared_hubs[shared_hubs$ensg  %in% human_specific_heart$x, ]
+
+nrow(hs_heart_shared_hubs)
+
+summary(hs_heart_shared_hubs)
+
+t.test(conserved_heart_shared_hubs$rank, hs_heart_shared_hubs$rank)
+
+
+#Conserved lung
+
+conserved_lung_shared_hubs <- shared_hubs[shared_hubs$ensg  %in% conserved_specific_lung$x, ]
+
+nrow(conserved_lung_shared_hubs)
+
+summary(conserved_lung_shared_hubs)
+
+
+# Human specific lung
+
+hs_lung_shared_hubs <- shared_hubs[shared_hubs$ensg  %in% human_specific_lung$x, ]
+
+nrow(hs_lung_shared_hubs)
+
+summary(hs_lung_shared_hubs)
+
+t.test(conserved_lung_shared_hubs$rank, hs_lung_shared_hubs$rank)
+```
+
+# How many times do genes appear in the TSN hub files?
+
+```{r}
+#Conserved heart
+
+conserved_heart_tsn_hubs <- tsn_heart[tsn_heart$ensg  %in% conserved_specific_heart$x, ]
+
+nrow(conserved_heart_tsn_hubs)
+
+summary(conserved_heart_tsn_hubs)
+
+# Human specific heart
+
+hs_heart_tsn_hubs <- tsn_heart[tsn_heart$ensg  %in% human_specific_heart$x, ]
+
+nrow(hs_heart_tsn_hubs)
+
+summary(hs_heart_tsn_hubs)
+
+prop.test(x = c(295,125), n = c(482,219))
+
+t.test(conserved_heart_tsn_hubs$rank, hs_heart_tsn_hubs$rank)
+t.test(conserved_heart_tsn_hubs$r, hs_heart_tsn_hubs$r)
+```
+
+## What are the variances of the hub genes/genes in the network?
+
+```{r}
+# Is there a connection between the variances and the rank of the hub? 
+
+heart_tissue_spec_var_name <- cbind(heart_tissue_spec_var, rownames(heart_tissue_spec_var))
+colnames(heart_tissue_spec_var_name) <- c("var", "var_rank", "gene")
+
+
+hub_variance <- merge(heart_hub_neighbor, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+cor.test(hub_variance$var, hub_variance$V2)
+cor.test(hub_variance$var_rank, hub_variance$V2)
+
+# Is there a connection between the variances and the rank of the shared hub?
+
+shared_hubs_var <- merge(shared_hubs, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+cor.test(shared_hubs_var$rank, shared_hubs_var$var)
+
+
+# Heart TSN
+
+tsn_hubs_var <- merge(tsn_heart, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+cor.test(tsn_hubs_var$rank, tsn_hubs_var$var)
+cor.test(tsn_hubs_var$rank, tsn_hubs_var$var, method = "spearman")
+cor.test(tsn_hubs_var$r, tsn_hubs_var$var)
+
+conserved_heart_tsn_hubs_var <- merge(conserved_heart_tsn_hubs, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+hs_heart_tsn_hubs_var <- merge(hs_heart_tsn_hubs, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+cor.test(conserved_heart_tsn_hubs_var$rank, conserved_heart_tsn_hubs_var$var)
+
+t.test(conserved_heart_tsn_hubs_var$var, hs_heart_tsn_hubs_var$var)
+
+# Hub
+
+var_cons_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% conserved_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+sort(var_cons_heart_hubs$var)
+
+var_hs_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% hs_heart_shared_hubs$ensg), ]
+
+summary(var_hs_heart_hubs)
+
+t.test(var_cons_heart_hubs$var, var_hs_heart_hubs$var)
+sort(var_hs_heart_hubs$var)
+
+# Shared hub
+
+var_cons_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% conserved_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+sort(var_cons_heart_hubs$var)
+
+var_hs_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% hs_heart_shared_hubs$ensg), ]
+
+summary(var_hs_heart_hubs)
+
+t.test(var_cons_heart_hubs$var, var_hs_heart_hubs$var)
+sort(var_hs_heart_hubs$var)
+
+plot(var_cons_heart_hubs[1:50,]$var, var_hs_heart_hubs[1:50,]$var)
+```
+
+
+
+
+# How often do the genes show up in PPI?
+
+```{r}
+#Conserved heart
+
+conserved_heart_ppi <- protein_heart.muscle_myocytes[protein_heart.muscle_myocytes$V1  %in% conserved_specific_heart$x | protein_heart.muscle_myocytes$V2  %in% conserved_specific_heart$x, ]
+
+dim(conserved_heart_ppi)
+
+length(union(conserved_heart_ppi$V1, conserved_heart_ppi$V2))
+
+# Human Heart specific
+
+hs_heart_ppi <- protein_heart.muscle_myocytes[protein_heart.muscle_myocytes$V1  %in% human_specific_heart$x | protein_heart.muscle_myocytes$V2  %in% human_specific_heart$x, ]
+
+dim(hs_heart_ppi)
+
+prop.test(x = c(482,219), n = c(4407,2743))
+
+length(union(hs_heart_ppi$V1, hs_heart_ppi$V2))
+
+# Kidney conserved
+
+conserved_kidney_ppi <- protein_kidney[protein_kidney$V1  %in% conserved_specific_kidney$x | protein_kidney$V2  %in% conserved_specific_kidney$x, ]
+
+dim(conserved_kidney_ppi)
+
+# Human kidney specific
+
+hs_kidney_ppi <- protein_kidney[protein_kidney$V1  %in% human_specific_kidney$x | protein_kidney$V2  %in% human_specific_kidney$x, ]
+
+dim(hs_kidney_ppi)
+
+prop.test(x = c(172,137), n = c(1280,1984))
+
+length(union(conserved_kidney_ppi$V1, conserved_kidney_ppi$V2))
+length(union(hs_kidney_ppi$V1, hs_kidney_ppi$V2))
+
+# liver conserved
+
+conserved_liver_ppi <- protein_liver[protein_liver$V1  %in% conserved_specific_liver$x | protein_liver$V2  %in% conserved_specific_liver$x, ]
+
+dim(conserved_liver_ppi)
+
+# Human liver specific
+
+hs_liver_ppi <- protein_liver[protein_liver$V1  %in% human_specific_liver$x | protein_liver$V2  %in% human_specific_liver$x, ]
+
+dim(hs_liver_ppi)
+
+prop.test(x = c(734,234), n = c(5136,2406))
+
+length(union(conserved_liver_ppi$V1, conserved_liver_ppi$V2))
+length(union(hs_liver_ppi$V1, hs_liver_ppi$V2))
+
+# lung conserved
+
+conserved_lung_ppi <- protein_lung[protein_lung$V1  %in% conserved_specific_lung$x | protein_lung$V2  %in% conserved_specific_lung$x, ]
+
+dim(conserved_lung_ppi)
+
+# Human lung specific
+
+hs_lung_ppi <- protein_lung[protein_lung$V1  %in% human_specific_lung$x | protein_lung$V2  %in% human_specific_lung$x, ]
+
+dim(hs_lung_ppi)
+
+length(union(conserved_lung_ppi$V1, conserved_lung_ppi$V2))
+length(union(hs_lung_ppi$V1, hs_lung_ppi$V2))
+
+prop.test(x = c(408,126), n = c(4562,1045))
+
+```
+
+# Are genes with lower variance (more evidence for selection) more likely to show up in PPI network?
+
+## Heart specific
+
+### All
+```{r}
+# Compare variances from human versus conserved
+
+human_heart_var <- heart_tissue_spec_var[rownames(heart_tissue_spec_var) %in% human_specific_heart$x, ]  
+
+cons_heart_var <- heart_tissue_spec_var[rownames(heart_tissue_spec_var) %in% conserved_specific_heart$x, ]  
+
+# Summary
+mean(cons_heart_var$var)
+mean(human_heart_var$var)
+
+t.test(cons_heart_var$var, human_heart_var$var)
+t.test(cons_heart_var$var_rank, human_heart_var$var_rank)
+
+head(sort(cons_heart_var$var_rank))
+head(sort(human_heart_var$var_rank))
+
+sort(cons_heart_var$var)
+
+sort(human_heart_var$var)
+```
+
+Variances for the human heart specific genes are lower (in terms of absolute value and the rank of the variance). Need to look only in the PPI and weigh by the number of occurences. 
+
+### Only in the PPI
+
+```{r}
+#Conserved heart
+
+cons_heart_var_ppi <- cons_heart_var[conserved_heart_ppi$V1  %in% rownames(cons_heart_var) | conserved_heart_ppi$V2  %in% rownames(cons_heart_var), ]
+
+cons_x <- cons_heart_var_ppi[complete.cases(cons_heart_var_ppi), ]
+
+hs_heart_var_ppi <- human_heart_var[hs_heart_ppi$V1  %in% rownames(human_heart_var) | hs_heart_ppi$V2  %in% rownames(human_heart_var), ]
+
+hs_x <- hs_heart_var_ppi[complete.cases(hs_heart_var_ppi), ]
+
+# Summary
+mean(cons_x$var)
+mean(hs_x$var)
+
+t.test(cons_x$var, hs_x$var)
+```
+
+### Weigh by number of occurences in the PPI
+
+```{r}
+# Compare variances
+hs_top_var <- sort(human_heart_var$var)
+
+cons_top_var <- sort(cons_heart_var$var)
+
+summary(hs_top_var > cons_top_var[1:219])
+
+plot(hs_top_var[1:219], cons_top_var[1:219], xlim = c(0, 6), ylim = c(0, 6))
+abline(0, 1, col = "red")
+
+plot(hs_top_var[1:25], cons_top_var[1:25], xlim = c(0, 0.02), ylim = c(0, 0.02))
+abline(0, 1, col = "red")
+
+plot(hs_top_var[1:100], cons_top_var[1:100], xlim = c(0, 0.02), ylim = c(0, 0.02))
+abline(0, 1, col = "red")
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_heart.muscle_myocytes[,1:2])), stringsAsFactors = FALSE)
+
+# Is there a general relationship between the number of occurences in PPI and the gene expression variance?
+
+heart_genes_ppi[heart_genes_ppi$Var1  %in% rownames(cpm.voom.cyclic$E) , ]
+
+all_heart_var_names <- cbind(heart_tissue_spec_var, rownames(heart_tissue_spec_var))
+colnames(all_heart_var_names) <- c("var", "var_rank", "gene")
+
+all_heart_var_names_freq <- merge(x = all_heart_var_names, y = heart_genes_ppi, by.x = "gene", by.y = "Var1", all.y = TRUE)
+
+cor.test(all_heart_var_names_freq$var, all_heart_var_names_freq$Freq, method = "spearman")
+
+cor.test(all_heart_var_names_freq$var, all_heart_var_names_freq$Freq, method = "pearson")
+
+plot(all_heart_var_names_freq$var, all_heart_var_names_freq$Freq)
+
+## Conserved
+
+freq_cons_heart_var_ppi <- heart_genes_ppi[heart_genes_ppi$Var1  %in% rownames(cons_heart_var) , ]
+
+cons_heart_var_names <- cbind(cons_heart_var, rownames(cons_heart_var))
+colnames(cons_heart_var_names) <- c("var", "var_rank", "gene")
+
+cons_heart_var_names_freq <- merge(x = cons_heart_var_names, y = freq_cons_heart_var_ppi, by.x = "gene", by.y = "Var1")
+
+cor.test(cons_heart_var_names_freq$var, cons_heart_var_names_freq$Freq, method = "spearman")
+
+## Human specific
+
+freq_hs_heart_var_ppi <- heart_genes_ppi[heart_genes_ppi$Var1  %in% rownames(human_heart_var) , ]
+
+hs_heart_var_names <- cbind(human_heart_var, rownames(human_heart_var))
+colnames(hs_heart_var_names) <- c("var", "var_rank", "gene")
+
+hs_heart_var_names_freq <- merge(x = hs_heart_var_names, y = freq_hs_heart_var_ppi, by.x = "gene", by.y = "Var1")
+
+cor.test(hs_heart_var_names_freq$var, hs_heart_var_names_freq$Freq, method = "spearman")
+
+
+
+prop.test(x = c(113,259), n = c(219,482))
+
+t.test(cons_heart_var_names_freq$var, hs_heart_var_names_freq$var)
+t.test(freq_cons_heart_var_ppi$Freq, freq_hs_heart_var_ppi$Freq)
+
+hist(cons_heart_var_names_freq$var, breaks = 150)
+hist(hs_heart_var_names_freq$var, breaks = 150)
+
+# Look at the p values for the top 100 genes
+
+cons_heart_var_sort <- cons_heart_var_names_freq[order(cons_heart_var_names_freq$var),]
+
+hs_heart_var_sort <- hs_heart_var_names_freq[order(hs_heart_var_names_freq$var),]
+
+plot(cons_heart_var_sort[1:round(nrow(cons_heart_var_sort)/4),]$var, cons_heart_var_sort[1:round(nrow(cons_heart_var_sort)/4),]$Freq)
+
+plot(cons_heart_var_sort[1:round(nrow(cons_heart_var_sort)/4),]$var, hs_heart_var_sort[1:round(nrow(cons_heart_var_sort)/4),]$var)
+
+t.test(cons_heart_var_sort[1:round(nrow(cons_heart_var_sort)/5),]$var, hs_heart_var_sort[1:round(nrow(hs_heart_var_sort)/5),]$var)
+
+t.test(cons_heart_var_sort[1:round(nrow(cons_heart_var_sort)/4),]$var, hs_heart_var_sort[1:round(nrow(hs_heart_var_sort)/4),]$var)
+
+t.test(cons_heart_var_sort[1:round(nrow(cons_heart_var_sort)/5),]$Freq, hs_heart_var_sort[1:round(nrow(hs_heart_var_sort)/5),]$Freq)
+```
+
+# Re-run with GTEx variance
+
+```{r}
+library(qdap)
+
+Heart_Left_Ventricle_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Heart_Left_Ventricle_Analysis.v6p.normalized.expression.R")
+
+Liver_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Liver_Analysis.v6p.normalized.expression.R")
+
+
+Lung_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Lung_Analysis.v6p.normalized.expression.R")
+
+
+heart_gtex <- Heart_Left_Ventricle_Analysis.v6p.normalized.expression[,-(1:3)]
+
+# Remove everything after the period
+
+# Make the individual names match
+
+ind_names <- gsub("\\..*","",heart_gtex$gene_id)
+
+rownames(heart_gtex) <- ind_names
+
+heart_gtex <- heart_gtex[,-(1)]
+
+gtex_heart_var <- as.data.frame(apply(heart_gtex,1, var))
+colnames(gtex_heart_var) <- c("Variance")
+
+# Take log2 variances
+
+gtex_heart_log_var <- log2(gtex_heart_var)
+```
+
+
+## What are the variances of the hub genes/genes in the network?
+
+```{r}
+# Is there a connection between the variances and the rank of the hub? 
+
+heart_tissue_spec_var_name <- cbind(gtex_heart_log_var, rownames(gtex_heart_log_var))
+colnames(heart_tissue_spec_var_name) <- c("var", "gene")
+
+
+hub_variance <- merge(heart_hub_neighbor, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+cor.test(hub_variance$var, hub_variance$V2, method = "spearman")
+cor.test(hub_variance$var, hub_variance$V2)
+
+# Compare hubs from conserved and human-specific
+
+var_cons_heart_hubs <- heart_tissue_spec_var_name[which(rownames(heart_tissue_spec_var_name) %in% conserved_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+
+var_hs_heart_hubs <- heart_tissue_spec_var_name[which(hub_variance$ensg %in% hs_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+
+t.test(var_cons_heart_hubs$var, var_hs_heart_hubs$var)
+
+
+
+# Compare hubs from conserved and human-specific
+
+var_cons_heart_hubs <- heart_tissue_spec_var_name[which(hub_variance$ensg %in% conserved_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+
+var_hs_heart_hubs <- heart_tissue_spec_var_name[which(hub_variance$ensg %in% hs_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+
+t.test(var_cons_heart_hubs$var, var_hs_heart_hubs$var)
+
+
+
+
+
+
+# Heart TSN
+
+tsn_hubs_var <- merge(tsn_heart, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+cor.test(tsn_hubs_var$rank, tsn_hubs_var$var)
+cor.test(tsn_hubs_var$r, tsn_hubs_var$var)
+
+cor.test(tsn_hubs_var$rank, tsn_hubs_var$var, method = "spearman")
+cor.test(tsn_hubs_var$r, tsn_hubs_var$var, method = "spearman")
+
+conserved_heart_tsn_hubs_var <- merge(conserved_heart_tsn_hubs, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+hs_heart_tsn_hubs_var <- merge(hs_heart_tsn_hubs, heart_tissue_spec_var_name, by.x = "ensg", by.y = "gene")
+
+t.test(conserved_heart_tsn_hubs_var$var, hs_heart_tsn_hubs_var$var)
+
+# Hub
+
+var_cons_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% conserved_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+sort(var_cons_heart_hubs$var)
+
+var_hs_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% hs_heart_shared_hubs$ensg), ]
+
+summary(var_hs_heart_hubs)
+
+t.test(var_cons_heart_hubs$var, var_hs_heart_hubs$var)
+sort(var_hs_heart_hubs$var)
+
+# Shared hub
+
+var_cons_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% conserved_heart_shared_hubs$ensg), ]
+
+summary(var_cons_heart_hubs)
+sort(var_cons_heart_hubs$var)
+
+var_hs_heart_hubs <- heart_tissue_spec_var[which(rownames(heart_tissue_spec_var) %in% hs_heart_shared_hubs$ensg), ]
+
+summary(var_hs_heart_hubs)
+
+t.test(var_cons_heart_hubs$var, var_hs_heart_hubs$var)
+sort(var_hs_heart_hubs$var)
+
+plot(var_cons_heart_hubs[1:50,]$var, var_hs_heart_hubs[1:50,]$var)
+```
+
+# Looking at patterns of variance in DE versus not 
+
+```{r}
+# Load libraries
+
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+library("R.utils")
+library("plyr")
+library("limma")
+library("gridExtra")
+library("VennDiagram")
+library("plyr")
+library("dplyr")
+library("limma")
+library("gridExtra")
+library("VennDiagram")
+
+
+results <- readRDS("../data/combined-limma.rds")
+
+results$HvC_Liver
+results$HvR_Liver
+results$CvR_Liver
+
+# Check that the gene names matched
+
+summary(results$HvC_Liver$genes == results$CvR_Liver$genes)
+summary(results$HvC_Liver$genes == results$HvR_Liver$genes)
+```
+
+
+## Pairwise- Heart 
+
+### Take between individual variances
+
+```{r}
+chimp_heart <- c(1, 5, 9, 13)
+human_heart <- c(20, 24, 28)
+rhesus_heart <- c(32, 36, 40, 44)
+
+chimp_kidney <- c(2, 6, 10, 14)
+human_kidney <- c(17, 21, 25, 29)
+rhesus_kidney <- c(33, 37, 41, 45)
+
+chimp_liver <- c(3, 7, 11, 15)
+human_liver <- c(18, 22, 26, 30)
+rhesus_liver <- c(34, 38, 42, 46)
+
+chimp_lung <- c(4, 8, 12, 16)
+human_lung <- c(19, 23, 27, 31)
+rhesus_lung <- c(35, 39, 43, 47)
+
+
+chimp_heart_var <- as.data.frame(apply(cpm.voom.cyclic$E[, chimp_heart], 1, var))
+human_heart_var <- as.data.frame(apply(cpm.voom.cyclic$E[, human_heart], 1, var))
+rhesus_heart_var <- as.data.frame(apply(cpm.voom.cyclic$E[, rhesus_heart], 1, var))
+
+total_heart_var <- (chimp_heart_var + human_heart_var + rhesus_heart_var)/3
+
+colnames(total_heart_var) <- c("var")
+total_heart_var <- cbind(rownames(total_heart_var), total_heart_var, stringsAsFactors = FALSE)
+colnames(total_heart_var) <- c("genes", "var")
+
+chimp_kidney_var <- as.data.frame(apply(cpm.voom.cyclic$E[, chimp_kidney], 1, var))
+human_kidney_var <- as.data.frame(apply(cpm.voom.cyclic$E[, human_kidney], 1, var))
+rhesus_kidney_var <- as.data.frame(apply(cpm.voom.cyclic$E[, rhesus_kidney], 1, var))
+
+total_kidney_var <- (chimp_kidney_var + human_kidney_var + rhesus_kidney_var)/3
+
+colnames(total_kidney_var) <- c("var")
+total_kidney_var <- cbind(rownames(total_kidney_var), total_kidney_var, stringsAsFactors = FALSE)
+colnames(total_kidney_var) <- c("genes", "var")
+
+chimp_liver_var <- as.data.frame(apply(cpm.voom.cyclic$E[, chimp_liver], 1, var))
+human_liver_var <- as.data.frame(apply(cpm.voom.cyclic$E[, human_liver], 1, var))
+rhesus_liver_var <- as.data.frame(apply(cpm.voom.cyclic$E[, rhesus_liver], 1, var))
+
+total_liver_var <- (chimp_liver_var + human_liver_var + rhesus_liver_var)/3
+
+colnames(total_liver_var) <- c("var")
+total_liver_var <- cbind(rownames(total_liver_var), total_liver_var, stringsAsFactors = FALSE)
+colnames(total_liver_var) <- c("genes", "var")
+
+chimp_lung_var <- as.data.frame(apply(cpm.voom.cyclic$E[, chimp_lung], 1, var))
+human_lung_var <- as.data.frame(apply(cpm.voom.cyclic$E[, human_lung], 1, var))
+rhesus_lung_var <- as.data.frame(apply(cpm.voom.cyclic$E[, rhesus_lung], 1, var))
+
+total_lung_var <- (chimp_lung_var + human_lung_var + rhesus_lung_var)/3
+
+colnames(total_lung_var) <- c("var")
+total_lung_var <- cbind(rownames(total_lung_var), total_lung_var, stringsAsFactors = FALSE)
+colnames(total_lung_var) <- c("genes", "var")
+```
+
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Heart
+
+## Find non-DE genes
+heart_no_de <- results$HvC_Heart[which(results$HvC_Heart$adj.P.Val > fdr_level & results$HvR_Heart$adj.P.Val > fdr_level & results$CvR_Heart$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_no_de <- total_heart_var[which(rownames(total_heart_var) %in% heart_no_de$genes),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_heart.muscle_myocytes[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+top <- c(1:100, 6388:6488)
+
+plot(heart_no_de_var_ppi_sorted[top,]$var, heart_no_de_var_ppi_sorted[top,]$Freq)
+
+n <- 100
+t.test(heart_no_de_var_ppi_sorted[1:n,]$Freq, heart_no_de_var_ppi_sorted[(6488-n):6488,]$Freq)
+
+summary(heart_no_de_var_ppi_sorted[1:n,]$Freq)
+summary(heart_no_de_var_ppi_sorted[(6488-n):6488,]$Freq)
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+## Find non-DE genes
+heart_human_de <- results$HvC_Heart[which(results$HvC_Heart$adj.P.Val < fdr_level & results$HvR_Heart$adj.P.Val < fdr_level & results$CvR_Heart$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_human_de <- total_heart_var[which(rownames(total_heart_var) %in% heart_human_de$genes),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 483)
+
+for (i in 30:483){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 483)
+
+for (i in 30:483){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+### Compare top low variance human DE and nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 483)
+
+for (i in 30:483){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+## Pairwise- Kidney
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Kidney
+
+## Find non-DE genes
+heart_no_de <- results$HvC_Kidney[which(results$HvC_Kidney$adj.P.Val > fdr_level & results$HvR_Kidney$adj.P.Val > fdr_level & results$CvR_Kidney$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_no_de <- total_kidney_var[which(rownames(total_kidney_var) %in% heart_no_de$genes),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the kidney PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_kidney[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+top <- c(1:100, (nrow(heart_no_de_var_ppi_sorted)-100):nrow(heart_no_de_var_ppi_sorted))
+
+plot(heart_no_de_var_ppi_sorted[top,]$var, heart_no_de_var_ppi_sorted[top,]$Freq)
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+## Find non-DE genes
+heart_human_de <- results$HvC_Kidney[which(results$HvC_Kidney$adj.P.Val < fdr_level & results$HvR_Kidney$adj.P.Val < fdr_level & results$CvR_Kidney$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_human_de <- total_kidney_var[which(rownames(total_kidney_var) %in% heart_human_de$genes),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 110)
+
+for (i in 30:110){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 110)
+
+for (i in 30:110){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+### Compare top low variance human DE nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 110)
+
+for (i in 30:110){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+## Pairwise- Liver
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Liver
+
+## Find non-DE genes
+heart_no_de <- results$HvC_Liver[which(results$HvC_Liver$adj.P.Val > fdr_level & results$HvR_Liver$adj.P.Val > fdr_level & results$CvR_Liver$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_no_de <- total_liver_var[which(rownames(total_liver_var) %in% heart_no_de$genes),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the kidney PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_liver[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+top <- c(1:100, (nrow(heart_no_de_var_ppi_sorted)-100):nrow(heart_no_de_var_ppi_sorted))
+
+plot(heart_no_de_var_ppi_sorted[top,]$var, heart_no_de_var_ppi_sorted[top,]$Freq)
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:100])
+```
+
+```{r}
+## Find non-DE genes
+heart_human_de <- results$HvC_Liver[which(results$HvC_Liver$adj.P.Val < fdr_level & results$HvR_Liver$adj.P.Val < fdr_level & results$CvR_Liver$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_human_de <- total_liver_var[which(rownames(total_liver_var) %in% heart_human_de$genes),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 208)
+
+for (i in 30:208){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 208)
+
+for (i in 30:208){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+### Compare top low variance human DE nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 208)
+
+for (i in 30:208){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+## Pairwise- Lung
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Lung
+
+## Find non-DE genes
+heart_no_de <- results$HvC_Lung[which(results$HvC_Lung$adj.P.Val > fdr_level & results$HvR_Lung$adj.P.Val > fdr_level & results$CvR_Lung$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_no_de <- total_lung_var[which(rownames(total_lung_var) %in% heart_no_de$genes),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the kidney PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_lung[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+top <- c(1:100, (nrow(heart_no_de_var_ppi_sorted)-100):nrow(heart_no_de_var_ppi_sorted))
+
+plot(heart_no_de_var_ppi_sorted[top,]$var, heart_no_de_var_ppi_sorted[top,]$Freq)
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:100])
+```
+
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+## Find non-DE genes
+heart_human_de <- results$HvC_Lung[which(results$HvC_Lung$adj.P.Val < fdr_level & results$HvR_Lung$adj.P.Val < fdr_level & results$CvR_Lung$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_human_de <- total_lung_var[which(rownames(total_lung_var) %in% heart_human_de$genes),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 142)
+
+for (i in 30:142){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 142)
+
+for (i in 30:142){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+pvalue_compare3_heart <- array(NA, dim = 142)
+
+for (i in 30:142){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+# Repeat with PPI network in tissue specific genes
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Heart
+
+## Find the variances for each 
+
+var_heart_no_de <- total_heart_var[which(rownames(total_heart_var) %in% conserved_specific_heart$x),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_heart.muscle_myocytes[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+
+## Find the variances for each 
+
+var_heart_human_de <- total_heart_var[which(rownames(total_heart_var) %in% human_specific_heart$x),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+### Compare top low variance human DE and nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+## Pairwise- Kidney
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Kidney
+
+## Find the variances for each 
+
+var_heart_no_de <- total_kidney_var[which(rownames(total_kidney_var) %in% conserved_specific_kidney$x),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the kidney PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_kidney[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+top <- c(1:100, (nrow(heart_no_de_var_ppi_sorted)-100):nrow(heart_no_de_var_ppi_sorted))
+
+plot(heart_no_de_var_ppi_sorted[top,]$var, heart_no_de_var_ppi_sorted[top,]$Freq)
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+## Find the variances for each 
+
+var_heart_human_de <- total_kidney_var[which(rownames(total_kidney_var) %in% human_specific_kidney$x),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 69)
+
+for (i in 30:69){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 69)
+
+for (i in 30:69){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+### Compare top low variance human DE nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 69)
+
+for (i in 30:69){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+## Pairwise- Liver
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Liver
+
+
+## Find the variances for each 
+
+var_heart_no_de <- total_liver_var[which(rownames(total_liver_var) %in% conserved_specific_liver$x),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the kidney PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_liver[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+top <- c(1:100, (nrow(heart_no_de_var_ppi_sorted)-100):nrow(heart_no_de_var_ppi_sorted))
+
+plot(heart_no_de_var_ppi_sorted[top,]$var, heart_no_de_var_ppi_sorted[top,]$Freq)
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:100])
+```
+
+```{r}
+
+## Find the variances for each 
+
+var_heart_human_de <- total_liver_var[which(rownames(total_liver_var) %in% human_specific_liver$x),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 117)
+
+for (i in 30:117){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[1:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 117)
+
+for (i in 30:117){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+### Compare top low variance human DE nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 117)
+
+for (i in 30:117){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+## Pairwise- Lung
+
+### Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Lung
+
+## Find the variances for each 
+
+var_heart_no_de <- total_lung_var[which(rownames(total_lung_var) %in% conserved_specific_lung$x),]
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the kidney PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(protein_lung[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Relationship between variance and frequency in PPI
+
+cor.test(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq)
+plot(heart_no_de_var_ppi$var, heart_no_de_var_ppi$Freq, xlim = c(0, 1))
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+top <- c(1:100, (nrow(heart_no_de_var_ppi_sorted)-100):nrow(heart_no_de_var_ppi_sorted))
+
+plot(heart_no_de_var_ppi_sorted[top,]$var, heart_no_de_var_ppi_sorted[top,]$Freq)
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:100])
+```
+
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+## Find the variances for each 
+
+var_heart_human_de <- total_lung_var[which(rownames(total_lung_var) %in% human_specific_lung$x),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 63)
+
+for (i in 30:63){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 63)
+
+for (i in 30:63){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+pvalue_compare3_heart <- array(NA, dim = 63)
+
+for (i in 30:63){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+
+
+
+
+
+
+# Is there an association between inter-individual variation and the positioning in the gene expression network?
+
+Hypothesis: For hub genes, variation in gene expression levels is expected to be lower than non-hub genes. 
+
+```{r}
+heart_gene_network <- as.data.frame(table(unlist(merge_heart_TE_TE_2[,5:6])), stringsAsFactors = FALSE)
+
+lung_gene_network <- as.data.frame(table(unlist(merge_lung_TE_TE_2[,5:6])), stringsAsFactors = FALSE)
+```
+
+### Heart- Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Heart
+
+## Find non-DE genes
+heart_no_de <- results$HvC_Heart[which(results$HvC_Heart$adj.P.Val > fdr_level & results$HvR_Heart$adj.P.Val > fdr_level & results$CvR_Heart$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_no_de <- total_heart_var[which(rownames(total_heart_var) %in% heart_no_de$genes),]
+
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(heart_gene_network[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+
+## Find the variances for each 
+
+heart_de <- results$HvC_Heart[which(results$HvC_Heart$adj.P.Val < fdr_level & results$HvR_Heart$adj.P.Val < fdr_level & results$CvR_Heart$adj.P.Val > fdr_level), ]
+
+var_heart_human_de <- total_heart_var[which(rownames(total_heart_var) %in% heart_de$genes),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 483)
+
+for (i in 30:483){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 483)
+
+for (i in 30:483){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+### Compare top low variance human DE and nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 483)
+
+for (i in 30:483){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+### Lung- Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Heart
+
+## Find non-DE genes
+heart_no_de <- results$HvC_Lung[which(results$HvC_Lung$adj.P.Val > fdr_level & results$HvR_Lung$adj.P.Val > fdr_level & results$CvR_Lung$adj.P.Val > fdr_level), ]
+
+## Find the variances for each 
+
+var_heart_no_de <- total_heart_var[which(rownames(total_heart_var) %in% heart_no_de$genes),]
+
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(lung_gene_network[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+
+## Find the variances for each 
+
+heart_de <- results$HvC_Lung[which(results$HvC_Lung$adj.P.Val < fdr_level & results$HvR_Lung$adj.P.Val < fdr_level & results$CvR_Lung$adj.P.Val > fdr_level), ]
+
+var_heart_human_de <- total_heart_var[which(rownames(total_heart_var) %in% heart_de$genes),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 142)
+
+for (i in 30:142){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 142)
+
+for (i in 30:142){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+### Compare top low variance human DE and nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 142)
+
+for (i in 30:142){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+
+### Heart tissue specific - Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Heart
+
+## Find the variances for each 
+
+var_heart_no_de <- total_heart_var[which(rownames(total_heart_var) %in% conserved_specific_heart$x),]
+
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(heart_gene_network[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+
+## Find the variances for each 
+
+var_heart_human_de <- total_heart_var[which(rownames(total_heart_var) %in% human_specific_heart$x),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+### Compare top low variance human DE and nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+### Lung- Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+
+## Find the variances for each 
+
+var_heart_no_de <- total_heart_var[which(rownames(total_heart_var) %in% conserved_specific_lung$x),]
+
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(lung_gene_network[,1:2])), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+
+## Find the variances for each 
+
+var_heart_human_de <- total_heart_var[which(rownames(total_heart_var) %in% human_specific_lung$x),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 63)
+
+for (i in 30:63){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 63)
+
+for (i in 30:63){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+### Compare top low variance human DE and nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 63)
+
+for (i in 30:63){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+
+
+### Heart tissue specific in the heart specific network- Not DE between humans, chimps, and rhesus macaques
+
+```{r}
+fdr_level <- 0.01
+
+# Heart
+
+## Find the variances for each 
+
+var_heart_no_de <- total_heart_var[which(rownames(total_heart_var) %in% conserved_specific_heart$x),]
+
+
+var_heart_no_de_sorted <- var_heart_no_de[order(var_heart_no_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_genes_ppi <- as.data.frame(table(unlist(tsn_heart$ensg)), stringsAsFactors = FALSE)
+
+heart_no_de_var_ppi <- merge(var_heart_no_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+
+# Replace NA with "0"
+
+heart_no_de_var_ppi$Freq <- heart_no_de_var_ppi$Freq %>% replace_na(0)
+
+# Let's compare genes whose variance in expression levels are the top 100 and bottom 100
+
+heart_no_de_var_ppi_sorted <- heart_no_de_var_ppi[order(heart_no_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_no_de)/2
+pvalue_no_de_heart <- array(NA, dim = nrow(var_heart_no_de)/2)
+
+for (i in 30:n){
+pvalue_no_de_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
+```
+
+
+### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
+
+```{r}
+
+## Find the variances for each 
+
+var_heart_human_de <- total_heart_var[which(rownames(total_heart_var) %in% human_specific_heart$x),]
+
+var_heart_human_de_sorted <- var_heart_no_de[order(var_heart_human_de$var),]
+
+
+# How many times is each gene in the PPI?
+
+heart_human_de_var_ppi <- merge(var_heart_human_de_sorted, heart_genes_ppi, by.x = "genes", by.y = "Var1", all.x = TRUE)
+
+# Replace NA with "0"
+
+heart_human_de_var_ppi$Freq <- heart_human_de_var_ppi$Freq %>% replace_na(0)
+
+# Sort variances
+
+heart_human_de_var_ppi_sorted <- heart_human_de_var_ppi[order(heart_human_de_var_ppi$var),]
+
+
+# Look at the p value at the ends of the spectrum
+n <- nrow(var_heart_human_de)/2
+pvalue_human_de_heart <- array(NA, dim = nrow(var_heart_human_de)/2)
+
+for (i in 30:n){
+pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+```{r}
+### Compare top low variance non-DE and bottom (high variance) from DE in humans
+
+pvalue_compare1_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare1_heart[i] <- t.test(heart_no_de_var_ppi_sorted[1:i,]$Freq, heart_human_de_var_ppi_sorted[(nrow(var_heart_human_de)-i):nrow(var_heart_human_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+summary(pvalue_compare1_heart[30:nrow(pvalue_compare1_heart)])
+
+### Compare top low variance human DE and bottom (high variance) from nonDE 
+
+pvalue_compare2_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare2_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[(nrow(var_heart_no_de)-i):nrow(var_heart_no_de),]$Freq)$p.value
+}
+
+plot(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+summary(pvalue_compare2_heart[30:nrow(pvalue_compare2_heart)])
+
+
+### Compare top low variance human DE and nonDE 
+
+pvalue_compare3_heart <- array(NA, dim = 109)
+
+for (i in 30:109){
+pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, heart_no_de_var_ppi_sorted[1:i,]$Freq)$p.value
+}
+
+plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+

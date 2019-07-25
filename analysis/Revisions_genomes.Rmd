@@ -1,0 +1,499 @@
+---
+title: "hg19_versus_hg38"
+author: "Lauren Blake"
+date: "July 5, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+The goal of this script is to compare the gene counts from hg19 and hg38. 
+
+```{r}
+# Import hg19 raw counts
+
+counts_12184 <- read.delim("~/Desktop/Reg_Evo_Primates/data/counts_12184.txt")
+
+counts_hg19 <- counts_12184[,17:31]
+counts_hg19 <- cbind(rownames(counts_12184), counts_hg19)
+colnames(counts_hg19) <- c("Geneid", colnames(counts_12184[,17:31]))
+
+# Import hg38 raw counts
+
+hg38_gene_counts_with_mm <- read.delim("../data/hg38_gene_counts_with_mm.txt", comment.char="#")
+
+# Subset to humans only
+
+colnames_bjp <- c("Geneid", "stYG_H_3_indH2_repM.bam", "stYG_H_3_indH3_repM.bam", "stYG_H_3_indH4_repM.bam", "stYG_H_4_indH1_repM.bam", "stYG_H_4_indH2_repM.bam", "stYG_H_4_indH3_repM.bam", "stYG_H_4_indH4_repM.bam", "stYG_H_5_indH1_repM.bam", "stYG_H_5_indH2_repM.bam", "stYG_H_5_indH3_repM.bam", "stYG_H_5_indH4_repM.bam", "stYG_H_6_indH1_repM.bam", "stYG_H_6_indH2_repM.bam", "stYG_H_6_indH3_repM.bam", "stYG_H_6_indH4_repM.bam")
+
+colnames(hg38_gene_counts_with_mm) %in% colnames_bjp
+
+hg38_gene_counts <- hg38_gene_counts_with_mm[,8:22]
+rownames(hg38_gene_counts) <- hg38_gene_counts_with_mm[,1]
+hg38_gene_counts <- cbind(hg38_gene_counts_with_mm[,1], hg38_gene_counts)
+colnames(hg38_gene_counts) <- colnames_bjp
+```
+
+# Overlap
+
+```{r}
+gene_compare <- rownames(counts_hg19) %in% rownames(hg38_gene_counts)
+summary(gene_compare)
+
+gene_compare_merge <- merge(counts_hg19, hg38_gene_counts, by = "Geneid")
+
+hg19_overlap <- gene_compare_merge[,1:16]
+
+overlap_numbers <- c(1, 17:31)
+hg38_overlap <- gene_compare_merge[,overlap_numbers]
+```
+
+Identify overlaps
+
+H1K- stYG_H_4_indH1_repM.bam
+H1Li- stYG_H_5_indH1_repM.bam
+H1Lu- stYG_H_6_indH1_repM.bam
+
+H2H- stYG_H_3_indH2_repM.bam
+H2K- stYG_H_4_indH2_repM.bam
+H2Li- stYG_H_5_indH2_repM.bam
+H2Lu- stYG_H_6_indH2_repM.bam
+
+H3H- stYG_H_3_indH3_repM.bam
+H3K- stYG_H_4_indH3_repM.bam
+H3Li- stYG_H_5_indH3_repM.bam
+H3Lu- stYG_H_6_indH3_repM.bam
+
+H4H- stYG_H_3_indH4_repM.bam
+H4K- stYG_H_4_indH4_repM.bam
+H4Li- stYG_H_5_indH4_repM.bam
+H4Lu- stYG_H_6_indH4_repM.bam
+
+# Look at correlations
+
+```{r}
+cor(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam)
+
+cor.test(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam)
+
+cor(hg19_overlap$H1Li, hg38_overlap$stYG_H_5_indH1_repM.bam)
+cor(hg19_overlap$H1Lu, hg38_overlap$stYG_H_6_indH1_repM.bam)
+
+cor(hg19_overlap$H2H, hg38_overlap$stYG_H_3_indH2_repM.bam)
+cor(hg19_overlap$H2K, hg38_overlap$stYG_H_4_indH2_repM.bam)
+cor(hg19_overlap$H2Li, hg38_overlap$stYG_H_5_indH2_repM.bam)
+cor(hg19_overlap$H2Lu, hg38_overlap$stYG_H_6_indH2_repM.bam)
+
+cor(hg19_overlap$H3H, hg38_overlap$stYG_H_3_indH3_repM.bam)
+cor(hg19_overlap$H3K, hg38_overlap$stYG_H_4_indH3_repM.bam)
+cor(hg19_overlap$H3Li, hg38_overlap$stYG_H_5_indH3_repM.bam)
+cor(hg19_overlap$H3Lu, hg38_overlap$stYG_H_6_indH3_repM.bam)
+
+cor(hg19_overlap$H4H, hg38_overlap$stYG_H_3_indH4_repM.bam)
+cor(hg19_overlap$H4K, hg38_overlap$stYG_H_4_indH4_repM.bam)
+cor(hg19_overlap$H4Li, hg38_overlap$stYG_H_5_indH4_repM.bam)
+cor(hg19_overlap$H4Lu, hg38_overlap$stYG_H_6_indH4_repM.bam)
+
+corrlation_matrix <- as.data.frame(c(0.6069429, 0.9633311, 0.7251576, 0.8265143, 0.890096, 0.8658459, 0.8154343, 0.6997069, 0.8107131, 0.9868997, 0.8357508, 0.7781797, 0.8501929, 0.9029145, 0.7878426))
+
+summary(corrlation_matrix)
+
+cor(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H1Li, hg38_overlap$stYG_H_5_indH1_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H1Lu, hg38_overlap$stYG_H_6_indH1_repM.bam, method = c("spearman"))
+
+cor(hg19_overlap$H2H, hg38_overlap$stYG_H_3_indH2_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H2K, hg38_overlap$stYG_H_4_indH2_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H2Li, hg38_overlap$stYG_H_5_indH2_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H2Lu, hg38_overlap$stYG_H_6_indH2_repM.bam, method = c("spearman"))
+
+cor(hg19_overlap$H3H, hg38_overlap$stYG_H_3_indH3_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H3K, hg38_overlap$stYG_H_4_indH3_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H3Li, hg38_overlap$stYG_H_5_indH3_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H3Lu, hg38_overlap$stYG_H_6_indH3_repM.bam, method = c("spearman"))
+
+cor(hg19_overlap$H4H, hg38_overlap$stYG_H_3_indH4_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H4K, hg38_overlap$stYG_H_4_indH4_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H4Li, hg38_overlap$stYG_H_5_indH4_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H4Lu, hg38_overlap$stYG_H_6_indH4_repM.bam, method = c("spearman"))
+
+
+# Plots
+plot(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam)
+abline(0,1, col = "red")
+
+summary(hg19_overlap$H1K > hg38_overlap$stYG_H_4_indH1_repM.bam)
+summary(hg19_overlap$H1K - hg38_overlap$stYG_H_4_indH1_repM.bam)
+plot(hg19_overlap$H1K - hg38_overlap$stYG_H_4_indH1_repM.bam, breaks= 100)
+
+plot(hg19_overlap$H1Li, hg38_overlap$stYG_H_5_indH1_repM.bam)
+abline(0,1, col = "red")
+
+plot(hg19_overlap$H1Lu, hg38_overlap$stYG_H_6_indH1_repM.bam)
+abline(0,1, col = "red")
+```
+
+```{r}
+# Import hg38 raw counts
+
+hg38_gene_counts_with_mm <- read.delim("../data/hg38_gene_counts_no_mm.txt", comment.char="#")
+
+# Subset to humans only
+
+colnames_bjp <- c("Geneid", "stYG_H_3_indH2_repM.bam", "stYG_H_3_indH3_repM.bam", "stYG_H_3_indH4_repM.bam", "stYG_H_4_indH1_repM.bam", "stYG_H_4_indH2_repM.bam", "stYG_H_4_indH3_repM.bam", "stYG_H_4_indH4_repM.bam", "stYG_H_5_indH1_repM.bam", "stYG_H_5_indH2_repM.bam", "stYG_H_5_indH3_repM.bam", "stYG_H_5_indH4_repM.bam", "stYG_H_6_indH1_repM.bam", "stYG_H_6_indH2_repM.bam", "stYG_H_6_indH3_repM.bam", "stYG_H_6_indH4_repM.bam")
+
+colnames(hg38_gene_counts_with_mm) %in% colnames_bjp
+
+hg38_gene_counts <- hg38_gene_counts_with_mm[,8:22]
+rownames(hg38_gene_counts) <- hg38_gene_counts_with_mm[,1]
+hg38_gene_counts <- cbind(hg38_gene_counts_with_mm[,1], hg38_gene_counts)
+colnames(hg38_gene_counts) <- colnames_bjp
+```
+
+# Overlap
+
+```{r}
+gene_compare <- rownames(counts_hg19) %in% rownames(hg38_gene_counts)
+summary(gene_compare)
+
+gene_compare_merge <- merge(counts_hg19, hg38_gene_counts, by = "Geneid")
+
+hg19_overlap <- gene_compare_merge[,1:16]
+
+overlap_numbers <- c(1, 17:31)
+hg38_overlap <- gene_compare_merge[,overlap_numbers]
+```
+
+Identify overlaps
+
+H1K- stYG_H_4_indH1_repM.bam
+H1Li- stYG_H_5_indH1_repM.bam
+H1Lu- stYG_H_6_indH1_repM.bam
+
+H2H- stYG_H_3_indH2_repM.bam
+H2K- stYG_H_4_indH2_repM.bam
+H2Li- stYG_H_5_indH2_repM.bam
+H2Lu- stYG_H_6_indH2_repM.bam
+
+H3H- stYG_H_3_indH3_repM.bam
+H3K- stYG_H_4_indH3_repM.bam
+H3Li- stYG_H_5_indH3_repM.bam
+H3Lu- stYG_H_6_indH3_repM.bam
+
+H4H- stYG_H_3_indH4_repM.bam
+H4K- stYG_H_4_indH4_repM.bam
+H4Li- stYG_H_5_indH4_repM.bam
+H4Lu- stYG_H_6_indH4_repM.bam
+
+# Look at correlations
+
+```{r}
+cor(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam)
+
+cor.test(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam)
+
+cor(hg19_overlap$H1Li, hg38_overlap$stYG_H_5_indH1_repM.bam)
+cor(hg19_overlap$H1Lu, hg38_overlap$stYG_H_6_indH1_repM.bam)
+
+cor(hg19_overlap$H2H, hg38_overlap$stYG_H_3_indH2_repM.bam)
+cor(hg19_overlap$H2K, hg38_overlap$stYG_H_4_indH2_repM.bam)
+cor(hg19_overlap$H2Li, hg38_overlap$stYG_H_5_indH2_repM.bam)
+cor(hg19_overlap$H2Lu, hg38_overlap$stYG_H_6_indH2_repM.bam)
+
+cor(hg19_overlap$H3H, hg38_overlap$stYG_H_3_indH3_repM.bam)
+cor(hg19_overlap$H3K, hg38_overlap$stYG_H_4_indH3_repM.bam)
+cor(hg19_overlap$H3Li, hg38_overlap$stYG_H_5_indH3_repM.bam)
+cor(hg19_overlap$H3Lu, hg38_overlap$stYG_H_6_indH3_repM.bam)
+
+cor(hg19_overlap$H4H, hg38_overlap$stYG_H_3_indH4_repM.bam)
+cor(hg19_overlap$H4K, hg38_overlap$stYG_H_4_indH4_repM.bam)
+cor(hg19_overlap$H4Li, hg38_overlap$stYG_H_5_indH4_repM.bam)
+cor(hg19_overlap$H4Lu, hg38_overlap$stYG_H_6_indH4_repM.bam)
+
+corrlation_matrix <- as.data.frame(c(0.659611, 0.9667593, 0.7978478, 0.8130906, 0.8981138, 0.8700223, 0.8307625, 0.6664122, 0.8323257, 0.9873673, 0.8522485, 0.7478594, 0.8713867, 0.9034255, 0.8135062))
+
+summary(corrlation_matrix)
+
+cor(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H1Li, hg38_overlap$stYG_H_5_indH1_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H1Lu, hg38_overlap$stYG_H_6_indH1_repM.bam, method = c("spearman"))
+
+cor(hg19_overlap$H2H, hg38_overlap$stYG_H_3_indH2_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H2K, hg38_overlap$stYG_H_4_indH2_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H2Li, hg38_overlap$stYG_H_5_indH2_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H2Lu, hg38_overlap$stYG_H_6_indH2_repM.bam, method = c("spearman"))
+
+cor(hg19_overlap$H3H, hg38_overlap$stYG_H_3_indH3_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H3K, hg38_overlap$stYG_H_4_indH3_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H3Li, hg38_overlap$stYG_H_5_indH3_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H3Lu, hg38_overlap$stYG_H_6_indH3_repM.bam, method = c("spearman"))
+
+cor(hg19_overlap$H4H, hg38_overlap$stYG_H_3_indH4_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H4K, hg38_overlap$stYG_H_4_indH4_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H4Li, hg38_overlap$stYG_H_5_indH4_repM.bam, method = c("spearman"))
+cor(hg19_overlap$H4Lu, hg38_overlap$stYG_H_6_indH4_repM.bam, method = c("spearman"))
+
+
+# Plots
+plot(hg19_overlap$H1K, hg38_overlap$stYG_H_4_indH1_repM.bam)
+abline(0,1, col = "red")
+
+summary(hg19_overlap$H1K > hg38_overlap$stYG_H_4_indH1_repM.bam)
+summary(hg19_overlap$H1K - hg38_overlap$stYG_H_4_indH1_repM.bam)
+plot(hg19_overlap$H1K - hg38_overlap$stYG_H_4_indH1_repM.bam, breaks= 100)
+
+plot(hg19_overlap$H1Li, hg38_overlap$stYG_H_5_indH1_repM.bam)
+abline(0,1, col = "red")
+
+plot(hg19_overlap$H1Lu, hg38_overlap$stYG_H_6_indH1_repM.bam)
+abline(0,1, col = "red")
+```
+
+## See if the same genes are the most 
+
+```{r}
+# Find top 10% of genes that are different
+summary(abs(hg19_overlap$H1K - hg38_overlap$stYG_H_4_indH1_repM.bam))
+
+summary(abs(hg19_overlap$H1K - hg38_overlap$stYG_H_4_indH1_repM.bam)/hg19_overlap$H1K)
+
+sort((abs(hg19_overlap$H1K - hg38_overlap$stYG_H_4_indH1_repM.bam)/hg19_overlap$H1K))[11000:11454]
+```
+
+## Try 
+
+```{r}
+# Load libraries 
+
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+library("limma")
+
+# Import hg38 raw counts
+
+hg38_gene_counts_with_mm <- read.delim("../data/hg38_gene_counts_with_mm.txt", comment.char="#")
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+#Load the data
+
+  #Raw counts
+
+counts_genes <- hg38_gene_counts_with_mm[,8:22]
+rownames(counts_genes) <- hg38_gene_counts_with_mm[,1] 
+dim(counts_genes)
+
+ #Sample information
+
+samples <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+
+samples <- samples[-17,]
+samples <- samples[17:31,]
+labels <- paste(samples$Species, samples$Tissue, sep=" ")
+
+# Set expression cutoff and sample number
+expr_cutoff <- 1.5
+sample_number <- 8
+
+# log2(CPM) adjusted for library sizes
+
+dge_original <- DGEList(counts=as.matrix(counts_genes), genes=rownames(counts_genes), group = as.character(t(labels)))
+dge_original <- calcNormFactors(dge_original)
+
+cpm <- cpm(dge_original, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+
+cpm_filtered <- cpm[rowSums(cpm > expr_cutoff) >= sample_number, ]
+dim(cpm_filtered)
+
+# Find the original counts of all of the genes that fit the criteria 
+
+inshared_lists = row.names(counts_genes) %in% rownames(cpm_filtered)
+inshared_lists_data <- as.data.frame(inshared_lists)
+counts_genes_in <- cbind(counts_genes, inshared_lists_data)
+counts_genes_in_cutoff <- subset(counts_genes_in, inshared_lists_data == "TRUE")
+counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:15]
+
+dim(counts_genes_in_cutoff)
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+head(cpm_in_cutoff)
+```
+
+## Look at the correlation between normalized gene expression levels for hg19 and hg38
+
+```{r}
+# Import hg38 raw counts
+
+hg19_gene_counts <- read.delim("~/Desktop/Reg_Evo_Primates/data/counts_12184.txt")
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+#Load the data
+
+  #Raw counts
+
+counts_genes <- hg19_gene_counts[,17:31]
+dim(counts_genes)
+
+ #Sample information
+
+samples <- read.csv("../../../Reg_Evo_Primates/data/Sample_info_RNAseq.csv")
+
+samples <- samples[-17,]
+samples <- samples[17:31,]
+labels <- paste(samples$Species, samples$Tissue, sep=" ")
+
+# Set expression cutoff and sample number
+expr_cutoff <- 1.5
+sample_number <- 8
+
+# log2(CPM) adjusted for library sizes
+
+dge_original <- DGEList(counts=as.matrix(counts_genes), genes=rownames(counts_genes), group = as.character(t(labels)))
+dge_original <- calcNormFactors(dge_original)
+
+cpm <- cpm(dge_original, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+
+cpm_filtered <- cpm[rowSums(cpm > expr_cutoff) >= sample_number, ]
+dim(cpm_filtered)
+
+# Find the original counts of all of the genes that fit the criteria 
+
+inshared_lists = row.names(counts_genes) %in% rownames(cpm_filtered)
+inshared_lists_data <- as.data.frame(inshared_lists)
+counts_genes_in <- cbind(counts_genes, inshared_lists_data)
+counts_genes_in_cutoff <- subset(counts_genes_in, inshared_lists_data == "TRUE")
+counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:15]
+
+dim(counts_genes_in_cutoff)
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+head(cpm_in_cutoff)
+```
+
+
+
+```{r}
+# Normalized gene expression levels for hg19
+cpm_12184 <- read.delim("~/Desktop/Reg_Evo_Primates/data/cpm_12184.txt")
+
+cpm_hg19 <- cpm_12184[,17:31]
+cpm_hg19 <- cbind(rownames(cpm_hg19), cpm_hg19)
+
+#cpm_hg19 <- cpm_in_cutoff
+#cpm_hg19 <- as.data.frame(rownames(cpm_12184), )
+
+
+colnames_bjp <- c("Geneid", "H1K", "H1Li", "H1Lu", "H2H", "H2K", "H2Li", "H2Lu", "H3H", "H3K", "H3Li", "H3Lu", "H4H", "H4K", "H4Li", "H4Lu")  
+colnames(cpm_hg19) <- colnames_bjp
+
+# Normalized gene expression levels for hg38
+cpm_hg38 <- cpm_in_cutoff
+cpm_hg38 <- as.data.frame(cbind(rownames(cpm_hg38), cpm_hg38), stringsAsFactors = FALSE)
+
+cpm_hg38[,2] <- as.numeric(cpm_hg38[,2])
+cpm_hg38[,3] <- as.numeric(cpm_hg38[,3])
+cpm_hg38[,4] <- as.numeric(cpm_hg38[,4])
+cpm_hg38[,5] <- as.numeric(cpm_hg38[,5])
+cpm_hg38[,6] <- as.numeric(cpm_hg38[,6])
+cpm_hg38[,7] <- as.numeric(cpm_hg38[,7])
+cpm_hg38[,8] <- as.numeric(cpm_hg38[,8])
+cpm_hg38[,9] <- as.numeric(cpm_hg38[,9])
+cpm_hg38[,10] <- as.numeric(cpm_hg38[,10])
+cpm_hg38[,11] <- as.numeric(cpm_hg38[,11])
+cpm_hg38[,12] <- as.numeric(cpm_hg38[,12])
+cpm_hg38[,13] <- as.numeric(cpm_hg38[,13])
+cpm_hg38[,14] <- as.numeric(cpm_hg38[,14])
+cpm_hg38[,15] <- as.numeric(cpm_hg38[,15])
+cpm_hg38[,16] <- as.numeric(cpm_hg38[,16])
+
+colnames(cpm_hg38) <- c("Geneid", "stYG_H_3_indH2_repM.bam", "stYG_H_3_indH3_repM.bam", "stYG_H_3_indH4_repM.bam", "stYG_H_4_indH1_repM.bam", "stYG_H_4_indH2_repM.bam", "stYG_H_4_indH3_repM.bam", "stYG_H_4_indH4_repM.bam", "stYG_H_5_indH1_repM.bam", "stYG_H_5_indH2_repM.bam", "stYG_H_5_indH3_repM.bam", "stYG_H_5_indH4_repM.bam", "stYG_H_6_indH1_repM.bam", "stYG_H_6_indH2_repM.bam", "stYG_H_6_indH3_repM.bam", "stYG_H_6_indH4_repM.bam")
+
+cpm_hg38 <- as.data.frame(cpm_hg38)
+
+# Find overlap of genes
+
+gene_compare <- rownames(cpm_hg19) %in% rownames(cpm_hg38)
+summary(gene_compare)
+
+gene_compare_merge <- merge(cpm_hg19, cpm_hg38, by = "Geneid")
+
+hg19_overlap <- gene_compare_merge[,2:16]
+
+hg38_overlap <- gene_compare_merge[,17:31]
+
+cor(as.numeric(hg19_overlap$H1K), as.numeric(hg38_overlap$stYG_H_4_indH1_repM.bam))
+cor(as.numeric(hg19_overlap$H1Li), as.numeric(hg38_overlap$stYG_H_5_indH1_repM.bam))
+cor(as.numeric(hg19_overlap$H1Lu), as.numeric(hg38_overlap$stYG_H_6_indH1_repM.bam))
+
+cor(as.numeric(hg19_overlap$H2H), as.numeric(hg38_overlap$stYG_H_3_indH2_repM.bam))
+cor(as.numeric(hg19_overlap$H2K), as.numeric(hg38_overlap$stYG_H_4_indH2_repM.bam))
+cor(as.numeric(hg19_overlap$H2Li), as.numeric(hg38_overlap$stYG_H_5_indH2_repM.bam))
+cor(as.numeric(hg19_overlap$H2Lu), as.numeric(hg38_overlap$stYG_H_6_indH2_repM.bam))
+
+cor(as.numeric(hg19_overlap$H3H), as.numeric(hg38_overlap$stYG_H_3_indH3_repM.bam))
+cor(as.numeric(hg19_overlap$H3K), as.numeric(hg38_overlap$stYG_H_4_indH3_repM.bam))
+cor(as.numeric(hg19_overlap$H3Li), as.numeric(hg38_overlap$stYG_H_5_indH3_repM.bam))
+cor(as.numeric(hg19_overlap$H3Lu), as.numeric(hg38_overlap$stYG_H_6_indH3_repM.bam))
+
+cor(as.numeric(hg19_overlap$H4H), as.numeric(hg38_overlap$stYG_H_3_indH4_repM.bam))
+cor(as.numeric(hg19_overlap$H4K), as.numeric(hg38_overlap$stYG_H_4_indH4_repM.bam))
+cor(as.numeric(hg19_overlap$H4Li), as.numeric(hg38_overlap$stYG_H_5_indH4_repM.bam))
+cor(as.numeric(hg19_overlap$H4Lu), as.numeric(hg38_overlap$stYG_H_6_indH4_repM.bam))
+
+# Put in the same order
+
+
+hg38_overlap_order <- cbind(hg38_overlap$stYG_H_4_indH1_repM.bam, hg38_overlap$stYG_H_5_indH1_repM.bam, hg38_overlap$stYG_H_6_indH1_repM.bam,
+hg38_overlap$stYG_H_3_indH2_repM.bam, hg38_overlap$stYG_H_4_indH2_repM.bam, hg38_overlap$stYG_H_5_indH2_repM.bam, hg38_overlap$stYG_H_6_indH2_repM.bam, 
+hg38_overlap$stYG_H_3_indH3_repM.bam, hg38_overlap$stYG_H_4_indH3_repM.bam, hg38_overlap$stYG_H_5_indH3_repM.bam, hg38_overlap$stYG_H_6_indH3_repM.bam, 
+hg38_overlap$stYG_H_3_indH4_repM.bam, hg38_overlap$stYG_H_4_indH4_repM.bam, hg38_overlap$stYG_H_5_indH4_repM.bam, hg38_overlap$stYG_H_6_indH4_repM.bam)
+
+hg38_overlap_order <- as.data.frame(hg38_overlap_order)
+
+rank(hg19_overlap[1,])
+rank(hg38_overlap_order[1,])
+
+cor(rank(hg19_overlap[1,]), rank(hg38_overlap_order[1,]))
+cor(rank(hg19_overlap[2,]), rank(hg38_overlap_order[2,]))
+
+rank_cor <- array(NA, dim = c(nrow(hg19_overlap),1))
+
+for(i in 1:nrow(hg19_overlap)){
+  rank_cor[i, 1] <- cor(rank(hg19_overlap[i,]), rank(hg38_overlap_order[i,]))
+}
+
+rank_level <- array(NA, dim = c(nrow(hg19_overlap),2))
+
+for(i in 1:nrow(hg19_overlap)){
+  rank_level[i, 1] <- mean(as.numeric(hg19_overlap[i,]))
+  rank_level[i, 2] <- mean(as.numeric(hg38_overlap[i,]))
+}
+
+cor(rank_cor[,1], rank_level[,1])
+cor(rank_cor[,1], rank_level[,2])
+```
+

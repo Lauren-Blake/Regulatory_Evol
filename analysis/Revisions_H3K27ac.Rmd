@@ -1,0 +1,404 @@
+---
+title: "Revisions_H3K27ac"
+author: "Lauren Blake"
+date: "June 24, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Open files
+
+Note: due to pairwise ordering from another file (tissue_specific_tDMRs), tDMRs labeled as "hypermethylated" are actually hypomethylated in the lung and kidney.
+
+```{r}
+# Library
+library(bedr)
+library("topGO")
+#library("biomaRt")
+library("clusterProfiler")
+library("org.Hs.eg.db")
+
+human_chimp_heart_specific_25_conserved_H3K27_HEART <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_heart_specific_25_conserved_H3K27_HEART.bed", header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_HEART$V4)
+
+413/(413+42)
+
+
+
+human_chimp_heart_specific_25_conserved_H3K27_KIDNEY <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_conserved_H3K27_KIDNEY.bed", header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_KIDNEY$V4)
+
+858/(858+39)
+
+human_chimp_heart_specific_25_conserved_H3K27_LIVER <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_liver_specific_25_conserved_H3K27_LIVER.bed", header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_LIVER$V4)
+
+1081/(1081+252)
+
+human_chimp_heart_specific_25_conserved_H3K27_LUNG <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_lung_specific_25_conserved_H3K27_LUNG.bed", header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_LUNG$V4)
+
+30/(30+21)
+```
+
+
+
+```{r}
+refGene_hg19_TSS <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/refGene_hg19_TSS.R", header=FALSE, stringsAsFactors = FALSE)
+
+# Adjust so that bedtools will accept it
+refGene_hg19_TSS[,3] <- refGene_hg19_TSS[,3] + 1 
+
+# Now sort
+
+human_chimp_heart_cons <- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_HEART[,1:3])
+
+refGene_hg19_TSS <- bedr.sort.region(refGene_hg19_TSS)
+
+closest_heart <- bedr(input = list(a = human_chimp_heart_specific_25_conserved_H3K27_HEART[,1:3], b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Sort based on upsteam/downstream
+
+closest_heart_upstream <- closest_heart[which(closest_heart$V9 == "+"),]
+closest_heart_downstream <- closest_heart[which(closest_heart$V9 == "-"),]
+distance_heart_upstream <- as.numeric(closest_heart_upstream$V3) - as.numeric(closest_heart_upstream$V5)
+distance_heart_downstream <- as.numeric(closest_heart_downstream$V5) - as.numeric(closest_heart_downstream$V3)
+
+length(which(distance_heart_upstream > 0))/length(distance_heart_upstream)
+length(which(distance_heart_downstream > 0))/length(distance_heart_downstream)
+
+summary(distance_heart_downstream)
+```
+
+## Kidney
+
+```{r}
+# Now sort
+
+human_chimp_heart_cons <- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_KIDNEY[,1:3])
+
+refGene_hg19_TSS <- bedr.sort.region(refGene_hg19_TSS)
+
+closest_heart <- bedr(input = list(a = human_chimp_heart_cons, b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Sort based on upsteam/downstream
+
+closest_heart_upstream <- closest_heart[which(closest_heart$V9 == "+"),]
+closest_heart_downstream <- closest_heart[which(closest_heart$V9 == "-"),]
+distance_heart_upstream <- as.numeric(closest_heart_upstream$V3) - as.numeric(closest_heart_upstream$V5)
+distance_heart_downstream <- as.numeric(closest_heart_downstream$V5) - as.numeric(closest_heart_downstream$V3)
+
+length(which(distance_heart_upstream > 0))/length(distance_heart_upstream)
+length(which(distance_heart_downstream > 0))/length(distance_heart_downstream)
+
+```
+
+## Liver
+
+```{r}
+# Now sort
+
+human_chimp_heart_cons <- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_LIVER[,1:3])
+
+refGene_hg19_TSS <- bedr.sort.region(refGene_hg19_TSS)
+
+closest_heart <- bedr(input = list(a = human_chimp_heart_cons, b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Sort based on upsteam/downstream
+
+closest_liver_upstream <- closest_heart[which(closest_heart$V9 == "+"),]
+closest_liver_downstream <- closest_heart[which(closest_heart$V9 == "-"),]
+distance_liver_upstream <- as.numeric(closest_liver_upstream$V3) - as.numeric(closest_liver_upstream$V5)
+distance_liver_downstream <- as.numeric(closest_liver_downstream$V5) - as.numeric(closest_liver_downstream$V3)
+
+length(which(distance_liver_upstream > 0))/length(distance_liver_upstream)
+length(which(distance_liver_downstream > 0))/length(distance_liver_downstream)
+
+all_distance <- c(distance_heart_upstream, distance_heart_downstream, distance_liver_upstream, distance_liver_downstream)
+summary(all_distance)
+```
+
+## Lung
+
+```{r}
+# Now sort
+
+human_chimp_heart_cons <- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_LUNG[,1:3])
+
+refGene_hg19_TSS <- bedr.sort.region(refGene_hg19_TSS)
+
+closest_heart <- bedr(input = list(a = human_chimp_heart_cons, b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Sort based on upsteam/downstream
+
+closest_heart_upstream <- closest_heart[which(closest_heart$V9 == "+"),]
+closest_heart_downstream <- closest_heart[which(closest_heart$V9 == "-"),]
+distance_heart_upstream <- as.numeric(closest_heart_upstream$V3) - as.numeric(closest_heart_upstream$V5)
+distance_heart_downstream <- as.numeric(closest_heart_downstream$V5) - as.numeric(closest_heart_downstream$V3)
+
+length(which(distance_heart_upstream > 0))/length(distance_heart_upstream)
+length(which(distance_heart_downstream > 0))/length(distance_heart_downstream)
+
+```
+
+
+# Separate into hypermethylated and overlapping H3K27ac
+
+# Heart
+```{r}
+# Find the heart hypo
+heart_hypo <- human_chimp_heart_specific_25_conserved_H3K27_HEART[which(human_chimp_heart_specific_25_conserved_H3K27_LIVER$V4 == "hyper" & human_chimp_heart_specific_25_conserved_H3K27_LIVER$V6 != "-1"),]
+
+heart_hypo <- heart_hypo[complete.cases(heart_hypo), ]
+
+# Find the closest gene
+
+closest_heart <- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Convert the gene name to ensg
+
+gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+comb_kidney <- merge(closest_heart, gene_id, by.x = c("V8"), by.y = c("Gene"))
+
+comb_kidney$ensg
+
+# Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg <- merge(refGene_hg19_TSS, gene_id, by.x = c("V5"), by.y = c("Gene"))
+
+all_ref_gene_hg19_ensg <- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene <- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene <- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) <-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+# Get names of kidney genes
+sig.genes <- sigGenes(go_data)
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+# cardiac myofibril assembly, positive regulation of heart rate, regulation of monocyte differentiation
+goresults["GO:0055003"] 
+goresults["GO:0010460"]
+goresults["GO:0045655"]
+```
+
+
+
+## Kidney
+
+```{r}
+# Find the heart hypo
+heart_hypo <- human_chimp_heart_specific_25_conserved_H3K27_KIDNEY[which(human_chimp_heart_specific_25_conserved_H3K27_KIDNEY$V4 == "hyper" & human_chimp_heart_specific_25_conserved_H3K27_KIDNEY$V6 != "-1"),]
+
+heart_hypo <- heart_hypo[complete.cases(heart_hypo), ]
+# Find the closest gene
+
+closest_heart <- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Convert the gene name to ensg
+
+gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+comb_kidney <- merge(closest_heart, gene_id, by.x = c("V8"), by.y = c("Gene"))
+
+comb_kidney$ensg
+
+# Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg <- merge(refGene_hg19_TSS, gene_id, by.x = c("V5"), by.y = c("Gene"))
+
+all_ref_gene_hg19_ensg <- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene <- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene <- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) <-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+
+goresults["GO:0098719"] 
+
+
+```
+
+## Liver
+
+```{r}
+# Find the heart hypo
+heart_hypo <- human_chimp_heart_specific_25_conserved_H3K27_LIVER[which(human_chimp_heart_specific_25_conserved_H3K27_LIVER$V4 == "hypo" & human_chimp_heart_specific_25_conserved_H3K27_LIVER$V6 != "-1"),]
+
+heart_hypo <- heart_hypo[complete.cases(heart_hypo), ]
+
+# Find the closest gene
+
+closest_heart <- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Convert the gene name to ensg
+
+gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+comb_kidney <- merge(closest_heart, gene_id, by.x = c("V8"), by.y = c("Gene"))
+
+comb_kidney$ensg
+
+# Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg <- merge(refGene_hg19_TSS, gene_id, by.x = c("V5"), by.y = c("Gene"))
+
+all_ref_gene_hg19_ensg <- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene <- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene <- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) <-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+
+ 
+
+
+```
+
+## Lung
+
+```{r}
+# Find the heart hypo
+heart_hypo <- human_chimp_heart_specific_25_conserved_H3K27_LUNG[which(human_chimp_heart_specific_25_conserved_H3K27_LUNG$V4 == "hyper" & human_chimp_heart_specific_25_conserved_H3K27_LUNG$V6 != "-1"),]
+
+heart_hypo <- heart_hypo[complete.cases(heart_hypo), ]
+
+# Find the closest gene
+
+closest_heart <- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = "closest", check.chr = FALSE)
+
+# Convert the gene name to ensg
+
+gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+comb_kidney <- merge(closest_heart, gene_id, by.x = c("V8"), by.y = c("Gene"))
+
+comb_kidney$ensg
+
+# Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg <- merge(refGene_hg19_TSS, gene_id, by.x = c("V5"), by.y = c("Gene"))
+
+all_ref_gene_hg19_ensg <- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene <- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene <- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) <-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+
+ 
+
+
+```

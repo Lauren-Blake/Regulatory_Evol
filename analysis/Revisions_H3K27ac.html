@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2019-06-24" />
+
+<title>Revisions_H3K27ac</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">RegulatoryEvolutionInPrimates</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Reg_Evo_Primates">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Revisions_H3K27ac</h1>
+<h4 class="author">Lauren Blake</h4>
+<h4 class="date">June 24, 2019</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#open-files">Open files</a><ul>
+<li><a href="#kidney">Kidney</a></li>
+<li><a href="#liver">Liver</a></li>
+<li><a href="#lung">Lung</a></li>
+</ul></li>
+<li><a href="#separate-into-hypermethylated-and-overlapping-h3k27ac">Separate into hypermethylated and overlapping H3K27ac</a></li>
+<li><a href="#heart">Heart</a><ul>
+<li><a href="#kidney-1">Kidney</a></li>
+<li><a href="#liver-1">Liver</a></li>
+<li><a href="#lung-1">Lung</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="open-files" class="section level1">
+<h1>Open files</h1>
+<p>Note: due to pairwise ordering from another file (tissue_specific_tDMRs), tDMRs labeled as “hypermethylated” are actually hypomethylated in the lung and kidney.</p>
+<pre class="r"><code># Library
+library(bedr)</code></pre>
+<pre><code>## Warning: package &#39;bedr&#39; was built under R version 3.4.4</code></pre>
+<pre><code>## 
+## 
+## ######################
+## #### bedr v1.0.7 ####
+## ######################
+## 
+## checking binary availability...
+##   * Checking path for bedtools... PASS
+##     /usr/local/bin/bedtools
+##   * Checking path for bedops... FAIL
+##   * Checking path for tabix... FAIL
+## tests and examples will be skipped on R CMD check if binaries are missing</code></pre>
+<pre class="r"><code>library(&quot;topGO&quot;)</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, cbind, colMeans,
+##     colnames, colSums, do.call, duplicated, eval, evalq, Filter,
+##     Find, get, grep, grepl, intersect, is.unsorted, lapply,
+##     lengths, Map, mapply, match, mget, order, paste, pmax,
+##     pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce,
+##     rowMeans, rownames, rowSums, sapply, setdiff, sort, table,
+##     tapply, union, unique, unsplit, which, which.max, which.min</code></pre>
+<pre><code>## Loading required package: graph</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>## Loading required package: GO.db</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     expand.grid</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Loading required package: SparseM</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SparseM&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     backsolve</code></pre>
+<pre><code>## 
+## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;topGO&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     members</code></pre>
+<pre class="r"><code>#library(&quot;biomaRt&quot;)
+library(&quot;clusterProfiler&quot;)</code></pre>
+<pre><code>## Loading required package: DOSE</code></pre>
+<pre><code>## DOSE v3.4.0  For help: https://guangchuangyu.github.io/DOSE
+## 
+## If you use DOSE in published research, please cite:
+## Guangchuang Yu, Li-Gen Wang, Guang-Rong Yan, Qing-Yu He. DOSE: an R/Bioconductor package for Disease Ontology Semantic and Enrichment analysis. Bioinformatics 2015, 31(4):608-609</code></pre>
+<pre><code>## clusterProfiler v3.6.0  For help: https://guangchuangyu.github.io/clusterProfiler
+## 
+## If you use clusterProfiler in published research, please cite:
+## Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287.</code></pre>
+<pre class="r"><code>library(&quot;org.Hs.eg.db&quot;)</code></pre>
+<pre><code>## </code></pre>
+<pre class="r"><code>human_chimp_heart_specific_25_conserved_H3K27_HEART &lt;- read.delim(&quot;~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_heart_specific_25_conserved_H3K27_HEART.bed&quot;, header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_HEART$V4)</code></pre>
+<pre><code>##    Length     Class      Mode 
+##       455 character character</code></pre>
+<pre class="r"><code>413/(413+42)</code></pre>
+<pre><code>## [1] 0.9076923</code></pre>
+<pre class="r"><code>human_chimp_heart_specific_25_conserved_H3K27_KIDNEY &lt;- read.delim(&quot;~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_kidney_specific_25_conserved_H3K27_KIDNEY.bed&quot;, header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_KIDNEY$V4)</code></pre>
+<pre><code>##    Length     Class      Mode 
+##       897 character character</code></pre>
+<pre class="r"><code>858/(858+39)</code></pre>
+<pre><code>## [1] 0.9565217</code></pre>
+<pre class="r"><code>human_chimp_heart_specific_25_conserved_H3K27_LIVER &lt;- read.delim(&quot;~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_liver_specific_25_conserved_H3K27_LIVER.bed&quot;, header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_LIVER$V4)</code></pre>
+<pre><code>##    Length     Class      Mode 
+##      1333 character character</code></pre>
+<pre class="r"><code>1081/(1081+252)</code></pre>
+<pre><code>## [1] 0.8109527</code></pre>
+<pre class="r"><code>human_chimp_heart_specific_25_conserved_H3K27_LUNG &lt;- read.delim(&quot;~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/human_chimp_lung_specific_25_conserved_H3K27_LUNG.bed&quot;, header=FALSE, stringsAsFactors = FALSE)
+
+summary(human_chimp_heart_specific_25_conserved_H3K27_LUNG$V4)</code></pre>
+<pre><code>##    Length     Class      Mode 
+##        51 character character</code></pre>
+<pre class="r"><code>30/(30+21)</code></pre>
+<pre><code>## [1] 0.5882353</code></pre>
+<pre class="r"><code>refGene_hg19_TSS &lt;- read.delim(&quot;~/Desktop/Regulatory_Evol/ashlar-trial/data/overlap_reg/overlap_25/refGene_hg19_TSS.R&quot;, header=FALSE, stringsAsFactors = FALSE)
+
+# Adjust so that bedtools will accept it
+refGene_hg19_TSS[,3] &lt;- refGene_hg19_TSS[,3] + 1 
+
+# Now sort
+
+human_chimp_heart_cons &lt;- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_HEART[,1:3])</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Overlapping regions can cause unexpected results.</code></pre>
+<pre class="r"><code>refGene_hg19_TSS &lt;- bedr.sort.region(refGene_hg19_TSS)</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS</code></pre>
+<pre class="r"><code>closest_heart &lt;- bedr(input = list(a = human_chimp_heart_specific_25_conserved_H3K27_HEART[,1:3], b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... PASS
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d644e0a69fd.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d644dc9f39.bed</code></pre>
+<pre class="r"><code># Sort based on upsteam/downstream
+
+closest_heart_upstream &lt;- closest_heart[which(closest_heart$V9 == &quot;+&quot;),]
+closest_heart_downstream &lt;- closest_heart[which(closest_heart$V9 == &quot;-&quot;),]
+distance_heart_upstream &lt;- as.numeric(closest_heart_upstream$V3) - as.numeric(closest_heart_upstream$V5)
+distance_heart_downstream &lt;- as.numeric(closest_heart_downstream$V5) - as.numeric(closest_heart_downstream$V3)
+
+length(which(distance_heart_upstream &gt; 0))/length(distance_heart_upstream)</code></pre>
+<pre><code>## [1] 0.6037152</code></pre>
+<pre class="r"><code>length(which(distance_heart_downstream &gt; 0))/length(distance_heart_downstream)</code></pre>
+<pre><code>## [1] 0.6140351</code></pre>
+<pre class="r"><code>summary(distance_heart_downstream)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -751049  -12592    3472   15480   50862  386993</code></pre>
+<div id="kidney" class="section level2">
+<h2>Kidney</h2>
+<pre class="r"><code># Now sort
+
+human_chimp_heart_cons &lt;- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_KIDNEY[,1:3])</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS</code></pre>
+<pre class="r"><code>refGene_hg19_TSS &lt;- bedr.sort.region(refGene_hg19_TSS)</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS</code></pre>
+<pre class="r"><code>closest_heart &lt;- bedr(input = list(a = human_chimp_heart_cons, b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d6424597403.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d6413619a87.bed</code></pre>
+<pre class="r"><code># Sort based on upsteam/downstream
+
+closest_heart_upstream &lt;- closest_heart[which(closest_heart$V9 == &quot;+&quot;),]
+closest_heart_downstream &lt;- closest_heart[which(closest_heart$V9 == &quot;-&quot;),]
+distance_heart_upstream &lt;- as.numeric(closest_heart_upstream$V3) - as.numeric(closest_heart_upstream$V5)
+distance_heart_downstream &lt;- as.numeric(closest_heart_downstream$V5) - as.numeric(closest_heart_downstream$V3)
+
+length(which(distance_heart_upstream &gt; 0))/length(distance_heart_upstream)</code></pre>
+<pre><code>## [1] 0.5685358</code></pre>
+<pre class="r"><code>length(which(distance_heart_downstream &gt; 0))/length(distance_heart_downstream)</code></pre>
+<pre><code>## [1] 0.5628227</code></pre>
+</div>
+<div id="liver" class="section level2">
+<h2>Liver</h2>
+<pre class="r"><code># Now sort
+
+human_chimp_heart_cons &lt;- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_LIVER[,1:3])</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS</code></pre>
+<pre class="r"><code>refGene_hg19_TSS &lt;- bedr.sort.region(refGene_hg19_TSS)</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS</code></pre>
+<pre class="r"><code>closest_heart &lt;- bedr(input = list(a = human_chimp_heart_cons, b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d64294012f9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d641339a09b.bed</code></pre>
+<pre class="r"><code># Sort based on upsteam/downstream
+
+closest_liver_upstream &lt;- closest_heart[which(closest_heart$V9 == &quot;+&quot;),]
+closest_liver_downstream &lt;- closest_heart[which(closest_heart$V9 == &quot;-&quot;),]
+distance_liver_upstream &lt;- as.numeric(closest_liver_upstream$V3) - as.numeric(closest_liver_upstream$V5)
+distance_liver_downstream &lt;- as.numeric(closest_liver_downstream$V5) - as.numeric(closest_liver_downstream$V3)
+
+length(which(distance_liver_upstream &gt; 0))/length(distance_liver_upstream)</code></pre>
+<pre><code>## [1] 0.6512043</code></pre>
+<pre class="r"><code>length(which(distance_liver_downstream &gt; 0))/length(distance_liver_downstream)</code></pre>
+<pre><code>## [1] 0.6230032</code></pre>
+<pre class="r"><code>all_distance &lt;- c(distance_heart_upstream, distance_heart_downstream, distance_liver_upstream, distance_liver_downstream)
+summary(all_distance)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -805181   -7548    1690   13079   31168  999526</code></pre>
+</div>
+<div id="lung" class="section level2">
+<h2>Lung</h2>
+<pre class="r"><code># Now sort
+
+human_chimp_heart_cons &lt;- bedr.sort.region(human_chimp_heart_specific_25_conserved_H3K27_LUNG[,1:3])</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Overlapping regions can cause unexpected results.</code></pre>
+<pre class="r"><code>refGene_hg19_TSS &lt;- bedr.sort.region(refGene_hg19_TSS)</code></pre>
+<pre><code>## SORTING
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS</code></pre>
+<pre class="r"><code>closest_heart &lt;- bedr(input = list(a = human_chimp_heart_cons, b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... PASS
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d6453a119c9.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d642ec1bbf9.bed</code></pre>
+<pre class="r"><code># Sort based on upsteam/downstream
+
+closest_heart_upstream &lt;- closest_heart[which(closest_heart$V9 == &quot;+&quot;),]
+closest_heart_downstream &lt;- closest_heart[which(closest_heart$V9 == &quot;-&quot;),]
+distance_heart_upstream &lt;- as.numeric(closest_heart_upstream$V3) - as.numeric(closest_heart_upstream$V5)
+distance_heart_downstream &lt;- as.numeric(closest_heart_downstream$V5) - as.numeric(closest_heart_downstream$V3)
+
+length(which(distance_heart_upstream &gt; 0))/length(distance_heart_upstream)</code></pre>
+<pre><code>## [1] 0.673913</code></pre>
+<pre class="r"><code>length(which(distance_heart_downstream &gt; 0))/length(distance_heart_downstream)</code></pre>
+<pre><code>## [1] 0.5714286</code></pre>
+</div>
+</div>
+<div id="separate-into-hypermethylated-and-overlapping-h3k27ac" class="section level1">
+<h1>Separate into hypermethylated and overlapping H3K27ac</h1>
+</div>
+<div id="heart" class="section level1">
+<h1>Heart</h1>
+<pre class="r"><code># Find the heart hypo
+heart_hypo &lt;- human_chimp_heart_specific_25_conserved_H3K27_HEART[which(human_chimp_heart_specific_25_conserved_H3K27_LIVER$V4 == &quot;hyper&quot; &amp; human_chimp_heart_specific_25_conserved_H3K27_LIVER$V6 != &quot;-1&quot;),]
+
+heart_hypo &lt;- heart_hypo[complete.cases(heart_hypo), ]
+
+# Find the closest gene
+
+closest_heart &lt;- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... PASS
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d6427176e6c.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d646dcad4a6.bed</code></pre>
+<pre class="r"><code># Convert the gene name to ensg
+
+gene_id &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv&quot;, stringsAsFactors = FALSE, header=TRUE, sep = &quot;,&quot;)
+
+comb_kidney &lt;- merge(closest_heart, gene_id, by.x = c(&quot;V8&quot;), by.y = c(&quot;Gene&quot;))
+
+comb_kidney$ensg</code></pre>
+<pre><code>##  [1] &quot;ENSG00000196839&quot; &quot;ENSG00000163050&quot; &quot;ENSG00000178878&quot;
+##  [4] &quot;ENSG00000130762&quot; &quot;ENSG00000168646&quot; &quot;ENSG00000110092&quot;
+##  [7] &quot;ENSG00000106554&quot; &quot;ENSG00000134871&quot; &quot;ENSG00000244274&quot;
+## [10] &quot;ENSG00000244274&quot; &quot;ENSG00000135636&quot; &quot;ENSG00000135636&quot;
+## [13] &quot;ENSG00000135636&quot; &quot;ENSG00000135636&quot; &quot;ENSG00000135636&quot;
+## [16] &quot;ENSG00000135636&quot; &quot;ENSG00000135636&quot; &quot;ENSG00000108001&quot;
+## [19] &quot;ENSG00000187773&quot; &quot;ENSG00000139132&quot; &quot;ENSG00000153303&quot;
+## [22] &quot;ENSG00000143641&quot; &quot;ENSG00000144596&quot; &quot;ENSG00000115756&quot;
+## [25] &quot;ENSG00000197081&quot; &quot;ENSG00000185507&quot; &quot;ENSG00000123104&quot;
+## [28] &quot;ENSG00000127528&quot; &quot;ENSG00000106003&quot; &quot;ENSG00000107902&quot;
+## [31] &quot;ENSG00000107902&quot; &quot;ENSG00000183060&quot; &quot;ENSG00000068305&quot;
+## [34] &quot;ENSG00000068305&quot; &quot;ENSG00000068305&quot; &quot;ENSG00000068305&quot;
+## [37] &quot;ENSG00000120254&quot; &quot;ENSG00000120254&quot; &quot;ENSG00000120254&quot;
+## [40] &quot;ENSG00000133454&quot; &quot;ENSG00000124785&quot; &quot;ENSG00000162407&quot;
+## [43] &quot;ENSG00000107263&quot; &quot;ENSG00000159788&quot; &quot;ENSG00000138835&quot;
+## [46] &quot;ENSG00000064932&quot; &quot;ENSG00000104969&quot; &quot;ENSG00000130147&quot;
+## [49] &quot;ENSG00000156222&quot; &quot;ENSG00000156222&quot; &quot;ENSG00000156222&quot;
+## [52] &quot;ENSG00000156222&quot; &quot;ENSG00000095637&quot; &quot;ENSG00000095637&quot;
+## [55] &quot;ENSG00000185594&quot; &quot;ENSG00000065882&quot; &quot;ENSG00000109927&quot;
+## [58] &quot;ENSG00000100726&quot; &quot;ENSG00000185361&quot; &quot;ENSG00000198795&quot;
+## [61] &quot;ENSG00000198597&quot; &quot;ENSG00000141579&quot; &quot;ENSG00000070476&quot;
+## [64] &quot;ENSG00000070476&quot;</code></pre>
+<pre class="r"><code># Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg &lt;- merge(refGene_hg19_TSS, gene_id, by.x = c(&quot;V5&quot;), by.y = c(&quot;Gene&quot;))
+
+all_ref_gene_hg19_ensg &lt;- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene &lt;- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene &lt;- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) &lt;-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 11450 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 15456 GO terms and 36153 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 14505 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 1568 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 15:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  11 nodes to be scored   (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  29 nodes to be scored   (103 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  50 nodes to be scored   (298 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  72 nodes to be scored   (2501 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  107 nodes to be scored  (3937 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   161 nodes to be scored  (5541 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   201 nodes to be scored  (7251 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   245 nodes to be scored  (8558 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   265 nodes to be scored  (10615 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   217 nodes to be scored  (12035 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   127 nodes to be scored  (13480 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   63 nodes to be scored   (13985 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   18 nodes to be scored   (14177 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (14301 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##        GO.ID                                        Term Annotated
+## 1 GO:0009113      purine nucleobase biosynthetic process        12
+## 2 GO:0033197                       response to vitamin E        12
+## 3 GO:0006351                transcription, DNA-templated      3277
+## 4 GO:0032007        negative regulation of TOR signaling        40
+## 5 GO:0043547      positive regulation of GTPase activity       354
+## 6 GO:0060070             canonical Wnt signaling pathway       274
+## 7 GO:1903078 positive regulation of protein localizat...        46
+## 8 GO:0071320                   cellular response to cAMP        47
+##   Significant Expected weightFisher
+## 1           2     0.03      0.00046
+## 2           2     0.03      0.00046
+## 3          14     8.81      0.00408
+## 4           2     0.11      0.00515
+## 5           6     0.95      0.00540
+## 6           4     0.74      0.00656
+## 7           2     0.12      0.00677
+## 8           2     0.13      0.00706</code></pre>
+<pre class="r"><code># Get names of kidney genes
+sig.genes &lt;- sigGenes(go_data)
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+# cardiac myofibril assembly, positive regulation of heart rate, regulation of monocyte differentiation
+goresults[&quot;GO:0055003&quot;] </code></pre>
+<pre><code>## $&lt;NA&gt;
+## NULL</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0010460&quot;]</code></pre>
+<pre><code>## $&lt;NA&gt;
+## NULL</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0045655&quot;]</code></pre>
+<pre><code>## $&lt;NA&gt;
+## NULL</code></pre>
+<div id="kidney-1" class="section level2">
+<h2>Kidney</h2>
+<pre class="r"><code># Find the heart hypo
+heart_hypo &lt;- human_chimp_heart_specific_25_conserved_H3K27_KIDNEY[which(human_chimp_heart_specific_25_conserved_H3K27_KIDNEY$V4 == &quot;hyper&quot; &amp; human_chimp_heart_specific_25_conserved_H3K27_KIDNEY$V6 != &quot;-1&quot;),]
+
+heart_hypo &lt;- heart_hypo[complete.cases(heart_hypo), ]
+# Find the closest gene
+
+closest_heart &lt;- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d642cf7ded7.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d64357fc67a.bed</code></pre>
+<pre class="r"><code># Convert the gene name to ensg
+
+gene_id &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv&quot;, stringsAsFactors = FALSE, header=TRUE, sep = &quot;,&quot;)
+
+comb_kidney &lt;- merge(closest_heart, gene_id, by.x = c(&quot;V8&quot;), by.y = c(&quot;Gene&quot;))
+
+comb_kidney$ensg</code></pre>
+<pre><code>##   [1] &quot;ENSG00000081760&quot; &quot;ENSG00000198691&quot; &quot;ENSG00000100997&quot;
+##   [4] &quot;ENSG00000100997&quot; &quot;ENSG00000117148&quot; &quot;ENSG00000169717&quot;
+##   [7] &quot;ENSG00000169717&quot; &quot;ENSG00000139567&quot; &quot;ENSG00000145536&quot;
+##  [10] &quot;ENSG00000134917&quot; &quot;ENSG00000105963&quot; &quot;ENSG00000162104&quot;
+##  [13] &quot;ENSG00000164252&quot; &quot;ENSG00000063438&quot; &quot;ENSG00000063438&quot;
+##  [16] &quot;ENSG00000110711&quot; &quot;ENSG00000196581&quot; &quot;ENSG00000196581&quot;
+##  [19] &quot;ENSG00000179841&quot; &quot;ENSG00000053371&quot; &quot;ENSG00000151360&quot;
+##  [22] &quot;ENSG00000178038&quot; &quot;ENSG00000178038&quot; &quot;ENSG00000106927&quot;
+##  [25] &quot;ENSG00000159461&quot; &quot;ENSG00000089053&quot; &quot;ENSG00000138613&quot;
+##  [28] &quot;ENSG00000138613&quot; &quot;ENSG00000198576&quot; &quot;ENSG00000147799&quot;
+##  [31] &quot;ENSG00000116017&quot; &quot;ENSG00000029153&quot; &quot;ENSG00000029153&quot;
+##  [34] &quot;ENSG00000029153&quot; &quot;ENSG00000029153&quot; &quot;ENSG00000029153&quot;
+##  [37] &quot;ENSG00000117407&quot; &quot;ENSG00000117407&quot; &quot;ENSG00000117407&quot;
+##  [40] &quot;ENSG00000126775&quot; &quot;ENSG00000126775&quot; &quot;ENSG00000068650&quot;
+##  [43] &quot;ENSG00000068650&quot; &quot;ENSG00000068650&quot; &quot;ENSG00000068650&quot;
+##  [46] &quot;ENSG00000241837&quot; &quot;ENSG00000241837&quot; &quot;ENSG00000158321&quot;
+##  [49] &quot;ENSG00000158321&quot; &quot;ENSG00000183778&quot; &quot;ENSG00000183778&quot;
+##  [52] &quot;ENSG00000183778&quot; &quot;ENSG00000183778&quot; &quot;ENSG00000183778&quot;
+##  [55] &quot;ENSG00000128298&quot; &quot;ENSG00000125492&quot; &quot;ENSG00000125492&quot;
+##  [58] &quot;ENSG00000125124&quot; &quot;ENSG00000050820&quot; &quot;ENSG00000127152&quot;
+##  [61] &quot;ENSG00000127152&quot; &quot;ENSG00000110987&quot; &quot;ENSG00000110987&quot;
+##  [64] &quot;ENSG00000116128&quot; &quot;ENSG00000162373&quot; &quot;ENSG00000165626&quot;
+##  [67] &quot;ENSG00000165626&quot; &quot;ENSG00000122870&quot; &quot;ENSG00000122870&quot;
+##  [70] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [73] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [76] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [79] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [82] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [85] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [88] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000125845&quot;
+##  [91] &quot;ENSG00000101144&quot; &quot;ENSG00000104221&quot; &quot;ENSG00000165863&quot;
+##  [94] &quot;ENSG00000109944&quot; &quot;ENSG00000109944&quot; &quot;ENSG00000173064&quot;
+##  [97] &quot;ENSG00000235162&quot; &quot;ENSG00000089916&quot; &quot;ENSG00000089916&quot;
+## [100] &quot;ENSG00000184601&quot; &quot;ENSG00000180336&quot; &quot;ENSG00000131943&quot;
+## [103] &quot;ENSG00000175262&quot; &quot;ENSG00000128346&quot; &quot;ENSG00000185056&quot;
+## [106] &quot;ENSG00000146521&quot; &quot;ENSG00000074410&quot; &quot;ENSG00000074410&quot;
+## [109] &quot;ENSG00000158966&quot; &quot;ENSG00000198286&quot; &quot;ENSG00000130940&quot;
+## [112] &quot;ENSG00000130940&quot; &quot;ENSG00000160200&quot; &quot;ENSG00000135736&quot;
+## [115] &quot;ENSG00000168491&quot; &quot;ENSG00000168491&quot; &quot;ENSG00000109881&quot;
+## [118] &quot;ENSG00000109881&quot; &quot;ENSG00000135127&quot; &quot;ENSG00000135127&quot;
+## [121] &quot;ENSG00000135127&quot; &quot;ENSG00000110092&quot; &quot;ENSG00000138764&quot;
+## [124] &quot;ENSG00000126353&quot; &quot;ENSG00000146731&quot; &quot;ENSG00000146731&quot;
+## [127] &quot;ENSG00000112149&quot; &quot;ENSG00000112149&quot; &quot;ENSG00000198752&quot;
+## [130] &quot;ENSG00000184661&quot; &quot;ENSG00000166589&quot; &quot;ENSG00000166589&quot;
+## [133] &quot;ENSG00000166589&quot; &quot;ENSG00000166589&quot; &quot;ENSG00000179242&quot;
+## [136] &quot;ENSG00000179242&quot; &quot;ENSG00000113100&quot; &quot;ENSG00000227767&quot;
+## [139] &quot;ENSG00000153046&quot; &quot;ENSG00000101489&quot; &quot;ENSG00000101489&quot;
+## [142] &quot;ENSG00000101489&quot; &quot;ENSG00000101489&quot; &quot;ENSG00000134873&quot;
+## [145] &quot;ENSG00000134873&quot; &quot;ENSG00000159261&quot; &quot;ENSG00000169583&quot;
+## [148] &quot;ENSG00000120885&quot; &quot;ENSG00000148842&quot; &quot;ENSG00000148842&quot;
+## [151] &quot;ENSG00000148842&quot; &quot;ENSG00000149972&quot; &quot;ENSG00000149972&quot;
+## [154] &quot;ENSG00000149972&quot; &quot;ENSG00000134871&quot; &quot;ENSG00000130635&quot;
+## [157] &quot;ENSG00000165644&quot; &quot;ENSG00000198612&quot; &quot;ENSG00000198612&quot;
+## [160] &quot;ENSG00000091704&quot; &quot;ENSG00000091704&quot; &quot;ENSG00000169372&quot;
+## [163] &quot;ENSG00000146592&quot; &quot;ENSG00000146592&quot; &quot;ENSG00000160202&quot;
+## [166] &quot;ENSG00000060069&quot; &quot;ENSG00000060069&quot; &quot;ENSG00000134030&quot;
+## [169] &quot;ENSG00000134030&quot; &quot;ENSG00000153015&quot; &quot;ENSG00000153015&quot;
+## [172] &quot;ENSG00000153015&quot; &quot;ENSG00000019186&quot; &quot;ENSG00000019186&quot;
+## [175] &quot;ENSG00000132437&quot; &quot;ENSG00000079785&quot; &quot;ENSG00000141141&quot;
+## [178] &quot;ENSG00000160049&quot; &quot;ENSG00000160049&quot; &quot;ENSG00000109016&quot;
+## [181] &quot;ENSG00000100697&quot; &quot;ENSG00000151240&quot; &quot;ENSG00000150672&quot;
+## [184] &quot;ENSG00000151208&quot; &quot;ENSG00000080845&quot; &quot;ENSG00000119689&quot;
+## [187] &quot;ENSG00000119689&quot; &quot;ENSG00000119689&quot; &quot;ENSG00000119689&quot;
+## [190] &quot;ENSG00000143006&quot; &quot;ENSG00000079805&quot; &quot;ENSG00000079805&quot;
+## [193] &quot;ENSG00000079805&quot; &quot;ENSG00000079805&quot; &quot;ENSG00000079805&quot;
+## [196] &quot;ENSG00000130226&quot; &quot;ENSG00000156162&quot; &quot;ENSG00000149636&quot;
+## [199] &quot;ENSG00000149636&quot; &quot;ENSG00000149636&quot; &quot;ENSG00000047579&quot;
+## [202] &quot;ENSG00000047579&quot; &quot;ENSG00000047579&quot; &quot;ENSG00000143507&quot;
+## [205] &quot;ENSG00000143507&quot; &quot;ENSG00000229847&quot; &quot;ENSG00000229847&quot;
+## [208] &quot;ENSG00000229847&quot; &quot;ENSG00000164778&quot; &quot;ENSG00000167280&quot;
+## [211] &quot;ENSG00000104714&quot; &quot;ENSG00000119715&quot; &quot;ENSG00000119715&quot;
+## [214] &quot;ENSG00000072840&quot; &quot;ENSG00000064655&quot; &quot;ENSG00000064655&quot;
+## [217] &quot;ENSG00000088926&quot; &quot;ENSG00000168309&quot; &quot;ENSG00000168309&quot;
+## [220] &quot;ENSG00000184731&quot; &quot;ENSG00000196814&quot; &quot;ENSG00000196814&quot;
+## [223] &quot;ENSG00000154153&quot; &quot;ENSG00000189292&quot; &quot;ENSG00000182183&quot;
+## [226] &quot;ENSG00000115363&quot; &quot;ENSG00000047662&quot; &quot;ENSG00000219438&quot;
+## [229] &quot;ENSG00000168672&quot; &quot;ENSG00000083857&quot; &quot;ENSG00000083857&quot;
+## [232] &quot;ENSG00000165140&quot; &quot;ENSG00000112787&quot; &quot;ENSG00000112787&quot;
+## [235] &quot;ENSG00000085265&quot; &quot;ENSG00000126266&quot; &quot;ENSG00000066468&quot;
+## [238] &quot;ENSG00000066468&quot; &quot;ENSG00000066468&quot; &quot;ENSG00000126500&quot;
+## [241] &quot;ENSG00000075426&quot; &quot;ENSG00000164916&quot; &quot;ENSG00000114861&quot;
+## [244] &quot;ENSG00000150893&quot; &quot;ENSG00000033170&quot; &quot;ENSG00000166206&quot;
+## [247] &quot;ENSG00000116717&quot; &quot;ENSG00000116717&quot; &quot;ENSG00000116717&quot;
+## [250] &quot;ENSG00000116717&quot; &quot;ENSG00000116717&quot; &quot;ENSG00000116717&quot;
+## [253] &quot;ENSG00000143641&quot; &quot;ENSG00000182870&quot; &quot;ENSG00000130700&quot;
+## [256] &quot;ENSG00000168505&quot; &quot;ENSG00000165702&quot; &quot;ENSG00000165702&quot;
+## [259] &quot;ENSG00000167741&quot; &quot;ENSG00000167741&quot; &quot;ENSG00000074047&quot;
+## [262] &quot;ENSG00000107249&quot; &quot;ENSG00000151948&quot; &quot;ENSG00000151948&quot;
+## [265] &quot;ENSG00000137198&quot; &quot;ENSG00000156049&quot; &quot;ENSG00000197177&quot;
+## [268] &quot;ENSG00000077585&quot; &quot;ENSG00000158292&quot; &quot;ENSG00000119714&quot;
+## [271] &quot;ENSG00000178075&quot; &quot;ENSG00000125651&quot; &quot;ENSG00000077235&quot;
+## [274] &quot;ENSG00000069812&quot; &quot;ENSG00000166135&quot; &quot;ENSG00000180448&quot;
+## [277] &quot;ENSG00000108753&quot; &quot;ENSG00000108753&quot; &quot;ENSG00000108753&quot;
+## [280] &quot;ENSG00000108753&quot; &quot;ENSG00000136720&quot; &quot;ENSG00000165868&quot;
+## [283] &quot;ENSG00000165868&quot; &quot;ENSG00000003147&quot; &quot;ENSG00000003147&quot;
+## [286] &quot;ENSG00000003147&quot; &quot;ENSG00000160223&quot; &quot;ENSG00000172201&quot;
+## [289] &quot;ENSG00000172201&quot; &quot;ENSG00000134049&quot; &quot;ENSG00000117154&quot;
+## [292] &quot;ENSG00000117154&quot; &quot;ENSG00000185950&quot; &quot;ENSG00000113430&quot;
+## [295] &quot;ENSG00000113430&quot; &quot;ENSG00000105655&quot; &quot;ENSG00000105655&quot;
+## [298] &quot;ENSG00000105655&quot; &quot;ENSG00000188385&quot; &quot;ENSG00000154118&quot;
+## [301] &quot;ENSG00000107104&quot; &quot;ENSG00000102781&quot; &quot;ENSG00000189337&quot;
+## [304] &quot;ENSG00000115041&quot; &quot;ENSG00000169427&quot; &quot;ENSG00000053918&quot;
+## [307] &quot;ENSG00000134504&quot; &quot;ENSG00000167977&quot; &quot;ENSG00000127663&quot;
+## [310] &quot;ENSG00000127663&quot; &quot;ENSG00000119537&quot; &quot;ENSG00000131149&quot;
+## [313] &quot;ENSG00000136051&quot; &quot;ENSG00000257093&quot; &quot;ENSG00000122778&quot;
+## [316] &quot;ENSG00000122778&quot; &quot;ENSG00000140950&quot; &quot;ENSG00000173214&quot;
+## [319] &quot;ENSG00000130294&quot; &quot;ENSG00000066735&quot; &quot;ENSG00000066735&quot;
+## [322] &quot;ENSG00000067082&quot; &quot;ENSG00000067082&quot; &quot;ENSG00000067082&quot;
+## [325] &quot;ENSG00000067082&quot; &quot;ENSG00000150361&quot; &quot;ENSG00000197705&quot;
+## [328] &quot;ENSG00000053747&quot; &quot;ENSG00000053747&quot; &quot;ENSG00000091136&quot;
+## [331] &quot;ENSG00000168961&quot; &quot;ENSG00000168961&quot; &quot;ENSG00000168961&quot;
+## [334] &quot;ENSG00000132130&quot; &quot;ENSG00000073350&quot; &quot;ENSG00000073350&quot;
+## [337] &quot;ENSG00000073350&quot; &quot;ENSG00000103227&quot; &quot;ENSG00000103227&quot;
+## [340] &quot;ENSG00000113368&quot; &quot;ENSG00000163380&quot; &quot;ENSG00000136944&quot;
+## [343] &quot;ENSG00000136944&quot; &quot;ENSG00000136944&quot; &quot;ENSG00000167210&quot;
+## [346] &quot;ENSG00000153395&quot; &quot;ENSG00000136141&quot; &quot;ENSG00000136141&quot;
+## [349] &quot;ENSG00000136141&quot; &quot;ENSG00000146006&quot; &quot;ENSG00000146006&quot;
+## [352] &quot;ENSG00000166159&quot; &quot;ENSG00000166159&quot; &quot;ENSG00000166159&quot;
+## [355] &quot;ENSG00000166159&quot; &quot;ENSG00000166159&quot; &quot;ENSG00000166159&quot;
+## [358] &quot;ENSG00000119681&quot; &quot;ENSG00000002822&quot; &quot;ENSG00000002822&quot;
+## [361] &quot;ENSG00000002822&quot; &quot;ENSG00000178573&quot; &quot;ENSG00000178573&quot;
+## [364] &quot;ENSG00000185022&quot; &quot;ENSG00000172469&quot; &quot;ENSG00000135525&quot;
+## [367] &quot;ENSG00000135525&quot; &quot;ENSG00000135525&quot; &quot;ENSG00000138834&quot;
+## [370] &quot;ENSG00000138834&quot; &quot;ENSG00000137337&quot; &quot;ENSG00000085871&quot;
+## [373] &quot;ENSG00000085871&quot; &quot;ENSG00000085871&quot; &quot;ENSG00000085871&quot;
+## [376] &quot;ENSG00000249567&quot; &quot;ENSG00000221323&quot; &quot;ENSG00000207588&quot;
+## [379] &quot;ENSG00000105926&quot; &quot;ENSG00000158186&quot; &quot;ENSG00000182170&quot;
+## [382] &quot;ENSG00000153944&quot; &quot;ENSG00000138823&quot; &quot;ENSG00000129422&quot;
+## [385] &quot;ENSG00000129422&quot; &quot;ENSG00000132938&quot; &quot;ENSG00000133055&quot;
+## [388] &quot;ENSG00000169994&quot; &quot;ENSG00000187556&quot; &quot;ENSG00000196498&quot;
+## [391] &quot;ENSG00000196498&quot; &quot;ENSG00000196498&quot; &quot;ENSG00000196498&quot;
+## [394] &quot;ENSG00000196498&quot; &quot;ENSG00000196498&quot; &quot;ENSG00000104419&quot;
+## [397] &quot;ENSG00000104419&quot; &quot;ENSG00000104419&quot; &quot;ENSG00000104419&quot;
+## [400] &quot;ENSG00000115286&quot; &quot;ENSG00000103154&quot; &quot;ENSG00000109320&quot;
+## [403] &quot;ENSG00000109320&quot; &quot;ENSG00000148826&quot; &quot;ENSG00000148826&quot;
+## [406] &quot;ENSG00000106410&quot; &quot;ENSG00000106410&quot; &quot;ENSG00000074771&quot;
+## [409] &quot;ENSG00000170485&quot; &quot;ENSG00000214285&quot; &quot;ENSG00000105954&quot;
+## [412] &quot;ENSG00000182667&quot; &quot;ENSG00000182667&quot; &quot;ENSG00000182667&quot;
+## [415] &quot;ENSG00000115758&quot; &quot;ENSG00000205927&quot; &quot;ENSG00000183715&quot;
+## [418] &quot;ENSG00000115947&quot; &quot;ENSG00000178602&quot; &quot;ENSG00000172818&quot;
+## [421] &quot;ENSG00000125850&quot; &quot;ENSG00000099864&quot; &quot;ENSG00000099864&quot;
+## [424] &quot;ENSG00000116183&quot; &quot;ENSG00000116183&quot; &quot;ENSG00000137819&quot;
+## [427] &quot;ENSG00000102699&quot; &quot;ENSG00000242265&quot; &quot;ENSG00000242265&quot;
+## [430] &quot;ENSG00000142655&quot; &quot;ENSG00000142655&quot; &quot;ENSG00000067057&quot;
+## [433] &quot;ENSG00000144824&quot; &quot;ENSG00000165443&quot; &quot;ENSG00000105229&quot;
+## [436] &quot;ENSG00000126822&quot; &quot;ENSG00000171680&quot; &quot;ENSG00000114554&quot;
+## [439] &quot;ENSG00000114554&quot; &quot;ENSG00000114554&quot; &quot;ENSG00000141682&quot;
+## [442] &quot;ENSG00000124225&quot; &quot;ENSG00000122512&quot; &quot;ENSG00000122512&quot;
+## [445] &quot;ENSG00000168081&quot; &quot;ENSG00000014138&quot; &quot;ENSG00000166169&quot;
+## [448] &quot;ENSG00000166169&quot; &quot;ENSG00000166169&quot; &quot;ENSG00000166169&quot;
+## [451] &quot;ENSG00000106536&quot; &quot;ENSG00000106536&quot; &quot;ENSG00000162407&quot;
+## [454] &quot;ENSG00000147535&quot; &quot;ENSG00000147535&quot; &quot;ENSG00000147535&quot;
+## [457] &quot;ENSG00000154001&quot; &quot;ENSG00000170325&quot; &quot;ENSG00000170325&quot;
+## [460] &quot;ENSG00000110851&quot; &quot;ENSG00000175785&quot; &quot;ENSG00000111725&quot;
+## [463] &quot;ENSG00000106617&quot; &quot;ENSG00000065675&quot; &quot;ENSG00000065675&quot;
+## [466] &quot;ENSG00000111218&quot; &quot;ENSG00000111218&quot; &quot;ENSG00000155066&quot;
+## [469] &quot;ENSG00000155066&quot; &quot;ENSG00000155066&quot; &quot;ENSG00000205352&quot;
+## [472] &quot;ENSG00000205352&quot; &quot;ENSG00000205352&quot; &quot;ENSG00000205352&quot;
+## [475] &quot;ENSG00000167157&quot; &quot;ENSG00000163636&quot; &quot;ENSG00000169398&quot;
+## [478] &quot;ENSG00000169398&quot; &quot;ENSG00000169398&quot; &quot;ENSG00000134644&quot;
+## [481] &quot;ENSG00000134644&quot; &quot;ENSG00000112531&quot; &quot;ENSG00000112531&quot;
+## [484] &quot;ENSG00000112531&quot; &quot;ENSG00000112531&quot; &quot;ENSG00000107560&quot;
+## [487] &quot;ENSG00000168461&quot; &quot;ENSG00000141542&quot; &quot;ENSG00000017797&quot;
+## [490] &quot;ENSG00000136828&quot; &quot;ENSG00000136828&quot; &quot;ENSG00000136828&quot;
+## [493] &quot;ENSG00000185989&quot; &quot;ENSG00000165105&quot; &quot;ENSG00000122035&quot;
+## [496] &quot;ENSG00000122965&quot; &quot;ENSG00000122965&quot; &quot;ENSG00000122965&quot;
+## [499] &quot;ENSG00000160957&quot; &quot;ENSG00000143954&quot; &quot;ENSG00000143954&quot;
+## [502] &quot;ENSG00000143954&quot; &quot;ENSG00000159788&quot; &quot;ENSG00000091844&quot;
+## [505] &quot;ENSG00000158106&quot; &quot;ENSG00000183421&quot; &quot;ENSG00000139797&quot;
+## [508] &quot;ENSG00000113269&quot; &quot;ENSG00000069667&quot; &quot;ENSG00000100784&quot;
+## [511] &quot;ENSG00000100784&quot; &quot;ENSG00000141564&quot; &quot;ENSG00000141564&quot;
+## [514] &quot;ENSG00000165526&quot; &quot;ENSG00000165526&quot; &quot;ENSG00000182010&quot;
+## [517] &quot;ENSG00000198838&quot; &quot;ENSG00000198838&quot; &quot;ENSG00000256463&quot;
+## [520] &quot;ENSG00000256463&quot; &quot;ENSG00000256463&quot; &quot;ENSG00000149021&quot;
+## [523] &quot;ENSG00000136546&quot; &quot;ENSG00000136546&quot; &quot;ENSG00000146555&quot;
+## [526] &quot;ENSG00000146555&quot; &quot;ENSG00000187764&quot; &quot;ENSG00000187764&quot;
+## [529] &quot;ENSG00000163904&quot; &quot;ENSG00000152217&quot; &quot;ENSG00000183576&quot;
+## [532] &quot;ENSG00000183576&quot; &quot;ENSG00000225383&quot; &quot;ENSG00000164690&quot;
+## [535] &quot;ENSG00000142178&quot; &quot;ENSG00000159263&quot; &quot;ENSG00000159263&quot;
+## [538] &quot;ENSG00000159263&quot; &quot;ENSG00000159263&quot; &quot;ENSG00000113504&quot;
+## [541] &quot;ENSG00000152779&quot; &quot;ENSG00000162241&quot; &quot;ENSG00000162241&quot;
+## [544] &quot;ENSG00000173262&quot; &quot;ENSG00000157765&quot; &quot;ENSG00000157765&quot;
+## [547] &quot;ENSG00000160190&quot; &quot;ENSG00000143036&quot; &quot;ENSG00000143036&quot;
+## [550] &quot;ENSG00000143036&quot; &quot;ENSG00000162426&quot; &quot;ENSG00000066230&quot;
+## [553] &quot;ENSG00000173930&quot; &quot;ENSG00000166949&quot; &quot;ENSG00000127616&quot;
+## [556] &quot;ENSG00000127616&quot; &quot;ENSG00000127616&quot; &quot;ENSG00000127616&quot;
+## [559] &quot;ENSG00000188176&quot; &quot;ENSG00000048471&quot; &quot;ENSG00000172803&quot;
+## [562] &quot;ENSG00000184557&quot; &quot;ENSG00000125398&quot; &quot;ENSG00000125398&quot;
+## [565] &quot;ENSG00000185594&quot; &quot;ENSG00000187678&quot; &quot;ENSG00000187678&quot;
+## [568] &quot;ENSG00000124783&quot; &quot;ENSG00000149418&quot; &quot;ENSG00000133121&quot;
+## [571] &quot;ENSG00000133121&quot; &quot;ENSG00000102572&quot; &quot;ENSG00000152953&quot;
+## [574] &quot;ENSG00000015592&quot; &quot;ENSG00000165730&quot; &quot;ENSG00000165730&quot;
+## [577] &quot;ENSG00000165730&quot; &quot;ENSG00000165730&quot; &quot;ENSG00000198203&quot;
+## [580] &quot;ENSG00000198203&quot; &quot;ENSG00000117614&quot; &quot;ENSG00000117614&quot;
+## [583] &quot;ENSG00000131018&quot; &quot;ENSG00000131018&quot; &quot;ENSG00000078269&quot;
+## [586] &quot;ENSG00000143028&quot; &quot;ENSG00000130699&quot; &quot;ENSG00000164691&quot;
+## [589] &quot;ENSG00000164691&quot; &quot;ENSG00000164691&quot; &quot;ENSG00000167291&quot;
+## [592] &quot;ENSG00000095383&quot; &quot;ENSG00000095383&quot; &quot;ENSG00000095383&quot;
+## [595] &quot;ENSG00000095383&quot; &quot;ENSG00000095383&quot; &quot;ENSG00000095383&quot;
+## [598] &quot;ENSG00000006638&quot; &quot;ENSG00000006638&quot; &quot;ENSG00000187621&quot;
+## [601] &quot;ENSG00000160180&quot; &quot;ENSG00000163235&quot; &quot;ENSG00000163235&quot;
+## [604] &quot;ENSG00000041988&quot; &quot;ENSG00000041988&quot; &quot;ENSG00000146426&quot;
+## [607] &quot;ENSG00000106829&quot; &quot;ENSG00000155957&quot; &quot;ENSG00000144120&quot;
+## [610] &quot;ENSG00000144120&quot; &quot;ENSG00000144120&quot; &quot;ENSG00000151353&quot;
+## [613] &quot;ENSG00000151353&quot; &quot;ENSG00000214128&quot; &quot;ENSG00000160055&quot;
+## [616] &quot;ENSG00000136205&quot; &quot;ENSG00000162341&quot; &quot;ENSG00000115705&quot;
+## [619] &quot;ENSG00000115705&quot; &quot;ENSG00000126602&quot; &quot;ENSG00000167632&quot;
+## [622] &quot;ENSG00000071575&quot; &quot;ENSG00000071575&quot; &quot;ENSG00000137699&quot;
+## [625] &quot;ENSG00000100815&quot; &quot;ENSG00000103671&quot; &quot;ENSG00000119121&quot;
+## [628] &quot;ENSG00000154743&quot; &quot;ENSG00000154743&quot; &quot;ENSG00000179981&quot;
+## [631] &quot;ENSG00000182463&quot; &quot;ENSG00000121297&quot; &quot;ENSG00000214063&quot;
+## [634] &quot;ENSG00000032389&quot; &quot;ENSG00000123607&quot; &quot;ENSG00000105948&quot;
+## [637] &quot;ENSG00000105948&quot; &quot;ENSG00000105948&quot; &quot;ENSG00000100154&quot;
+## [640] &quot;ENSG00000143367&quot; &quot;ENSG00000143367&quot; &quot;ENSG00000233608&quot;
+## [643] &quot;ENSG00000184787&quot; &quot;ENSG00000184787&quot; &quot;ENSG00000184787&quot;
+## [646] &quot;ENSG00000178473&quot; &quot;ENSG00000115446&quot; &quot;ENSG00000113763&quot;
+## [649] &quot;ENSG00000101558&quot; &quot;ENSG00000101558&quot; &quot;ENSG00000129003&quot;
+## [652] &quot;ENSG00000129003&quot; &quot;ENSG00000129003&quot; &quot;ENSG00000129003&quot;
+## [655] &quot;ENSG00000176428&quot; &quot;ENSG00000185274&quot; &quot;ENSG00000185274&quot;
+## [658] &quot;ENSG00000185274&quot; &quot;ENSG00000065268&quot; &quot;ENSG00000160193&quot;
+## [661] &quot;ENSG00000103175&quot; &quot;ENSG00000198373&quot; &quot;ENSG00000076924&quot;
+## [664] &quot;ENSG00000196584&quot; &quot;ENSG00000130733&quot; &quot;ENSG00000184828&quot;
+## [667] &quot;ENSG00000213588&quot; &quot;ENSG00000014164&quot; &quot;ENSG00000175048&quot;
+## [670] &quot;ENSG00000175048&quot; &quot;ENSG00000153786&quot; &quot;ENSG00000153786&quot;
+## [673] &quot;ENSG00000156639&quot; &quot;ENSG00000156639&quot; &quot;ENSG00000133858&quot;
+## [676] &quot;ENSG00000139800&quot; &quot;ENSG00000015171&quot; &quot;ENSG00000015171&quot;
+## [679] &quot;ENSG00000102935&quot; &quot;ENSG00000102935&quot; &quot;ENSG00000183621&quot;
+## [682] &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot;
+## [685] &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot;
+## [688] &quot;ENSG00000197857&quot; &quot;ENSG00000197857&quot; &quot;ENSG00000225614&quot;
+## [691] &quot;ENSG00000225614&quot; &quot;ENSG00000171425&quot; &quot;ENSG00000157657&quot;
+## [694] &quot;ENSG00000157657&quot; &quot;ENSG00000183779&quot; &quot;ENSG00000183779&quot;</code></pre>
+<pre class="r"><code># Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg &lt;- merge(refGene_hg19_TSS, gene_id, by.x = c(&quot;V5&quot;), by.y = c(&quot;Gene&quot;))
+
+all_ref_gene_hg19_ensg &lt;- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene &lt;- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene &lt;- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) &lt;-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 11450 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 15456 GO terms and 36153 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 14505 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 4713 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 17:  2 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  12 nodes to be scored   (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  36 nodes to be scored   (43 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  88 nodes to be scored   (256 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  153 nodes to be scored  (797 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  230 nodes to be scored  (1872 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  365 nodes to be scored  (3877 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  507 nodes to be scored  (5411 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   636 nodes to be scored  (7511 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   646 nodes to be scored  (9535 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   708 nodes to be scored  (11100 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   603 nodes to be scored  (12377 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   391 nodes to be scored  (13128 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   216 nodes to be scored  (13810 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   98 nodes to be scored   (14073 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   21 nodes to be scored   (14207 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (14324 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0061045        negative regulation of wound healing        63
+## 2  GO:0042692                 muscle cell differentiation       376
+## 3  GO:0048839                       inner ear development       175
+## 4  GO:0003203           endocardial cushion morphogenesis        29
+## 5  GO:0008589 regulation of smoothened signaling pathw...        67
+## 6  GO:2001054 negative regulation of mesenchymal cell ...         8
+## 7  GO:0060736                       prostate gland growth        10
+## 8  GO:0060174                          limb bud formation        10
+## 9  GO:1901203 positive regulation of extracellular mat...         8
+## 10 GO:0006351                transcription, DNA-templated      3277
+## 11 GO:0000122 negative regulation of transcription fro...       727
+## 12 GO:0060670 branching involved in labyrinthine layer...        12
+## 13 GO:0002053 positive regulation of mesenchymal cell ...        27
+## 14 GO:0010800 positive regulation of peptidyl-threonin...        28
+## 15 GO:0061154              endothelial tube morphogenesis        15
+## 16 GO:0021794                        thalamus development        15
+## 17 GO:0021930 cerebellar granule cell precursor prolif...        14
+## 18 GO:0038007          netrin-activated signaling pathway         5
+## 19 GO:0060916 mesenchymal cell proliferation involved ...         5
+## 20 GO:0021937 cerebellar Purkinje cell-granule cell pr...         5
+## 21 GO:0007411                               axon guidance       219
+## 22 GO:0045664        regulation of neuron differentiation       541
+## 23 GO:0060445 branching involved in salivary gland mor...        21
+## 24 GO:0002076                      osteoblast development        16
+## 25 GO:0030901                        midbrain development        83
+## 26 GO:0022010          central nervous system myelination        17
+## 27 GO:0042753     positive regulation of circadian rhythm        17
+## 28 GO:0030177 positive regulation of Wnt signaling pat...       143
+## 29 GO:0045687 positive regulation of glial cell differ...        33
+## 30 GO:2001182      regulation of interleukin-12 secretion         6
+## 31 GO:0060664 epithelial cell proliferation involved i...         6
+## 32 GO:0060685       regulation of prostatic bud formation         6
+## 33 GO:0071286          cellular response to magnesium ion         6
+## 34 GO:0032713 negative regulation of interleukin-4 pro...         6
+## 35 GO:0032808                  lacrimal gland development         6
+##    Significant Expected weightFisher
+## 1            6     1.65      5.7e-05
+## 2           16     9.85      0.00013
+## 3           14     4.58      0.00046
+## 4            4     0.76      0.00058
+## 5            8     1.76      0.00064
+## 6            3     0.21      0.00091
+## 7            3     0.26      0.00187
+## 8            3     0.26      0.00187
+## 9            3     0.21      0.00201
+## 10         114    85.85      0.00236
+## 11          34    19.05      0.00241
+## 12           3     0.31      0.00329
+## 13           4     0.71      0.00505
+## 14           4     0.73      0.00577
+## 15           3     0.39      0.00642
+## 16           3     0.39      0.00642
+## 17           4     0.37      0.00644
+## 18           2     0.13      0.00650
+## 19           2     0.13      0.00650
+## 20           2     0.13      0.00650
+## 21          13     5.74      0.00689
+## 22          21    14.17      0.00750
+## 23           4     0.55      0.00770
+## 24           3     0.42      0.00775
+## 25           6     2.17      0.00890
+## 26           3     0.45      0.00923
+## 27           3     0.45      0.00923
+## 28           7     3.75      0.00933
+## 29           6     0.86      0.00942
+## 30           2     0.16      0.00958
+## 31           2     0.16      0.00958
+## 32           2     0.16      0.00958
+## 33           2     0.16      0.00958
+## 34           2     0.16      0.00958
+## 35           2     0.16      0.00958</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0098719&quot;] </code></pre>
+<pre><code>## $&lt;NA&gt;
+## NULL</code></pre>
+</div>
+<div id="liver-1" class="section level2">
+<h2>Liver</h2>
+<pre class="r"><code># Find the heart hypo
+heart_hypo &lt;- human_chimp_heart_specific_25_conserved_H3K27_LIVER[which(human_chimp_heart_specific_25_conserved_H3K27_LIVER$V4 == &quot;hypo&quot; &amp; human_chimp_heart_specific_25_conserved_H3K27_LIVER$V6 != &quot;-1&quot;),]
+
+heart_hypo &lt;- heart_hypo[complete.cases(heart_hypo), ]
+
+# Find the closest gene
+
+closest_heart &lt;- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d64550fd9b7.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d6442cd72ef.bed</code></pre>
+<pre class="r"><code># Convert the gene name to ensg
+
+gene_id &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv&quot;, stringsAsFactors = FALSE, header=TRUE, sep = &quot;,&quot;)
+
+comb_kidney &lt;- merge(closest_heart, gene_id, by.x = c(&quot;V8&quot;), by.y = c(&quot;Gene&quot;))
+
+comb_kidney$ensg</code></pre>
+<pre><code>##    [1] &quot;ENSG00000121410&quot; &quot;ENSG00000114771&quot; &quot;ENSG00000114771&quot;
+##    [4] &quot;ENSG00000141338&quot; &quot;ENSG00000121270&quot; &quot;ENSG00000108846&quot;
+##    [7] &quot;ENSG00000108846&quot; &quot;ENSG00000108846&quot; &quot;ENSG00000108846&quot;
+##   [10] &quot;ENSG00000138075&quot; &quot;ENSG00000076555&quot; &quot;ENSG00000076555&quot;
+##   [13] &quot;ENSG00000181513&quot; &quot;ENSG00000181513&quot; &quot;ENSG00000181513&quot;
+##   [16] &quot;ENSG00000181513&quot; &quot;ENSG00000122729&quot; &quot;ENSG00000197142&quot;
+##   [19] &quot;ENSG00000183549&quot; &quot;ENSG00000143199&quot; &quot;ENSG00000143199&quot;
+##   [22] &quot;ENSG00000143199&quot; &quot;ENSG00000143199&quot; &quot;ENSG00000162104&quot;
+##   [25] &quot;ENSG00000183077&quot; &quot;ENSG00000183077&quot; &quot;ENSG00000183077&quot;
+##   [28] &quot;ENSG00000157985&quot; &quot;ENSG00000157985&quot; &quot;ENSG00000157985&quot;
+##   [31] &quot;ENSG00000165923&quot; &quot;ENSG00000165923&quot; &quot;ENSG00000165923&quot;
+##   [34] &quot;ENSG00000144891&quot; &quot;ENSG00000144891&quot; &quot;ENSG00000144891&quot;
+##   [37] &quot;ENSG00000144891&quot; &quot;ENSG00000172482&quot; &quot;ENSG00000113492&quot;
+##   [40] &quot;ENSG00000042286&quot; &quot;ENSG00000042286&quot; &quot;ENSG00000011243&quot;
+##   [43] &quot;ENSG00000106948&quot; &quot;ENSG00000198610&quot; &quot;ENSG00000198610&quot;
+##   [46] &quot;ENSG00000142208&quot; &quot;ENSG00000023330&quot; &quot;ENSG00000023330&quot;
+##   [49] &quot;ENSG00000170017&quot; &quot;ENSG00000170017&quot; &quot;ENSG00000170017&quot;
+##   [52] &quot;ENSG00000170017&quot; &quot;ENSG00000170017&quot; &quot;ENSG00000170017&quot;
+##   [55] &quot;ENSG00000170017&quot; &quot;ENSG00000170017&quot; &quot;ENSG00000033011&quot;
+##   [58] &quot;ENSG00000198796&quot; &quot;ENSG00000136383&quot; &quot;ENSG00000136383&quot;
+##   [61] &quot;ENSG00000162551&quot; &quot;ENSG00000162551&quot; &quot;ENSG00000162551&quot;
+##   [64] &quot;ENSG00000106927&quot; &quot;ENSG00000139344&quot; &quot;ENSG00000166126&quot;
+##   [67] &quot;ENSG00000166025&quot; &quot;ENSG00000166025&quot; &quot;ENSG00000116337&quot;
+##   [70] &quot;ENSG00000116337&quot; &quot;ENSG00000174945&quot; &quot;ENSG00000116194&quot;
+##   [73] &quot;ENSG00000116194&quot; &quot;ENSG00000198483&quot; &quot;ENSG00000154945&quot;
+##   [76] &quot;ENSG00000131620&quot; &quot;ENSG00000131620&quot; &quot;ENSG00000074855&quot;
+##   [79] &quot;ENSG00000042753&quot; &quot;ENSG00000042753&quot; &quot;ENSG00000132703&quot;
+##   [82] &quot;ENSG00000110243&quot; &quot;ENSG00000110243&quot; &quot;ENSG00000084674&quot;
+##   [85] &quot;ENSG00000175336&quot; &quot;ENSG00000118520&quot; &quot;ENSG00000118520&quot;
+##   [88] &quot;ENSG00000118520&quot; &quot;ENSG00000118520&quot; &quot;ENSG00000196843&quot;
+##   [91] &quot;ENSG00000133794&quot; &quot;ENSG00000133794&quot; &quot;ENSG00000133794&quot;
+##   [94] &quot;ENSG00000136950&quot; &quot;ENSG00000111339&quot; &quot;ENSG00000111339&quot;
+##   [97] &quot;ENSG00000100325&quot; &quot;ENSG00000100325&quot; &quot;ENSG00000141505&quot;
+##  [100] &quot;ENSG00000141505&quot; &quot;ENSG00000141505&quot; &quot;ENSG00000141505&quot;
+##  [103] &quot;ENSG00000161944&quot; &quot;ENSG00000161944&quot; &quot;ENSG00000161944&quot;
+##  [106] &quot;ENSG00000161944&quot; &quot;ENSG00000161944&quot; &quot;ENSG00000126522&quot;
+##  [109] &quot;ENSG00000126522&quot; &quot;ENSG00000126522&quot; &quot;ENSG00000169696&quot;
+##  [112] &quot;ENSG00000169696&quot; &quot;ENSG00000169696&quot; &quot;ENSG00000169136&quot;
+##  [115] &quot;ENSG00000169136&quot; &quot;ENSG00000157087&quot; &quot;ENSG00000157087&quot;
+##  [118] &quot;ENSG00000186009&quot; &quot;ENSG00000107518&quot; &quot;ENSG00000204842&quot;
+##  [121] &quot;ENSG00000158321&quot; &quot;ENSG00000119986&quot; &quot;ENSG00000109956&quot;
+##  [124] &quot;ENSG00000109956&quot; &quot;ENSG00000182272&quot; &quot;ENSG00000117411&quot;
+##  [127] &quot;ENSG00000156273&quot; &quot;ENSG00000175866&quot; &quot;ENSG00000175866&quot;
+##  [130] &quot;ENSG00000175866&quot; &quot;ENSG00000175866&quot; &quot;ENSG00000255056&quot;
+##  [133] &quot;ENSG00000172530&quot; &quot;ENSG00000172530&quot; &quot;ENSG00000172530&quot;
+##  [136] &quot;ENSG00000172530&quot; &quot;ENSG00000172530&quot; &quot;ENSG00000114200&quot;
+##  [139] &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot;
+##  [142] &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot;
+##  [145] &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot;
+##  [148] &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot;
+##  [151] &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot;
+##  [154] &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot; &quot;ENSG00000153094&quot;
+##  [157] &quot;ENSG00000121380&quot; &quot;ENSG00000121380&quot; &quot;ENSG00000100739&quot;
+##  [160] &quot;ENSG00000015475&quot; &quot;ENSG00000015475&quot; &quot;ENSG00000136717&quot;
+##  [163] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [166] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [169] &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot; &quot;ENSG00000136717&quot;
+##  [172] &quot;ENSG00000115760&quot; &quot;ENSG00000197299&quot; &quot;ENSG00000168487&quot;
+##  [175] &quot;ENSG00000168487&quot; &quot;ENSG00000168487&quot; &quot;ENSG00000168487&quot;
+##  [178] &quot;ENSG00000140299&quot; &quot;ENSG00000145919&quot; &quot;ENSG00000145919&quot;
+##  [181] &quot;ENSG00000176720&quot; &quot;ENSG00000234235&quot; &quot;ENSG00000214688&quot;
+##  [184] &quot;ENSG00000110696&quot; &quot;ENSG00000111412&quot; &quot;ENSG00000173064&quot;
+##  [187] &quot;ENSG00000214900&quot; &quot;ENSG00000128944&quot; &quot;ENSG00000128944&quot;
+##  [190] &quot;ENSG00000128944&quot; &quot;ENSG00000166780&quot; &quot;ENSG00000125149&quot;
+##  [193] &quot;ENSG00000125149&quot; &quot;ENSG00000174109&quot; &quot;ENSG00000185504&quot;
+##  [196] &quot;ENSG00000185504&quot; &quot;ENSG00000168675&quot; &quot;ENSG00000168675&quot;
+##  [199] &quot;ENSG00000168675&quot; &quot;ENSG00000168675&quot; &quot;ENSG00000168675&quot;
+##  [202] &quot;ENSG00000168675&quot; &quot;ENSG00000130813&quot; &quot;ENSG00000130813&quot;
+##  [205] &quot;ENSG00000130173&quot; &quot;ENSG00000168275&quot; &quot;ENSG00000159403&quot;
+##  [208] &quot;ENSG00000159403&quot; &quot;ENSG00000182326&quot; &quot;ENSG00000182326&quot;
+##  [211] &quot;ENSG00000166278&quot; &quot;ENSG00000166278&quot; &quot;ENSG00000166278&quot;
+##  [214] &quot;ENSG00000166278&quot; &quot;ENSG00000101474&quot; &quot;ENSG00000128254&quot;
+##  [217] &quot;ENSG00000215012&quot; &quot;ENSG00000100249&quot; &quot;ENSG00000115998&quot;
+##  [220] &quot;ENSG00000204128&quot; &quot;ENSG00000215217&quot; &quot;ENSG00000039537&quot;
+##  [223] &quot;ENSG00000146521&quot; &quot;ENSG00000244291&quot; &quot;ENSG00000170279&quot;
+##  [226] &quot;ENSG00000157131&quot; &quot;ENSG00000021852&quot; &quot;ENSG00000021852&quot;
+##  [229] &quot;ENSG00000021852&quot; &quot;ENSG00000176919&quot; &quot;ENSG00000113600&quot;
+##  [232] &quot;ENSG00000134508&quot; &quot;ENSG00000134508&quot; &quot;ENSG00000154040&quot;
+##  [235] &quot;ENSG00000154040&quot; &quot;ENSG00000154040&quot; &quot;ENSG00000154040&quot;
+##  [238] &quot;ENSG00000154040&quot; &quot;ENSG00000171735&quot; &quot;ENSG00000171735&quot;
+##  [241] &quot;ENSG00000171735&quot; &quot;ENSG00000171735&quot; &quot;ENSG00000042493&quot;
+##  [244] &quot;ENSG00000110888&quot; &quot;ENSG00000110888&quot; &quot;ENSG00000110888&quot;
+##  [247] &quot;ENSG00000110888&quot; &quot;ENSG00000110888&quot; &quot;ENSG00000213995&quot;
+##  [250] &quot;ENSG00000213995&quot; &quot;ENSG00000142273&quot; &quot;ENSG00000142273&quot;
+##  [253] &quot;ENSG00000139899&quot; &quot;ENSG00000139899&quot; &quot;ENSG00000160200&quot;
+##  [256] &quot;ENSG00000160200&quot; &quot;ENSG00000144648&quot; &quot;ENSG00000005059&quot;
+##  [259] &quot;ENSG00000160799&quot; &quot;ENSG00000144395&quot; &quot;ENSG00000165972&quot;
+##  [262] &quot;ENSG00000161573&quot; &quot;ENSG00000110092&quot; &quot;ENSG00000110092&quot;
+##  [265] &quot;ENSG00000177575&quot; &quot;ENSG00000177575&quot; &quot;ENSG00000177575&quot;
+##  [268] &quot;ENSG00000177575&quot; &quot;ENSG00000134061&quot; &quot;ENSG00000178562&quot;
+##  [271] &quot;ENSG00000178562&quot; &quot;ENSG00000178562&quot; &quot;ENSG00000110651&quot;
+##  [274] &quot;ENSG00000151465&quot; &quot;ENSG00000099804&quot; &quot;ENSG00000198752&quot;
+##  [277] &quot;ENSG00000149798&quot; &quot;ENSG00000170779&quot; &quot;ENSG00000170779&quot;
+##  [280] &quot;ENSG00000136807&quot; &quot;ENSG00000166446&quot; &quot;ENSG00000153879&quot;
+##  [283] &quot;ENSG00000153879&quot; &quot;ENSG00000241832&quot; &quot;ENSG00000149187&quot;
+##  [286] &quot;ENSG00000011523&quot; &quot;ENSG00000011523&quot; &quot;ENSG00000159398&quot;
+##  [289] &quot;ENSG00000159398&quot; &quot;ENSG00000087237&quot; &quot;ENSG00000243649&quot;
+##  [292] &quot;ENSG00000165410&quot; &quot;ENSG00000165410&quot; &quot;ENSG00000165410&quot;
+##  [295] &quot;ENSG00000016391&quot; &quot;ENSG00000016391&quot; &quot;ENSG00000085872&quot;
+##  [298] &quot;ENSG00000177830&quot; &quot;ENSG00000177830&quot; &quot;ENSG00000177830&quot;
+##  [301] &quot;ENSG00000177830&quot; &quot;ENSG00000177830&quot; &quot;ENSG00000110721&quot;
+##  [304] &quot;ENSG00000110721&quot; &quot;ENSG00000104879&quot; &quot;ENSG00000159261&quot;
+##  [307] &quot;ENSG00000159261&quot; &quot;ENSG00000125246&quot; &quot;ENSG00000091317&quot;
+##  [310] &quot;ENSG00000091317&quot; &quot;ENSG00000170293&quot; &quot;ENSG00000150656&quot;
+##  [313] &quot;ENSG00000133313&quot; &quot;ENSG00000168763&quot; &quot;ENSG00000168763&quot;
+##  [316] &quot;ENSG00000158158&quot; &quot;ENSG00000184144&quot; &quot;ENSG00000106078&quot;
+##  [319] &quot;ENSG00000196739&quot; &quot;ENSG00000118004&quot; &quot;ENSG00000118004&quot;
+##  [322] &quot;ENSG00000118004&quot; &quot;ENSG00000118004&quot; &quot;ENSG00000118004&quot;
+##  [325] &quot;ENSG00000118004&quot; &quot;ENSG00000131143&quot; &quot;ENSG00000178772&quot;
+##  [328] &quot;ENSG00000178772&quot; &quot;ENSG00000178772&quot; &quot;ENSG00000100884&quot;
+##  [331] &quot;ENSG00000157184&quot; &quot;ENSG00000167193&quot; &quot;ENSG00000167193&quot;
+##  [334] &quot;ENSG00000178585&quot; &quot;ENSG00000178585&quot; &quot;ENSG00000040531&quot;
+##  [337] &quot;ENSG00000040531&quot; &quot;ENSG00000111249&quot; &quot;ENSG00000111249&quot;
+##  [340] &quot;ENSG00000154639&quot; &quot;ENSG00000154639&quot; &quot;ENSG00000154639&quot;
+##  [343] &quot;ENSG00000154639&quot; &quot;ENSG00000154639&quot; &quot;ENSG00000166347&quot;
+##  [346] &quot;ENSG00000166347&quot; &quot;ENSG00000166347&quot; &quot;ENSG00000166347&quot;
+##  [349] &quot;ENSG00000166347&quot; &quot;ENSG00000166347&quot; &quot;ENSG00000166394&quot;
+##  [352] &quot;ENSG00000140505&quot; &quot;ENSG00000135929&quot; &quot;ENSG00000135929&quot;
+##  [355] &quot;ENSG00000135929&quot; &quot;ENSG00000138115&quot; &quot;ENSG00000138115&quot;
+##  [358] &quot;ENSG00000138115&quot; &quot;ENSG00000138115&quot; &quot;ENSG00000106258&quot;
+##  [361] &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot;
+##  [364] &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot;
+##  [367] &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot;
+##  [370] &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot;
+##  [373] &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot; &quot;ENSG00000106258&quot;
+##  [376] &quot;ENSG00000186115&quot; &quot;ENSG00000171954&quot; &quot;ENSG00000171954&quot;
+##  [379] &quot;ENSG00000186529&quot; &quot;ENSG00000186529&quot; &quot;ENSG00000186529&quot;
+##  [382] &quot;ENSG00000164488&quot; &quot;ENSG00000112977&quot; &quot;ENSG00000172992&quot;
+##  [385] &quot;ENSG00000043093&quot; &quot;ENSG00000132437&quot; &quot;ENSG00000100201&quot;
+##  [388] &quot;ENSG00000100201&quot; &quot;ENSG00000141141&quot; &quot;ENSG00000100150&quot;
+##  [391] &quot;ENSG00000100150&quot; &quot;ENSG00000077044&quot; &quot;ENSG00000102967&quot;
+##  [394] &quot;ENSG00000181192&quot; &quot;ENSG00000181192&quot; &quot;ENSG00000067596&quot;
+##  [397] &quot;ENSG00000184047&quot; &quot;ENSG00000184047&quot; &quot;ENSG00000184047&quot;
+##  [400] &quot;ENSG00000184047&quot; &quot;ENSG00000258498&quot; &quot;ENSG00000258498&quot;
+##  [403] &quot;ENSG00000258498&quot; &quot;ENSG00000066084&quot; &quot;ENSG00000108176&quot;
+##  [406] &quot;ENSG00000108176&quot; &quot;ENSG00000163687&quot; &quot;ENSG00000163687&quot;
+##  [409] &quot;ENSG00000167130&quot; &quot;ENSG00000167130&quot; &quot;ENSG00000167130&quot;
+##  [412] &quot;ENSG00000184845&quot; &quot;ENSG00000143507&quot; &quot;ENSG00000161326&quot;
+##  [415] &quot;ENSG00000108861&quot; &quot;ENSG00000107404&quot; &quot;ENSG00000105204&quot;
+##  [418] &quot;ENSG00000105204&quot; &quot;ENSG00000105204&quot; &quot;ENSG00000123179&quot;
+##  [421] &quot;ENSG00000134463&quot; &quot;ENSG00000229715&quot; &quot;ENSG00000229715&quot;
+##  [424] &quot;ENSG00000142634&quot; &quot;ENSG00000169242&quot; &quot;ENSG00000169242&quot;
+##  [427] &quot;ENSG00000099617&quot; &quot;ENSG00000172889&quot; &quot;ENSG00000172889&quot;
+##  [430] &quot;ENSG00000146648&quot; &quot;ENSG00000146648&quot; &quot;ENSG00000146648&quot;
+##  [433] &quot;ENSG00000146648&quot; &quot;ENSG00000171570&quot; &quot;ENSG00000173812&quot;
+##  [436] &quot;ENSG00000106263&quot; &quot;ENSG00000106263&quot; &quot;ENSG00000066044&quot;
+##  [439] &quot;ENSG00000196361&quot; &quot;ENSG00000196361&quot; &quot;ENSG00000155849&quot;
+##  [442] &quot;ENSG00000155849&quot; &quot;ENSG00000155849&quot; &quot;ENSG00000134759&quot;
+##  [445] &quot;ENSG00000134759&quot; &quot;ENSG00000134759&quot; &quot;ENSG00000134759&quot;
+##  [448] &quot;ENSG00000134759&quot; &quot;ENSG00000134759&quot; &quot;ENSG00000134759&quot;
+##  [451] &quot;ENSG00000160963&quot; &quot;ENSG00000167136&quot; &quot;ENSG00000116016&quot;
+##  [454] &quot;ENSG00000182580&quot; &quot;ENSG00000196411&quot; &quot;ENSG00000196411&quot;
+##  [457] &quot;ENSG00000130427&quot; &quot;ENSG00000113719&quot; &quot;ENSG00000086619&quot;
+##  [460] &quot;ENSG00000139684&quot; &quot;ENSG00000196405&quot; &quot;ENSG00000205436&quot;
+##  [463] &quot;ENSG00000107371&quot; &quot;ENSG00000107371&quot; &quot;ENSG00000182197&quot;
+##  [466] &quot;ENSG00000092820&quot; &quot;ENSG00000126218&quot; &quot;ENSG00000180210&quot;
+##  [469] &quot;ENSG00000159784&quot; &quot;ENSG00000109794&quot; &quot;ENSG00000152102&quot;
+##  [472] &quot;ENSG00000185442&quot; &quot;ENSG00000188916&quot; &quot;ENSG00000189319&quot;
+##  [475] &quot;ENSG00000133477&quot; &quot;ENSG00000188522&quot; &quot;ENSG00000176853&quot;
+##  [478] &quot;ENSG00000169710&quot; &quot;ENSG00000177294&quot; &quot;ENSG00000100225&quot;
+##  [481] &quot;ENSG00000100225&quot; &quot;ENSG00000171557&quot; &quot;ENSG00000171557&quot;
+##  [484] &quot;ENSG00000115226&quot; &quot;ENSG00000160097&quot; &quot;ENSG00000160097&quot;
+##  [487] &quot;ENSG00000170802&quot; &quot;ENSG00000106701&quot; &quot;ENSG00000106701&quot;
+##  [490] &quot;ENSG00000070404&quot; &quot;ENSG00000160282&quot; &quot;ENSG00000160282&quot;
+##  [493] &quot;ENSG00000107164&quot; &quot;ENSG00000165060&quot; &quot;ENSG00000165060&quot;
+##  [496] &quot;ENSG00000165060&quot; &quot;ENSG00000163251&quot; &quot;ENSG00000131482&quot;
+##  [499] &quot;ENSG00000131482&quot; &quot;ENSG00000154252&quot; &quot;ENSG00000108479&quot;
+##  [502] &quot;ENSG00000106648&quot; &quot;ENSG00000106648&quot; &quot;ENSG00000128310&quot;
+##  [505] &quot;ENSG00000130005&quot; &quot;ENSG00000130005&quot; &quot;ENSG00000111640&quot;
+##  [508] &quot;ENSG00000213512&quot; &quot;ENSG00000213512&quot; &quot;ENSG00000106633&quot;
+##  [511] &quot;ENSG00000106633&quot; &quot;ENSG00000084734&quot; &quot;ENSG00000023909&quot;
+##  [514] &quot;ENSG00000178795&quot; &quot;ENSG00000141098&quot; &quot;ENSG00000141098&quot;
+##  [517] &quot;ENSG00000141098&quot; &quot;ENSG00000151892&quot; &quot;ENSG00000115486&quot;
+##  [520] &quot;ENSG00000115486&quot; &quot;ENSG00000157017&quot; &quot;ENSG00000157017&quot;
+##  [523] &quot;ENSG00000157017&quot; &quot;ENSG00000157017&quot; &quot;ENSG00000157017&quot;
+##  [526] &quot;ENSG00000157017&quot; &quot;ENSG00000157017&quot; &quot;ENSG00000157017&quot;
+##  [529] &quot;ENSG00000157017&quot; &quot;ENSG00000157017&quot; &quot;ENSG00000137960&quot;
+##  [532] &quot;ENSG00000151948&quot; &quot;ENSG00000016864&quot; &quot;ENSG00000016864&quot;
+##  [535] &quot;ENSG00000203972&quot; &quot;ENSG00000196743&quot; &quot;ENSG00000196743&quot;
+##  [538] &quot;ENSG00000112699&quot; &quot;ENSG00000114349&quot; &quot;ENSG00000114349&quot;
+##  [541] &quot;ENSG00000100522&quot; &quot;ENSG00000185245&quot; &quot;ENSG00000119927&quot;
+##  [544] &quot;ENSG00000119927&quot; &quot;ENSG00000119927&quot; &quot;ENSG00000119927&quot;
+##  [547] &quot;ENSG00000112293&quot; &quot;ENSG00000132975&quot; &quot;ENSG00000180758&quot;
+##  [550] &quot;ENSG00000166123&quot; &quot;ENSG00000176153&quot; &quot;ENSG00000176153&quot;
+##  [553] &quot;ENSG00000176153&quot; &quot;ENSG00000075240&quot; &quot;ENSG00000083307&quot;
+##  [556] &quot;ENSG00000139835&quot; &quot;ENSG00000100577&quot; &quot;ENSG00000077809&quot;
+##  [559] &quot;ENSG00000077809&quot; &quot;ENSG00000077809&quot; &quot;ENSG00000077809&quot;
+##  [562] &quot;ENSG00000077809&quot; &quot;ENSG00000101181&quot; &quot;ENSG00000169919&quot;
+##  [565] &quot;ENSG00000130600&quot; &quot;ENSG00000148702&quot; &quot;ENSG00000148702&quot;
+##  [568] &quot;ENSG00000148702&quot; &quot;ENSG00000130956&quot; &quot;ENSG00000084110&quot;
+##  [571] &quot;ENSG00000084110&quot; &quot;ENSG00000084110&quot; &quot;ENSG00000115677&quot;
+##  [574] &quot;ENSG00000115677&quot; &quot;ENSG00000122557&quot; &quot;ENSG00000114315&quot;
+##  [577] &quot;ENSG00000114315&quot; &quot;ENSG00000168509&quot; &quot;ENSG00000168509&quot;
+##  [580] &quot;ENSG00000168509&quot; &quot;ENSG00000168509&quot; &quot;ENSG00000109758&quot;
+##  [583] &quot;ENSG00000137133&quot; &quot;ENSG00000100084&quot; &quot;ENSG00000108924&quot;
+##  [586] &quot;ENSG00000117305&quot; &quot;ENSG00000117305&quot; &quot;ENSG00000115756&quot;
+##  [589] &quot;ENSG00000158104&quot; &quot;ENSG00000110169&quot; &quot;ENSG00000110169&quot;
+##  [592] &quot;ENSG00000113905&quot; &quot;ENSG00000113905&quot; &quot;ENSG00000005700&quot;
+##  [595] &quot;ENSG00000115738&quot; &quot;ENSG00000142166&quot; &quot;ENSG00000142166&quot;
+##  [598] &quot;ENSG00000115457&quot; &quot;ENSG00000243646&quot; &quot;ENSG00000115590&quot;
+##  [601] &quot;ENSG00000115590&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [604] &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [607] &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [610] &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [613] &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [616] &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [619] &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [622] &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot; &quot;ENSG00000196083&quot;
+##  [625] &quot;ENSG00000196083&quot; &quot;ENSG00000136689&quot; &quot;ENSG00000103522&quot;
+##  [628] &quot;ENSG00000103522&quot; &quot;ENSG00000100385&quot; &quot;ENSG00000203485&quot;
+##  [631] &quot;ENSG00000203485&quot; &quot;ENSG00000203485&quot; &quot;ENSG00000122641&quot;
+##  [634] &quot;ENSG00000148384&quot; &quot;ENSG00000254647&quot; &quot;ENSG00000254647&quot;
+##  [637] &quot;ENSG00000254647&quot; &quot;ENSG00000129965&quot; &quot;ENSG00000129965&quot;
+##  [640] &quot;ENSG00000186480&quot; &quot;ENSG00000186480&quot; &quot;ENSG00000186480&quot;
+##  [643] &quot;ENSG00000186480&quot; &quot;ENSG00000186480&quot; &quot;ENSG00000186480&quot;
+##  [646] &quot;ENSG00000125629&quot; &quot;ENSG00000134070&quot; &quot;ENSG00000134070&quot;
+##  [649] &quot;ENSG00000172183&quot; &quot;ENSG00000078747&quot; &quot;ENSG00000078747&quot;
+##  [652] &quot;ENSG00000078747&quot; &quot;ENSG00000083457&quot; &quot;ENSG00000083457&quot;
+##  [655] &quot;ENSG00000162267&quot; &quot;ENSG00000055955&quot; &quot;ENSG00000055955&quot;
+##  [658] &quot;ENSG00000100605&quot; &quot;ENSG00000100605&quot; &quot;ENSG00000100605&quot;
+##  [661] &quot;ENSG00000205726&quot; &quot;ENSG00000205726&quot; &quot;ENSG00000163166&quot;
+##  [664] &quot;ENSG00000009765&quot; &quot;ENSG00000009765&quot; &quot;ENSG00000009765&quot;
+##  [667] &quot;ENSG00000140044&quot; &quot;ENSG00000154118&quot; &quot;ENSG00000102781&quot;
+##  [670] &quot;ENSG00000176407&quot; &quot;ENSG00000069424&quot; &quot;ENSG00000158445&quot;
+##  [673] &quot;ENSG00000124780&quot; &quot;ENSG00000169427&quot; &quot;ENSG00000188997&quot;
+##  [676] &quot;ENSG00000089094&quot; &quot;ENSG00000089094&quot; &quot;ENSG00000107077&quot;
+##  [679] &quot;ENSG00000107077&quot; &quot;ENSG00000166783&quot; &quot;ENSG00000166783&quot;
+##  [682] &quot;ENSG00000166783&quot; &quot;ENSG00000176542&quot; &quot;ENSG00000125337&quot;
+##  [685] &quot;ENSG00000125337&quot; &quot;ENSG00000118922&quot; &quot;ENSG00000129911&quot;
+##  [688] &quot;ENSG00000128607&quot; &quot;ENSG00000128607&quot; &quot;ENSG00000025800&quot;
+##  [691] &quot;ENSG00000185896&quot; &quot;ENSG00000002549&quot; &quot;ENSG00000107929&quot;
+##  [694] &quot;ENSG00000086730&quot; &quot;ENSG00000086730&quot; &quot;ENSG00000086730&quot;
+##  [697] &quot;ENSG00000213398&quot; &quot;ENSG00000164406&quot; &quot;ENSG00000164406&quot;
+##  [700] &quot;ENSG00000145826&quot; &quot;ENSG00000116977&quot; &quot;ENSG00000072163&quot;
+##  [703] &quot;ENSG00000166035&quot; &quot;ENSG00000166035&quot; &quot;ENSG00000166035&quot;
+##  [706] &quot;ENSG00000101670&quot; &quot;ENSG00000189067&quot; &quot;ENSG00000189067&quot;
+##  [709] &quot;ENSG00000162761&quot; &quot;ENSG00000102910&quot; &quot;ENSG00000134324&quot;
+##  [712] &quot;ENSG00000134324&quot; &quot;ENSG00000070018&quot; &quot;ENSG00000175489&quot;
+##  [715] &quot;ENSG00000160233&quot; &quot;ENSG00000124831&quot; &quot;ENSG00000124831&quot;
+##  [718] &quot;ENSG00000124831&quot; &quot;ENSG00000124831&quot; &quot;ENSG00000143669&quot;
+##  [721] &quot;ENSG00000197063&quot; &quot;ENSG00000145050&quot; &quot;ENSG00000101460&quot;
+##  [724] &quot;ENSG00000076984&quot; &quot;ENSG00000119487&quot; &quot;ENSG00000119487&quot;
+##  [727] &quot;ENSG00000119487&quot; &quot;ENSG00000119487&quot; &quot;ENSG00000119487&quot;
+##  [730] &quot;ENSG00000119487&quot; &quot;ENSG00000099785&quot; &quot;ENSG00000099785&quot;
+##  [733] &quot;ENSG00000099785&quot; &quot;ENSG00000009724&quot; &quot;ENSG00000009724&quot;
+##  [736] &quot;ENSG00000197971&quot; &quot;ENSG00000197971&quot; &quot;ENSG00000197971&quot;
+##  [739] &quot;ENSG00000197971&quot; &quot;ENSG00000126217&quot; &quot;ENSG00000180398&quot;
+##  [742] &quot;ENSG00000180398&quot; &quot;ENSG00000128285&quot; &quot;ENSG00000090674&quot;
+##  [745] &quot;ENSG00000135679&quot; &quot;ENSG00000135679&quot; &quot;ENSG00000135679&quot;
+##  [748] &quot;ENSG00000135679&quot; &quot;ENSG00000108510&quot; &quot;ENSG00000152127&quot;
+##  [751] &quot;ENSG00000170430&quot; &quot;ENSG00000199065&quot; &quot;ENSG00000199065&quot;
+##  [754] &quot;ENSG00000199065&quot; &quot;ENSG00000221039&quot; &quot;ENSG00000221063&quot;
+##  [757] &quot;ENSG00000208017&quot; &quot;ENSG00000199075&quot; &quot;ENSG00000207727&quot;
+##  [760] &quot;ENSG00000207875&quot; &quot;ENSG00000207875&quot; &quot;ENSG00000130382&quot;
+##  [763] &quot;ENSG00000115648&quot; &quot;ENSG00000115648&quot; &quot;ENSG00000009950&quot;
+##  [766] &quot;ENSG00000009950&quot; &quot;ENSG00000009950&quot; &quot;ENSG00000009950&quot;
+##  [769] &quot;ENSG00000108960&quot; &quot;ENSG00000173269&quot; &quot;ENSG00000075643&quot;
+##  [772] &quot;ENSG00000166391&quot; &quot;ENSG00000166391&quot; &quot;ENSG00000107186&quot;
+##  [775] &quot;ENSG00000107186&quot; &quot;ENSG00000107186&quot; &quot;ENSG00000214026&quot;
+##  [778] &quot;ENSG00000173867&quot; &quot;ENSG00000173531&quot; &quot;ENSG00000149480&quot;
+##  [781] &quot;ENSG00000122085&quot; &quot;ENSG00000122085&quot; &quot;ENSG00000122085&quot;
+##  [784] &quot;ENSG00000122085&quot; &quot;ENSG00000132613&quot; &quot;ENSG00000110921&quot;
+##  [787] &quot;ENSG00000110921&quot; &quot;ENSG00000172927&quot; &quot;ENSG00000172927&quot;
+##  [790] &quot;ENSG00000106436&quot; &quot;ENSG00000065534&quot; &quot;ENSG00000065534&quot;
+##  [793] &quot;ENSG00000065534&quot; &quot;ENSG00000065534&quot; &quot;ENSG00000091536&quot;
+##  [796] &quot;ENSG00000091536&quot; &quot;ENSG00000236242&quot; &quot;ENSG00000139597&quot;
+##  [799] &quot;ENSG00000139597&quot; &quot;ENSG00000008130&quot; &quot;ENSG00000008130&quot;
+##  [802] &quot;ENSG00000152620&quot; &quot;ENSG00000141562&quot; &quot;ENSG00000141562&quot;
+##  [805] &quot;ENSG00000141562&quot; &quot;ENSG00000166833&quot; &quot;ENSG00000255043&quot;
+##  [808] &quot;ENSG00000255043&quot; &quot;ENSG00000255043&quot; &quot;ENSG00000196498&quot;
+##  [811] &quot;ENSG00000196498&quot; &quot;ENSG00000196498&quot; &quot;ENSG00000166579&quot;
+##  [814] &quot;ENSG00000166579&quot; &quot;ENSG00000151366&quot; &quot;ENSG00000151366&quot;
+##  [817] &quot;ENSG00000151366&quot; &quot;ENSG00000165802&quot; &quot;ENSG00000165802&quot;
+##  [820] &quot;ENSG00000165802&quot; &quot;ENSG00000165802&quot; &quot;ENSG00000165802&quot;
+##  [823] &quot;ENSG00000173848&quot; &quot;ENSG00000107954&quot; &quot;ENSG00000100906&quot;
+##  [826] &quot;ENSG00000104825&quot; &quot;ENSG00000104825&quot; &quot;ENSG00000101004&quot;
+##  [829] &quot;ENSG00000163293&quot; &quot;ENSG00000172548&quot; &quot;ENSG00000172548&quot;
+##  [832] &quot;ENSG00000136783&quot; &quot;ENSG00000169251&quot; &quot;ENSG00000169251&quot;
+##  [835] &quot;ENSG00000166741&quot; &quot;ENSG00000015520&quot; &quot;ENSG00000015520&quot;
+##  [838] &quot;ENSG00000015520&quot; &quot;ENSG00000015520&quot; &quot;ENSG00000148734&quot;
+##  [841] &quot;ENSG00000242349&quot; &quot;ENSG00000131910&quot; &quot;ENSG00000012504&quot;
+##  [844] &quot;ENSG00000012504&quot; &quot;ENSG00000012504&quot; &quot;ENSG00000012504&quot;
+##  [847] &quot;ENSG00000012504&quot; &quot;ENSG00000012504&quot; &quot;ENSG00000012504&quot;
+##  [850] &quot;ENSG00000012504&quot; &quot;ENSG00000144852&quot; &quot;ENSG00000144852&quot;
+##  [853] &quot;ENSG00000144852&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [856] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [859] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [862] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [865] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [868] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [871] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [874] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [877] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [880] &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot; &quot;ENSG00000143257&quot;
+##  [883] &quot;ENSG00000143257&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot;
+##  [886] &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot;
+##  [889] &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot;
+##  [892] &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot;
+##  [895] &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot;
+##  [898] &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot;
+##  [901] &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot;
+##  [904] &quot;ENSG00000113580&quot; &quot;ENSG00000113580&quot; &quot;ENSG00000116833&quot;
+##  [907] &quot;ENSG00000116833&quot; &quot;ENSG00000116833&quot; &quot;ENSG00000116833&quot;
+##  [910] &quot;ENSG00000116833&quot; &quot;ENSG00000116833&quot; &quot;ENSG00000180530&quot;
+##  [913] &quot;ENSG00000171119&quot; &quot;ENSG00000151413&quot; &quot;ENSG00000090273&quot;
+##  [916] &quot;ENSG00000168101&quot; &quot;ENSG00000168101&quot; &quot;ENSG00000168101&quot;
+##  [919] &quot;ENSG00000168101&quot; &quot;ENSG00000132182&quot; &quot;ENSG00000125450&quot;
+##  [922] &quot;ENSG00000176046&quot; &quot;ENSG00000176046&quot; &quot;ENSG00000065154&quot;
+##  [925] &quot;ENSG00000065154&quot; &quot;ENSG00000180304&quot; &quot;ENSG00000111325&quot;
+##  [928] &quot;ENSG00000060491&quot; &quot;ENSG00000119547&quot; &quot;ENSG00000119547&quot;
+##  [931] &quot;ENSG00000224855&quot; &quot;ENSG00000175619&quot; &quot;ENSG00000140961&quot;
+##  [934] &quot;ENSG00000185624&quot; &quot;ENSG00000179364&quot; &quot;ENSG00000100266&quot;
+##  [937] &quot;ENSG00000006712&quot; &quot;ENSG00000006712&quot; &quot;ENSG00000006712&quot;
+##  [940] &quot;ENSG00000140694&quot; &quot;ENSG00000140694&quot; &quot;ENSG00000140694&quot;
+##  [943] &quot;ENSG00000140694&quot; &quot;ENSG00000140694&quot; &quot;ENSG00000140694&quot;
+##  [946] &quot;ENSG00000140694&quot; &quot;ENSG00000140694&quot; &quot;ENSG00000140694&quot;
+##  [949] &quot;ENSG00000111224&quot; &quot;ENSG00000185630&quot; &quot;ENSG00000185630&quot;
+##  [952] &quot;ENSG00000185630&quot; &quot;ENSG00000167081&quot; &quot;ENSG00000173599&quot;
+##  [955] &quot;ENSG00000166228&quot; &quot;ENSG00000175198&quot; &quot;ENSG00000175198&quot;
+##  [958] &quot;ENSG00000175198&quot; &quot;ENSG00000114054&quot; &quot;ENSG00000114054&quot;
+##  [961] &quot;ENSG00000140479&quot; &quot;ENSG00000140479&quot; &quot;ENSG00000140479&quot;
+##  [964] &quot;ENSG00000140479&quot; &quot;ENSG00000140479&quot; &quot;ENSG00000140479&quot;
+##  [967] &quot;ENSG00000140479&quot; &quot;ENSG00000140479&quot; &quot;ENSG00000169174&quot;
+##  [970] &quot;ENSG00000116005&quot; &quot;ENSG00000106244&quot; &quot;ENSG00000113721&quot;
+##  [973] &quot;ENSG00000113721&quot; &quot;ENSG00000155660&quot; &quot;ENSG00000107438&quot;
+##  [976] &quot;ENSG00000133027&quot; &quot;ENSG00000133027&quot; &quot;ENSG00000124299&quot;
+##  [979] &quot;ENSG00000124299&quot; &quot;ENSG00000124299&quot; &quot;ENSG00000124299&quot;
+##  [982] &quot;ENSG00000124299&quot; &quot;ENSG00000124299&quot; &quot;ENSG00000161031&quot;
+##  [985] &quot;ENSG00000107537&quot; &quot;ENSG00000060642&quot; &quot;ENSG00000155629&quot;
+##  [988] &quot;ENSG00000155629&quot; &quot;ENSG00000174238&quot; &quot;ENSG00000090975&quot;
+##  [991] &quot;ENSG00000178385&quot; &quot;ENSG00000076356&quot; &quot;ENSG00000115946&quot;
+##  [994] &quot;ENSG00000101346&quot; &quot;ENSG00000101346&quot; &quot;ENSG00000127948&quot;
+##  [997] &quot;ENSG00000168938&quot; &quot;ENSG00000168938&quot; &quot;ENSG00000108179&quot;
+## [1000] &quot;ENSG00000118898&quot; &quot;ENSG00000219607&quot; &quot;ENSG00000137713&quot;
+## [1003] &quot;ENSG00000137713&quot; &quot;ENSG00000137713&quot; &quot;ENSG00000137713&quot;
+## [1006] &quot;ENSG00000137713&quot; &quot;ENSG00000066027&quot; &quot;ENSG00000066027&quot;
+## [1009] &quot;ENSG00000066027&quot; &quot;ENSG00000100239&quot; &quot;ENSG00000100239&quot;
+## [1012] &quot;ENSG00000100239&quot; &quot;ENSG00000100239&quot; &quot;ENSG00000110075&quot;
+## [1015] &quot;ENSG00000110075&quot; &quot;ENSG00000110075&quot; &quot;ENSG00000110075&quot;
+## [1018] &quot;ENSG00000110075&quot; &quot;ENSG00000110075&quot; &quot;ENSG00000147596&quot;
+## [1021] &quot;ENSG00000116690&quot; &quot;ENSG00000116690&quot; &quot;ENSG00000116690&quot;
+## [1024] &quot;ENSG00000116690&quot; &quot;ENSG00000131791&quot; &quot;ENSG00000154229&quot;
+## [1027] &quot;ENSG00000067606&quot; &quot;ENSG00000101000&quot; &quot;ENSG00000117707&quot;
+## [1030] &quot;ENSG00000117707&quot; &quot;ENSG00000126231&quot; &quot;ENSG00000126231&quot;
+## [1033] &quot;ENSG00000161542&quot; &quot;ENSG00000161542&quot; &quot;ENSG00000248405&quot;
+## [1036] &quot;ENSG00000080815&quot; &quot;ENSG00000080815&quot; &quot;ENSG00000159352&quot;
+## [1039] &quot;ENSG00000180822&quot; &quot;ENSG00000180822&quot; &quot;ENSG00000180822&quot;
+## [1042] &quot;ENSG00000124212&quot; &quot;ENSG00000206527&quot; &quot;ENSG00000070159&quot;
+## [1045] &quot;ENSG00000070159&quot; &quot;ENSG00000070159&quot; &quot;ENSG00000070159&quot;
+## [1048] &quot;ENSG00000060656&quot; &quot;ENSG00000060656&quot; &quot;ENSG00000060656&quot;
+## [1051] &quot;ENSG00000060656&quot; &quot;ENSG00000060656&quot; &quot;ENSG00000060656&quot;
+## [1054] &quot;ENSG00000060656&quot; &quot;ENSG00000060656&quot; &quot;ENSG00000136045&quot;
+## [1057] &quot;ENSG00000136045&quot; &quot;ENSG00000165661&quot; &quot;ENSG00000213339&quot;
+## [1060] &quot;ENSG00000172007&quot; &quot;ENSG00000172007&quot; &quot;ENSG00000172007&quot;
+## [1063] &quot;ENSG00000160271&quot; &quot;ENSG00000108961&quot; &quot;ENSG00000108961&quot;
+## [1066] &quot;ENSG00000108961&quot; &quot;ENSG00000173166&quot; &quot;ENSG00000173166&quot;
+## [1069] &quot;ENSG00000105122&quot; &quot;ENSG00000108551&quot; &quot;ENSG00000108551&quot;
+## [1072] &quot;ENSG00000165105&quot; &quot;ENSG00000100320&quot; &quot;ENSG00000100320&quot;
+## [1075] &quot;ENSG00000184863&quot; &quot;ENSG00000138207&quot; &quot;ENSG00000139547&quot;
+## [1078] &quot;ENSG00000139547&quot; &quot;ENSG00000174236&quot; &quot;ENSG00000173156&quot;
+## [1081] &quot;ENSG00000111785&quot; &quot;ENSG00000167705&quot; &quot;ENSG00000108830&quot;
+## [1084] &quot;ENSG00000108830&quot; &quot;ENSG00000178828&quot; &quot;ENSG00000132383&quot;
+## [1087] &quot;ENSG00000125844&quot; &quot;ENSG00000125844&quot; &quot;ENSG00000160214&quot;
+## [1090] &quot;ENSG00000163825&quot; &quot;ENSG00000163825&quot; &quot;ENSG00000163602&quot;
+## [1093] &quot;ENSG00000020577&quot; &quot;ENSG00000020577&quot; &quot;ENSG00000101347&quot;
+## [1096] &quot;ENSG00000123453&quot; &quot;ENSG00000168077&quot; &quot;ENSG00000168077&quot;
+## [1099] &quot;ENSG00000073060&quot; &quot;ENSG00000073060&quot; &quot;ENSG00000073060&quot;
+## [1102] &quot;ENSG00000073060&quot; &quot;ENSG00000073060&quot; &quot;ENSG00000073060&quot;
+## [1105] &quot;ENSG00000143653&quot; &quot;ENSG00000100012&quot; &quot;ENSG00000100012&quot;
+## [1108] &quot;ENSG00000100012&quot; &quot;ENSG00000100012&quot; &quot;ENSG00000103184&quot;
+## [1111] &quot;ENSG00000254154&quot; &quot;ENSG00000254154&quot; &quot;ENSG00000065665&quot;
+## [1114] &quot;ENSG00000065665&quot; &quot;ENSG00000065665&quot; &quot;ENSG00000065665&quot;
+## [1117] &quot;ENSG00000065665&quot; &quot;ENSG00000025796&quot; &quot;ENSG00000187742&quot;
+## [1120] &quot;ENSG00000187742&quot; &quot;ENSG00000179918&quot; &quot;ENSG00000184640&quot;
+## [1123] &quot;ENSG00000197249&quot; &quot;ENSG00000196136&quot; &quot;ENSG00000100665&quot;
+## [1126] &quot;ENSG00000117601&quot; &quot;ENSG00000117601&quot; &quot;ENSG00000183576&quot;
+## [1129] &quot;ENSG00000183576&quot; &quot;ENSG00000144040&quot; &quot;ENSG00000144040&quot;
+## [1132] &quot;ENSG00000144040&quot; &quot;ENSG00000104205&quot; &quot;ENSG00000104205&quot;
+## [1135] &quot;ENSG00000130147&quot; &quot;ENSG00000107957&quot; &quot;ENSG00000105251&quot;
+## [1138] &quot;ENSG00000105251&quot; &quot;ENSG00000138606&quot; &quot;ENSG00000164690&quot;
+## [1141] &quot;ENSG00000164690&quot; &quot;ENSG00000138771&quot; &quot;ENSG00000112246&quot;
+## [1144] &quot;ENSG00000169375&quot; &quot;ENSG00000096717&quot; &quot;ENSG00000124523&quot;
+## [1147] &quot;ENSG00000141526&quot; &quot;ENSG00000170190&quot; &quot;ENSG00000112337&quot;
+## [1150] &quot;ENSG00000112337&quot; &quot;ENSG00000112337&quot; &quot;ENSG00000146039&quot;
+## [1153] &quot;ENSG00000110436&quot; &quot;ENSG00000168575&quot; &quot;ENSG00000175003&quot;
+## [1156] &quot;ENSG00000175003&quot; &quot;ENSG00000175003&quot; &quot;ENSG00000175003&quot;
+## [1159] &quot;ENSG00000149742&quot; &quot;ENSG00000148339&quot; &quot;ENSG00000171612&quot;
+## [1162] &quot;ENSG00000171612&quot; &quot;ENSG00000171612&quot; &quot;ENSG00000181035&quot;
+## [1165] &quot;ENSG00000140107&quot; &quot;ENSG00000140284&quot; &quot;ENSG00000140284&quot;
+## [1168] &quot;ENSG00000083807&quot; &quot;ENSG00000197496&quot; &quot;ENSG00000173262&quot;
+## [1171] &quot;ENSG00000196660&quot; &quot;ENSG00000196660&quot; &quot;ENSG00000196660&quot;
+## [1174] &quot;ENSG00000196660&quot; &quot;ENSG00000130958&quot; &quot;ENSG00000127526&quot;
+## [1177] &quot;ENSG00000138449&quot; &quot;ENSG00000162426&quot; &quot;ENSG00000022567&quot;
+## [1180] &quot;ENSG00000022567&quot; &quot;ENSG00000076351&quot; &quot;ENSG00000076351&quot;
+## [1183] &quot;ENSG00000139508&quot; &quot;ENSG00000139508&quot; &quot;ENSG00000111181&quot;
+## [1186] &quot;ENSG00000111181&quot; &quot;ENSG00000111181&quot; &quot;ENSG00000130876&quot;
+## [1189] &quot;ENSG00000130876&quot; &quot;ENSG00000103257&quot; &quot;ENSG00000137834&quot;
+## [1192] &quot;ENSG00000137834&quot; &quot;ENSG00000137834&quot; &quot;ENSG00000137834&quot;
+## [1195] &quot;ENSG00000103056&quot; &quot;ENSG00000103056&quot; &quot;ENSG00000198742&quot;
+## [1198] &quot;ENSG00000198742&quot; &quot;ENSG00000198742&quot; &quot;ENSG00000165684&quot;
+## [1201] &quot;ENSG00000201902&quot; &quot;ENSG00000104852&quot; &quot;ENSG00000147481&quot;
+## [1204] &quot;ENSG00000142168&quot; &quot;ENSG00000142168&quot; &quot;ENSG00000184985&quot;
+## [1207] &quot;ENSG00000184985&quot; &quot;ENSG00000137642&quot; &quot;ENSG00000100146&quot;
+## [1210] &quot;ENSG00000153498&quot; &quot;ENSG00000227213&quot; &quot;ENSG00000006282&quot;
+## [1213] &quot;ENSG00000006282&quot; &quot;ENSG00000006282&quot; &quot;ENSG00000186583&quot;
+## [1216] &quot;ENSG00000186583&quot; &quot;ENSG00000204710&quot; &quot;ENSG00000100014&quot;
+## [1219] &quot;ENSG00000072080&quot; &quot;ENSG00000136158&quot; &quot;ENSG00000162032&quot;
+## [1222] &quot;ENSG00000173898&quot; &quot;ENSG00000137877&quot; &quot;ENSG00000049319&quot;
+## [1225] &quot;ENSG00000182934&quot; &quot;ENSG00000182934&quot; &quot;ENSG00000147488&quot;
+## [1228] &quot;ENSG00000166444&quot; &quot;ENSG00000073849&quot; &quot;ENSG00000070731&quot;
+## [1231] &quot;ENSG00000133121&quot; &quot;ENSG00000166888&quot; &quot;ENSG00000115107&quot;
+## [1234] &quot;ENSG00000115107&quot; &quot;ENSG00000115107&quot; &quot;ENSG00000115107&quot;
+## [1237] &quot;ENSG00000115107&quot; &quot;ENSG00000115107&quot; &quot;ENSG00000118046&quot;
+## [1240] &quot;ENSG00000204344&quot; &quot;ENSG00000116030&quot; &quot;ENSG00000116030&quot;
+## [1243] &quot;ENSG00000116030&quot; &quot;ENSG00000116030&quot; &quot;ENSG00000116030&quot;
+## [1246] &quot;ENSG00000116030&quot; &quot;ENSG00000100242&quot; &quot;ENSG00000196235&quot;
+## [1249] &quot;ENSG00000173227&quot; &quot;ENSG00000177156&quot; &quot;ENSG00000143374&quot;
+## [1252] &quot;ENSG00000135111&quot; &quot;ENSG00000135111&quot; &quot;ENSG00000135111&quot;
+## [1255] &quot;ENSG00000135111&quot; &quot;ENSG00000135111&quot; &quot;ENSG00000135111&quot;
+## [1258] &quot;ENSG00000011007&quot; &quot;ENSG00000163792&quot; &quot;ENSG00000163792&quot;
+## [1261] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1264] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1267] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1270] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1273] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1276] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1279] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1282] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1285] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1288] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1291] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1294] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1297] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1300] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1303] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1306] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1309] &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot; &quot;ENSG00000148737&quot;
+## [1312] &quot;ENSG00000148737&quot; &quot;ENSG00000101190&quot; &quot;ENSG00000100109&quot;
+## [1315] &quot;ENSG00000100109&quot; &quot;ENSG00000106327&quot; &quot;ENSG00000072274&quot;
+## [1318] &quot;ENSG00000125780&quot; &quot;ENSG00000125780&quot; &quot;ENSG00000101158&quot;
+## [1321] &quot;ENSG00000079134&quot; &quot;ENSG00000172009&quot; &quot;ENSG00000090534&quot;
+## [1324] &quot;ENSG00000090534&quot; &quot;ENSG00000090534&quot; &quot;ENSG00000187720&quot;
+## [1327] &quot;ENSG00000221995&quot; &quot;ENSG00000104980&quot; &quot;ENSG00000100234&quot;
+## [1330] &quot;ENSG00000150455&quot; &quot;ENSG00000150455&quot; &quot;ENSG00000196781&quot;
+## [1333] &quot;ENSG00000140332&quot; &quot;ENSG00000140332&quot; &quot;ENSG00000140332&quot;
+## [1336] &quot;ENSG00000135926&quot; &quot;ENSG00000134291&quot; &quot;ENSG00000134291&quot;
+## [1339] &quot;ENSG00000134291&quot; &quot;ENSG00000134291&quot; &quot;ENSG00000168936&quot;
+## [1342] &quot;ENSG00000168936&quot; &quot;ENSG00000064545&quot; &quot;ENSG00000064545&quot;
+## [1345] &quot;ENSG00000106565&quot; &quot;ENSG00000106565&quot; &quot;ENSG00000106565&quot;
+## [1348] &quot;ENSG00000187824&quot; &quot;ENSG00000204278&quot; &quot;ENSG00000204278&quot;
+## [1351] &quot;ENSG00000204278&quot; &quot;ENSG00000149582&quot; &quot;ENSG00000149582&quot;
+## [1354] &quot;ENSG00000149582&quot; &quot;ENSG00000149582&quot; &quot;ENSG00000149582&quot;
+## [1357] &quot;ENSG00000149582&quot; &quot;ENSG00000109133&quot; &quot;ENSG00000109133&quot;
+## [1360] &quot;ENSG00000177042&quot; &quot;ENSG00000177042&quot; &quot;ENSG00000109084&quot;
+## [1363] &quot;ENSG00000187045&quot; &quot;ENSG00000109079&quot; &quot;ENSG00000185361&quot;
+## [1366] &quot;ENSG00000028137&quot; &quot;ENSG00000141232&quot; &quot;ENSG00000141232&quot;
+## [1369] &quot;ENSG00000136816&quot; &quot;ENSG00000188001&quot; &quot;ENSG00000056558&quot;
+## [1372] &quot;ENSG00000131653&quot; &quot;ENSG00000131653&quot; &quot;ENSG00000173334&quot;
+## [1375] &quot;ENSG00000173334&quot; &quot;ENSG00000173334&quot; &quot;ENSG00000101255&quot;
+## [1378] &quot;ENSG00000234127&quot; &quot;ENSG00000234127&quot; &quot;ENSG00000169871&quot;
+## [1381] &quot;ENSG00000144481&quot; &quot;ENSG00000144481&quot; &quot;ENSG00000011105&quot;
+## [1384] &quot;ENSG00000011105&quot; &quot;ENSG00000235217&quot; &quot;ENSG00000172425&quot;
+## [1387] &quot;ENSG00000100304&quot; &quot;ENSG00000120440&quot; &quot;ENSG00000124120&quot;
+## [1390] &quot;ENSG00000124120&quot; &quot;ENSG00000124120&quot; &quot;ENSG00000118271&quot;
+## [1393] &quot;ENSG00000136295&quot; &quot;ENSG00000198431&quot; &quot;ENSG00000143569&quot;
+## [1396] &quot;ENSG00000078140&quot; &quot;ENSG00000078140&quot; &quot;ENSG00000078140&quot;
+## [1399] &quot;ENSG00000169139&quot; &quot;ENSG00000168246&quot; &quot;ENSG00000162543&quot;
+## [1402] &quot;ENSG00000162543&quot; &quot;ENSG00000241635&quot; &quot;ENSG00000241635&quot;
+## [1405] &quot;ENSG00000105668&quot; &quot;ENSG00000105698&quot; &quot;ENSG00000105698&quot;
+## [1408] &quot;ENSG00000140455&quot; &quot;ENSG00000140455&quot; &quot;ENSG00000140455&quot;
+## [1411] &quot;ENSG00000140455&quot; &quot;ENSG00000103404&quot; &quot;ENSG00000148429&quot;
+## [1414] &quot;ENSG00000132952&quot; &quot;ENSG00000152818&quot; &quot;ENSG00000132612&quot;
+## [1417] &quot;ENSG00000141252&quot; &quot;ENSG00000141252&quot; &quot;ENSG00000109072&quot;
+## [1420] &quot;ENSG00000109072&quot; &quot;ENSG00000110799&quot; &quot;ENSG00000186153&quot;
+## [1423] &quot;ENSG00000186153&quot; &quot;ENSG00000186153&quot; &quot;ENSG00000114127&quot;
+## [1426] &quot;ENSG00000114127&quot; &quot;ENSG00000175155&quot; &quot;ENSG00000205189&quot;
+## [1429] &quot;ENSG00000205189&quot; &quot;ENSG00000169155&quot; &quot;ENSG00000169155&quot;
+## [1432] &quot;ENSG00000184828&quot; &quot;ENSG00000141664&quot; &quot;ENSG00000153786&quot;
+## [1435] &quot;ENSG00000153786&quot; &quot;ENSG00000099904&quot; &quot;ENSG00000099904&quot;
+## [1438] &quot;ENSG00000140836&quot; &quot;ENSG00000185650&quot; &quot;ENSG00000185650&quot;
+## [1441] &quot;ENSG00000100711&quot; &quot;ENSG00000100711&quot; &quot;ENSG00000108175&quot;
+## [1444] &quot;ENSG00000122515&quot; &quot;ENSG00000085644&quot; &quot;ENSG00000171940&quot;
+## [1447] &quot;ENSG00000168813&quot; &quot;ENSG00000168813&quot; &quot;ENSG00000185252&quot;
+## [1450] &quot;ENSG00000185252&quot; &quot;ENSG00000185252&quot; &quot;ENSG00000185252&quot;
+## [1453] &quot;ENSG00000185252&quot; &quot;ENSG00000188372&quot; &quot;ENSG00000070476&quot;
+## [1456] &quot;ENSG00000070476&quot;</code></pre>
+<pre class="r"><code># Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg &lt;- merge(refGene_hg19_TSS, gene_id, by.x = c(&quot;V5&quot;), by.y = c(&quot;Gene&quot;))
+
+all_ref_gene_hg19_ensg &lt;- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene &lt;- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene &lt;- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) &lt;-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 11450 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 15456 GO terms and 36153 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 14505 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 6020 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 18:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 17:  4 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 16:  20 nodes to be scored   (8 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 15:  57 nodes to be scored   (71 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  116 nodes to be scored  (316 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  208 nodes to be scored  (911 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  308 nodes to be scored  (1979 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  502 nodes to be scored  (4148 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  677 nodes to be scored  (5660 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   819 nodes to be scored  (7855 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   848 nodes to be scored  (9971 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   873 nodes to be scored  (11436 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   739 nodes to be scored  (12657 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   470 nodes to be scored  (13331 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   250 nodes to be scored  (13846 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   105 nodes to be scored  (14079 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   22 nodes to be scored   (14207 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (14324 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0030449         regulation of complement activation        41
+## 2  GO:0042632                     cholesterol homeostasis        68
+## 3  GO:0006953                        acute-phase response        42
+## 4  GO:0006958    complement activation, classical pathway        28
+## 5  GO:0070328                    triglyceride homeostasis        29
+## 6  GO:0009820                  alkaloid metabolic process         5
+## 7  GO:0002576                      platelet degranulation       120
+## 8  GO:0043691               reverse cholesterol transport        16
+## 9  GO:0034384 high-density lipoprotein particle cleara...        11
+## 10 GO:0006641              triglyceride metabolic process        90
+## 11 GO:0055089                      fatty acid homeostasis        12
+## 12 GO:0046628 positive regulation of insulin receptor ...        13
+## 13 GO:0006879               cellular iron ion homeostasis        57
+## 14 GO:0006957 complement activation, alternative pathw...        14
+## 15 GO:0034375 high-density lipoprotein particle remode...        15
+## 16 GO:0008203               cholesterol metabolic process       121
+## 17 GO:0090277 positive regulation of peptide hormone s...        79
+## 18 GO:0006898               receptor-mediated endocytosis       264
+## 19 GO:0008202                   steroid metabolic process       265
+## 20 GO:0006768                    biotin metabolic process        10
+## 21 GO:0034372 very-low-density lipoprotein particle re...        10
+## 22 GO:0019835                                   cytolysis        35
+## 23 GO:0007597        blood coagulation, intrinsic pathway        17
+## 24 GO:1904179 positive regulation of adipose tissue de...         5
+## 25 GO:0001907           killing by symbiont of host cells         5
+## 26 GO:0006524                   alanine catabolic process         5
+## 27 GO:0042738            exogenous drug catabolic process         5
+## 28 GO:0001889                           liver development       124
+## 29 GO:0007584                        response to nutrient       168
+## 30 GO:0010951 negative regulation of endopeptidase act...       213
+## 31 GO:0017187        peptidyl-glutamic acid carboxylation        11
+## 32 GO:0050892                       intestinal absorption        34
+## 33 GO:1904683 regulation of metalloendopeptidase activ...         6
+## 34 GO:0015942                   formate metabolic process         6
+## 35 GO:0070141                            response to UV-A         6
+## 36 GO:0097267              omega-hydroxylase P450 pathway         6
+## 37 GO:0006536                 glutamate metabolic process        30
+## 38 GO:0061138     morphogenesis of a branching epithelium       168
+## 39 GO:0045944 positive regulation of transcription fro...      1010
+## 40 GO:0034374 low-density lipoprotein particle remodel...        13
+## 41 GO:0043433 negative regulation of DNA binding trans...       130
+## 42 GO:0070301      cellular response to hydrogen peroxide        74
+## 43 GO:0048538                          thymus development        41
+## 44 GO:0060059 embryonic retina morphogenesis in camera...         7
+## 45 GO:0045620 negative regulation of lymphocyte differ...        40
+## 46 GO:0045717 negative regulation of fatty acid biosyn...        14
+## 47 GO:0002244 hematopoietic progenitor cell differenti...       155
+## 48 GO:0045540 regulation of cholesterol biosynthetic p...        38
+## 49 GO:0034380 high-density lipoprotein particle assemb...        15
+## 50 GO:0045725 positive regulation of glycogen biosynth...        15
+## 51 GO:0071276            cellular response to cadmium ion        24
+## 52 GO:0046620                  regulation of organ growth        89
+## 53 GO:1903427 negative regulation of reactive oxygen s...        23
+## 54 GO:0010918 positive regulation of mitochondrial mem...         8
+## 55 GO:0015886                              heme transport         8
+## 56 GO:0051715                 cytolysis in other organism         8
+## 57 GO:0006548                 histidine catabolic process         8
+## 58 GO:0019216       regulation of lipid metabolic process       332
+## 59 GO:0071559 response to transforming growth factor b...       203
+## 60 GO:0019695                   choline metabolic process         9
+## 61 GO:0010984 regulation of lipoprotein particle clear...        17
+## 62 GO:0090218 positive regulation of lipid kinase acti...        31
+## 63 GO:0010894 negative regulation of steroid biosynthe...        22
+## 64 GO:0046329          negative regulation of JNK cascade        30
+## 65 GO:0006739                      NADP metabolic process        33
+## 66 GO:0016310                             phosphorylation      2076
+## 67 GO:0000098         sulfur amino acid catabolic process         9
+## 68 GO:0042908                        xenobiotic transport         9
+## 69 GO:0070989                     oxidative demethylation         9
+## 70 GO:0030917     midbrain-hindbrain boundary development         9
+## 71 GO:0046185                  aldehyde catabolic process         9
+## 72 GO:0070857 regulation of bile acid biosynthetic pro...         9
+## 73 GO:0055091                    phospholipid homeostasis         9
+## 74 GO:0033344                          cholesterol efflux        42
+## 75 GO:0071157    negative regulation of cell cycle arrest        18
+## 76 GO:0042593                         glucose homeostasis       200
+## 77 GO:0006869                             lipid transport       311
+## 78 GO:0051004 regulation of lipoprotein lipase activit...        18
+## 79 GO:0050665      hydrogen peroxide biosynthetic process        10
+## 80 GO:0051712 positive regulation of killing of cells ...        10
+## 81 GO:0006853                           carnitine shuttle        10
+## 82 GO:1902237 positive regulation of endoplasmic retic...        10
+## 83 GO:0001558                   regulation of cell growth       356
+##    Significant Expected weightFisher
+## 1           13     1.87      1.8e-08
+## 2           15     3.10      1.4e-07
+## 3           11     1.91      6.7e-07
+## 4            9     1.28      2.5e-06
+## 5           10     1.32      3.2e-06
+## 6            4     0.23      2.1e-05
+## 7           17     5.47      3.0e-05
+## 8            6     0.73      4.7e-05
+## 9            5     0.50      7.1e-05
+## 10          16     4.10      8.7e-05
+## 11           5     0.55      0.00012
+## 12           5     0.59      0.00018
+## 13          10     2.60      0.00022
+## 14           5     0.64      0.00027
+## 15           5     0.68      0.00040
+## 16          21     5.51      0.00041
+## 17          12     3.60      0.00044
+## 18          25    12.03      0.00044
+## 19          41    12.08      0.00047
+## 20           4     0.46      0.00072
+## 21           4     0.46      0.00072
+## 22           9     1.59      0.00074
+## 23           5     0.77      0.00076
+## 24           3     0.23      0.00088
+## 25           3     0.23      0.00088
+## 26           3     0.23      0.00088
+## 27           3     0.23      0.00088
+## 28          17     5.65      0.00091
+## 29          21     7.66      0.00100
+## 30          18     9.71      0.00103
+## 31           4     0.50      0.00109
+## 32           8     1.55      0.00155
+## 33           3     0.27      0.00170
+## 34           3     0.27      0.00170
+## 35           3     0.27      0.00170
+## 36           3     0.27      0.00170
+## 37           6     1.37      0.00204
+## 38           9     7.66      0.00208
+## 39          67    46.03      0.00213
+## 40           4     0.59      0.00220
+## 41          16     5.92      0.00225
+## 42           9     3.37      0.00227
+## 43           7     1.87      0.00230
+## 44           3     0.32      0.00287
+## 45           4     1.82      0.00288
+## 46           4     0.64      0.00297
+## 47          12     7.06      0.00328
+## 48           7     1.73      0.00336
+## 49           4     0.68      0.00390
+## 50           4     0.68      0.00390
+## 51           5     1.09      0.00400
+## 52           8     4.06      0.00442
+## 53           4     1.05      0.00444
+## 54           3     0.36      0.00444
+## 55           3     0.36      0.00444
+## 56           3     0.36      0.00444
+## 57           3     0.36      0.00444
+## 58          39    15.13      0.00523
+## 59          15     9.25      0.00596
+## 60           4     0.41      0.00600
+## 61           4     0.77      0.00601
+## 62           3     1.41      0.00604
+## 63           5     1.00      0.00630
+## 64           5     1.37      0.00631
+## 65           5     1.50      0.00632
+## 66         116    94.60      0.00636
+## 67           3     0.41      0.00644
+## 68           3     0.41      0.00644
+## 69           3     0.41      0.00644
+## 70           3     0.41      0.00644
+## 71           3     0.41      0.00644
+## 72           3     0.41      0.00644
+## 73           3     0.41      0.00644
+## 74           8     1.91      0.00772
+## 75           4     0.82      0.00784
+## 76          20     9.11      0.00840
+## 77          38    14.17      0.00841
+## 78           4     0.82      0.00887
+## 79           3     0.46      0.00889
+## 80           3     0.46      0.00889
+## 81           3     0.46      0.00889
+## 82           3     0.46      0.00889
+## 83          28    16.22      0.00937</code></pre>
+</div>
+<div id="lung-1" class="section level2">
+<h2>Lung</h2>
+<pre class="r"><code># Find the heart hypo
+heart_hypo &lt;- human_chimp_heart_specific_25_conserved_H3K27_LUNG[which(human_chimp_heart_specific_25_conserved_H3K27_LUNG$V4 == &quot;hyper&quot; &amp; human_chimp_heart_specific_25_conserved_H3K27_LUNG$V6 != &quot;-1&quot;),]
+
+heart_hypo &lt;- heart_hypo[complete.cases(heart_hypo), ]
+
+# Find the closest gene
+
+closest_heart &lt;- bedr(input = list(a = heart_hypo[,1:3], b = refGene_hg19_TSS), method = &quot;closest&quot;, check.chr = FALSE)</code></pre>
+<pre><code>##  * Processing input (1): a
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... PASS
+##  * Checking for overlapping &#39;contiguous&#39; regions... PASS
+##  * Processing input (2): b
+## CONVERT TO BED
+##  * Checking input type... PASS
+##    Input seems to be in bed format but chr/start/end column names are missing
+## VALIDATE REGIONS
+##  * Check if index is a string... PASS
+##  * Check index pattern... PASS
+##  * Check for missing values... PASS
+##  * Check for larger start position... PASS.
+##  * Check if zero based... PASS
+##  * Checking sort order... FAIL
+##    The input for object is not *lexographically* ordered!
+##    This can cause unexpected results for some set operations.
+##    try: x &lt;- bedr.sort.region(x)
+##  * Checking for overlapping &#39;contiguous&#39; regions... FAIL
+##    The input for object has overlapping features!
+##    This can cause unexpected results for some set operations.
+##    i.e. x &lt;- bedr.merge.region(x)
+##    bedtools closest -a /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/a_4d641eb6a428.bed -b /var/folders/rf/qrcw6ncj05z1pc_pq9xzw3540000gn/T//RtmpmZZ1x7/b_4d642ee9139e.bed</code></pre>
+<pre class="r"><code># Convert the gene name to ensg
+
+gene_id &lt;- read.table(&quot;../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv&quot;, stringsAsFactors = FALSE, header=TRUE, sep = &quot;,&quot;)
+
+comb_kidney &lt;- merge(closest_heart, gene_id, by.x = c(&quot;V8&quot;), by.y = c(&quot;Gene&quot;))
+
+comb_kidney$ensg</code></pre>
+<pre><code>##  [1] &quot;ENSG00000177674&quot; &quot;ENSG00000177674&quot; &quot;ENSG00000177674&quot;
+##  [4] &quot;ENSG00000177674&quot; &quot;ENSG00000177674&quot; &quot;ENSG00000130762&quot;
+##  [7] &quot;ENSG00000117411&quot; &quot;ENSG00000026508&quot; &quot;ENSG00000026508&quot;
+## [10] &quot;ENSG00000026508&quot; &quot;ENSG00000026508&quot; &quot;ENSG00000026508&quot;
+## [13] &quot;ENSG00000026508&quot; &quot;ENSG00000026508&quot; &quot;ENSG00000026508&quot;
+## [16] &quot;ENSG00000114861&quot; &quot;ENSG00000114315&quot; &quot;ENSG00000131149&quot;
+## [19] &quot;ENSG00000198951&quot; &quot;ENSG00000196498&quot; &quot;ENSG00000196498&quot;
+## [22] &quot;ENSG00000196498&quot; &quot;ENSG00000170322&quot; &quot;ENSG00000100100&quot;
+## [25] &quot;ENSG00000100100&quot; &quot;ENSG00000185917&quot; &quot;ENSG00000185917&quot;
+## [28] &quot;ENSG00000167323&quot; &quot;ENSG00000143643&quot; &quot;ENSG00000143643&quot;
+## [31] &quot;ENSG00000153786&quot; &quot;ENSG00000153786&quot; &quot;ENSG00000171940&quot;
+## [34] &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot;
+## [37] &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot; &quot;ENSG00000183621&quot;
+## [40] &quot;ENSG00000183621&quot;</code></pre>
+<pre class="r"><code># Convert the TSS to ensg as well 
+
+ref_gene_hg19_ensg &lt;- merge(refGene_hg19_TSS, gene_id, by.x = c(&quot;V5&quot;), by.y = c(&quot;Gene&quot;))
+
+all_ref_gene_hg19_ensg &lt;- unique(ref_gene_hg19_ensg$ensg)
+
+heart_ref_gene &lt;- all_ref_gene_hg19_ensg %in% comb_kidney$ensg
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene &lt;- as.numeric(as.vector(heart_ref_gene))
+names(test_gene) &lt;-  all_ref_gene_hg19_ensg
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>## 
+## Building most specific GOs .....</code></pre>
+<pre><code>##  ( 11450 GO terms found. )</code></pre>
+<pre><code>## 
+## Build GO DAG topology ..........</code></pre>
+<pre><code>##  ( 15456 GO terms and 36153 relations. )</code></pre>
+<pre><code>## 
+## Annotating nodes ...............</code></pre>
+<pre><code>##  ( 14505 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>## 
+##           -- Weight01 Algorithm -- 
+## 
+##       the algorithm is scoring 1110 nontrivial nodes
+##       parameters: 
+##           test statistic: fisher</code></pre>
+<pre><code>## 
+##   Level 15:  3 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 14:  5 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 13:  23 nodes to be scored   (86 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 12:  44 nodes to be scored   (192 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 11:  76 nodes to be scored   (1997 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 10:  103 nodes to be scored  (3134 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 9:   112 nodes to be scored  (5198 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 8:   124 nodes to be scored  (6736 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 7:   155 nodes to be scored  (7719 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 6:   166 nodes to be scored  (10145 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 5:   144 nodes to be scored  (11508 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 4:   90 nodes to be scored   (13129 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 3:   48 nodes to be scored   (13788 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 2:   16 nodes to be scored   (14144 eliminated genes)</code></pre>
+<pre><code>## 
+##   Level 1:   1 nodes to be scored    (14277 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>##         GO.ID                                        Term Annotated
+## 1  GO:0035019    somatic stem cell population maintenance        61
+## 2  GO:0061009                common bile duct development         5
+## 3  GO:0032237 activation of store-operated calcium cha...         5
+## 4  GO:0072049             comma-shaped body morphogenesis         5
+## 5  GO:0003310           pancreatic A cell differentiation         5
+## 6  GO:0009912      auditory receptor cell fate commitment         6
+## 7  GO:1901533 negative regulation of hematopoietic pro...         6
+## 8  GO:2001182      regulation of interleukin-12 secretion         6
+## 9  GO:2000973    regulation of pro-B cell differentiation         6
+## 10 GO:0021861 forebrain radial glial cell differentiat...         6
+## 11 GO:0018230        peptidyl-L-cysteine S-palmitoylation         6
+## 12 GO:1903039 positive regulation of leukocyte cell-ce...       195
+## 13 GO:0046477          glycosylceramide catabolic process         7
+## 14 GO:1903799 negative regulation of production of miR...         7
+## 15 GO:0061101         neuroendocrine cell differentiation         7
+## 16 GO:0072050                 S-shaped body morphogenesis         7
+## 17 GO:0061626        pharyngeal arch artery morphogenesis         7
+## 18 GO:0042117                         monocyte activation         7
+## 19 GO:0048664                   neuron fate determination         7
+## 20 GO:0045607 regulation of auditory receptor cell dif...         8
+## 21 GO:0072282    metanephric nephron tubule morphogenesis         8
+## 22 GO:0097084     vascular smooth muscle cell development         8
+## 23 GO:0007262            STAT protein import into nucleus         8
+## 24 GO:0016139                 glycoside catabolic process         8
+## 25 GO:1903726 negative regulation of phospholipid meta...         8
+## 26 GO:0061309 cardiac neural crest cell development in...         9
+## 27 GO:0018026             peptidyl-lysine monomethylation         9
+## 28 GO:0003266 regulation of secondary heart field card...         9
+## 29 GO:0030917     midbrain-hindbrain boundary development         9
+## 30 GO:0070486                       leukocyte aggregation         9
+## 31 GO:0072567 chemokine (C-X-C motif) ligand 2 product...         9
+##    Significant Expected weightFisher
+## 1            2     0.06       0.0018
+## 2            1     0.01       0.0052
+## 3            1     0.01       0.0052
+## 4            1     0.01       0.0052
+## 5            1     0.01       0.0052
+## 6            1     0.01       0.0062
+## 7            1     0.01       0.0062
+## 8            1     0.01       0.0062
+## 9            1     0.01       0.0062
+## 10           1     0.01       0.0062
+## 11           1     0.01       0.0062
+## 12           2     0.20       0.0068
+## 13           1     0.01       0.0072
+## 14           1     0.01       0.0072
+## 15           1     0.01       0.0072
+## 16           1     0.01       0.0072
+## 17           1     0.01       0.0072
+## 18           1     0.01       0.0072
+## 19           1     0.01       0.0072
+## 20           1     0.01       0.0082
+## 21           1     0.01       0.0082
+## 22           1     0.01       0.0082
+## 23           1     0.01       0.0082
+## 24           1     0.01       0.0082
+## 25           1     0.01       0.0082
+## 26           1     0.01       0.0093
+## 27           1     0.01       0.0093
+## 28           1     0.01       0.0093
+## 29           1     0.01       0.0093
+## 30           1     0.01       0.0093
+## 31           1     0.01       0.0093</code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

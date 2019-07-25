@@ -40,7 +40,7 @@ library("medinome")
 
 ```{r}
 FDR_level <- 0.05
-FDR_add <- 0.10
+#FDR_add <- 0.10
 ```
 
 # Chimp heart-kidney

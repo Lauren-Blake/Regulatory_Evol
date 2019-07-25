@@ -104,9 +104,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -131,22 +129,92 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -196,12 +264,13 @@ $(document).ready(function () {
 <li><a href="#integration-of-gene-expression-levels-and-methylation-levels--intertissue-de-genes">Integration of gene expression levels and methylation levels- intertissue DE genes</a></li>
 <li><a href="#associated-analyses">Associated analyses</a></li>
 <li><a href="#additional-figuretable-generation">Additional figure/table generation</a></li>
+<li><a href="#revisions">Revisions</a></li>
 <li><a href="#notes">Notes</a></li>
 </ul>
 </div>
 
-<p><strong>Last updated:</strong> 2018-11-18</p>
-<p><strong>Code version:</strong> 1d6bd64d9aaca11e1f978971b174aac8f6d9309c</p>
+<p><strong>Last updated:</strong> 2019-07-25</p>
+<p><strong>Code version:</strong> cbe7dd2181c4b0621f7ac9e39431d269c52c352f</p>
 <div id="project-introduction" class="section level2">
 <h2>Project Introduction</h2>
 </div>
@@ -241,6 +310,7 @@ $(document).ready(function () {
 <div id="final-filtering-normalizations-and-analysis-with-technical-factors-12184-genes" class="section level3">
 <h3>Final filtering, normalizations, and analysis with technical factors (12,184 genes)</h3>
 <ul>
+<li><a href="../analysis/PC_RNA_seq.html">Technical factor analysis</a></li>
 <li><a href="../analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html">Processing using filtering with lowly expressed genes</a></li>
 </ul>
 </div>
@@ -262,7 +332,6 @@ $(document).ready(function () {
 <ul>
 <li><a href="../analysis/Hg19_PanTro3_TSS.html">Human-chimpanzee orthologous promoters</a></li>
 <li><a href="../analysis/hg19_to_rhesus_and_chimp_coor.html">Human-chimpanzee-rhesus orthologous promoters</a></li>
-<li>Clustering after testing for technical variables</li>
 </ul>
 </div>
 <div id="differentially-methylated-regions" class="section level2">
@@ -273,9 +342,10 @@ $(document).ready(function () {
 <li><a href="../analysis/Pairwise_tDMRs.html">Pairwise tDMRs II</a></li>
 <li><a href="../analysis/tissue_specific_tDMRs.html">Tissue specific tDMRs</a></li>
 <li><a href="../analysis/Finding_conserved_DMRs.html">Finding conserved tDMRs I</a></li>
-<li>Finding conserved tDMRs</li>
+<li>[List of conserved tDMRs] conserved tDMRs(../Conserved_tDMR_list.html)</li>
 <li><a href="../analysis/Pairwise_tDMR_overlap.html">Pairwise tDMR overlap</a></li>
-<li><a href="../analysis/Overlap_reg_features.html">Overlap of tDMRs with H3K27ac and DHS</a></li>
+<li><a href="Overlap_H3K27ac.html">Overlap of tDMRs with H3K27ac and DHS</a></li>
+<li><a href="../analysis/Overlap_reg_features.html">Exploring the parameters for this overlap analysis</a></li>
 <li><a href="../analysis/Pairwise_SDMRs.html">Pairwise sDMRs</a></li>
 </ul>
 </div>
@@ -312,7 +382,22 @@ $(document).ready(function () {
 <li><a href="../analysis/Figure_1.html">Figure 1</a></li>
 <li><a href="../analysis/Figures_methylation.html">Figure 3</a></li>
 <li><a href="../analysis/Final_effect_size_figure_4.html">Figure 4</a></li>
-<li><p><a href="../analysis/Final_effect_size_figure_5.html">Figure 5</a></p></li>
+<li><a href="../analysis/Final_effect_size_figure_5.html">Figure 5</a></li>
+<li><a href="../analysis/Supplementary_figures_clustering.html">Figures S7-9</a></li>
+<li><a href="../analysis/Figure_Supplementary10.html">Figure S10</a></li>
+<li><p><a href="../analysis/Figure_Supplementary11.html">Figure S11</a></p></li>
+</ul>
+</div>
+<div id="revisions" class="section level2">
+<h2>Revisions</h2>
+<p>Many thanks to the editor and 3 reviewers who provided helpful comments on this manuscript.</p>
+<ul>
+<li>[Matched versus non matched individuals]</li>
+<li><a href="../analysis/Revisions_H3K27ac.html">Futher H3K27ac analysis</a></li>
+<li><a href="../analysis/Revisions_genomes.html">HG19 versus HG38 genome builds</a></li>
+<li><a href="../analysis/Supplementary_figures_clustering.html">Clustering</a></li>
+<li><a href="../analysis/revisions_networks.html">Network analysis</a></li>
+<li><a href="../analysis/revisions_misc.html">Number of genes per tissue</a></li>
 </ul>
 </div>
 <div id="notes" class="section level2">

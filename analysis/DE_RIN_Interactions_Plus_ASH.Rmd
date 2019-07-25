@@ -28,6 +28,10 @@ library("VennDiagram")
 source("functions.R")
 library(ashr)
 library(ggplot2)
+library("topGO")
+#library("biomaRt")
+library("clusterProfiler")
+library("org.Hs.eg.db")
 
 # Set directory to save the data
 
@@ -39,13 +43,13 @@ colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]
 pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
 
 # Retrieve RIN score for each sample
-RNA_seq_info <- read.csv("../data/RNA_seq_info.csv")
+RNA_seq_info <- read.csv("../../../Reg_Evo_Primates/data/RNA_seq_info.csv")
 RIN <- as.data.frame(RNA_seq_info[,22])
 RIN <- as.matrix(RIN)
 colnames(RIN) <- c("RIN")
 
 # Retrieve sample information
-samples <- read.delim("../data/Sample_info_RNAseq_limma.txt")
+samples <- read.delim("../../../Reg_Evo_Primates/data/Sample_info_RNAseq_limma.txt")
 
 # Eliminate H1H
 samples <- samples[-17,]
@@ -88,7 +92,7 @@ colSums(design)
 ```{r}
 # Load count data
 
-counts_genes_in_cutoff <- read.delim("../data/counts_12184.txt")
+counts_genes_in_cutoff <- read.delim("../../../Reg_Evo_Primates/data/counts_12184.txt")
 
 # TMM 
 
@@ -172,7 +176,7 @@ mylist[["Lung"]] <- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj
 
 
 # Make 
-dev.off()
+#dev.off()
 Four_comp <- venn.diagram(mylist, filename= NULL, main="Significant interactions in Humans (FDR 1%)", cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
 grid.draw(Four_comp)
 
@@ -194,7 +198,30 @@ grid.draw(Four_comp)
 
 
 ```{r}
-# Prepare the data for the 
+# Perform multiple testing correction with adaptive shrinkage (ASH) 
+ #
+ # x - object MArrayLM from eBayes output
+ # coef - coefficient tested by eBayes
+
+run_ash <- function(x, coef){
+  #stopifnot(class(x) == "MArrayLM", coef %in% colnames(x$coefficients),
+  #             length(unique(x$df.total) == 1))
+  result <- ash(betahat = x$coefficients[, coef], sebetahat = x$stdev.unscaled[, coef] * sqrt(x$s2.post), df = x$df.total[1])
+  return(result)
+}
+
+get_results <- function(x, number = nrow(x$coefficients), sort.by = "none",
+                        ...) {
+  # x - object MArrayLM from eBayes output
+  # ... - additional arguments passed to topTable
+  stopifnot(class(x) == "MArrayLM")
+  results <- topTable(x, number = number, sort.by = sort.by, ...)
+  return(results)
+}
+
+
+
+# Prepare the data for the ASH
 tests <- colnames(fit1$coefficients)
 results <- vector(length = length(tests), mode = "list")
 names(results) <- tests
@@ -212,8 +239,212 @@ for (test in tests) {
 }
 
 # Save results from analysis with limma and ash.
-saveRDS(results, file.path(data_dir, "results-limma-voom-ash-interactions.rds"))
+#saveRDS(results, file.path(data_dir, #"results-limma-voom-ash-interactions.rds"))
 ```
+
+# GO Enrichment for revisions
+
+```{r}
+FDR_level <- 0.05
+
+human_kidney_inter <- top3$H_K_inter
+human_liver_inter <- top3$H_Li_inter
+human_lung_inter <- top3$H_Lu_inter
+
+rhesus_kidney_inter <- top3$R_K_inter
+rhesus_liver_inter <- top3$R_Li_inter
+rhesus_lung_inter <- top3$R_Lu_inter
+
+# Find human_kidney specific
+human_kidney_only <- human_kidney_inter[which(human_kidney_inter$adj.P.Val < FDR_level & human_liver_inter$adj.P.Val > FDR_level & human_lung_inter$adj.P.Val > FDR_level & rhesus_kidney_inter$adj.P.Val > FDR_level & rhesus_liver_inter$adj.P.Val > FDR_level & rhesus_lung_inter$adj.P.Val > FDR_level), 1]                                   
+
+human_kidney_inter_only <- human_kidney_inter$genes %in% human_kidney_only
+```
+
+## Human liver
+
+```{r}
+
+# Find human_kidney specific
+human_liver_only <- human_liver_inter[which(human_kidney_inter$adj.P.Val > FDR_level & human_liver_inter$adj.P.Val < FDR_level & human_lung_inter$adj.P.Val > FDR_level & rhesus_kidney_inter$adj.P.Val > FDR_level & rhesus_liver_inter$adj.P.Val > FDR_level & rhesus_lung_inter$adj.P.Val > FDR_level), 1]                                   
+
+human_liver_inter_only <- human_liver_inter$genes %in% human_liver_only
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene <- as.numeric(as.vector(human_liver_inter_only))
+names(test_gene) <- human_liver_inter$genes
+
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+# Get names of liver genes
+sig.genes <- sigGenes(go_data)
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults["GO:0005978"] 
+
+# Gene to ID conversion document
+
+gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+human_liver_only_data <- as.data.frame(c("ENSG00000079739", "ENSG00000114480", "ENSG00000132326", "ENSG00000142208"))
+colnames(human_liver_only_data) <- c("ensg")
+
+# Get gene names of the background
+comb_liver <- merge(human_liver_only_data, gene_id, by = c("ensg"))
+
+# glycogen biosynthetic proces
+
+comb_liver
+```
+
+## Human lung
+
+```{r}
+
+# Find human_kidney specific
+human_lung_only <- human_lung_inter[which(human_lung_inter$adj.P.Val < FDR_level & human_liver_inter$adj.P.Val > FDR_level & human_kidney_inter$adj.P.Val > FDR_level & rhesus_kidney_inter$adj.P.Val > FDR_level & rhesus_liver_inter$adj.P.Val > FDR_level & rhesus_lung_inter$adj.P.Val > FDR_level), 1]                                   
+
+human_lung_inter_only <- human_lung_inter$genes %in% human_lung_only
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene <- as.numeric(as.vector(human_lung_inter_only))
+names(test_gene) <- human_lung_inter$genes
+
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+goresults["GO:0048340"] 
+goresults["GO:0032736"] 
+goresults["GO:0032753"] 
+
+# Gene to ID conversion document
+
+#gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+#human_lung_only_data <- as.data.frame(c("ENSG00000105698", "ENSG00000131165"))
+#colnames(human_liver_only_data) <- c("ensg")
+
+# Get gene names of the background
+#comb_lung <- merge(human_lung_only_data, gene_id, by = c("ensg"))
+
+#positive regulation of lipoprotein lipas...
+
+#comb_lung
+```
+
+
+## Human kidney
+
+```{r}
+
+# Find human_kidney specific
+human_kidney_only <- human_kidney_inter[which(human_kidney_inter$adj.P.Val < FDR_level & human_liver_inter$adj.P.Val > FDR_level & human_lung_inter$adj.P.Val > FDR_level & rhesus_kidney_inter$adj.P.Val > FDR_level & rhesus_liver_inter$adj.P.Val > FDR_level & rhesus_lung_inter$adj.P.Val > FDR_level), 1]                                   
+
+human_kidney_inter_only <- human_kidney_inter$genes %in% human_kidney_only
+
+# Revisions- run GO
+# Merge ENSG with true/false
+
+test_gene <- as.numeric(as.vector(human_kidney_inter_only))
+names(test_gene) <- human_kidney_inter$genes
+
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+# Get names of kidney genes
+sig.genes <- sigGenes(go_data)
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+goresults["GO:0098719"] 
+
+# Gene to ID conversion document
+
+#gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+#human_kidney_only_data <- as.data.frame(c("ENSG00000138031", "ENSG00000142875", "ENSG00000173175"))
+#colnames(human_kidney_only_data) <- c("ensg")
+
+# Get gene names of the background
+#comb_kidney <- merge(human_kidney_only_data, gene_id, by = c("ensg"))
+
+# renal water homeostasis
+
+#comb_kidney
+
+```
+
 
 
 

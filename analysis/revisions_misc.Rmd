@@ -1,0 +1,130 @@
+---
+title: "Revisions_misc"
+author: "Lauren Blake"
+date: "June 17, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Looking at number of genes per tissue 
+
+```{r}
+cpm_12184 <- read.delim("~/Desktop/Reg_Evo_Primates/data/cpm_12184.txt")
+
+chimp_heart <- c(1, 5, 9, 13)
+human_heart <- c(20, 24, 28)
+rhesus_heart <- c(32, 36, 40, 44)
+
+chimp_kidney <- c(2, 6, 10, 14)
+human_kidney <- c(17, 21, 25, 29)
+rhesus_kidney <- c(33, 37, 41, 45)
+
+chimp_liver <- c(3, 7, 11, 15)
+human_liver <- c(18, 22, 26, 30)
+rhesus_liver <- c(34, 38, 42, 46)
+
+chimp_lung <- c(4, 8, 12, 16)
+human_lung <- c(19, 23, 27, 31)
+rhesus_lung <- c(35, 39, 43, 47)
+
+# Expression on a per tissue, per species basis
+chimp_heart_exp <- cpm_12184[,chimp_heart]
+
+human_heart_exp <- cpm_12184[,human_heart]
+
+rhesus_heart_exp <- cpm_12184[,rhesus_heart]
+
+chimp_kidney_exp <- cpm_12184[,chimp_kidney]
+
+human_kidney_exp <- cpm_12184[,human_kidney]
+summary(apply(human_kidney_exp, 1, mean) > 1.5)
+summary(rowSums(human_kidney_exp > 1.5) >= 2)
+
+rhesus_kidney_exp <- cpm_12184[,rhesus_kidney]
+summary(apply(rhesus_kidney_exp, 1, mean) > 1.5)
+summary(rowSums(rhesus_kidney_exp > 1.5) >= 2)
+
+chimp_liver_exp <- cpm_12184[,chimp_liver]
+summary(apply(chimp_liver_exp, 1, mean) > 1.5)
+summary(rowSums(chimp_liver_exp > 1.5) >= 2)
+
+human_liver_exp <- cpm_12184[,human_liver]
+summary(apply(human_liver_exp, 1, mean) > 1.5)
+summary(rowSums(human_liver_exp > 1.5) >= 2)
+
+rhesus_liver_exp <- cpm_12184[,rhesus_liver]
+summary(apply(rhesus_liver_exp, 1, mean) > 1.5)
+summary(rowSums(rhesus_liver_exp > 1.5) >= 2)
+
+chimp_lung_exp <- cpm_12184[,chimp_lung]
+summary(apply(chimp_lung_exp, 1, mean) > 1.5)
+summary(rowSums(chimp_lung_exp > 1.5) >= 2)
+
+human_lung_exp <- cpm_12184[,human_lung]
+summary(apply(human_lung_exp, 1, mean) > 1.5)
+summary(rowSums(human_lung_exp > 1.5) >= 2)
+
+rhesus_lung_exp <- cpm_12184[,rhesus_lung]
+summary(apply(rhesus_lung_exp, 1, mean) > 1.5)
+summary(rowSums(rhesus_lung_exp > 1.5) >= 2)
+
+
+summary(apply(chimp_heart_exp, 1, mean) > 1.5)
+summary(apply(human_heart_exp, 1, mean) > 1.5)
+summary(apply(rhesus_heart_exp, 1, mean) > 1.5)
+
+summary(apply(chimp_kidney_exp, 1, mean) > 1.5)
+summary(apply(human_kidney_exp, 1, mean) > 1.5)
+summary(apply(rhesus_kidney_exp, 1, mean) > 1.5)
+
+summary(apply(chimp_liver_exp, 1, mean) > 1.5)
+summary(apply(human_liver_exp, 1, mean) > 1.5)
+summary(apply(rhesus_liver_exp, 1, mean) > 1.5)
+
+summary(apply(chimp_lung_exp, 1, mean) > 1.5)
+summary(apply(human_lung_exp, 1, mean) > 1.5)
+summary(apply(rhesus_lung_exp, 1, mean) > 1.5)
+
+
+
+
+summary(rowSums(chimp_heart_exp > 1.5) >= 2)
+summary(rowSums(human_heart_exp > 1.5) >= 2)
+summary(rowSums(rhesus_heart_exp > 1.5) >= 2)
+
+summary(rowSums(chimp_kidney_exp > 1.5) >= 2)
+summary(rowSums(human_kidney_exp > 1.5) >= 2)
+summary(rowSums(rhesus_kidney_exp > 1.5) >= 2)
+
+summary(rowSums(chimp_liver_exp > 1.5) >= 2)
+summary(rowSums(human_liver_exp > 1.5) >= 2)
+summary(rowSums(rhesus_liver_exp > 1.5) >= 2)
+
+summary(rowSums(chimp_lung_exp > 1.5) >= 2)
+summary(rowSums(human_lung_exp > 1.5) >= 2)
+summary(rowSums(rhesus_lung_exp > 1.5) >= 2)
+
+
+
+
+summary(rowSums(chimp_heart_exp > 0) >= 1)
+summary(rowSums(human_heart_exp > 0) >= 1)
+summary(rowSums(rhesus_heart_exp > 0) >= 1)
+
+summary(rowSums(chimp_kidney_exp > 0) >= 1)
+summary(rowSums(human_kidney_exp > 0) >= 1)
+summary(rowSums(rhesus_kidney_exp > 0) >= 1)
+
+summary(rowSums(chimp_liver_exp > 0) >= 1)
+summary(rowSums(human_liver_exp > 0) >= 1)
+summary(rowSums(rhesus_liver_exp > 0) >= 1)
+
+summary(rowSums(chimp_lung_exp > 0) >= 1)
+summary(rowSums(human_lung_exp > 0) >= 1)
+summary(rowSums(rhesus_lung_exp > 0) >= 1)
+```
+
+

@@ -1,0 +1,2558 @@
+---
+title: "DE_GTEX_normalized_data"
+author: "Lauren Blake"
+date: "May 8, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Get GTEx data
+```{r}
+# Libraries
+library(limma)
+library(edgeR)
+
+
+# Run Pairwise DE- counts data
+
+# Import GTEx count data from hearts, kidney, livers, and lungs
+
+library(qdap)
+library("edgeR")
+library("limma")
+
+Hearts.LV <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/gtex_v7_counts/Hearts.LV.read_counts")
+
+HRTLV <- read.table("~/Desktop/Regulatory_Evol/ashlar-trial/data/gtex_v7_counts/HRTLV.keep.txt", quote="\"", comment.char="", stringsAsFactors = FALSE)
+
+# Keep gene name
+
+gene_names <- as.matrix(c("Name", "Description"))
+hits <- rbind(gene_names, HRTLV, stringsAsFactors = FALSE)
+
+# Make the individual names match
+
+ind_names <- beg2char(colnames(Hearts.LV), ".", 2)
+
+colnames(Hearts.LV) <- ind_names
+
+
+# Remove duplicates
+test = as.data.frame(table(ind_names), stringsAsFactors = FALSE)
+only_appear_once <- test[which(test$Freq == 1),]
+
+
+inshared_lists = only_appear_once$ind_names %in% colnames(Hearts.LV)
+summary(inshared_lists)
+
+
+
+inshared_lists = colnames(Hearts.LV) %in% only_appear_once$ind_names
+summary(inshared_lists)
+
+keep_unique <- which(inshared_lists == TRUE)
+
+Hearts.LV <- Hearts.LV[,keep_unique]
+
+
+ind_names_matching <- gsub('.', '-' ,colnames(Hearts.LV), fixed=TRUE)
+
+colnames(Hearts.LV) <- ind_names_matching
+
+# Use individuals that were in GTEx
+
+inshared_lists = colnames(Hearts.LV) %in% unlist(hits)
+summary(inshared_lists)
+
+keep_unique <- which(inshared_lists == TRUE)
+
+Hearts.LV <- Hearts.LV[,keep_unique]
+dim(Hearts.LV)
+
+
+# Make function
+
+tissue_formatting <-function(data, hits){
+  Hearts.LV <- data
+  HRTLV <- hits
+  
+  gene_names <- as.matrix(c("Name", "Description"))
+hits <- rbind(gene_names, HRTLV, stringsAsFactors = FALSE)
+
+# Make the individual names match
+
+ind_names <- beg2char(colnames(Hearts.LV), ".", 2)
+
+colnames(Hearts.LV) <- ind_names
+
+
+# Remove duplicates
+test = as.data.frame(table(ind_names), stringsAsFactors = FALSE)
+only_appear_once <- test[which(test$Freq == 1),]
+
+
+inshared_lists = only_appear_once$ind_names %in% colnames(Hearts.LV)
+summary(inshared_lists)
+
+
+
+inshared_lists = colnames(Hearts.LV) %in% only_appear_once$ind_names
+summary(inshared_lists)
+
+keep_unique <- which(inshared_lists == TRUE)
+
+Hearts.LV <- Hearts.LV[,keep_unique]
+
+
+ind_names_matching <- gsub('.', '-' ,colnames(Hearts.LV), fixed=TRUE)
+
+colnames(Hearts.LV) <- ind_names_matching
+
+# Use individuals that were in GTEx
+
+inshared_lists = colnames(Hearts.LV) %in% unlist(hits)
+summary(inshared_lists)
+
+keep_unique <- which(inshared_lists == TRUE)
+
+Hearts.LV <- Hearts.LV[,keep_unique]
+dim(Hearts.LV)
+return(Hearts.LV)
+  
+}
+
+# Check for hearts
+
+gtex_heart <- tissue_formatting(Hearts.LV, HRTLV)
+
+
+# Liver
+
+#liver_data <- read.delim("../data/gtex_v7_counts/liver.read_counts")
+
+#keep_liver_data <- read.table("../data/gtex_v7_counts/LIVER.keep.txt", quote="\"", comment.char="", stringsAsFactors = FALSE)
+
+
+#gtex_liver <- tissue_formatting(liver_data, keep_liver_data)
+
+# Lung
+
+# Add lung
+lung_data <- read.delim("../data/gtex_v7_counts/lungs.read_counts")
+
+keep_lung_data <- read.table("../data/gtex_v7_counts/LUNG.keep.txt", quote="\"", comment.char="", stringsAsFactors = FALSE)
+
+
+gtex_lung <- tissue_formatting(lung_data, keep_lung_data)
+
+length(intersect(colnames(gtex_lung), colnames(gtex_heart)))
+
+# Get counts of genes included in the analysis
+
+rownames(gtex_heart) <- gtex_heart[,1]
+#rownames(gtex_liver) <- gtex_liver[,1]
+rownames(gtex_lung) <- gtex_lung[,1]
+
+gtex_heart_ind <- gtex_heart[,-(1:2)]
+#gtex_liver_ind <- gtex_liver[,-(1:2)]
+gtex_lung_ind <- gtex_lung[,-(1:2)]
+
+counts_genes <- cbind(gtex_heart[,3:257], gtex_lung[,3:365])
+rownames(counts_genes) <- gtex_heart[,1]
+
+# Make labels
+heart_label <- array("heart", dim = c(1, ncol(gtex_heart)-2))
+lung_label <- array("lung", dim = c(1,ncol(gtex_lung)-2))
+
+
+labels <- cbind(heart_label, lung_label)
+
+# Set expression cutoff and sample number
+expr_cutoff <- 1.5
+sample_number <- round(ncol(counts_genes)/2)
+
+# log2(CPM) adjusted for library sizes
+
+dge_original <- DGEList(counts=as.matrix(counts_genes), genes=rownames(counts_genes), group = as.character(t(labels)))
+dge_original <- calcNormFactors(dge_original)
+
+cpm <- cpm(dge_original, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+
+hist(cpm, main = "log2(CPM) values in unfiltered data", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = expr_cutoff, col = "red", lwd = 3)
+cpm_filtered <- cpm[rowSums(cpm > expr_cutoff) >= sample_number, ]
+dim(cpm_filtered)
+
+inshared_lists = row.names(counts_genes) %in% rownames(cpm_filtered)
+inshared_lists_data <- as.data.frame(inshared_lists)
+counts_genes_in <- cbind(counts_genes, inshared_lists_data)
+counts_genes_in_cutoff <- subset(counts_genes_in, inshared_lists_data == "TRUE")
+counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:618]
+
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
+
+
+# GTEx genes matching filtering criteria 
+gtex_gene_names <- beg2char(rownames(cpm_in_cutoff), ".", 1)
+
+# Tissue paper genes
+cpm_12184 <- read.delim("~/Desktop/Reg_Evo_Primates/data/cpm_12184.txt")
+
+length(intersect(gtex_gene_names, rownames(cpm_12184)))
+common_genes_ind <- intersect(gtex_gene_names, rownames(cpm_12184))
+
+common_79_ind <- intersect(colnames(gtex_heart_ind), colnames(gtex_lung_ind))
+
+# Ind names
+
+  # Heart
+ind_names_matching <- gsub('.', '-' ,colnames(gtex_heart_ind), fixed=TRUE)
+colnames(gtex_heart_ind) <- ind_names_matching
+
+shared_list <- colnames(gtex_heart_ind) %in% common_79_ind
+heart_common_ind <- c(which(shared_list, useNames = TRUE))
+common_ind_heart <- gtex_heart_ind[,heart_common_ind]
+
+gene_names <- beg2char(rownames(common_ind_heart), ".", 1)
+rownames(common_ind_heart) <- gene_names
+  
+shared_list <- rownames(common_ind_heart) %in% rownames(common_genes_ind)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))
+common_ind_heart_counts <- gtex_heart_ind[heart_common_ind,]
+
+  # Liver
+#ind_names_matching <- gsub('-', '.' ,colnames(gtex_liver_ind), fixed=TRUE)
+#colnames(gtex_liver_ind) <- ind_names_matching
+
+#shared_list <- colnames(gtex_liver_ind) %in% common_79_ind
+#liver_common_ind <- c(which(shared_list, useNames = TRUE))
+#common_ind_liver <- gtex_liver_ind[,liver_common_ind]
+
+#shared_list <- rownames(gtex_liver_ind) %in% rownames(common_genes_ind_liver)
+#liver_common_ind <- c(which(shared_list, useNames = TRUE))
+#common_ind_liver_counts <- gtex_liver_ind[liver_common_ind,]
+
+  # Lung
+ind_names_matching <- gsub('-', '.' ,colnames(gtex_lung_ind), fixed=TRUE)
+colnames(gtex_lung_ind) <- ind_names_matching
+
+shared_list <- colnames(gtex_lung_ind) %in% common_79_ind
+lung_common_ind <- c(which(shared_list, useNames = TRUE))
+common_ind_lung <- gtex_lung_ind[,lung_common_ind]
+
+gene_names <- beg2char(rownames(common_ind_lung), ".", 1)
+rownames(common_ind_lung) <- gene_names
+
+shared_list <- rownames(gtex_lung_ind) %in% rownames(common_genes_ind)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))
+common_ind_lung_counts <- gtex_lung_ind[lung_common_ind,]
+```
+
+255 hearts
+150 livers
+363 lungs
+
+# Use individuals with sex = 1 and platform = 1 (so you don't have to include these as covariates)
+
+```{r}
+# Covariates
+Heart_covar <- read.delim("../data/Heart_Left_Ventricle.v7.covariates.txt")
+rownames(Heart_covar) <- Heart_covar[,1]
+t_heart_covar <- t(Heart_covar[,-(1)])
+
+#Liver_covar <- read.delim("../data/Liver.v7.covariates.txt")
+#rownames(Liver_covar) <- Liver_covar[,1]
+#t_liver_covar <- t(Liver_covar[,-(1)])
+
+Lung_covar <- read.delim("../data/Lung.v7.covariates.txt")
+rownames(Lung_covar) <- Lung_covar[,1]
+t_lung_covar <- t(Lung_covar[,-(1)])
+
+heart_platform <- t(t_heart_covar[which(t_heart_covar[,49] == 1 & t_heart_covar[,50] == 1),])
+
+#liver_platform <- t(t_liver_covar[which(t_liver_covar[,34] == 1 & t_liver_covar[,35] == 1),])
+
+lung_platform <- t(t_lung_covar[which(t_lung_covar[,64] == 1 & t_lung_covar[,65] == 1),])
+
+# Use first 6 covariates (3 genotype PCs and 3 PEER factors)
+
+heart_platform_6 <- heart_platform[1:6,]
+#liver_platform_6 <- liver_platform[1:6,]
+lung_platform_6 <- lung_platform[1:6,]
+
+# Find the gene counts only for the individuals in the sample
+
+shared_list <- colnames(common_ind_heart_counts) %in% rownames(heart_platform_6)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))
+common_ind_heart_counts_platform <- common_ind_heart_counts[,heart_common_ind]
+
+shared_list <- colnames(heart_platform_6) %in% colnames(common_ind_heart_counts_platform)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))
+heart_platform_6 <- heart_platform_6[,heart_common_ind]
+
+#shared_list <- colnames(common_ind_liver_counts) %in% rownames(t_liver_platform_6)
+#liver_common_ind <- c(which(shared_list, useNames = TRUE))
+#common_ind_liver_counts_platform <- common_ind_liver_counts[,liver_common_ind]
+
+#shared_list <- colnames(liver_platform_6) %in% colnames(common_ind_liver_counts_platform)
+#liver_common_ind <- c(which(shared_list, useNames = TRUE))
+#liver_platform_6 <- liver_platform_6[,liver_common_ind]
+
+shared_list <- colnames(common_ind_lung_counts) %in% rownames(lung_platform_6)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))
+common_ind_lung_counts_platform <- common_ind_lung_counts[,lung_common_ind]
+
+shared_list <- colnames(lung_platform_6) %in% colnames(common_ind_lung_counts_platform)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))
+lung_platform_6 <- lung_platform_6[,lung_common_ind]
+
+t_heart_platform_6 <- t(heart_platform_6)
+#t_liver_platform_6 <- t(liver_platform_6)
+t_lung_platform_6 <- t(lung_platform_6)
+
+# Finalize covariates
+
+#four_cov <- rbind(t_heart_platform_6, t_liver_platform_6, t_lung_platform_6)
+four_cov <- rbind(heart_platform_6, lung_platform_6)
+four_cov <- as.data.frame(four_cov)
+```
+
+
+
+
+
+# DE in same versus different individuals
+
+
+```{r}
+# Four same
+
+names_heart <- c("GTEX.1212Z", "GTEX.145MO", "GTEX.RN64", "GTEX.YEC4")
+names_lung <- c("GTEX.14E1K", "GTEX.QV44", "GTEX.11ZUS", "GTEX.13FTZ")
+
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label,  lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[3] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff1 <- topTable(fit.cyclic.norm, coef=1, adjust="BH", number=Inf, sort.by="none")
+dim(heart_lung_diff1[which(heart_lung_diff1$adj.P.Val < 0.05), ]) 
+
+
+```
+
+```{r}
+cor(heart_liver_same1$logFC, heart_liver_diff1$logFC)
+plot(heart_liver_same1$logFC, heart_liver_diff1$logFC, xlab = "Same individuals", ylab = "Different individuals", main = "Effect size")
+abline(0, 1, col = "red")
+
+cor(heart_liver_same1$t, heart_liver_diff1$t)
+plot(heart_liver_same1$t, heart_liver_diff1$t, xlab = "Same individuals", ylab = "Different individuals", main = "T statistic")
+abline(0, 1, col = "red")
+
+plot(heart_liver_same1$adj.P.Val, heart_liver_diff1$adj.P.Val)
+cor(heart_liver_same1$adj.P.Val, heart_liver_diff1$adj.P.Val)
+
+
+```
+
+# Compare to actual
+
+```{r}
+genes_true <- heart_liver_all[which(heart_liver_all$adj.P.Val < 0.05), 1]
+genes_same <- heart_liver_same1[which(heart_liver_same1$adj.P.Val < 0.05), 1]
+genes_diff <- heart_liver_diff1[which(heart_liver_diff1$adj.P.Val < 0.05), 1]
+
+summary(genes_same %in% genes_true)
+summary(genes_diff %in% genes_true)
+
+in_diff_not_true <- setdiff(genes_diff, genes_true)
+same_in_true <- intersect(genes_same, genes_true)
+length(setdiff(same_in_true, genes_diff))
+
+# Heart Lung
+genes_true <- heart_lung_all[which(heart_lung_all$adj.P.Val < 0.05), 1]
+genes_same <- heart_lung_same1[which(heart_lung_same1$adj.P.Val < 0.05), 1]
+genes_diff <- heart_lung_diff1[which(heart_lung_diff1$adj.P.Val < 0.05), 1]
+
+summary(genes_same %in% genes_true)
+summary(genes_diff %in% genes_true)
+
+in_diff_not_true <- setdiff(genes_diff, genes_true)
+same_in_true <- intersect(genes_same, genes_true)
+length(setdiff(same_in_true, genes_diff))
+
+# Liver Lung
+genes_true <- liver_lung_all[which(liver_lung_all$adj.P.Val < 0.05), 1]
+genes_same <- liver_lung_same1[which(liver_lung_same1$adj.P.Val < 0.05), 1]
+genes_diff <- liver_lung_diff1[which(liver_lung_diff1$adj.P.Val < 0.05), 1]
+
+summary(genes_same %in% genes_true)
+summary(genes_diff %in% genes_true)
+
+in_diff_not_true <- setdiff(genes_diff, genes_true)
+same_in_true <- intersect(genes_same, genes_true)
+length(setdiff(same_in_true, genes_diff))
+
+# Find the genes
+
+#false_diff <- setdiff(in_diff_not_true, same_in_true)
+#t(heart_liver_all)
+```
+
+# Function for same individuals
+
+## DE in same individuals
+
+# Trial 1
+```{r}
+names_heart_same <- c("GTEX.111FC", "GTEX.111YS", "GTEX.117YW", "GTEX.117YX")
+names_lung_same <- c("GTEX.111FC", "GTEX.111YS", "GTEX.117YW", "GTEX.117YX")
+
+names_heart_diff <- c("GTEX.111FC", "GTEX.111YS", "GTEX.117YW", "GTEX.117YX")
+names_lung_diff <- c("GTEX.11DXZ", "GTEX.11LCK", "GTEX.11TT1", "GTEX.11TUW")
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_1 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_1 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+```
+
+
+# Trial 3
+```{r}
+names_heart_same <- c("GTEX.132NY","GTEX.132QS","GTEX.13FHP","GTEX.13FLV")
+
+
+names_lung_same <-  c("GTEX.132NY","GTEX.132QS","GTEX.13FHP","GTEX.13FLV")
+
+names_heart_diff <-  c("GTEX.132NY","GTEX.132QS","GTEX.13FHP","GTEX.13FLV")
+names_lung_diff <- c("GTEX.13FTZ", "GTEX.13JVG", "GTEX.13NYB", "GTEX.13O21")
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_3 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_3 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+```
+
+# Trial 4
+```{r}
+names_heart_same <-  c("GTEX.13O3P", "GTEX.13O61", "GTEX.13OVG", "GTEX.13OVL") 
+
+
+names_lung_same <-   c("GTEX.13O3P", "GTEX.13O61", "GTEX.13OVG", "GTEX.13OVL") 
+
+names_heart_diff <-   c("GTEX.13O3P", "GTEX.13O61", "GTEX.13OVG", "GTEX.13OVL") 
+names_lung_diff <- c("GTEX.13OW5","GTEX.13OW6","GTEX.13OW8","GTEX.13PVQ")
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_4 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_4 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+```
+
+# Trial 5
+```{r}
+names_heart_same <-  c("GTEX.13RTJ","GTEX.13S86","GTEX.145MN","GTEX.145MO")
+
+
+
+names_lung_same <-   c("GTEX.13RTJ","GTEX.13S86","GTEX.145MN","GTEX.145MO")
+
+names_heart_diff <-  c("GTEX.13RTJ","GTEX.13S86","GTEX.145MN","GTEX.145MO") 
+names_lung_diff <-   c("GTEX.147F4", "GTEX.147JS", "GTEX.148VJ", "GTEX.1497J")
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_5 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_5 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+
+intersect(intersect(intersect(intersect(gene_list_true_1$gene, gene_list_true_2$gene), gene_list_true_3$gene), gene_list_true_4$gene), gene_list_true_5$gene)
+
+#intersect(intersect(intersect(intersect(gene_list_neg_1$gene, gene_list_neg_2$gene), gene_list_neg_3$gene), gene_list_neg_4$gene), gene_list_neg_5$gene)
+```
+
+# Trial 6
+```{r}
+names_heart_same <-  c("GTEX.14BIL", "GTEX.14C39", "GTEX.14C5O", "GTEX.14E1K")
+names_lung_same <-   c("GTEX.14BIL", "GTEX.14C39", "GTEX.14C5O", "GTEX.14E1K")
+
+names_heart_diff <- c("GTEX.14BIL", "GTEX.14C39", "GTEX.14C5O", "GTEX.14E1K")
+names_lung_diff <-   c("GTEX.ZDYS", "GTEX.ZEX8",  "GTEX.ZG7Y",  "GTEX.ZPU1")
+
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_6 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_6 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+
+```
+
+# Trial 7
+```{r}
+names_heart_same <-  c("GTEX.14JIY", "GTEX.14PJ4", "GTEX.15RJ7", "GTEX.15SHW") 
+names_lung_same <-  c("GTEX.14JIY", "GTEX.14PJ4", "GTEX.15RJ7", "GTEX.15SHW") 
+
+names_heart_diff <-  c("GTEX.14JIY", "GTEX.14PJ4", "GTEX.15RJ7", "GTEX.15SHW") 
+names_lung_diff <-   c("GTEX.17GQL", "GTEX.17HGU", "GTEX.17KNJ", "GTEX.17MF6")
+
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_7 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_7 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+
+```
+
+# Trial 8
+```{r}
+names_heart_same <- c("GTEX.1AX8Z","GTEX.1AX9I","GTEX.1AX9J", "GTEX.1AX9K")
+names_lung_same <-  c("GTEX.1AX8Z","GTEX.1AX9I","GTEX.1AX9J", "GTEX.1AX9K")
+
+names_heart_diff <-  c("GTEX.1AX8Z","GTEX.1AX9I","GTEX.1AX9J", "GTEX.1AX9K")
+names_lung_diff <-   c( "GTEX.1AYCT", "GTEX.1B8L1", "GTEX.1B996", "GTEX.QDVJ")  
+
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_8 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_8 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+
+```
+
+# Trial 9
+```{r}
+names_heart_same <-  c("GTEX.QESD", "GTEX.QV44", "GTEX.R55C", "GTEX.REY6")  
+names_lung_same <-   c("GTEX.QESD", "GTEX.QV44", "GTEX.R55C", "GTEX.REY6") 
+
+names_heart_diff <-  c("GTEX.QESD", "GTEX.QV44", "GTEX.R55C", "GTEX.REY6") 
+names_lung_diff <-   c("GTEX.RN64", "GTEX.T6MN", "GTEX.U8XE", "GTEX.UJMC") 
+
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_9 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_9 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+```
+
+# Trial 10
+```{r}
+names_heart_same <-  c("GTEX.V1D1", "GTEX.WFG7", "GTEX.WFG8", "GTEX.WFON")
+names_lung_same <-   c("GTEX.V1D1", "GTEX.WFG7", "GTEX.WFG8", "GTEX.WFON")
+
+names_heart_diff <-  c("GTEX.V1D1", "GTEX.WFG7", "GTEX.WFG8", "GTEX.WFON")
+names_lung_diff <-  c("GTEX.WHPG", "GTEX.WY7C", "GTEX.WYJK", "GTEX.WZTO")  
+
+
+
+
+  names_heart <- names_heart_same
+  names_lung <- names_lung_same
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_same <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+  names_heart <- names_heart_diff
+  names_lung <- names_lung_diff
+
+# Make labels
+heart_label <- array("heart", dim = c(1,4))
+lung_label <- array("lung", dim = c(1,4))
+
+labels <- cbind(heart_label, lung_label)
+
+# Pull matrix
+
+shared_list <- colnames(dge_in_cutoff) %in% names_heart
+summary(shared_list)
+heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+
+shared_list <- colnames(dge_in_cutoff) %in% names_lung
+summary(shared_list)
+lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+
+col_diff <- c(heart_common_ind, lung_common_ind)
+
+dge_shared_1 <- dge_in_cutoff[,col_diff]
+
+
+# Pull PCs
+
+four_cov_1 <- four_cov[col_diff,]
+
+
+# Make a design matrix
+
+PC1 <- four_cov_1$C1
+PC2 <- four_cov_1$C2
+PC3 <- four_cov_1$C3
+IC1 <- four_cov_1$InferredCov1
+IC2 <- four_cov_1$InferredCov2
+IC3 <- four_cov_1$InferredCov3
+
+tissue <- t(labels)
+#design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
+design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+
+# Rename columns of the contrast matrix
+colnames(design)[1] <- "Intercept"
+colnames(design)[2] <- "lung"
+
+# Look at the number of samples in each column 
+colSums(design)
+
+# Voom with individual as a random variable
+
+cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+
+# Make the individuals
+heart_ind <- as.vector(names_heart)
+lung_ind <- as.vector(names_lung)
+
+all_ind <- as.data.frame(c(heart_ind, lung_ind))
+#all_ind <- as.data.frame(all_ind, stringsAsFactors = TRUE)
+
+all_ind <- as.factor(unlist(all_ind))
+all_ind <- t(all_ind)
+
+#ind <- as.data.frame(as.factor(c(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4)))
+#colnames(ind) <- c("check")
+
+#corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+fit.cyclic.norm <- eBayes(fit.cyclic.norm)
+
+heart_lung_diff <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+
+
+
+# Bind genes, heart_lung_same, and heart_lung_all
+gene_total <- cbind(as.character(heart_lung_same$genes), as.numeric(heart_lung_same$adj.P.Val), as.numeric(heart_lung_diff$adj.P.Val), as.numeric(heart_lung_all$adj.P.Val))
+gene_total <- as.data.frame(gene_total[,1:4], stringsAsFactors = FALSE)
+gene_total[,2] <- as.numeric(gene_total[,2])
+gene_total[,3] <- as.numeric(gene_total[,3])
+gene_total[,4] <- as.numeric(gene_total[,4])
+colnames(gene_total) <- c("gene", "p_val_same", "p_val_diff", "p_val_truth")
+
+# Same- Total true positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total true positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] < 0.05),])
+
+# Same- Total true negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total true negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] > 0.05),])
+
+
+# Same- Total false positives
+
+nrow(gene_total[which(gene_total[,2] < 0.05 & gene_total[,4] > 0.05),])
+
+# Different - Total false positives
+
+nrow(gene_total[which(gene_total[,3] < 0.05 & gene_total[,4] > 0.05),])
+
+# Same- Total false negatives
+
+nrow(gene_total[which(gene_total[,2] > 0.05 & gene_total[,4] < 0.05),])
+
+# Different - Total false negatives
+
+nrow(gene_total[which(gene_total[,3] > 0.05 & gene_total[,4] < 0.05),])
+
+# Same detects true positive but different doesn't
+
+gene_list_true_10 <- gene_total[which(gene_total[,2] < 0.05 & gene_total[,3] > 0.05 & gene_total[,4] < 0.05),]
+
+# Same detects true negative but different doesn't
+
+gene_list_neg_10 <- gene_total[which(gene_total[,2] > 0.05 & gene_total[,3] < 0.05 & gene_total[,4] > 0.05),]
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(gene_list_true_1$gene, gene_list_true_2$gene), gene_list_true_3$gene), gene_list_true_4$gene), gene_list_true_5$gene), gene_list_true_6$gene), gene_list_true_7$gene), gene_list_true_8$gene), gene_list_true_9$gene), gene_list_true_10$gene)
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(intersect(gene_list_true_1$gene, gene_list_true_2$gene), gene_list_true_3$gene), gene_list_true_4$gene), gene_list_true_5$gene), gene_list_true_6$gene), gene_list_true_7$gene), gene_list_true_8$gene), gene_list_true_9$gene)
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(gene_list_true_1$gene, gene_list_true_2$gene), gene_list_true_3$gene), gene_list_true_4$gene), gene_list_true_5$gene), gene_list_true_6$gene), gene_list_true_7$gene), gene_list_true_8$gene)
+
+intersect(intersect(intersect(intersect(intersect(intersect(intersect(gene_list_true_1$gene, gene_list_true_2$gene), gene_list_true_3$gene), gene_list_true_4$gene), gene_list_true_5$gene), gene_list_true_6$gene), gene_list_true_7$gene), gene_list_true_10$gene)
+
+intersect(intersect(intersect(intersect(intersect(intersect(gene_list_true_1$gene, gene_list_true_2$gene), gene_list_true_3$gene), gene_list_true_4$gene), gene_list_true_5$gene), gene_list_true_6$gene), gene_list_true_7$gene)
+
+#intersect(intersect(intersect(intersect(gene_list_neg_1$gene, gene_list_neg_2$gene), gene_list_neg_3$gene), gene_list_neg_4$gene), gene_list_neg_5$gene)
+
+same_true <- c(8638, 6275, 6162, 7875, 5161, 2617, 4502, 1466, 3948, 3085)
+diff_true <- c(4117, 3277, 2997, 4497, 4190, 1466, 967, 1877, 5809, 5451)
+
+t.test(same_true, diff_true)
+
+same_neg <- c(36, 6, 9, 8, 10, 6, 11, 5, 5, 11)
+diff_neg <- c(41, 20, 9, 24, 9, 5, 2, 6, 19, 40)
+t.test(same_neg, diff_neg)
+
+prop.test(c(same_neg, diff_neg), c(same_true, diff_true)) 
+
+# Convert the gene name to ensg
+
+gene_id <- read.table("../../../Reg_Evo_Primates/data/ENSG_GENE_HG19.csv", stringsAsFactors = FALSE, header=TRUE, sep = ",")
+
+closest_heart <- as.data.frame(c("ENSG00000114805", "ENSG00000163106", "ENSG00000233493"))
+colnames(closest_heart) <- c("ensg")
+
+comb_kidney <- merge(closest_heart, gene_id, by.x = c("ensg"), by.y = c("ensg"))
+
+comb_kidney$ensg
+```
+
+```{r}
+# Figure 3C
+Heart_LV_norm <- read.delim("../data/Heart_Left_Ventricle.v7.normalized_expression.bed", header=FALSE, comment.char="#")
+Heart_LV_covariates <- read.delim("../data/Heart_Left_Ventricle.v7.covariates.txt")
+
+
+colnames(Heart_LV_norm) <- c("chr", "start", "end", "gene", colnames(Heart_LV_covariates)[2:273])
+
+Lung_norm <- read.delim("../data/Lung.v7.normalized_expression.bed", header=FALSE, comment.char="#")
+
+Lung_covariates <- read.delim("../data/Lung.v7.covariates.txt")
+
+colnames(Lung_norm) <- c("chr", "start", "end", "gene", colnames(Lung_covariates)[2:383])
+
+names_heart_same <-  c("GTEX.13RTJ","GTEX.13S86","GTEX.145MN","GTEX.145MO")
+names_lung_same <-   c("GTEX.13RTJ","GTEX.13S86","GTEX.145MN","GTEX.145MO")
+
+names_heart_diff <-  c("GTEX.13RTJ","GTEX.13S86","GTEX.145MN","GTEX.145MO") 
+names_lung_diff <-   c("GTEX.147F4", "GTEX.147JS", "GTEX.148VJ", "GTEX.1497J")
+
+
+# ENSG00000114805 is row 4449 in hearts and row 5358 in lungs
+# ENSG00000163106 is row 5137 in hearts and row 6210 in lungs
+# ENSG00000233493 is row 18756 in hearts and row 22767 in lungs
+
+first_gene_same <- rbind(Heart_LV_norm$GTEX.13RTJ[4449], Heart_LV_norm$GTEX.13S86[4449], Heart_LV_norm$GTEX.145MN[4449], Heart_LV_norm$GTEX.145MO[4449], Lung_norm$GTEX.13RTJ[5358], Lung_norm$GTEX.13S86[5358], Lung_norm$GTEX.145MN[5358], Lung_norm$GTEX.145MO[5358])
+
+#first_gene_diff <- cbind(Heart_LV_norm$GTEX.13RTJ[4449], Heart_LV_norm$GTEX.13S86[4449], Heart_LV_norm$GTEX.145MN[4449], Heart_LV_norm$GTEX.145MO[4449], Lung_norm$GTEX.147F4[5358], Lung_norm$GTEX.147JS[5358], Lung_norm$GTEX.148VJ[5358], Lung_norm$GTEX.1497J[5358])
+
+first_gene_diff <- rbind(Lung_norm$GTEX.147F4[5358], Lung_norm$GTEX.147JS[5358], Lung_norm$GTEX.148VJ[5358], Lung_norm$GTEX.1497J[5358])
+
+labels_same <- c("Heart same", "Heart same", "Heart same", "Heart same", "Lung same", "Lung same", "Lung same", "Lung same", "Lung different", "Lung different", "Lung different", "Lung different")
+
+first_gene <- rbind(first_gene_same, first_gene_diff)
+first_gene <- cbind(first_gene, labels_same)
+
+colnames(first_gene) <- c("exp", "label")
+
+first_gene <- as.data.frame(first_gene, stringsAsFactors = FALSE)
+first_gene[,1] <- as.numeric(first_gene[,1])
+
+ggplot(first_gene, aes(label, exp, colour = label)) + 
+  geom_boxplot()
+
+second_gene_same <- cbind(Heart_LV_norm$GTEX.13RTJ[5137], Heart_LV_norm$GTEX.13S86[5137], Heart_LV_norm$GTEX.145MN[5137], Heart_LV_norm$GTEX.145MO[5137], Lung_norm$GTEX.13RTJ[6210], Lung_norm$GTEX.13S86[6210], Lung_norm$GTEX.145MN[6210], Lung_norm$GTEX.145MO[6210])
+
+second_gene_diff <- cbind(Heart_LV_norm$GTEX.13RTJ[5137], Heart_LV_norm$GTEX.13S86[5137], Heart_LV_norm$GTEX.145MN[5137], Heart_LV_norm$GTEX.145MO[5137], Lung_norm$GTEX.147F4[6210], Lung_norm$GTEX.147JS[6210], Lung_norm$GTEX.148VJ[6210], Lung_norm$GTEX.1497J[6210])
+
+
+third_gene_same <- cbind(Heart_LV_norm$GTEX.13RTJ[18756], Heart_LV_norm$GTEX.13S86[18756], Heart_LV_norm$GTEX.145MN[18756], Heart_LV_norm$GTEX.145MO[18756], Lung_norm$GTEX.13RTJ[22767], Lung_norm$GTEX.13S86[22767], Lung_norm$GTEX.145MN[22767], Lung_norm$GTEX.145MO[22767])
+
+third_gene_diff <- cbind(Lung_norm$GTEX.147F4[22767], Lung_norm$GTEX.147JS[22767], Lung_norm$GTEX.148VJ[22767], Lung_norm$GTEX.1497J[22767])
+
+first_gene <- rbind(t(third_gene_same), t(third_gene_diff))
+first_gene <- cbind(first_gene, labels_same)
+
+colnames(first_gene) <- c("exp", "Label")
+
+first_gene <- as.data.frame(first_gene, stringsAsFactors = FALSE)
+first_gene[,1] <- as.numeric(first_gene[,1])
+
+ggplot(first_gene, aes(Label, exp, colour = Label)) + 
+  geom_boxplot() + labs(y = "GTEx Normalized Gene \n Expression Levels", x = "  ") + theme_bw() + theme(axis.text.x = element_text(angle = 0)) + theme(legend.position = "none") + ggtitle("AC020922.1 gene expression levels") +  theme(plot.title = element_text(hjust = 0.5, face="bold")) + scale_x_discrete(labels=c("Heart same" = "Heart \n same \n individuals", "Lung different" = "Lung \n different \n individuals", "Lung same" = "Lung \n same \n individuals"))
+```
+
+
+
+```{r}
+# Revisions
+y1 <- c(8638/36, 6275/6, 6162/9, 7875/8, 5161/10, 2617/6, 4502/11, 1466/5, 3948/5, 3085/11)
+
+y2 <- c(4117/41, 3277/20, 2997/9, 4497/24, 4190/9, 1466/5, 967/2, 1877/6, 5809/19, 5451/40)
+t.test(y1, y2)
+
+# Revisions- p value for enrichment, "In particular, there is strong enrichment of T-DMRs in CpG island shores [58], 5’UTRs, and active enhancers."
+
+cpg_real <- c(699, 938, 490, 941, 664, 577)
+cpg_random <- c(359.55, 708.97, 81.72, 409.58, 0.834, 878.26)
+
+t.test(cpg_real, cpg_random)
+
+inter_real <- c(10588, 6632, 4158, 5967, 3515, 5856)
+inter_random <- c(0, 885.84, 1488.65, 4573.69, 2616.1, 6231.74)
+
+t.test(inter_real, inter_random)
+
+intron_real <- c(17381, 14314, 8904, 10525, 8904, 9387) 
+intron_random <- c(1878.26, 0, 0, 1699.7, 1934.07, 8743.19) 
+
+t.test(intron_real, intron_random)
+
+exon_real <- c(2888, 3116, 1746, 2263, 1991, 1772)
+exon_random <- c(286.01, 0.88, 159.62, 105.79, 174.12, 23.523)
+
+t.test(exon_real, exon_random)
+
+five_real <- c(891, 1145, 638, 862, 715, 647)
+five_random <- c(119.51, 89.86, 175.87, 101.01, 304.597, 578.67)
+t.test(five_real, five_random)
+
+three_real <- c(1781, 1783, 1111, 1167, 1106, 1015)
+three_random <- c(147.49, 1139.21, 738.48, 1036.92, 756.86, 895.49)
+t.test(three_real, three_random)
+
+active_real <- c(19, 15, 24, 13, 14, 17, 5, 10, 8, 23, 14.67, 14)
+active_random <- c(6.92, 4.95, 6.09, 1.33, 3.57, 3.91, 1.25, 3.33, 1.06, 4.4, 5.67, 2.8)
+
+t.test(active_real, active_random)
+
+
+```
+
