@@ -265,13 +265,17 @@ $(document).ready(function () {
 <li><a href="#human-heart-kidney-non-de-1">Human heart-kidney non-DE</a></li>
 <li><a href="#for-revisions">For revisions</a><ul>
 <li><a href="#human-heart-kidney-2">Human heart-kidney</a></li>
-<li><a href="#signficant-conserved-heart-kidney-in-human">Signficant conserved heart-kidney in human</a></li>
+<li><a href="#signficant-conserved-heart-kidney-in-human">Signficant conserved heart-kidney in human</a><ul>
+<li><a href="#an-example">An example</a></li>
+</ul></li>
 <li><a href="#human-heart-liver">Human heart-liver</a></li>
 <li><a href="#signficant-conserved-heart-liver-in-human">Signficant conserved heart-liver in human</a></li>
 <li><a href="#human-heart-lung">Human heart-lung</a></li>
 <li><a href="#signficant-conserved-heart-lung-in-human">Signficant conserved heart-lung in human</a></li>
 <li><a href="#human-kidney-liver">Human kidney-liver</a></li>
-<li><a href="#signficant-conserved-kidney-liver-in-human">Signficant conserved kidney-liver in human</a></li>
+<li><a href="#signficant-conserved-kidney-liver-in-human">Signficant conserved kidney-liver in human</a><ul>
+<li><a href="#cluster-profiler">Cluster profiler</a></li>
+</ul></li>
 <li><a href="#human-kidney-lung">Human kidney-lung</a></li>
 <li><a href="#signficant-conserved-kidney-lung-in-human">Signficant conserved kidney-lung in human</a></li>
 <li><a href="#human-liver-lung">Human liver-lung</a></li>
@@ -387,7 +391,7 @@ library(&quot;topGO&quot;)</code></pre>
 <pre class="r"><code>library(&quot;org.Hs.eg.db&quot;)</code></pre>
 <pre><code>## </code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ tibble  2.1.1       ✔ purrr   0.3.2  
 ## ✔ tidyr   0.8.3       ✔ dplyr   0.8.0.1
 ## ✔ readr   1.3.1       ✔ stringr 1.4.0  
@@ -399,7 +403,7 @@ library(&quot;topGO&quot;)</code></pre>
 <pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## Warning: package &#39;forcats&#39; was built under R version 3.4.4</code></pre>
-<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::arrange()         masks plyr::arrange()
 ## ✖ stringr::boundary()      masks graph::boundary()
 ## ✖ dplyr::collapse()        masks IRanges::collapse()
@@ -741,6 +745,52 @@ colnames(df1) &lt;- c(&quot;Tissue&quot;, &quot;Gene_type&quot;, &quot;Percentag
 
 plot_intertissue &lt;- ggplot(data=df1, aes(x=Gene_type, y=Percentage)) +
   geom_bar(stat=&quot;identity&quot;, fill = as.numeric(df1$Gene_type)) + facet_wrap(~ df1$Tissue) + xlab(&quot;DE in Humans and Chimpanzees&quot;) + ylab(&quot;% of genes for which DNAm \n could underlie DE&quot;) + theme(strip.text.x = element_text(size = 10, face = &quot;bold&quot;)) + ylim(0, 0.3)</code></pre>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+gene_value &lt;- grep(&quot;ENSG00000072062&quot;, rownames(hc_exprs_heart))
+gene_number &lt;- gene_value
+
+expression_levels &lt;- hc_exprs_heart[gene_number,]
+expression_tissue &lt;- c(&quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;)
+expression_df &lt;- as.data.frame(cbind(t(expression_levels), expression_tissue), stringsAsFactors = FALSE)
+expression_df[,1] &lt;- as.numeric(expression_df[,1])
+colnames(expression_df) &lt;- c(&quot;gene&quot;, &quot;Tissue&quot;)
+ 
+exp_plot &lt;- ggplot(expression_df, aes(Tissue, gene)) + geom_boxplot() + ylab(&quot;Normalized gene expression level&quot;)
+
+methyl_levels &lt;- methyl[gene_number,]
+methyl_tissue &lt;- c(&quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;)
+methyl_df &lt;- as.data.frame(cbind(t(methyl_levels), methyl_tissue), stringsAsFactors = FALSE)
+methyl_df[,1] &lt;- as.numeric(methyl_df[,1])
+colnames(methyl_df) &lt;- c(&quot;gene_name&quot;, &quot;Tissue&quot;)
+
+methyl_plot &lt;- ggplot(methyl_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab(&quot;Methylation level&quot;)
+
+resid &lt;- lm(t(expression_levels) ~ t(methyl_levels))$resid
+
+resid_df &lt;- as.data.frame(cbind(as.data.frame(resid), methyl_tissue), stringsAsFactors = FALSE)
+resid_df[,1] &lt;- as.numeric(resid_df[,1])
+colnames(resid_df) &lt;- c(&quot;gene_name&quot;, &quot;Tissue&quot;)
+
+resid_plot &lt;- ggplot(resid_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab(&quot;Normalized gene expression residual level&quot;)
+
+plot_fig5df &lt;- plot_grid(exp_plot, methyl_plot, resid_plot, nrow = 1)</code></pre>
 </div>
 <div id="make-into-figure" class="section level1">
 <h1>Make into figure</h1>
@@ -757,27 +807,35 @@ top_row &lt;- plot_grid(h_cons, h_spec, h_non, nrow = 1)</code></pre>
 
 plot_fig5 &lt;- plot_grid(top_row, bottom_row, ncol = 1, nrow = 2, rel_heights = c(1,1.5))
 
-save_plot(&quot;/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5_test.png&quot;, plot_fig5,
-           ncol = 1, # we&#39;re saving a grid plot of 2 columns
-           nrow = 2, # and 2 rows
+#save_plot(&quot;/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5_test.png&quot;, plot_fig5,
+#           ncol = 1, # we&#39;re saving a grid plot of 2 columns
+#           nrow = 2, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
-           base_aspect_ratio = 1
-           )
+#           base_aspect_ratio = 1
+#           )
 
 # Divide into 2 plots
 
 plot_fig5ac &lt;- plot_grid(top_row, nrow = 1)
 
-save_plot(&quot;/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5ac_test.pdf&quot;, plot_fig5ac,
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5ac_test.pdf&quot;, plot_fig5ac,
            ncol = 3, # we&#39;re saving a grid plot of 2 columns
            nrow = 1, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
            base_aspect_ratio = 1
            )
 
-plot_fig5d &lt;- plot_grid(bottom_row, ncol = 1, nrow = 1)
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5df_test.pdf&quot;, plot_fig5df,
+           ncol = 3, # we&#39;re saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )
 
-save_plot(&quot;/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5d_test.pdf&quot;, plot_fig5d,
+
+plot_fig5g &lt;- plot_grid(bottom_row, ncol = 1, nrow = 1)
+
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5g_test.pdf&quot;, plot_fig5g,
            ncol = 1, # we&#39;re saving a grid plot of 2 columns
            nrow = 1, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
@@ -1203,6 +1261,9 @@ check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
 test_gene &lt;- as.vector(check)
 names(test_gene) &lt;- rownames(Y)
 
+test_gene_heart_kidney &lt;- as.vector(check)
+names(test_gene_heart_kidney) &lt;- rownames(Y)
+
 # Run topGO
 go_data &lt;- new(&quot;topGOdata&quot;,
                    ontology = &quot;BP&quot;,
@@ -1223,7 +1284,35 @@ go_data &lt;- new(&quot;topGOdata&quot;,
 <pre><code>## 
 ## Annotating nodes ...............</code></pre>
 <pre><code>##  ( 1050 genes annotated to the GO terms. )</code></pre>
-<pre class="r"><code># Perform enrichment test
+<pre class="r"><code>library(clusterProfiler)
+
+
+test_df &lt;- as.data.frame(test_gene)
+test_df &lt;- data.frame(cbind(rownames(Y), test_df), stringsAsFactors = FALSE)
+colnames(test_df) &lt;- c(&quot;ensg&quot;, &quot;test_gene&quot;)
+
+formula_res &lt;- compareCluster(ensg~test_gene, data=test_df, fun=&quot;enrichGO&quot;, universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+                                keyType       = &#39;ENSEMBL&#39;,
+                ont           = &quot;BP&quot;,
+                pAdjustMethod = &quot;fdr&quot;,
+                qvalueCutoff  = 0.05,
+                                maxGSSize = 3000,
+                                minGSSize = 3)
+
+#Plot
+make_dotplot &lt;- dotplot(formula_res, showCategory = 20, by = &quot;count&quot;)
+
+plot_fig5h &lt;- plot_grid(make_dotplot, ncol = 1, nrow = 1)
+
+save_plot(&quot;/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5h_test.pdf&quot;, plot_fig5h,
+           ncol = 2, # we&#39;re saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )
+           
+# Perform enrichment test
 go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
 <pre><code>## 
 ##           -- Weight01 Algorithm -- 
@@ -1296,6 +1385,58 @@ go_table</code></pre>
 ## 9            6     1.95      0.00672
 ## 10           4     0.98      0.00780
 ## 11           4     0.98      0.00780</code></pre>
+<div id="an-example" class="section level3">
+<h3>An example</h3>
+<pre class="r"><code># Check parameters
+
+human_chimp_heart &lt;- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs &lt;- exprs[,2:48]
+exprs_methyl &lt;- exprs[,49:79]
+
+# HC heart only
+
+library(ggplot2)
+library(cowplot)
+
+hc_exprs_heart &lt;- hc_exprs[,human_chimp_heart]
+
+
+methyl &lt;- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) &lt;- rownames(exprs)
+rownames(methyl) &lt;- rownames(exprs)
+
+gene_value &lt;- grep(&quot;ENSG00000072062&quot;, rownames(hc_exprs_heart))
+gene_number &lt;- gene_value
+
+expression_levels &lt;- hc_exprs_heart[gene_number,]
+expression_tissue &lt;- c(&quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;)
+expression_df &lt;- as.data.frame(cbind(t(expression_levels), expression_tissue), stringsAsFactors = FALSE)
+expression_df[,1] &lt;- as.numeric(expression_df[,1])
+colnames(expression_df) &lt;- c(&quot;gene&quot;, &quot;Tissue&quot;)
+ 
+exp_plot &lt;- ggplot(expression_df, aes(Tissue, gene)) + geom_boxplot() + ylab(&quot;Normalized gene \n expression level&quot;)
+
+methyl_levels &lt;- methyl[gene_number,]
+methyl_tissue &lt;- c(&quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;, &quot;Heart&quot;, &quot;Kidney&quot;)
+methyl_df &lt;- as.data.frame(cbind(t(methyl_levels), methyl_tissue), stringsAsFactors = FALSE)
+methyl_df[,1] &lt;- as.numeric(methyl_df[,1])
+colnames(methyl_df) &lt;- c(&quot;gene_name&quot;, &quot;Tissue&quot;)
+
+methyl_plot &lt;- ggplot(methyl_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab(&quot;Methylation level&quot;)
+
+resid &lt;- lm(t(expression_levels) ~ t(methyl_levels))$resid
+
+resid_df &lt;- as.data.frame(cbind(as.data.frame(resid), methyl_tissue), stringsAsFactors = FALSE)
+resid_df[,1] &lt;- as.numeric(resid_df[,1])
+colnames(resid_df) &lt;- c(&quot;gene_name&quot;, &quot;Tissue&quot;)
+
+resid_plot &lt;- ggplot(resid_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab(&quot;Normalized gene \n  expression \n residual level&quot;)
+
+plot_grid(exp_plot, methyl_plot, resid_plot, nrow = 1)</code></pre>
+<p><img src="Final_effect_size_figure_5_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+</div>
 </div>
 <div id="human-heart-liver" class="section level2">
 <h2>Human heart-liver</h2>
@@ -1959,6 +2100,10 @@ check &lt;- as.numeric(as.factor(combine_dataa$ind_siga))
 test_gene &lt;- as.vector(check)
 names(test_gene) &lt;- rownames(Y)
 
+test_gene_kidney_liver &lt;- as.vector(check)
+names(test_gene_kidney_liver) &lt;- rownames(Y)
+
+
 # Run topGO
 go_data &lt;- new(&quot;topGOdata&quot;,
                    ontology = &quot;BP&quot;,
@@ -2080,6 +2225,33 @@ go_table</code></pre>
 ## 24           6     1.68      0.00742
 ## 25          10     4.40      0.00799
 ## 26           5     1.42      0.00816</code></pre>
+<div id="cluster-profiler" class="section level3">
+<h3>Cluster profiler</h3>
+<pre class="r"><code>#test_df_heart_kidney &lt;- as.data.frame(test_gene_heart_kidney)
+#test_df_heart_kidney[,2] &lt;- rownames(test_df_heart_kidney)
+#colnames(test_df_heart_kidney) &lt;- c(&quot;hk&quot;, &quot;ensg&quot;)
+
+#test_df_kidney_liver &lt;- as.data.frame(test_gene_kidney_liver)
+#test_df_kidney_liver[,2] &lt;- rownames(test_df_kidney_liver)
+#colnames(test_df_kidney_liver) &lt;- c(&quot;hk&quot;, &quot;ensg&quot;)
+
+#check_overlap &lt;- merge(test_df_heart_kidney, test_df_kidney_liver, by = &quot;ensg&quot;)
+
+#formula_res &lt;- compareCluster(ensg~hk.x+hk.y, data=check_overlap, fun=&quot;enrichGO&quot;, universe = check_overlap$ensg,
+#                OrgDb         = org.Hs.eg.db,
+#                                keyType       = &#39;ENSEMBL&#39;,
+#                ont           = &quot;BP&quot;,
+#                pAdjustMethod = &quot;fdr&quot;,
+#                qvalueCutoff  = 0.05,
+#                                maxGSSize = 3000,
+#                                minGSSize = 3)
+
+#Plot
+#p10 &lt;- dotplot(formula_res)
+#dotplot(formula_res, showCategory = 10, by = &quot;geneRatio&quot;)
+
+#plot_grid(p10)</code></pre>
+</div>
 </div>
 <div id="human-kidney-lung" class="section level2">
 <h2>Human kidney-lung</h2>

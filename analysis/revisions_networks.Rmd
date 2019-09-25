@@ -906,7 +906,6 @@ summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
 ```
 
 
-
 ### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
 
 ```{r}
@@ -945,6 +944,22 @@ plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
 summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
 
 ```
+
+#### For revisions
+
+```{r}
+
+#### For figure revisions
+
+heart_ppi_cons_100 <- heart_no_de_var_ppi_sorted[1:100,]$Freq 
+heart_ppi_cons_last <- heart_no_de_var_ppi_sorted[(nrow(heart_no_de_var_ppi_sorted)-99):nrow(heart_no_de_var_ppi_sorted),]$Freq
+
+
+heart_ppi_human_100 <- heart_human_de_var_ppi_sorted[1:100,]$Freq 
+heart_ppi_human_last <- heart_human_de_var_ppi_sorted[(nrow(heart_human_de_var_ppi_sorted)-99):nrow(heart_human_de_var_ppi_sorted),]$Freq
+
+```
+
 
 ```{r}
 ### Compare top low variance non-DE and bottom (high variance) from DE in humans
@@ -1037,6 +1052,7 @@ plot(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
 summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
 ```
 
+
 ### DE between humans and chimps, and humans and rhesus macaques but not chimps and rhesus macaques
 
 ```{r}
@@ -1075,6 +1091,21 @@ plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
 summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
 
 ```
+
+#### For revisions
+
+```{r}
+#### For figure revisions
+
+kidney_ppi_cons_100 <- heart_no_de_var_ppi_sorted[1:100,]$Freq 
+kidney_ppi_cons_last <- heart_no_de_var_ppi_sorted[(nrow(heart_no_de_var_ppi_sorted)-99):nrow(heart_no_de_var_ppi_sorted),]$Freq
+
+
+kidney_ppi_human_100 <- heart_human_de_var_ppi_sorted[1:100,]$Freq 
+kidney_ppi_human_last <- heart_human_de_var_ppi_sorted[(nrow(heart_human_de_var_ppi_sorted)-99):nrow(heart_human_de_var_ppi_sorted),]$Freq
+
+```
+
 
 ```{r}
 ### Compare top low variance non-DE and bottom (high variance) from DE in humans
@@ -1167,6 +1198,7 @@ summary(pvalue_no_de_heart[30:nrow(var_heart_no_de)])
 summary(pvalue_no_de_heart[30:100])
 ```
 
+
 ```{r}
 ## Find non-DE genes
 heart_human_de <- results$HvC_Liver[which(results$HvC_Liver$adj.P.Val < fdr_level & results$HvR_Liver$adj.P.Val < fdr_level & results$CvR_Liver$adj.P.Val > fdr_level), ]
@@ -1201,6 +1233,18 @@ pvalue_human_de_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, hea
 
 plot(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
 summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
+
+```
+
+#### For figure revisions
+
+```{r}
+liver_ppi_cons_100 <- heart_no_de_var_ppi_sorted[1:100,]$Freq 
+liver_ppi_cons_last <- heart_no_de_var_ppi_sorted[(nrow(heart_no_de_var_ppi_sorted)-99):nrow(heart_no_de_var_ppi_sorted),]$Freq
+
+
+liver_ppi_human_100 <- heart_human_de_var_ppi_sorted[1:100,]$Freq 
+liver_ppi_human_last <- heart_human_de_var_ppi_sorted[(nrow(heart_human_de_var_ppi_sorted)-99):nrow(heart_human_de_var_ppi_sorted),]$Freq
 
 ```
 
@@ -1336,6 +1380,18 @@ summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
 
 ```
 
+#### For figure revisions
+
+```{r}
+lung_ppi_cons_100 <- heart_no_de_var_ppi_sorted[1:100,]$Freq 
+lung_ppi_cons_last <- heart_no_de_var_ppi_sorted[(nrow(heart_no_de_var_ppi_sorted)-99):nrow(heart_no_de_var_ppi_sorted),]$Freq
+
+
+lung_ppi_human_100 <- heart_human_de_var_ppi_sorted[1:100,]$Freq 
+lung_ppi_human_last <- heart_human_de_var_ppi_sorted[(nrow(heart_human_de_var_ppi_sorted)-99):nrow(heart_human_de_var_ppi_sorted),]$Freq
+
+```
+
 ```{r}
 ### Compare top low variance non-DE and bottom (high variance) from DE in humans
 
@@ -1369,6 +1425,163 @@ pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, hea
 plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
 summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
 ```
+
+
+```{r}
+length(heart_ppi_cons_100)
+length(heart_ppi_cons_last)
+
+length(kidney_ppi_cons_100)
+length(kidney_ppi_cons_last)
+
+length(liver_ppi_cons_100)
+length(liver_ppi_cons_last)
+
+length(lung_ppi_cons_100)
+length(lung_ppi_cons_last)
+
+# Axis label
+label1 <- array("P", dim = c(100,1))
+label2 <- array("O", dim = c(100,1))
+label3 <- array("N", dim = c(100,1))
+label4 <- array("M", dim = c(100,1))
+
+label5 <- array("L", dim = c(100,1))
+label6 <- array("K", dim = c(100,1))
+label7 <- array("J", dim = c(100,1))
+label8 <- array("I", dim = c(100,1))
+
+label9 <- array("H", dim = c(100,1))
+label10 <- array("G", dim = c(100,1))
+label11 <- array("F", dim = c(100,1))
+label12 <- array("E", dim = c(100,1))
+
+label13 <- array("D", dim = c(100,1))
+label14 <- array("C", dim = c(100,1))
+label15 <- array("B", dim = c(100,1))
+label16 <- array("A", dim = c(100,1))
+
+order_col <- rbind(label1, label2, label3, label4, label5, label6, label7, label8, label9, label10, label11, label12, label13, label14, label15, label16)
+
+label1 <- array("Heart top stabilizing", dim = c(100,1))
+label2 <- array("Heart bottom stabilizing", dim = c(100,1))
+label3 <- array("Heart top directional", dim = c(100,1))
+label4 <- array("Heart bottom directional", dim = c(100,1))
+
+label5 <- array("Kidney top stabilizing", dim = c(100,1))
+label6 <- array("Kidney bottom stabilizing", dim = c(100,1))
+label7 <- array("Kidney top directional", dim = c(100,1))
+label8 <- array("Kidney bottom directional", dim = c(100,1))
+
+label9 <- array("Liver top stabilizing", dim = c(100,1))
+label10 <- array("Liver bottom stabilizing", dim = c(100,1))
+label11 <- array("Liver top directional", dim = c(100,1))
+label12 <- array("Liver bottom directional", dim = c(100,1))
+
+label13 <- array("Lung top stabilizing", dim = c(100,1))
+label14 <- array("Lung bottom stabilizing", dim = c(100,1))
+label15 <- array("Lung top directional", dim = c(100,1))
+label16 <- array("Lung bottom directional", dim = c(100,1))
+
+label_col <- rbind(label1, label2, label3, label4, label5, label6, label7, label8, label9, label10, label11, label12, label13, label14, label15, label16)
+
+
+# Fill label
+
+label1 <- array("Top", dim = c(100,1))
+label2 <-  array("Bottom", dim = c(100,1))
+label3 <-  array("Top", dim = c(100,1))
+label4 <- array("Bottom", dim = c(100,1))
+
+label5 <-  array("Top", dim = c(100,1))
+label6 <- array("Bottom", dim = c(100,1))
+label7 <-  array("Top", dim = c(100,1))
+label8 <- array("Bottom", dim = c(100,1))
+
+label9 <-  array("Top", dim = c(100,1))
+label10 <-array("Bottom", dim = c(100,1))
+label11 <-  array("Top", dim = c(100,1))
+label12 <- array("Bottom", dim = c(100,1))
+
+label13 <-  array("Top", dim = c(100,1))
+label14 <- array("Bottom", dim = c(100,1))
+label15 <-  array("Top", dim = c(100,1))
+label16 <- array("Bottom", dim = c(100,1))
+
+fill_col <- rbind(label1, label2, label3, label4, label5, label6, label7, label8, label9, label10, label11, label12, label13, label14, label15, label16)
+
+
+#Heart
+heart_ppi_cons_100_df <- as.data.frame(heart_ppi_cons_100)
+colnames(heart_ppi_cons_100_df) <- c("Frequency")
+
+heart_ppi_cons_last_df <- as.data.frame(heart_ppi_cons_last)
+colnames(heart_ppi_cons_last_df) <- c("Frequency")
+
+heart_ppi_human_100_df <- as.data.frame(heart_ppi_human_100)
+colnames(heart_ppi_human_100_df) <- c("Frequency")
+
+heart_ppi_human_last_df <- as.data.frame(heart_ppi_human_last)
+colnames(heart_ppi_human_last_df) <- c("Frequency")
+
+#Kidney
+kidney_ppi_cons_100_df <- as.data.frame(kidney_ppi_cons_100)
+colnames(kidney_ppi_cons_100_df) <- c("Frequency")
+
+kidney_ppi_cons_last_df <- as.data.frame(kidney_ppi_cons_last)
+colnames(kidney_ppi_cons_last_df) <- c("Frequency")
+
+kidney_ppi_human_100_df <- as.data.frame(kidney_ppi_human_100)
+colnames(kidney_ppi_human_100_df) <- c("Frequency")
+
+kidney_ppi_human_last_df <- as.data.frame(kidney_ppi_human_last)
+colnames(kidney_ppi_human_last_df) <- c("Frequency")
+
+# Liver
+
+liver_ppi_cons_100_df <- as.data.frame(liver_ppi_cons_100)
+colnames(liver_ppi_cons_100_df) <- c("Frequency")
+
+liver_ppi_cons_last_df <- as.data.frame(liver_ppi_cons_last)
+colnames(liver_ppi_cons_last_df) <- c("Frequency")
+
+liver_ppi_human_100_df <- as.data.frame(liver_ppi_human_100)
+colnames(liver_ppi_human_100_df) <- c("Frequency")
+
+liver_ppi_human_last_df <- as.data.frame(liver_ppi_human_last)
+colnames(liver_ppi_human_last_df) <- c("Frequency")
+
+# Lung
+lung_ppi_cons_100_df <- as.data.frame(lung_ppi_cons_100)
+colnames(lung_ppi_cons_100_df) <- c("Frequency")
+
+lung_ppi_cons_last_df <- as.data.frame(lung_ppi_cons_last)
+colnames(lung_ppi_cons_last_df) <- c("Frequency")
+
+lung_ppi_human_100_df <- as.data.frame(lung_ppi_human_100)
+colnames(lung_ppi_human_100_df) <- c("Frequency")
+
+lung_ppi_human_last_df <- as.data.frame(lung_ppi_human_last)
+colnames(lung_ppi_human_last_df) <- c("Frequency")
+
+
+data_col <- rbind(heart_ppi_cons_100_df, heart_ppi_cons_last_df, heart_ppi_human_100_df, heart_ppi_human_last_df, kidney_ppi_cons_100_df, kidney_ppi_cons_last_df, kidney_ppi_human_100_df, kidney_ppi_human_last_df, liver_ppi_cons_100_df, liver_ppi_cons_last_df, liver_ppi_human_100_df, liver_ppi_human_last_df, lung_ppi_cons_100_df, lung_ppi_cons_last_df, lung_ppi_human_100_df, lung_ppi_human_last_df)
+
+all_ppi_data <- as.data.frame(cbind(data_col, label_col, fill_col, order_col), stringsAsFactors = FALSE)
+all_ppi_data[,1] <- as.numeric(all_ppi_data[,1])
+
+data_col <- rbind(heart_ppi_cons_100_df, heart_ppi_cons_last_df, heart_ppi_human_100_df, heart_ppi_human_last_df, kidney_ppi_cons_100_df, kidney_ppi_cons_last_df, kidney_ppi_human_100_df, kidney_ppi_human_last_df, liver_ppi_cons_100_df, liver_ppi_cons_last_df, liver_ppi_human_100_df, liver_ppi_human_last_df, lung_ppi_cons_100_df, lung_ppi_cons_last_df, lung_ppi_human_100_df, lung_ppi_human_last_df)
+
+
+#all_ppi_data[,4]<-factor(all_ppi_data$label_col,levels=levels(all_ppi_data$label_col)[c(2,1,4,3,6,5,8,7,10,9,12,11,14,13,16,15)])
+
+#all_ppi_data[,4] <- factor(all_ppi_data$label_col, labels = c("Lung top stabilizing","Heart bottom stabilizing","Heart top directional","Heart bottom directional", "Kidney top stabilizing","Kidney bottom stabilizing","Kidney top directional","Kidney bottom directional", "Liver top stabilizing","Liver bottom stabilizing","Liver top directional","Liver bottom directional", "Lung top stabilizing","Lung bottom stabilizing","Lung top directional","Heart bottom directional"))
+
+
+ggplot(all_ppi_data, aes(order_col, Frequency, fill = fill_col)) + geom_boxplot(outlier.size = 0.3) + xlab(" ") + ylab("PPI frequency") + ylim(0, 80) + coord_flip() + theme_bw() + theme(legend.position = "none")
+
+```
+
 
 # Repeat with PPI network in tissue specific genes
 
@@ -1967,6 +2180,20 @@ summary(pvalue_human_de_heart[30:nrow(var_heart_human_de)])
 
 ```
 
+#### For figure revisions
+
+```{r}
+heart_gene_cons_100 <- heart_no_de_var_ppi_sorted[1:100,]$Freq 
+heart_gene_cons_last <- heart_no_de_var_ppi_sorted[(nrow(heart_no_de_var_ppi_sorted)-99):nrow(heart_no_de_var_ppi_sorted),]$Freq
+
+
+heart_gene_human_100 <- heart_human_de_var_ppi_sorted[1:100,]$Freq 
+heart_gene_human_last <- heart_human_de_var_ppi_sorted[(nrow(heart_human_de_var_ppi_sorted)-99):nrow(heart_human_de_var_ppi_sorted),]$Freq
+
+```
+
+
+
 ```{r}
 ### Compare top low variance non-DE and bottom (high variance) from DE in humans
 
@@ -2123,6 +2350,16 @@ pvalue_compare3_heart[i] <- t.test(heart_human_de_var_ppi_sorted[1:i,]$Freq, hea
 
 plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
 summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
+```
+
+```{r}
+lung_gene_cons_100 <- heart_no_de_var_ppi_sorted[1:100,]$Freq 
+lung_gene_cons_last <- heart_no_de_var_ppi_sorted[(nrow(heart_no_de_var_ppi_sorted)-99):nrow(heart_no_de_var_ppi_sorted),]$Freq
+
+
+lung_gene_human_100 <- heart_human_de_var_ppi_sorted[1:100,]$Freq 
+lung_gene_human_last <- heart_human_de_var_ppi_sorted[(nrow(heart_human_de_var_ppi_sorted)-99):nrow(heart_human_de_var_ppi_sorted),]$Freq
+
 ```
 
 
@@ -2478,4 +2715,88 @@ plot(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
 summary(pvalue_compare3_heart[30:nrow(pvalue_compare3_heart)])
 ```
 
+#### For revisions- network figure
+
+```{r}
+# Axis label
+label1 <- array("P", dim = c(100,1))
+label2 <- array("O", dim = c(100,1))
+label3 <- array("N", dim = c(100,1))
+label4 <- array("M", dim = c(100,1))
+
+label5 <- array("L", dim = c(100,1))
+label6 <- array("K", dim = c(100,1))
+label7 <- array("J", dim = c(100,1))
+label8 <- array("I", dim = c(100,1))
+
+order_col <- rbind(label1, label2, label3, label4, label5, label6, label7, label8)
+
+label1 <- array("Heart top stabilizing", dim = c(100,1))
+label2 <- array("Heart bottom stabilizing", dim = c(100,1))
+label3 <- array("Heart top directional", dim = c(100,1))
+label4 <- array("Heart bottom directional", dim = c(100,1))
+
+
+label5 <- array("Lung top stabilizing", dim = c(100,1))
+label16 <- array("Lung bottom stabilizing", dim = c(100,1))
+label17 <- array("Lung top directional", dim = c(100,1))
+label18 <- array("Lung bottom directional", dim = c(100,1))
+
+label_col <- rbind(label1, label2, label3, label4, label5, label6, label7, label8)
+
+
+# Fill label
+
+label1 <- array("Top", dim = c(100,1))
+label2 <-  array("Bottom", dim = c(100,1))
+label3 <-  array("Top", dim = c(100,1))
+label4 <- array("Bottom", dim = c(100,1))
+
+label5 <-  array("Top", dim = c(100,1))
+label6 <- array("Bottom", dim = c(100,1))
+label7 <-  array("Top", dim = c(100,1))
+label8 <- array("Bottom", dim = c(100,1))
+
+fill_col <- rbind(label1, label2, label3, label4, label5, label6, label7, label8)
+
+
+#Heart
+heart_ppi_cons_100_df <- as.data.frame(heart_ppi_cons_100)
+colnames(heart_ppi_cons_100_df) <- c("Frequency")
+
+heart_ppi_cons_last_df <- as.data.frame(heart_ppi_cons_last)
+colnames(heart_ppi_cons_last_df) <- c("Frequency")
+
+heart_ppi_human_100_df <- as.data.frame(heart_ppi_human_100)
+colnames(heart_ppi_human_100_df) <- c("Frequency")
+
+heart_ppi_human_last_df <- as.data.frame(heart_ppi_human_last)
+colnames(heart_ppi_human_last_df) <- c("Frequency")
+
+# Lung
+lung_ppi_cons_100_df <- as.data.frame(lung_ppi_cons_100)
+colnames(lung_ppi_cons_100_df) <- c("Frequency")
+
+lung_ppi_cons_last_df <- as.data.frame(lung_ppi_cons_last)
+colnames(lung_ppi_cons_last_df) <- c("Frequency")
+
+lung_ppi_human_100_df <- as.data.frame(lung_ppi_human_100)
+colnames(lung_ppi_human_100_df) <- c("Frequency")
+
+lung_ppi_human_last_df <- as.data.frame(lung_ppi_human_last)
+colnames(lung_ppi_human_last_df) <- c("Frequency")
+
+
+data_col <- rbind(heart_ppi_cons_100_df, heart_ppi_cons_last_df, heart_ppi_human_100_df, heart_ppi_human_last_df, lung_ppi_cons_100_df, lung_ppi_cons_last_df, lung_ppi_human_100_df, lung_ppi_human_last_df)
+
+all_ppi_data <- as.data.frame(cbind(data_col, label_col, fill_col, order_col), stringsAsFactors = FALSE)
+all_ppi_data[,1] <- as.numeric(all_ppi_data[,1])
+
+data_col <- rbind(heart_ppi_cons_100_df, heart_ppi_cons_last_df, heart_ppi_human_100_df, heart_ppi_human_last_df, lung_ppi_cons_100_df, lung_ppi_cons_last_df, lung_ppi_human_100_df, lung_ppi_human_last_df)
+
+
+
+ggplot(all_ppi_data, aes(order_col, Frequency, fill = fill_col)) + geom_boxplot(outlier.size = 0.3) + xlab(" ") + ylab("Number of interactions in the gene co-expression network") + ylim(0, 80) + coord_flip() + theme_bw() + theme(legend.position = "none")
+
+```
 

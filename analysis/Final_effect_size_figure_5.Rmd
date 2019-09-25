@@ -3,6 +3,8 @@ title: "Final_effect_size_figure_5"
 author: "Lauren Blake"
 date: "October 11, 2018"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup}
@@ -347,6 +349,58 @@ plot_intertissue <- ggplot(data=df1, aes(x=Gene_type, y=Percentage)) +
 
 ```
 
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+gene_value <- grep("ENSG00000072062", rownames(hc_exprs_heart))
+gene_number <- gene_value
+
+expression_levels <- hc_exprs_heart[gene_number,]
+expression_tissue <- c("Kidney", "Heart", "Kidney", "Heart", "Kidney", "Heart", "Kidney")
+expression_df <- as.data.frame(cbind(t(expression_levels), expression_tissue), stringsAsFactors = FALSE)
+expression_df[,1] <- as.numeric(expression_df[,1])
+colnames(expression_df) <- c("gene", "Tissue")
+ 
+exp_plot <- ggplot(expression_df, aes(Tissue, gene)) + geom_boxplot() + ylab("Normalized gene expression level")
+
+methyl_levels <- methyl[gene_number,]
+methyl_tissue <- c("Kidney", "Heart", "Kidney", "Heart", "Kidney", "Heart", "Kidney")
+methyl_df <- as.data.frame(cbind(t(methyl_levels), methyl_tissue), stringsAsFactors = FALSE)
+methyl_df[,1] <- as.numeric(methyl_df[,1])
+colnames(methyl_df) <- c("gene_name", "Tissue")
+
+methyl_plot <- ggplot(methyl_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab("Methylation level")
+
+resid <- lm(t(expression_levels) ~ t(methyl_levels))$resid
+
+resid_df <- as.data.frame(cbind(as.data.frame(resid), methyl_tissue), stringsAsFactors = FALSE)
+resid_df[,1] <- as.numeric(resid_df[,1])
+colnames(resid_df) <- c("gene_name", "Tissue")
+
+resid_plot <- ggplot(resid_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab("Normalized gene expression residual level")
+
+plot_fig5df <- plot_grid(exp_plot, methyl_plot, resid_plot, nrow = 1)
+
+```
+
+
 # Make into figure
 
 ```{r}
@@ -364,27 +418,35 @@ bottom_row <- plot_grid(plot_intertissue, labels = c('5D. All tissues'))
 
 plot_fig5 <- plot_grid(top_row, bottom_row, ncol = 1, nrow = 2, rel_heights = c(1,1.5))
 
-save_plot("/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5_test.png", plot_fig5,
-           ncol = 1, # we're saving a grid plot of 2 columns
-           nrow = 2, # and 2 rows
+#save_plot("/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5_test.png", plot_fig5,
+#           ncol = 1, # we're saving a grid plot of 2 columns
+#           nrow = 2, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
-           base_aspect_ratio = 1
-           )
+#           base_aspect_ratio = 1
+#           )
 
 # Divide into 2 plots
 
 plot_fig5ac <- plot_grid(top_row, nrow = 1)
 
-save_plot("/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5ac_test.pdf", plot_fig5ac,
+save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5ac_test.pdf", plot_fig5ac,
            ncol = 3, # we're saving a grid plot of 2 columns
            nrow = 1, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
            base_aspect_ratio = 1
            )
 
-plot_fig5d <- plot_grid(bottom_row, ncol = 1, nrow = 1)
+save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5df_test.pdf", plot_fig5df,
+           ncol = 3, # we're saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )
 
-save_plot("/Users/laurenblake/Desktop/Tissue_Revisions/Figure_5d_test.pdf", plot_fig5d,
+
+plot_fig5g <- plot_grid(bottom_row, ncol = 1, nrow = 1)
+
+save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5g_test.pdf", plot_fig5g,
            ncol = 1, # we're saving a grid plot of 2 columns
            nrow = 1, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
@@ -839,6 +901,9 @@ check <- as.numeric(as.factor(combine_dataa$ind_siga))
 test_gene <- as.vector(check)
 names(test_gene) <- rownames(Y)
 
+test_gene_heart_kidney <- as.vector(check)
+names(test_gene_heart_kidney) <- rownames(Y)
+
 # Run topGO
 go_data <- new("topGOdata",
                    ontology = "BP",
@@ -851,6 +916,35 @@ go_data <- new("topGOdata",
                    mapping = "org.Hs.eg.db",
                    ID = "ensembl")
 
+
+library(clusterProfiler)
+
+
+test_df <- as.data.frame(test_gene)
+test_df <- data.frame(cbind(rownames(Y), test_df), stringsAsFactors = FALSE)
+colnames(test_df) <- c("ensg", "test_gene")
+
+formula_res <- compareCluster(ensg~test_gene, data=test_df, fun="enrichGO", universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+                                keyType       = 'ENSEMBL',
+                ont           = "BP",
+                pAdjustMethod = "fdr",
+                qvalueCutoff  = 0.05,
+                                maxGSSize = 3000,
+                                minGSSize = 3)
+
+#Plot
+make_dotplot <- dotplot(formula_res, showCategory = 20, by = "count")
+
+plot_fig5h <- plot_grid(make_dotplot, ncol = 1, nrow = 1)
+
+save_plot("/Users/laurenblake/Dropbox/Tissue_paper/Draft_11/Figures/Figure_5h_test.pdf", plot_fig5h,
+           ncol = 2, # we're saving a grid plot of 2 columns
+           nrow = 1, # and 2 rows
+           # each individual subplot should have an aspect ratio of 1.3
+           base_aspect_ratio = 1
+           )
+           
 # Perform enrichment test
 go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
 
@@ -860,6 +954,60 @@ go_table <- GenTable(go_data, weightFisher = go_test,
 
 go_table
 ```
+
+### An example
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(17, 20, 21, 24, 25, 28, 29)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+library(ggplot2)
+library(cowplot)
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+rownames(hc_exprs_heart) <- rownames(exprs)
+rownames(methyl) <- rownames(exprs)
+
+gene_value <- grep("ENSG00000072062", rownames(hc_exprs_heart))
+gene_number <- gene_value
+
+expression_levels <- hc_exprs_heart[gene_number,]
+expression_tissue <- c("Kidney", "Heart", "Kidney", "Heart", "Kidney", "Heart", "Kidney")
+expression_df <- as.data.frame(cbind(t(expression_levels), expression_tissue), stringsAsFactors = FALSE)
+expression_df[,1] <- as.numeric(expression_df[,1])
+colnames(expression_df) <- c("gene", "Tissue")
+ 
+exp_plot <- ggplot(expression_df, aes(Tissue, gene)) + geom_boxplot() + ylab("Normalized gene \n expression level")
+
+methyl_levels <- methyl[gene_number,]
+methyl_tissue <- c("Kidney", "Heart", "Kidney", "Heart", "Kidney", "Heart", "Kidney")
+methyl_df <- as.data.frame(cbind(t(methyl_levels), methyl_tissue), stringsAsFactors = FALSE)
+methyl_df[,1] <- as.numeric(methyl_df[,1])
+colnames(methyl_df) <- c("gene_name", "Tissue")
+
+methyl_plot <- ggplot(methyl_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab("Methylation level")
+
+resid <- lm(t(expression_levels) ~ t(methyl_levels))$resid
+
+resid_df <- as.data.frame(cbind(as.data.frame(resid), methyl_tissue), stringsAsFactors = FALSE)
+resid_df[,1] <- as.numeric(resid_df[,1])
+colnames(resid_df) <- c("gene_name", "Tissue")
+
+resid_plot <- ggplot(resid_df, aes(Tissue, gene_name)) + geom_boxplot() + ylab("Normalized gene \n  expression \n residual level")
+
+plot_grid(exp_plot, methyl_plot, resid_plot, nrow = 1)
+```
+
 
 ## Human heart-liver
 
@@ -1370,6 +1518,10 @@ check <- as.numeric(as.factor(combine_dataa$ind_siga))
 test_gene <- as.vector(check)
 names(test_gene) <- rownames(Y)
 
+test_gene_kidney_liver <- as.vector(check)
+names(test_gene_kidney_liver) <- rownames(Y)
+
+
 # Run topGO
 go_data <- new("topGOdata",
                    ontology = "BP",
@@ -1391,6 +1543,36 @@ go_table <- GenTable(go_data, weightFisher = go_test,
 
 go_table
 ```
+
+### Cluster profiler
+
+```{r}
+#test_df_heart_kidney <- as.data.frame(test_gene_heart_kidney)
+#test_df_heart_kidney[,2] <- rownames(test_df_heart_kidney)
+#colnames(test_df_heart_kidney) <- c("hk", "ensg")
+
+#test_df_kidney_liver <- as.data.frame(test_gene_kidney_liver)
+#test_df_kidney_liver[,2] <- rownames(test_df_kidney_liver)
+#colnames(test_df_kidney_liver) <- c("hk", "ensg")
+
+#check_overlap <- merge(test_df_heart_kidney, test_df_kidney_liver, by = "ensg")
+
+#formula_res <- compareCluster(ensg~hk.x+hk.y, data=check_overlap, fun="enrichGO", universe = check_overlap$ensg,
+#                OrgDb         = org.Hs.eg.db,
+#                                keyType       = 'ENSEMBL',
+#                ont           = "BP",
+#                pAdjustMethod = "fdr",
+#                qvalueCutoff  = 0.05,
+#                                maxGSSize = 3000,
+#                                minGSSize = 3)
+
+#Plot
+#p10 <- dotplot(formula_res)
+#dotplot(formula_res, showCategory = 10, by = "geneRatio")
+
+#plot_grid(p10)
+```
+
 
 ## Human kidney-lung
 

@@ -17,15 +17,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # Libraries
 library(limma)
 library(edgeR)
-
-
-# Run Pairwise DE- counts data
-
-# Import GTEx count data from hearts, kidney, livers, and lungs
-
 library(qdap)
-library("edgeR")
-library("limma")
+
 
 Hearts.LV <- read.delim("~/Desktop/Regulatory_Evol/ashlar-trial/data/gtex_v7_counts/Hearts.LV.read_counts")
 
@@ -144,9 +137,9 @@ gtex_heart <- tissue_formatting(Hearts.LV, HRTLV)
 # Lung
 
 # Add lung
-lung_data <- read.delim("../data/gtex_v7_counts/lungs.read_counts")
+lung_data <- read.delim("./data/gtex_v7_counts/lungs.read_counts")
 
-keep_lung_data <- read.table("../data/gtex_v7_counts/LUNG.keep.txt", quote="\"", comment.char="", stringsAsFactors = FALSE)
+keep_lung_data <- read.table("./data/gtex_v7_counts/LUNG.keep.txt", quote="\"", comment.char="", stringsAsFactors = FALSE)
 
 
 gtex_lung <- tissue_formatting(lung_data, keep_lung_data)
@@ -201,6 +194,9 @@ counts_genes_in_cutoff <- counts_genes_in_cutoff[,1:618]
 dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
 dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
 
+dge_in_cutoff_dot <- beg2char(rownames(dge_in_cutoff), ".", 1)
+rownames(dge_in_cutoff) <- dge_in_cutoff_dot
+
 cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE, prior.count = 0.25)
 
 
@@ -214,12 +210,11 @@ length(intersect(gtex_gene_names, rownames(cpm_12184)))
 common_genes_ind <- intersect(gtex_gene_names, rownames(cpm_12184))
 
 common_79_ind <- intersect(colnames(gtex_heart_ind), colnames(gtex_lung_ind))
+common_79_ind_dot <- gsub('-', '.' , common_79_ind, fixed=TRUE)
 
 # Ind names
 
   # Heart
-ind_names_matching <- gsub('.', '-' ,colnames(gtex_heart_ind), fixed=TRUE)
-colnames(gtex_heart_ind) <- ind_names_matching
 
 shared_list <- colnames(gtex_heart_ind) %in% common_79_ind
 heart_common_ind <- c(which(shared_list, useNames = TRUE))
@@ -228,25 +223,13 @@ common_ind_heart <- gtex_heart_ind[,heart_common_ind]
 gene_names <- beg2char(rownames(common_ind_heart), ".", 1)
 rownames(common_ind_heart) <- gene_names
   
-shared_list <- rownames(common_ind_heart) %in% rownames(common_genes_ind)
+shared_list <- rownames(common_ind_heart) %in% common_genes_ind
 heart_common_ind <- c(which(shared_list, useNames = TRUE))
 common_ind_heart_counts <- gtex_heart_ind[heart_common_ind,]
 
-  # Liver
-#ind_names_matching <- gsub('-', '.' ,colnames(gtex_liver_ind), fixed=TRUE)
-#colnames(gtex_liver_ind) <- ind_names_matching
+colnames(common_ind_heart_counts) <- gsub('-', '.' , colnames(common_ind_heart_counts), fixed=TRUE)
 
-#shared_list <- colnames(gtex_liver_ind) %in% common_79_ind
-#liver_common_ind <- c(which(shared_list, useNames = TRUE))
-#common_ind_liver <- gtex_liver_ind[,liver_common_ind]
-
-#shared_list <- rownames(gtex_liver_ind) %in% rownames(common_genes_ind_liver)
-#liver_common_ind <- c(which(shared_list, useNames = TRUE))
-#common_ind_liver_counts <- gtex_liver_ind[liver_common_ind,]
-
-  # Lung
-ind_names_matching <- gsub('-', '.' ,colnames(gtex_lung_ind), fixed=TRUE)
-colnames(gtex_lung_ind) <- ind_names_matching
+ # Lung
 
 shared_list <- colnames(gtex_lung_ind) %in% common_79_ind
 lung_common_ind <- c(which(shared_list, useNames = TRUE))
@@ -254,21 +237,38 @@ common_ind_lung <- gtex_lung_ind[,lung_common_ind]
 
 gene_names <- beg2char(rownames(common_ind_lung), ".", 1)
 rownames(common_ind_lung) <- gene_names
-
-shared_list <- rownames(gtex_lung_ind) %in% rownames(common_genes_ind)
+  
+shared_list <- rownames(common_ind_lung) %in% common_genes_ind
 lung_common_ind <- c(which(shared_list, useNames = TRUE))
 common_ind_lung_counts <- gtex_lung_ind[lung_common_ind,]
+
+name_genes_counts <- beg2char(rownames(common_ind_lung_counts), ".")
+rownames(common_ind_lung_counts) <- name_genes_counts
+
+colnames(common_ind_lung_counts) <- gsub('-', '.' , colnames(common_ind_lung_counts), fixed=TRUE)
+
+  # Lung
+#ind_names_matching <- gsub('-', '.' ,colnames(gtex_lung_ind), fixed=TRUE)
+#colnames(gtex_lung_ind) <- ind_names_matching
+
+#shared_list <- colnames(gtex_lung_ind) %in% common_79_ind
+#lung_common_ind <- c(which(shared_list, useNames = TRUE))
+#common_ind_lung <- gtex_lung_ind[,lung_common_ind]
+
+#gene_names <- beg2char(rownames(common_ind_lung), ".", 1)
+#rownames(common_ind_lung) <- gene_names
+
+#shared_list <- rownames(gtex_lung_ind) %in% rownames(common_genes_ind)
+#lung_common_ind <- c(which(shared_list, useNames = TRUE))
+#common_ind_lung_counts <- gtex_lung_ind[lung_common_ind,]
 ```
 
-255 hearts
-150 livers
-363 lungs
 
 # Use individuals with sex = 1 and platform = 1 (so you don't have to include these as covariates)
 
 ```{r}
 # Covariates
-Heart_covar <- read.delim("../data/Heart_Left_Ventricle.v7.covariates.txt")
+Heart_covar <- read.delim("./data/Heart_Left_Ventricle.v7.covariates.txt")
 rownames(Heart_covar) <- Heart_covar[,1]
 t_heart_covar <- t(Heart_covar[,-(1)])
 
@@ -276,7 +276,7 @@ t_heart_covar <- t(Heart_covar[,-(1)])
 #rownames(Liver_covar) <- Liver_covar[,1]
 #t_liver_covar <- t(Liver_covar[,-(1)])
 
-Lung_covar <- read.delim("../data/Lung.v7.covariates.txt")
+Lung_covar <- read.delim("./data/Lung.v7.covariates.txt")
 rownames(Lung_covar) <- Lung_covar[,1]
 t_lung_covar <- t(Lung_covar[,-(1)])
 
@@ -294,38 +294,35 @@ lung_platform_6 <- lung_platform[1:6,]
 
 # Find the gene counts only for the individuals in the sample
 
-shared_list <- colnames(common_ind_heart_counts) %in% rownames(heart_platform_6)
+overlap_ids_dot <- intersect(intersect(intersect(colnames(common_ind_heart_counts), colnames(heart_platform_6)), colnames(common_ind_lung_counts)), colnames(lung_platform_6))
+
+# Heart
+shared_list <- overlap_ids_dot %in% colnames(common_ind_heart_counts)
 heart_common_ind <- c(which(shared_list, useNames = TRUE))
 common_ind_heart_counts_platform <- common_ind_heart_counts[,heart_common_ind]
 
-shared_list <- colnames(heart_platform_6) %in% colnames(common_ind_heart_counts_platform)
+shared_list <- overlap_ids_dot %in% colnames(heart_platform_6)
 heart_common_ind <- c(which(shared_list, useNames = TRUE))
 heart_platform_6 <- heart_platform_6[,heart_common_ind]
 
-#shared_list <- colnames(common_ind_liver_counts) %in% rownames(t_liver_platform_6)
-#liver_common_ind <- c(which(shared_list, useNames = TRUE))
-#common_ind_liver_counts_platform <- common_ind_liver_counts[,liver_common_ind]
-
-#shared_list <- colnames(liver_platform_6) %in% colnames(common_ind_liver_counts_platform)
-#liver_common_ind <- c(which(shared_list, useNames = TRUE))
-#liver_platform_6 <- liver_platform_6[,liver_common_ind]
-
-shared_list <- colnames(common_ind_lung_counts) %in% rownames(lung_platform_6)
+# Lung
+shared_list <- overlap_ids_dot %in% colnames(common_ind_lung_counts)
 lung_common_ind <- c(which(shared_list, useNames = TRUE))
 common_ind_lung_counts_platform <- common_ind_lung_counts[,lung_common_ind]
 
-shared_list <- colnames(lung_platform_6) %in% colnames(common_ind_lung_counts_platform)
+shared_list <- overlap_ids_dot %in% colnames(lung_platform_6)
 lung_common_ind <- c(which(shared_list, useNames = TRUE))
 lung_platform_6 <- lung_platform_6[,lung_common_ind]
 
+
 t_heart_platform_6 <- t(heart_platform_6)
-#t_liver_platform_6 <- t(liver_platform_6)
 t_lung_platform_6 <- t(lung_platform_6)
+
+summary(rownames(t_heart_platform_6) == rownames(t_lung_platform_6))
 
 # Finalize covariates
 
-#four_cov <- rbind(t_heart_platform_6, t_liver_platform_6, t_lung_platform_6)
-four_cov <- rbind(heart_platform_6, lung_platform_6)
+four_cov <- rbind(t_heart_platform_6, t_lung_platform_6)
 four_cov <- as.data.frame(four_cov)
 ```
 
@@ -333,133 +330,81 @@ four_cov <- as.data.frame(four_cov)
 
 
 
-# DE in same versus different individuals
+# Run DE in all individuals
 
 
 ```{r}
-# Four same
-
-names_heart <- c("GTEX.1212Z", "GTEX.145MO", "GTEX.RN64", "GTEX.YEC4")
-names_lung <- c("GTEX.14E1K", "GTEX.QV44", "GTEX.11ZUS", "GTEX.13FTZ")
-
-
 # Make labels
-heart_label <- array("heart", dim = c(1,4))
-lung_label <- array("lung", dim = c(1,4))
+heart_label <- array("heart", dim = c(1,103))
+lung_label <- array("lung", dim = c(1,103))
 
 labels <- cbind(heart_label,  lung_label)
 
 # Pull matrix
 
-shared_list <- colnames(dge_in_cutoff) %in% names_heart
-summary(shared_list)
-heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
+#shared_list <- colnames(dge_in_cutoff) %in% names_heart
+#summary(shared_list)
+#heart_common_ind <- c(which(shared_list, useNames = TRUE))[1:4]
 
-shared_list <- colnames(dge_in_cutoff) %in% names_lung
-summary(shared_list)
-lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
+#shared_list <- colnames(dge_in_cutoff) %in% names_lung
+#summary(shared_list)
+#lung_common_ind <- c(which(shared_list, useNames = TRUE))[5:8]
 
-col_diff <- c(heart_common_ind, lung_common_ind)
+#col_diff <- c(heart_common_ind, lung_common_ind)
 
-dge_shared_1 <- dge_in_cutoff[,col_diff]
+#dge_shared_1 <- dge_in_cutoff[,col_diff]
 
 
 # Pull PCs
 
-four_cov_1 <- four_cov[col_diff,]
+#four_cov_1 <- four_cov[col_diff,]
 
 
 # Make a design matrix
 
-PC1 <- four_cov_1$C1
-PC2 <- four_cov_1$C2
-PC3 <- four_cov_1$C3
-IC1 <- four_cov_1$InferredCov1
-IC2 <- four_cov_1$InferredCov2
-IC3 <- four_cov_1$InferredCov3
+PC1 <- four_cov$C1
+PC2 <- four_cov$C2
+PC3 <- four_cov$C3
+IC1 <- four_cov$InferredCov1
+IC2 <- four_cov$InferredCov2
+IC3 <- four_cov$InferredCov3
 
 tissue <- t(labels)
 #design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
-design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
-
+#design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
+design <- model.matrix(~ tissue)
 # Rename columns of the contrast matrix
 colnames(design)[1] <- "Intercept"
-colnames(design)[3] <- "lung"
+colnames(design)[2] <- "lung"
 
 # Look at the number of samples in each column 
 colSums(design)
 
+dge_shared <- cbind(common_ind_lung_counts_platform, common_ind_lung_counts_platform)
+
+dge_in_cutoff <- DGEList(counts=as.matrix(dge_shared), genes=rownames(dge_shared), group = as.character(labels))
+dge_shared <- calcNormFactors(dge_in_cutoff)
+
 # Voom with individual as a random variable
 
-cpm.voom.cyclic <- voom(dge_shared_1, design, normalize.method="cyclicloess", plot=T)
+cpm.voom.cyclic <- voom(dge_shared, design, normalize.method="cyclicloess", plot=T)
 
-fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE)
+all_ind <- rbind(colnames(common_ind_heart_counts_platform), colnames(common_ind_lung_counts_platform))
+
+corfit <- duplicateCorrelation(cpm.voom.cyclic, design, block = all_ind)
+#corfit$consensus.correlation
+#corfit.consensus <-  0.06519918
+corfit.consensus <- corfit$consensus.correlation
+
+fit.cyclic.norm <- lmFit(cpm.voom.cyclic, design, plot = TRUE, block=all_ind, correlation=corfit.consensus)
 fit.cyclic.norm <- eBayes(fit.cyclic.norm)
 
-heart_lung_diff1 <- topTable(fit.cyclic.norm, coef=1, adjust="BH", number=Inf, sort.by="none")
-dim(heart_lung_diff1[which(heart_lung_diff1$adj.P.Val < 0.05), ]) 
+heart_lung_all <- topTable(fit.cyclic.norm, coef=2, adjust="BH", number=Inf, sort.by="none")
+dim(heart_lung_all[which(heart_lung_all$adj.P.Val < 0.05), ]) 
 
 
 ```
 
-```{r}
-cor(heart_liver_same1$logFC, heart_liver_diff1$logFC)
-plot(heart_liver_same1$logFC, heart_liver_diff1$logFC, xlab = "Same individuals", ylab = "Different individuals", main = "Effect size")
-abline(0, 1, col = "red")
-
-cor(heart_liver_same1$t, heart_liver_diff1$t)
-plot(heart_liver_same1$t, heart_liver_diff1$t, xlab = "Same individuals", ylab = "Different individuals", main = "T statistic")
-abline(0, 1, col = "red")
-
-plot(heart_liver_same1$adj.P.Val, heart_liver_diff1$adj.P.Val)
-cor(heart_liver_same1$adj.P.Val, heart_liver_diff1$adj.P.Val)
-
-
-```
-
-# Compare to actual
-
-```{r}
-genes_true <- heart_liver_all[which(heart_liver_all$adj.P.Val < 0.05), 1]
-genes_same <- heart_liver_same1[which(heart_liver_same1$adj.P.Val < 0.05), 1]
-genes_diff <- heart_liver_diff1[which(heart_liver_diff1$adj.P.Val < 0.05), 1]
-
-summary(genes_same %in% genes_true)
-summary(genes_diff %in% genes_true)
-
-in_diff_not_true <- setdiff(genes_diff, genes_true)
-same_in_true <- intersect(genes_same, genes_true)
-length(setdiff(same_in_true, genes_diff))
-
-# Heart Lung
-genes_true <- heart_lung_all[which(heart_lung_all$adj.P.Val < 0.05), 1]
-genes_same <- heart_lung_same1[which(heart_lung_same1$adj.P.Val < 0.05), 1]
-genes_diff <- heart_lung_diff1[which(heart_lung_diff1$adj.P.Val < 0.05), 1]
-
-summary(genes_same %in% genes_true)
-summary(genes_diff %in% genes_true)
-
-in_diff_not_true <- setdiff(genes_diff, genes_true)
-same_in_true <- intersect(genes_same, genes_true)
-length(setdiff(same_in_true, genes_diff))
-
-# Liver Lung
-genes_true <- liver_lung_all[which(liver_lung_all$adj.P.Val < 0.05), 1]
-genes_same <- liver_lung_same1[which(liver_lung_same1$adj.P.Val < 0.05), 1]
-genes_diff <- liver_lung_diff1[which(liver_lung_diff1$adj.P.Val < 0.05), 1]
-
-summary(genes_same %in% genes_true)
-summary(genes_diff %in% genes_true)
-
-in_diff_not_true <- setdiff(genes_diff, genes_true)
-same_in_true <- intersect(genes_same, genes_true)
-length(setdiff(same_in_true, genes_diff))
-
-# Find the genes
-
-#false_diff <- setdiff(in_diff_not_true, same_in_true)
-#t(heart_liver_all)
-```
 
 # Function for same individuals
 
@@ -515,13 +460,6 @@ IC3 <- four_cov_1$InferredCov3
 tissue <- t(labels)
 #design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
 design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
-
-# Rename columns of the contrast matrix
-colnames(design)[1] <- "Intercept"
-colnames(design)[2] <- "lung"
-
-# Look at the number of samples in each column 
-colSums(design)
 
 # Voom with individual as a random variable
 
@@ -593,9 +531,6 @@ tissue <- t(labels)
 #design <- model.matrix(~ tissue + PC1 + PC2 + PC3 + IC1 + IC2 + IC3)
 design <- model.matrix(~ tissue + PC1 + PC2 + IC1)
 
-# Rename columns of the contrast matrix
-colnames(design)[1] <- "Intercept"
-colnames(design)[2] <- "lung"
 
 # Look at the number of samples in each column 
 colSums(design)
@@ -2446,15 +2381,15 @@ comb_kidney$ensg
 
 ```{r}
 # Figure 3C
-Heart_LV_norm <- read.delim("../data/Heart_Left_Ventricle.v7.normalized_expression.bed", header=FALSE, comment.char="#")
-Heart_LV_covariates <- read.delim("../data/Heart_Left_Ventricle.v7.covariates.txt")
+Heart_LV_norm <- read.delim("./data/Heart_Left_Ventricle.v7.normalized_expression.bed", header=FALSE, comment.char="#")
+Heart_LV_covariates <- read.delim("./data/Heart_Left_Ventricle.v7.covariates.txt")
 
 
 colnames(Heart_LV_norm) <- c("chr", "start", "end", "gene", colnames(Heart_LV_covariates)[2:273])
 
-Lung_norm <- read.delim("../data/Lung.v7.normalized_expression.bed", header=FALSE, comment.char="#")
+Lung_norm <- read.delim("./data/Lung.v7.normalized_expression.bed", header=FALSE, comment.char="#")
 
-Lung_covariates <- read.delim("../data/Lung.v7.covariates.txt")
+Lung_covariates <- read.delim("./data/Lung.v7.covariates.txt")
 
 colnames(Lung_norm) <- c("chr", "start", "end", "gene", colnames(Lung_covariates)[2:383])
 

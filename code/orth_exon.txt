@@ -1,0 +1,223 @@
+Are there any trade or professional journals that would be helpful to us as we learn more about patent law and current issues within patent law?
+
+y <- c(100,300,500,530,560,570,590,1000,1200,1300,2000)
+y2 <- c(y[1],y[-length(y)])
+distance <- y-y2
+
+# annotate regions
+region_index <- which(distance > 300)
+region_array <- data.frame(starting=c(1,region_index),
+                           ending=c(region_index-1,length(y)))
+
+# take out region with less than 3 CpGs
+region_array_subset <- region_array[with(region_array, which((ending-starting+1)>2)), ] 
+
+region_list <- vector("list",nrow(region_array_subset))
+
+# Pull the average methylation for each region
+for (index in 1:length(region_list)) {
+  region_tmp <- unlist(region_array_subset[index,])
+  region_tmp2 <- c(region_tmp[1]:region_tmp[2])
+  region_list[[index]] <- mean(y[region_tmp2])
+}
+
+
+
+# for (index3 in 1:length(region_list)) {
+#   region_index <- distance[]
+#   for (index in seq_along(region_index)) {
+#     region_dist <- distance[1:(region_index[index]-1)]
+#     
+#     for (index2 in seq_along(re/Users/laurenblakegion_dist)) {
+#       dd <- distance[index2]  
+#       if (dd < 300) {
+#         region_list[[index3]] <- c(region,index2)
+#       } 
+#     }
+#   }
+# }
+
+
+
+# Read the orth CpG file
+methyl_means_array <- array("NA", dim = c(263784, 48))
+orth_cpg <- read.table("/mnt/gluster/home/leblake/Methylation/dfCovnoXposMeth.txt")
+dfCovnoX <- read.table("/mnt/gluster/home/leblake/Methylation/liftOVer/dfCovnoX_hg19.bed")
+y <- c(dfCovnoX[,2])
+y2 <- c(y[1],y[-length(y)])
+distance <- y-y2
+
+
+
+# annotate regions
+region_index <- which(distance > 300)
+region_array <- data.frame(starting=c(1,region_index),
+                           ending=c(region_index-1,length(y)))
+
+# take out region with less than 3 CpGs
+region_array_subset <- region_array[with(region_array, which((ending-starting+1)>2)), ] 
+
+#write.table(region_array_subset, file = "./region_array_subset")
+
+
+# Read the orth CpG file
+orth_cpg <- read.table("/mnt/gluster/home/leblake/Methylation/dfCovnoXposMeth.txt")
+
+
+# Make an array for the methylated regions (MR)
+methyl_means_array <- array("NA", dim = c(263784, 48))
+colnames(methyl_means_array) <- colnames(orth_cpg[,2:49])
+
+
+for (i in 1:263784){
+#print(i)
+
+# Get rows for a given MR from the orthologous jpg file
+ 
+grab_row <- orth_cpg[region_array_subset[i,1]+1:region_array_subset[i,2]+1,]
+
+# Trim only to columns we want (the first column contains a row number not a methylation value)
+
+grab_row_trim <- grab_row[,-1]
+
+# Get col means
+
+get_row_means <- colMeans(grab_row_trim)
+
+# Put row means into an array
+
+methyl_means_array[i,] <- get_row_means
+}
+
+head(methyl_means_array)
+write.table(methyl_means_array, file = "/mnt/gluster/home/leblake/Methylation/region_methyl_means_array_batch", quote = FALSE)
+
+
+for (i in 1:
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  2.000   2.000   3.000   6.295   6.000 288.000 
+
+263784
+
+
+methyl_reg <- read.table(“./region_array_subset”)
+dim(methyl_reg)
+methyl_last2 <- methyl_reg[200000:235001,]
+write.table(methyl_last2, “./region_array_subset_last2”)
+
+methyl_last3 <- methyl_reg[235000:263784,]
+
+
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14E.csv", quote = FALSE, row.names = FALSE)
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+
+doi: https://doi.org/10.1101/135442
+
+The median width of tissue-DMRs ranged from 189 nt to 531 nt. There was only little variation in width across pairwise tissue comparisons and in different species (Figure S22A). 
+
+
+Pavlovic BJ, Blake LE, Roux J, Chavarria C, and Gilad Y. A Comparative Assessment of Human and Chimpanzee iPSC-derived Cardiomyocytes with Primary Heart Tissues. bioRxiv 289942; doi; https://doi.org/10.1101/289942
+
+
+
+I am pursuing a graduate degree in data science to understand how the genome sequence influences human specific traits. By integrating data collected from cutting-edge functional genomic techniques, my work provides insight into genome dynamics. This research requires a deep understanding of statistics, computational workflows, and mechanistic biological knowledge. By creating open access workflows, others will be able to build upon my analysis to progress the regulatory genomics field.
+
+
+16 sDMRs between chimpanzees and humans inchromosomes 21 and 22;
+
+cat *C1H* > /project/gilad/leblake/GEO_tissue/C1H.fastq.gz
+cat *C2H* > /project/gilad/leblake/GEO_tissue/C2H.fastq.gz
+cat *C3H* > /project/gilad/leblake/GEO_tissue/C3H.fastq.gz
+cat *C4H* > /project/gilad/leblake/GEO_tissue/C4H.fastq.gz
+cat *C1K* > /project/gilad/leblake/GEO_tissue/C1K.fastq.gz
+cat *C2K* > /project/gilad/leblake/GEO_tissue/C2K.fastq.gz
+cat *C3K* > /project/gilad/leblake/GEO_tissue/C3K.fastq.gz
+cat *C4K* > /project/gilad/leblake/GEO_tissue/C4K.fastq.gz
+cat *C1Li* > /project/gilad/leblake/GEO_tissue/C1Li.fastq.gz
+cat *C2Li* > /project/gilad/leblake/GEO_tissue/C2Li.fastq.gz
+cat *C3Li* > /project/gilad/leblake/GEO_tissue/C3Li.fastq.gz
+cat *C4Li* > /project/gilad/leblake/GEO_tissue/C4Li.fastq.gzcat *C1Lu* > /project/gilad/leblake/GEO_tissue/C1Lu.fastq.gz
+cat *C2Lu* > /project/gilad/leblake/GEO_tissue/C2Lu.fastq.gz
+cat *C3Lu* > /project/gilad/leblake/GEO_tissue/C3Lu.fastq.gz
+cat *C4Lu* > /project/gilad/leblake/GEO_tissue/C4Lu.fastq.gz
+
+cat *H1H* > /project/gilad/leblake/GEO_tissue/H1H.fastq.gz
+cat *H2H* > /project/gilad/leblake/GEO_tissue/H2H.fastq.gz
+cat *H3H* > /project/gilad/leblake/GEO_tissue/H3H.fastq.gz
+cat *H4H* > /project/gilad/leblake/GEO_tissue/H4H.fastq.gz
+cat *H1K* > /project/gilad/leblake/GEO_tissue/H1K.fastq.gz
+cat *H2K* > /project/gilad/leblake/GEO_tissue/H2K.fastq.gz
+cat *H3K* > /project/gilad/leblake/GEO_tissue/H3K.fastq.gz
+cat *H4K* > /project/gilad/leblake/GEO_tissue/H4K.fastq.gz
+cat *H1Li* > /project/gilad/leblake/GEO_tissue/H1Li.fastq.gz
+cat *H2Li* > /project/gilad/leblake/GEO_tissue/H2Li.fastq.gz
+cat *H3Li* > /project/gilad/leblake/GEO_tissue/H3Li.fastq.gz
+cat *H4Li* > /project/gilad/leblake/GEO_tissue/H4Li.fastq.gzcat *H1Lu* > /project/gilad/leblake/GEO_tissue/H1Lu.fastq.gz
+cat *H2Lu* > /project/gilad/leblake/GEO_tissue/H2Lu.fastq.gz
+cat *H3Lu* > /project/gilad/leblake/GEO_tissue/H3Lu.fastq.gz
+cat *H4Lu* > /project/gilad/leblake/GEO_tissue/H4Lu.fastq.gz
+
+cat *R1H* > /project/gilad/leblake/GEO_tissue/R1H.fastq.gz
+cat *R2H* > /project/gilad/leblake/GEO_tissue/R2H.fastq.gz
+cat *R3H* > /project/gilad/leblake/GEO_tissue/R3H.fastq.gz
+cat *R4H* > /project/gilad/leblake/GEO_tissue/R4H.fastq.gz
+cat *R1K* > /project/gilad/leblake/GEO_tissue/R1K.fastq.gz
+cat *R2K* > /project/gilad/leblake/GEO_tissue/R2K.fastq.gz
+cat *R3K* > /project/gilad/leblake/GEO_tissue/R3K.fastq.gz
+cat *R4K* > /project/gilad/leblake/GEO_tissue/R4K.fastq.gz
+cat *R1Li* > /project/gilad/leblake/GEO_tissue/R1Li.fastq.gz
+cat *R2Li* > /project/gilad/leblake/GEO_tissue/R2Li.fastq.gz
+cat *R3Li* > /project/gilad/leblake/GEO_tissue/R3Li.fastq.gz
+cat *R4Li* > /project/gilad/leblake/GEO_tissue/R4Li.fastq.gzcat *R1Lu* > /project/gilad/leblake/GEO_tissue/R1Lu.fastq.gz
+cat *R2Lu* > /project/gilad/leblake/GEO_tissue/R2Lu.fastq.gz
+cat *R3Lu* > /project/gilad/leblake/GEO_tissue/R3Lu.fastq.gz
+cat *R4Lu* > /project/gilad/leblake/GEO_tissue/R4Lu.fastq.gz
+
+
+
+Differences in gene regulation between humans and chimpanzees is thought to underlie many phenotypic differences between these groups. Therefore, characterizing these regulatory differences between humans and non-human primates will help us to understand the genetic underpinnings of human specific traits and complex diseases.•	Many studies of interprimate differences in gene expression•	Fewer studies of the mechanisms that underlie these gene regulatory differences•	One well studied mechanism- DNA methylation. In mammals, it is involved in numerous biological processes such as cell differentiation, X-chromosome inactivation, genomic imprinting and susceptibility to complex diseases•	Inverse correlation of promoter DNA methylation and gene expression levels, although the mechanisms by which DNA methylation affects gene expression levels are unclear. Studies in primates to assess contribution of DNA methylation to primate evolution. ConservedHuman specific•	Wang et al. 2012- only a handful of DMRs in the prefrontal cortex between humans and macaques (https://bmcevolbiol.biomedcentral.com/articles/10.1186/1471-2148-12-144) •	Molaro et al. 2011- high correlations across methylation levels in human and chimpanzee sperm (https://www.ncbi.nlm.nih.gov/pubmed/21925323) •	 Martin et al 2011- 10% of CpG islands-like regions present different methylation states between chimpanzees and humans (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3227095/) •	Fukuda et al. 2013- 16 sDMRs between chimpanzees and humans in chromosomes 21 and 22 peripheral blood leukocytes (http://www.nature.com/articles/jhg201355) •	•	Enard et al- more differences between humans and chimpanzees in brain than liver and lymphocytes (http://www.cell.com/current-biology/abstract/S0960-9822(04)00072-7) •	Hernando-Herraez et al. 2013- Our analysis identified ∼800 genes with significantly altered methylation patterns among the great apes, including ∼170 genes with a methylation pattern unique to human. Some of these are known to be involved in developmental and neurological features, suggesting that epigenetic changes have been frequent during recent human and primate evolution.•	Hernando-Herraez et al. 2015- In concordance with previous studies (13,45,46), our results showed high conservation of DNA methylation levels specifically at CpG islands and gene promoters. Nevertheless, we found 570 regions that presented an exclusive pattern of DNA methylation in humans and contrary to expectation, these tend to be located distally to transcription start sites. How can local methylation changes act as mechanisms of human evolution? Possible transition to looking at tissues: 
+How can local methylation changes act as mechanisms of human evolution? Athma’s paper- “inter-species differences in methylation levels might underlie as much as 12%–18% of differences in gene expression levels between humans and chimpanzees”
+
+Identification of human-specific DNA methylation patternsHernando-Herraez 2015- identified hundreds of regions differentially methylated across humans and non-human primates in peripheral whole blood. 
+
+20% and 36% of human-specific hypo- and hypermethylated DMRs found in blood were detectable in all other tissues tested, including the brain, liver, and placenta. The results of this study begs the question about the contribution of methylation to inter tissue gene expression differences found in humans only, relative to those that are conserved DMRs. 
+
+What was/is the role of methylation differences in creating or maintaining human-specific gene regulation across tissues? Could tell us how did tissue differences within humans evolve? 
+Overall, we are interested in how regulatory features in primates across tissues could contribute to gene expression differences. We collected gene expression and DNA methylation genomic data in parallel from frozen human, chimpanzee, and rhesus macaque primary tissue samples. By using an outgroup to the humans and chimpanzees, such as rhesus macaques, we can look beyond Great Ape evolution.  For example, by looking at differences between humans and the chimpanzee and rhesus group, we may be able to learn about the evolution of human-specific properties. Using matched individuals will have several advantages: Reduce interindividual variation in measurements. Since the individuals have the same genotypes across different tissues, we can ask questions about how different gene expression patterns across tissues manifest.We identified putatively functional tissue-specific gene expression patterns and differentially methylated regions. Finally, we found that intertissue differences in methylation levels might underlie at least 18% of differences in gene expression levels between human tissues and that a higher percentage is explained in conserved intertissue differences than different between humans and chimpsFound that intertissue methylation differences are more likely to underlie conserved intertissue gene expression differences than human-specific intertissue differences. Suggests that methylation may have been important for establishing or maintaining intertissue gene expression differences during early primate evolution. •	Difficulty- many studies comparing multiple primate species only have one tissue (e.g. Wang 2012 in prefrontal cortex, Molaro et al. 2011 in sperm, DIK Martin et al. in neutrophils, Fukuda et al 2013 in peripheral blood leukocytes, Hernando-Herraez et al. 2013 and Hernando-Herraez et al. 2015 in peripheral blood)•	Previous study from our lab- high degree of conservation between tDMRs in humans and chimpanzees, consistent with previous research comparing human and mice tDMRs (Irizarry et al. 2009). Highlights the additional information with multiple tissues-Pai et al. 2011- “inter-species differences in methylation levels might underlie as much as 12%–18% of differences in gene expression levels between humans and chimpanzees”To make robust conclusions about the variation in gene expression levels that could be , need to analyze trends across tissuesLook at human-specific versus conserved methylation differences in tissues- •	Human-chimp regulatory differences To what extent do regulatory changes impact transcription and its downstream processes?Functional impact of DNA methylation outside of promoter regions is not 
+
+
+
+
+<bytecode: 0x167323638>
+<environment: namespace:WGCNA>

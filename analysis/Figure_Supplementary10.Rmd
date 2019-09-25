@@ -5,6 +5,8 @@ date: "December 2, 2018"
 output: html_document
 ---
 
+# Install libraries and data
+
 ```{r setup}
 # Load libraries
 library("edgeR")
@@ -18,7 +20,6 @@ library("devtools")
 library("medinome")
 ```
 
-# Human-chimp heart- DE genes
 
 ```{r}
 # import sample labels
@@ -39,6 +40,147 @@ cpm.voom.cyclic <- readRDS("../../../Reg_Evo_Primates/data/human_chimp_orth_cpm_
 ```{r}
 FDR_level <- 0.05
 ```
+
+# Human-chimp heart
+
+```{r}
+# Check parameters
+
+human_chimp_heart <- c(1, 5, 9, 13, 20, 24, 28)
+
+# Methylation
+hc_exprs <- exprs[,2:48]
+exprs_methyl <- exprs[,49:79]
+
+# HC heart only
+
+
+hc_exprs_heart <- hc_exprs[,human_chimp_heart]
+
+
+methyl <- exprs_methyl[,human_chimp_heart]
+
+
+
+Y <- hc_exprs_heart
+two_species <- samples$Species[human_chimp_heart]
+X <- droplevels.factor(two_species)
+M <- methyl
+RIN_subset <- RIN[human_chimp_heart]
+
+
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash_normal <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+summary(fit_ash_normal$result$svalue < 0.05)
+
+
+```
+
+# Human-chimp heart- DE genes
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val < FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+ind_sigg <- (fit_ash$result$svalue < 0.05)
+ind_sigg[ind_sigg == TRUE] <- "red"
+ind_sigg[ind_sigg == FALSE] <- "black"
+
+combine_datag <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_sigg), stringsAsFactors = FALSE)
+
+combine_datag[,1] <- as.numeric(combine_datag[,1])
+combine_datag[,2] <- as.numeric(combine_datag[,2])
+colnames(combine_datag) <- c("Effect", "SE", "ind_sigg")
+
+hr_deg <- ggplot(combine_datag, aes(combine_datag$Effect, combine_datag$SE)) + geom_point(color = c(combine_datag$ind_sigg)) + ylab("Standard error") + xlab("Effect size difference") + ylim(0, 6.5) + xlim(-8, 8)
+
+```
+
+# Human-chimp heart- non DE genes
+
+```{r}
+# Run the linear model in limma
+  design_1 <- model.matrix(~ X + RIN_subset)
+  fit_all <- lmFit(cpm.voom.cyclic[,human_chimp_heart], design_1)
+  fit_all <- eBayes(fit_all)
+
+# Get results
+  HvC_Heart_fit_all = topTable(fit_all, coef=2, adjust="BH", number=Inf, sort.by="none")
+  HvC_Heart_fit_all_5perc <-
+HvC_Heart_fit_all[which(HvC_Heart_fit_all$adj.P.Val > FDR_level), ]
+  
+ human_chimp_heart1 <-  rownames(methyl) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(methyl, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+M <- counts_human_chimp_heart_subset
+
+human_chimp_heart1 <-  rownames(hc_exprs_heart) %in% rownames( HvC_Heart_fit_all_5perc)
+human_chimp_heart1 <- as.data.frame(human_chimp_heart1)
+counts_genes_in <- cbind(hc_exprs_heart, human_chimp_heart1)
+counts_genes_in_cutoff <- subset(counts_genes_in, human_chimp_heart1 == "TRUE")
+counts_human_chimp_heart_subset <- counts_genes_in_cutoff[,1:7]
+Y <- counts_human_chimp_heart_subset
+
+check_values <- mediate.test.regressing(Y, X, M, RIN_subset)
+
+fit <- vash(check_values$d_se,df=5, singlecomp = T, unimodal = "auto") 
+fit_ash <- ash(as.vector(check_values$d), fit$sd.post, mode = 0, mixcompdist = "normal")
+
+calc <- as.array(summary(fit_ash$result$svalue < FDR_level))
+calc2 <- as.numeric(calc[[2]])
+
+(nrow(Y)-calc2)/nrow(Y)
+
+ind_sigh <- (fit_ash$result$svalue < 0.05)
+ind_sigh[ind_sigh == TRUE] <- "red"
+ind_sigh[ind_sigh == FALSE] <- "black"
+
+combine_datah <- as.data.frame(cbind(fit_ash$result$betahat, fit_ash$result$sebetahat, ind_sigh), stringsAsFactors = FALSE)
+
+combine_datah[,1] <- as.numeric(combine_datah[,1])
+combine_datah[,2] <- as.numeric(combine_datah[,2])
+colnames(combine_datah) <- c("Effect", "SE", "ind_sigh")
+
+hr_deh <- ggplot(combine_datah, aes(combine_datah$Effect, combine_datah$SE)) + geom_point(color = c(combine_datah$ind_sigh)) + ylab("Standard error") + xlab("Effect size difference") + ylim(0, 6.5) + xlim(-8, 8)
+```
+
+
+
 
 # Human-chimp kidney
 
@@ -77,6 +219,7 @@ summary(fit_ash_normal$result$svalue < 0.05)
 
 ```
 
+# Human-chimp kidney- DE genes
 
 ```{r}
 # Run the linear model in limma
@@ -127,7 +270,7 @@ hr_dea <- ggplot(combine_dataa, aes(combine_dataa$Effect, combine_dataa$SE)) + g
 
 ```
 
-# Human-chimp liver- non DE genes
+# Human-chimp kidney- non DE genes
 
 ```{r}
 # Run the linear model in limma
@@ -215,6 +358,7 @@ summary(fit_ash_normal$result$svalue < 0.05)
 
 ```
 
+# Human-chimp liver- DE genes
 
 ```{r}
 # Run the linear model in limma
@@ -353,6 +497,7 @@ summary(fit_ash_normal$result$svalue < 0.05)
 
 ```
 
+# Human-chimp lung- DE genes
 
 ```{r}
 # Run the linear model in limma
@@ -457,12 +602,12 @@ hr_def <- ggplot(combine_dataf, aes(combine_dataf$Effect, combine_dataf$SE)) + g
 
 ```{r}
 
-eight_plots <- plot_grid(hr_dea, hr_deb, hr_dec, hr_ded, hr_dee, hr_def, labels = c("10A. DE Genes", "10B. Non-DE genes", "10C.", "10D.", "10E.", "10F.", label_y = 0), ncol = 2)
+eight_plots <- plot_grid(hr_deg, hr_deh, hr_dea, hr_deb, hr_dec, hr_ded, hr_dee, hr_def, labels = c("10A. Heart DE Genes", "10. Heart non-DE genes", "10C. Kidney DE Genes", "10D. Kidney non-DE genes", "10E. Liver DE genes", "10F. Liver non-DE genes", "10G. Lung DE genes", "10H. Lung non-DE genes", label_y = 0), ncol = 3, nrow = 5)
 plot_fig4 <- plot_grid(eight_plots, ncol = 1, rel_heights=c(0.1, 1))
 
-save_plot("/Users/laurenblake/Desktop/tissue_paper/test7.pdf", plot_fig4,
-           ncol = 2, # we're saving a grid plot of 2 columns
-           nrow = 3, # and 2 rows
+save_plot("/Users/laurenblake/Desktop/tissue_paper/test11.pdf", plot_fig4,
+           ncol = 3, # we're saving a grid plot of 2 columns
+           nrow = 5, # and 2 rows
            # each individual subplot should have an aspect ratio of 1.3
            base_aspect_ratio = 1
            )
