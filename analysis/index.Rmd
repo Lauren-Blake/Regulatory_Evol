@@ -10,7 +10,7 @@ title: "Home"
 
 ## Sample Information and Record of Technical Variables
 
-*  [Technical variables documented/tested (sample information, RNA-seq, BS-seq, QC, processing, etc.)](../docs/List_technical_variables.docx)
+*  [Technical variables documented/tested (sample information, RNA-seq, BS-seq, QC, processing, etc.)](https://github.com/Lauren-Blake/Reg_Evo_Primates/blob/gh-pages/docs/List_technical_variables.docx)
 
 ## RNA-seq Data
 
