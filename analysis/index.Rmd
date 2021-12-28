@@ -118,7 +118,7 @@ How does this percentage compare to the percentage of non-conserved intertissue 
 
 Many thanks to the editor and 3 reviewers who provided helpful comments on this manuscript. 
 
-* [Additional H3K27ac analysis, including GO enrichment.](../analysis/Revisions_H3K27ac.html).
+* [Additional H3K27ac analysis, including GO enrichment.](../analysis/Revisions_H3K27ac.html)
 * [Comparing gene expression levels with reads mapped using the HG19 versus HG38 genome builds.](../analysis/Revisions_genomes.html)
 * [Network analysis.](../analysis/revisions_networks.html)
 * [Obtain the number of genes per tissue.](../analysis/revisions_misc.html)
