@@ -60,7 +60,7 @@ Main conclusions from this section: Overall, the patterns of inter-tissue differ
 *  [Identifying variables related to methylation processing that are potentially confounded with biological variables of interest](../analysis/PC_RNA_seq.html)
 *  [Identifying genes for which promoters are orthologous across humans and chimpanzees](../analysis/Hg19_PanTro3_TSS.html)
 *  [Identifying genes for which promoters are orthologous across humans, chimpanzees, and rhesus macaques](../analysis/hg19_to_rhesus_and_chimp_coor.html)
-
+Main conclusion from this section: We identified 7,725 orthologous genes with expression data and corresponding promoter DNA methylation data in humans and chimpanzees, and 4155 orthologous genes with the same information for all three species.
 
 
 ## Differentially methylated regions (DMRs)
@@ -83,7 +83,7 @@ What percentage of interspecies gene expression level differences can be explain
 * [Human-chimpanzee with 7125 genes](../analysis/Final_effect_size_human_chimp.html)
 * [Human-chimpanzee with 4155 genes](../analysis/Final_effect_size_human_chimp_4155.html)
 * [Human-rhesus macaque with 4155 genes](../analysis/Final_effect_size_human_rhesus_4155.html)
-Conclusion from this section: Considering DE genes between humans and chimpanzees (in at least one tissue), we found that between 11% and 25% of genes (depending on tissue) showed a difference in the effect of species on gene expression level$
+Main conclusion from this section: When considering DE genes between humans and chimpanzees (in at least one tissue), we found that between 11% and 25% of genes (depending on tissue) showed a difference in the effect of species on gene expression level$
 
 ## Integration of gene expression levels and methylation levels- intertissue DE genes
 
@@ -92,7 +92,7 @@ Within a species, what percentage of intertissue gene expression level differenc
 * [Intertissue chimps](../analysis/Final_effect_size_chimp_tissues.html)
 * [Intertissue rhesus macaques](../analysis/Final_effect_size_rhesus_tissues_4155.html)
 * [Tissue specific DE genes](../analysis/Final_effect_size_tissue_specific.html)
-Conclusion from this section: 9%–17% of inter-tissue gene expression differences could potentially be explained by DNA methylation differences across tissues (FSR 5%).
+Main conclusion from this section: 9%–17% of inter-tissue gene expression differences could potentially be explained by DNA methylation differences across tissues (FSR 5%).
 
 ## Integration of gene expression levels and methylation levels- conserved versus non-conserved intertissue DE genes
 
@@ -101,7 +101,7 @@ How does this percentage compare to the percentage of non-conserved intertissue 
 
 * [Conserved versus nonconserved DE genes- humans and chimpanzees](../analysis/Conserved_nonconserved_correlation.html)
 * [Conserved versus nonconserved DE genes- humans and rhesus macaques](../analysis/Conserved_nonconserved_correlation_rhesus.html)
-Conclusion from this section: When we focused on regulatory patterns that are most likely to be functional—namely, conserved inter-tissue gene regulatory differences, these differences were more likely to be explained by variation in DNA methylation levels than nonconserved inter-tissue gene expression differences (minimum difference is 7%, P < 0.005 for all comparisons; at FDR <5% and FSR <5%).
+Main conclusion from this section: When we focused on regulatory patterns that are most likely to be functional—namely, conserved inter-tissue gene regulatory differences, these differences were more likely to be explained by variation in DNA methylation levels than nonconserved inter-tissue gene expression differences (minimum difference is 7%, P < 0.005 for all comparisons; at FDR <5% and FSR <5%).
 
 ## Additional figure/table generation
 
