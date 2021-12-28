@@ -12,87 +12,88 @@ The project website for Blake, Roux, et al., "A comparison of gene expression an
 
 ## Sample Information and Record of Technical Variables
 
-*  [Technical variables documented/tested (sample information, RNA-seq, BS-seq, QC, processing, etc.)](../docs/List_technical_variables.docx). \
+*  [Technical variables documented/tested (sample information, RNA-seq, BS-seq, QC, processing, etc.).](../docs/List_technical_variables.docx) \
 Note: Clicking on this link will lead to the automatic download of a .docx file. For more information about the samples, see [Supplemental_Table_S1.xls](https://genome.cshlp.org/content/30/2/250/suppl/DC1).
-Main conclusion from this section: "
+*  Main conclusion from this section: All sample processing steps should be recorded in a sample history file that includes anything that happened to any sample. This documentation can help provide evidence that a phenomenon is driven by biological rather than technical factors.
 
 ## RNA-seq Data
 
 ### Pre-processing
 
-*  [Exploratory analysis of unmapped and mapped reads](../analysis/Plots_unmapped_mapped_RNAseq_reads.html). 
-Main conclusion from this section: There is a sufficient number of (orthologous) reads per sample to proceed with the analysis. 
+*  [Exploratory analysis of unmapped and mapped reads.](../analysis/Plots_unmapped_mapped_RNAseq_reads.html) 
+*  Main conclusion from this section: There is a sufficient number of (orthologous) reads per sample to proceed with the analysis. 
 
 ### Normalization 
 
-*  [Visualize raw gene expression counts](../analysis/Normalization_plots.html)
-*  [Establishing filtering criteria for multispecies RNA-seq data](../analysis/Filtering_analysis.html)
+*  [Visualize raw gene expression counts.](../analysis/Normalization_plots.html)
+*  [Establishing filtering criteria for multispecies RNA-seq data.](../analysis/Filtering_analysis.html)
 *  [Should the data be normalized for GC content?](../analysis/GC_content_normalization_CHT.html).  
-*  [Library size adjustment and decoupling the relationship between expression mean and variance with edgeR+voom](../analysis/TMM_voom_on_GC_normalized_data.html)
-Main conclusion from this section:  For each tissue-species pair, the adjusted raw counts and the actual raw counts were highly correlated (> 0.98). Therefore, we did not adjust for read depth or GC content in our RNA-sequencing data. 
+*  [Library size adjustment and decoupling the relationship between expression mean and variance with edgeR+voom.](../analysis/TMM_voom_on_GC_normalized_data.html)
+*  Main conclusion from this section:  For each tissue-species pair, the adjusted raw counts and the actual raw counts were highly correlated (> 0.98). Therefore, I did not adjust for read depth or GC content in the RNA-sequencing data. 
 
-### Analysis with Technical Factors
+### Testing the relationship between a large number of technical factors recorded throughout our experiments and the biological variables of interest in the study
 
-*  [Part 1: Identifying variables potentially confounded with biological variables of interest](../analysis/Tech_factor_analysis1_gene_exp.html). As described in Gilad and Mizrahi-Man et al F1000 Research 2015, study design is imperative in primate comparative genomics. In this study, we took extra care to record and analyze non-biological variables of interest. 
-*  [Part 2: Relationships between potential confounders](../analysis/Analysis_of_confounders2_gene_exp.html)
-*  [Using glmnet to find the "best sets" of technical factors](../analysis/GLMnet_gene_exp.html)
-*  [Correlation between technical factors in the best sets and gene expression levels](../analysis/Follow_up_best_set_tech_factors.html)
-Main conclusion from this section: We tested the relationship between a large number of technical factors recorded throughout our experiments and the biological variables of interest in our study, namely tissue and species. We found that there were no technical confounders with tissue but two technical factors were confounded with species: time postmortem until collection and RNA extraction date. Because of the opportunistic nature of sample collection, these confounders are practically impossible to avoid in comparative studies of primates (especially apes). We discuss possible implications of these confounders throughout the [publication](https://genome.cshlp.org/content/30/2/250.long).
+*  [Part 1: Identifying variables potentially confounded with biological variables of interest.](../analysis/Tech_factor_analysis1_gene_exp.html). As described in Gilad and Mizrahi-Man et al F1000 Research 2015, study design is imperative in primate comparative genomics. In this study, we took extra care to record and analyze non-biological variables of interest. 
+*  [Part 2: Relationships between potential confounders and biological variables of interest.](../analysis/Analysis_of_confounders2_gene_exp.html)
+*  [Using glmnet to find the "best sets" of technical factors.](../analysis/GLMnet_gene_exp.html)
+*  [Correlation between technical factors in the best sets and gene expression levels.](../analysis/Follow_up_best_set_tech_factors.html)
+*  Main conclusion from this section: There were no recorded technical confounders with tissue but two technical factors were confounded with species: time postmortem until collection and RNA extraction date. Because of the opportunistic nature of sample collection, these confounders are practically impossible to avoid in comparative studies of primates (especially apes). We discuss possible implications of these confounders throughout the [publication](https://genome.cshlp.org/content/30/2/250.long).
 
 ### Final filtering, normalizations, and analysis with technical factors (12,184 genes)
 
-*  [Processing using filtering with lowly expressed genes](../analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html)
-Main conclusion from this section: We estimated gene expression levels using an approach designed to prevent biases driven by sequence divergence across species.We excluded data from genes that were lowly expressed in more than half of the samples as well as data from one human heart sample that was an obvious outlier, probably owing to a sample swap. We normalized the distribution of gene expression levels to remove systematic expression differences between species (maximizing the number of genes with invariant expression levels across species corresponds to our null hypothesis).
+*  [Processing using filtering with lowly expressed genes.](../analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html)
+*  Main conclusion from this section: I estimated gene expression levels using an approach designed to prevent biases driven by sequence divergence across species and excluded data from genes that were lowly expressed in more than half of the samples (as well as data from one human heart sample that was an obvious outlier, probably owing to a sample swap). I normalized the distribution of gene expression levels to remove systematic expression differences between species (maximizing the number of genes with invariant expression levels across species corresponds to our null hypothesis).
 
 ### Univariate analysis on gene expression levels
 
-* [Test for differentially expressed (DE) genes with ASH](../analysis/DE_RIN_Plus_ASH.html)
-* [Test for signficant interactions and Gene Ontology (GO) enrichments](../analysis/DE_RIN_Interactions_Plus_ASH.html)
-* [Code for testing the enrichment of the number of overlapping genes using the hypergeometric distribution](../analysis/Recapitulate_Pai_2011.html)
-* [Number of genes consistent with a tissue specific pattern using a more lenient definition of "tissue specific"](../analysis/More_lenient_tissue_specific.html). Since there are only 4 tissues in this analysis, it is not possible to separate whether the gene expression level in a tissue is truly tissue specific (versus all tissues) or just the other 3 tissues included in the analysis.  
-* [Significance of conservation in tissue specific gene expression- using the hypergeometric distribution](../analysis/Tissue_specific_overlap.html)
-* [Comparison of conserved tissue specific genes to other data](../analysis/Comparison_to_GTEx.html) The goal of this script is to compare the order of the gene expression in our tissues to the order in a well established biobank, GTEx. 
-Main conclusions from this section: Overall, the patterns of inter-tissue differences in gene expression levels are similar in the three species, significantly more so than expected by chance alone (P < 10−16, hypergeometric distribution). A range of 17%–26% of inter-tissue DE genes have conserved inter-tissue expression patterns in all three species. It is a common notion that genes with tissue-specific expression patterns may underlie tissue-specific functions. To broadly analyze the biological function of genes with conserved tissue-specific expression, we performed a Gene Ontology (GO) enrichment analysis. We found these genes are indeed highly enriched with functional annotations that are relevant to the corresponding tissue.  
+* [Characterize differentially expressed (DE) genes with ASH.](../analysis/DE_RIN_Plus_ASH.html)
+* [Test for signficant interactions and perform Gene Ontology (GO) enrichments.](../analysis/DE_RIN_Interactions_Plus_ASH.html)
+* [Code for testing the enrichment of the number of overlapping genes using the hypergeometric distribution.](../analysis/Recapitulate_Pai_2011.html)
+* [Number of genes consistent with a tissue specific pattern using a more lenient definition of "tissue specific".](../analysis/More_lenient_tissue_specific.html). Since there are only 4 tissues in this analysis, it is not possible to separate whether the gene expression level in a tissue is truly tissue specific (versus all tissues) or just the other 3 tissues included in the analysis.  
+* [Significance of conservation in tissue specific gene expression patterns using the hypergeometric distribution.](../analysis/Tissue_specific_overlap.html)
+* [Comparison of conserved tissue specific genes to other data.](../analysis/Comparison_to_GTEx.html) The goal of this script is to compare the order of the gene expression in our tissues to the order in a well established biobank, GTEx. 
+*  Main conclusions from this section: Overall, the patterns of inter-tissue differences in gene expression levels are similar in the three species, significantly more so than expected by chance alone (P < 10−16, hypergeometric distribution). A range of 17%–26% of inter-tissue DE genes have conserved inter-tissue expression patterns in all three species. These genes are also highly enriched with functional annotations that are relevant to the corresponding tissue, which is suggestive of biological function.  
 
 
 ## Methylation Data
 
-*  [Identifying variables related to methylation processing that are potentially confounded with biological variables of interest](../analysis/PC_RNA_seq.html)
-*  [Identifying genes for which promoters are orthologous across humans and chimpanzees](../analysis/Hg19_PanTro3_TSS.html)
-*  [Identifying genes for which promoters are orthologous across humans, chimpanzees, and rhesus macaques](../analysis/hg19_to_rhesus_and_chimp_coor.html)
-Main conclusion from this section: We identified 7,725 orthologous genes with expression data and corresponding promoter DNA methylation data in humans and chimpanzees, and 4155 orthologous genes with the same information for all three species.
+*  [Identifying variables related to methylation processing that are potentially confounded with biological variables of interest.](../analysis/PC_RNA_seq.html)
+*  [Identifying genes for which promoters are orthologous across humans and chimpanzees.](../analysis/Hg19_PanTro3_TSS.html)
+*  [Identifying genes for which promoters are orthologous across humans, chimpanzees, and rhesus macaques.](../analysis/hg19_to_rhesus_and_chimp_coor.html)
+*  Main conclusion from this section: I identified 7,725 orthologous genes with expression data and corresponding promoter DNA methylation data in humans and chimpanzees, and 4155 orthologous genes with the same information for all three species.
 
 
 ## Differentially methylated regions (DMRs)
 
 Identifying DMRs was computationally intensive using the BSmooth package. Therefore, tissue and species DMRs were identified using the orthologous CpGs on a HPC. The output of each file was either (1) a list of sDMRs where the same tissue was analyzed across species or (2) a list of tDMRs where different tissues were analyzed within a species. 
 
-*  [Obtain size of DMRs](../analysis/Compare_methylated_regions.html)
-*  [Exploration of tDMRs within each species](../analysis/Finding_DMRs.html)
-*  [Identify conserved and human-specific tDMRs using the package bedr](../analysis/Pairwise_tDMRs.html)
-*  [Identifying DMRs with a pattern consistent with tissue specificity](../analysis/tissue_specific_tDMRs.html). Again, the methylation pattern in 1 tissue is being compared to methylation in only 3 other tissues.
-*  [Identifying conserved tDMRs](../analysis/Finding_conserved_DMRs.html)
-*  [Enrichment of tDMR overlap using the hypergeometric distribution](../analysis/Pairwise_tDMR_overlap.html)
-*  [Overlap between DMRs and H3K27ac, an epigenetic mark often associated with active gene expression](../analysis/Overlap_reg_features.html)
-Main conclusions from this section: Our results suggest that in general, inter-tissue DNA methylation differences within a species tend to be conserved, consistent with the observations of previous studies 
-We next focused specifically on tissue-specific DMRs, as these may contribute to tissue-specific function. In all four tissues, >59% of conserved DMRs are hypomethylated in a tissue-specific manner. We evaluated the overlap between tissue-specific DMRs and genomic regions marked with H3K27ac, a mark often associated with active gene expression (The ENCODE Project Consortium 2012). We found that conserved hypomethylated tissue-specific DMRs were annotated with H3K27ac more frequently than tissue-specific DMRs identified only in humans (P < 0.001, difference of proportions test). 
+*  [Obtain statistics about the sizes of DMRs.](../analysis/Compare_methylated_regions.html)
+*  [Exploration of tDMRs within each species.](../analysis/Finding_DMRs.html)
+*  [Identifying human-specific tDMRs using the package bedr.](../analysis/Pairwise_tDMRs.html)
+*  [Identifying DMRs with a pattern consistent with tissue specificity.](../analysis/tissue_specific_tDMRs.html). Again, the methylation pattern in 1 tissue is being compared to methylation in only 3 other tissues.
+*  [Identifying conserved tDMRs.](../analysis/Finding_conserved_DMRs.html)
+*  [Enrichment of tDMR overlap using the hypergeometric distribution.](../analysis/Pairwise_tDMR_overlap.html)
+*  [Overlap between DMRs and H3K27ac, an epigenetic mark often associated with active gene expression.](../analysis/Overlap_reg_features.html)
+*  Main conclusions from this section: Inter-tissue DNA methylation differences within a species tend to be conserved, consistent with the observations of previous studies. In all four tissues, >59% of conserved DMRs are hypomethylated in a tissue-specific manner. We evaluated the overlap between tissue-specific DMRs and genomic regions marked with H3K27ac, a mark often associated with active gene expression (The ENCODE Project Consortium 2012). We found that conserved hypomethylated tissue-specific DMRs were annotated with H3K27ac more frequently than tissue-specific DMRs identified only in humans (P < 0.001, difference of proportions test). 
 
 ## Integration of gene expression levels and methylation levels- interspecies DE genes
 
 What percentage of interspecies gene expression level differences can be explained by variation in DNA methylation levels?
-* [Human-chimpanzee with 7125 genes](../analysis/Final_effect_size_human_chimp.html)
-* [Human-chimpanzee with 4155 genes](../analysis/Final_effect_size_human_chimp_4155.html)
-* [Human-rhesus macaque with 4155 genes](../analysis/Final_effect_size_human_rhesus_4155.html)
-Main conclusion from this section: When considering DE genes between humans and chimpanzees (in at least one tissue), we found that between 11% and 25% of genes (depending on tissue) showed a difference in the effect of species on gene expression level$
+
+* [In humans and chimpanzees with 7125 orthologous genes.](../analysis/Final_effect_size_human_chimp.html)
+* [In human and chimpanzees with 4155 human-chimp-rhesus orthologous genes.](../analysis/Final_effect_size_human_chimp_4155.html)
+* [In humans and rhesus macaques with 4155 orthologous genes.](../analysis/Final_effect_size_human_rhesus_4155.html)
+* Main conclusion from this section: When considering DE genes between humans and chimpanzees (in at least one tissue), I found that between 11% and 25% of genes (depending on tissue) showed a difference in the effect of species on gene expression level.
 
 ## Integration of gene expression levels and methylation levels- intertissue DE genes
 
 Within a species, what percentage of intertissue gene expression level differences can be explained by variation in DNA methylation levels?
-* [Intertissue humans](../analysis/Final_effect_size_human_tissues.html)
-* [Intertissue chimps](../analysis/Final_effect_size_chimp_tissues.html)
-* [Intertissue rhesus macaques](../analysis/Final_effect_size_rhesus_tissues_4155.html)
-* [Tissue specific DE genes](../analysis/Final_effect_size_tissue_specific.html)
-Main conclusion from this section: 9%–17% of inter-tissue gene expression differences could potentially be explained by DNA methylation differences across tissues (FSR 5%).
+
+* [Intertissue in humans.](../analysis/Final_effect_size_human_tissues.html)
+* [Intertissue in chimpanzees.](../analysis/Final_effect_size_chimp_tissues.html)
+* [Intertissue in rhesus macaques.](../analysis/Final_effect_size_rhesus_tissues_4155.html)
+* [In tissue specific DE genes.](../analysis/Final_effect_size_tissue_specific.html)
+* Main conclusion from this section: 9%–17% of inter-tissue gene expression differences could potentially be explained by DNA methylation differences across tissues (FSR 5%).
 
 ## Integration of gene expression levels and methylation levels- conserved versus non-conserved intertissue DE genes
 
@@ -101,13 +102,11 @@ How does this percentage compare to the percentage of non-conserved intertissue 
 
 * [Conserved versus nonconserved DE genes- humans and chimpanzees](../analysis/Conserved_nonconserved_correlation.html)
 * [Conserved versus nonconserved DE genes- humans and rhesus macaques](../analysis/Conserved_nonconserved_correlation_rhesus.html)
-Main conclusion from this section: When we focused on regulatory patterns that are most likely to be functional—namely, conserved inter-tissue gene regulatory differences, these differences were more likely to be explained by variation in DNA methylation levels than nonconserved inter-tissue gene expression differences (minimum difference is 7%, P < 0.005 for all comparisons; at FDR <5% and FSR <5%).
+* Main conclusion from this section: When focusing on regulatory patterns that are most likely to be functional—namely, conserved inter-tissue gene regulatory differences, these differences were more likely to be explained by variation in DNA methylation levels than nonconserved inter-tissue gene expression differences (minimum difference is 7%, P < 0.005 for all comparisons; at FDR <5% and FSR <5%).
 
 ## Additional figure/table generation
 
-* [Global surveys of RNA-seq and BS-seq data](../analysis/gene_exp_corr.html)
-* [About samples](../analysis/Figures_samples_info.html)
-
+* [Correlations of gene expression levels in matched and unmatched individuals](../analysis/gene_exp_corr.html)
 * [Figure 1](../analysis/Figure_1.html)
 * [Figure 3](../analysis/Figures_methylation.html)
 * [Figure 4](../analysis/Final_effect_size_figure_4.html)
@@ -124,7 +123,7 @@ Many thanks to the editor and 3 reviewers who provided helpful comments on this 
 * [Comparing gene expression levels using the HG19 versus HG38 genome builds](../analysis/Revisions_genomes.html)
 * [Network analysis](../analysis/revisions_networks.html)
 * [Number of genes per tissue](../analysis/revisions_misc.html)
-Main conclusion from this section: We found that genes with conserved tissue-specific expression patterns are more likely to appear as nodes in the networks than genes without tissue-specific expression patterns or genes whose tissue-specific expression patterns are not conserved (P < 10−5). When we only considered genes that appear as nodes in the network, we found that genes with conserved tissue-specific expression patterns are more likely to be classified as hubs in the networks than genes without tissue-specific expression patterns or genes whose tissue-specific expression patterns are not conserved (P < 0.007).
+* Main conclusion from this section: I found that genes with conserved tissue-specific expression patterns are more likely to appear as nodes in the networks than genes without tissue-specific expression patterns or genes whose tissue-specific expression patterns are not conserved (P < 10−5).
 
 
 
