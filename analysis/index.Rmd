@@ -8,7 +8,8 @@ title: "Home"
 
 ## Project Introduction
 
-The project website for Blake, Roux, et al., "A comparison of gene expression and DNA methylation patterns across tissues and species". Many of the main conclusions from each section are quoted directly from the [publication](https://genome.cshlp.org/content/30/2/250.long). 
+This this the project website for Blake, Roux, et al., "A comparison of gene expression and DNA methylation patterns across tissues and species". Many of the main conclusions from each section are quoted directly from the [publication](https://genome.cshlp.org/content/30/2/250.long). 
+A link to the Github repo can be found [here](https://github.com/Lauren-Blake/Regulatory_Evol/tree/gh-pages), although the code is much more readable using the links below.  
 
 ## Sample Information and Record of Technical Variables
 
@@ -33,7 +34,7 @@ Note: Clicking on this link will lead to the automatic download of a .docx file.
 
 ### Testing the relationship between a large number of technical factors recorded throughout our experiments and the biological variables of interest in the study
 
-*  [Part 1: Identifying variables potentially confounded with biological variables of interest.](../analysis/Tech_factor_analysis1_gene_exp.html). As described in [Gilad and Mizrahi-Man et al 2015](https://f1000research.com/articles/4-121), study design is imperative in primate comparative genomics. In this study, I took extra care to record and analyze non-biological variables of interest. 
+*  [Part 1: Identifying variables potentially confounded with biological variables of interest.](../analysis/Tech_factor_analysis1_gene_exp.html) As described in [Gilad and Mizrahi-Man et al 2015](https://f1000research.com/articles/4-121), study design is imperative in primate comparative genomics. In this study, I took extra care to record and analyze non-biological variables of interest. 
 *  [Part 2: Relationships between potential confounders and biological variables of interest.](../analysis/Analysis_of_confounders2_gene_exp.html)
 *  [Using glmnet to find the "best sets" of technical factors.](../analysis/GLMnet_gene_exp.html)
 *  [Correlation between technical factors in the best sets and gene expression levels.](../analysis/Follow_up_best_set_tech_factors.html)
