@@ -27,7 +27,7 @@ Note: Clicking on this link will lead to the automatic download of a .docx file.
 
 *  [Visualize raw gene expression counts.](../analysis/Normalization_plots.html)
 *  [Establishing filtering criteria for multispecies RNA-seq data.](../analysis/Filtering_analysis.html)
-*  [Should the data be normalized for GC content?](../analysis/GC_content_normalization_CHT.html).  
+*  [Should the data be normalized for GC content?](../analysis/GC_content_normalization_CHT.html)  
 *  [Library size adjustment and decoupling the relationship between expression mean and variance with edgeR+voom.](../analysis/TMM_voom_on_GC_normalized_data.html)
 *  Conclusion from this section:  For each tissue-species pair, the adjusted raw counts and the actual raw counts were highly correlated (> 0.98). Therefore, I did not adjust for read depth or GC content in the RNA-sequencing data. 
 
